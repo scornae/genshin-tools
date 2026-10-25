@@ -850,18 +850,34 @@ const T = () => THEMES.celestial;
 const elc = k => (T().el && T().el[k]) || EL[k].c;
 const WP = {sword:'Sword',claymore:'Claymore',polearm:'Polearm',bow:'Bow',catalyst:'Catalyst'};
 const WP_ORDER = ['sword','claymore','polearm','bow','catalyst'];
+const LOCAL_BASE = 'assets-optimized';
+// Verified absent from both the source API and the optimized asset set.
+// Skipping these keys avoids repeated 404s; every renderer already treats a
+// missing nc/na image as "no background" and keeps the rest of the UI intact.
+const LOCAL_MISSING = new Set(['nc:yae-miko','na:yae-miko']);
+const localAsset = (cat, id, ext='.webp') => `${LOCAL_BASE}/${cat}/${encodeURIComponent(id)}${ext}`;
 const altUrl = k => `https://api.lunaris.moe/data/assets/icons/${k}.webp`;
 const wpUrl = k => `https://api.lunaris.moe/data/assets/icons/${k}.webp`;
+const iconUrls = k => [localAsset('icons_lunaris', k), altUrl(k)];
 const wpIcon = k => { const im=imgs.get('wp:'+k); return im&&im.src ? `<img src="${esc(im.src)}" alt="">` : ''; };
 const IMG_PATTERN = 'https://api.lunaris.moe/data/assets/avataricon/UI_AvatarIcon_{id}.webp';
 const EL_PATTERN = 'https://gi.yatta.moe/assets/UI/UI_Buff_Element_{id}.png?vh=2024123000';
 const elUrl = k => EL_PATTERN.replace('{id}', EL[k].u);
+const elUrls = k => [localAsset('icons_yatta', k, '.png'), elUrl(k)];
 const charUrl = id => IMG_PATTERN.replace('{id}', encodeURIComponent(id));
 const cardUrl = id => `https://api.lunaris.moe/data/assets/avatarcard/UI_AvatarIcon_${encodeURIComponent(id)}_Card.webp`;
 const naUrl = id => `https://api.lunaris.moe/data/assets/namecardalpha/UI_NameCardPic_${encodeURIComponent(id)}_Alpha.png`;
 const naVar = id => { const n=imgs.get('na:'+id); return n&&n.src?`--na:url('${esc(n.src)}');`:''; };
 const ncUrl = id => `https://api.lunaris.moe/data/assets/namecardpic/UI_NameCardPic_${encodeURIComponent(id)}_P.png`;
 const gachaUrl = id => `https://api.lunaris.moe/data/assets/gachaicon/UI_Gacha_AvatarIcon_${encodeURIComponent(id)}.png`;
+// Local-first URL list: stable character id for the optimized file, then the
+// existing remote variants as a reliable fallback. Traveler has no local asset.
+const assetUrls = (cat, c, remoteFn) => {
+  const urls = [];
+  if(c && c.id && c.id !== 'traveler') urls.push(localAsset(cat, c.id));
+  if(c && Array.isArray(c.ids)) urls.push(...c.ids.map(remoteFn));
+  return urls;
+};
 const glyph = el => {
   const e = EL[el]; if(!e) return '';
   return e.t==='f'
@@ -870,7 +886,7 @@ const glyph = el => {
 };
 const elIcon = el => {
   const ei=imgs.get('ei:'+el);
-  if(ei&&ei.kind==='blob') return `<span class="eic" style="--m:url(${ei.src})"></span>`;
+  if(ei&&imgReady(ei.kind)) return `<span class="eic" style="--m:url(${ei.src})"></span>`;
   const im=imgs.get('el:'+el);
   return im&&im.src ? `<img src="${esc(im.src)}" alt="">` : glyph(el);
 };
@@ -911,13 +927,17 @@ const byId = id => chars().find(c=>c.id===id);
 
 /* ---------- image cache (IndexedDB) ---------- */
 let db = null;
-const idbOpen = () => new Promise(res=>{ try{ const r=indexedDB.open('gi-roster-v2',1); r.onupgradeneeded=()=>r.result.createObjectStore('img'); r.onsuccess=()=>res(r.result); r.onerror=()=>res(null); }catch(e){res(null);} });
+// v2: reset the image cache so old remote blobs do not shadow the new local
+// assets. Only the `img` object store is touched; roster/lineup data lives in
+// localStorage and is untouched.
+const idbOpen = () => new Promise(res=>{ try{ const r=indexedDB.open('gi-roster-v2',2); r.onupgradeneeded=()=>{ const d=r.result; if(d.objectStoreNames.contains('img')) d.deleteObjectStore('img'); d.createObjectStore('img'); }; r.onsuccess=()=>res(r.result); r.onerror=()=>res(null); }catch(e){res(null);} });
 const idb = (mode, fn) => new Promise(res=>{ if(!db) return res(null); try{ const st=db.transaction('img',mode).objectStore('img'); const q=fn(st); q.onsuccess=()=>res(q.result===undefined?null:q.result); q.onerror=()=>res(null);}catch(e){res(null);} });
 const idbGet = k => idb('readonly', s=>s.get(k));
 const idbPut = (k,v) => idb('readwrite', s=>s.put(v,k));
 
 /* ---------- image loading ---------- */
-const imgs = new Map();   // key -> {src, kind:'blob'|'remote'|'fail'}
+const imgs = new Map();   // key -> {src, kind:'blob'|'local'|'remote'|'fail'}
+const imgReady = k => k==='blob'||k==='local';
 let queue = [], running = 0, chromeT;
 const probe = u => new Promise(res=>{ const i=new Image(); i.onload=()=>res(true); i.onerror=()=>res(false); i.src=u; });
 function setImg(key, src, kind){
@@ -947,19 +967,19 @@ async function loadAsset(key, urls, shrink){
   for(const u of urls){
     try{
       const r = await fetch(u,{mode:'cors'});
-      if(r.ok){ let b=await r.blob(); if(b.type.startsWith('image')){ if(shrink) b=await shrinkImg(b,shrink); idbPut(key,b); setImg(key, URL.createObjectURL(b), 'blob'); return; } }
+      if(r.ok){ let b=await r.blob(); const ext=(u.split('?')[0].match(/\.([a-z0-9]+)$/i)||[])[1]?.toLowerCase(); const mime={webp:'image/webp',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',gif:'image/gif',avif:'image/avif'}[ext]; const localImg=u.startsWith(LOCAL_BASE+'/')&&!!mime; if(b.type.startsWith('image')||localImg){ if(localImg&&!b.type.startsWith('image')) b=new Blob([b],{type:mime}); if(shrink && !u.startsWith(LOCAL_BASE+'/')) b=await shrinkImg(b,shrink); idbPut(key,b); setImg(key, URL.createObjectURL(b), 'blob'); return; } }
       continue;
     }catch(e){ /* CORS or network: try a plain <img> for display only */ }
-    if(await probe(u)){ setImg(key,u,'remote'); return; }
+    if(await probe(u)){ setImg(key,u,u.startsWith(LOCAL_BASE+'/')?'local':'remote'); return; }
   }
   imgs.set(key,{src:'',kind:'fail'});
-  if(key.startsWith('g:')||key.startsWith('card:')){ const id=key.startsWith('g:')?key.slice(2):key.slice(5), c=SEED.find(x=>x.id===id); if(c && !imgs.has(id) && !queue.some(q=>q.key===id)) queue.unshift({key:id, urls:c.ids.map(charUrl)}); }
+  if(key.startsWith('g:')||key.startsWith('card:')){ const id=key.startsWith('g:')?key.slice(2):key.slice(5), c=SEED.find(x=>x.id===id); if(c && !imgs.has(id) && !queue.some(q=>q.key===id)) queue.unshift({key:id, urls:assetUrls('avataricon', c, charUrl)}); }
 }
 function pump(){
   while(running<6 && queue.length){
     const job=queue.shift(); running++;
     loadAsset(job.key, job.urls, job.shrink).catch(()=>{}).finally(()=>{
-      if(job.key.startsWith('ei:')){ const im=imgs.get(job.key), k=job.key.slice(3); if((!im||im.kind!=='blob') && !imgs.has('el:'+k) && !queue.some(q=>q.key==='el:'+k)) queue.unshift({key:'el:'+k, urls:[elUrl(k)]}); }
+      if(job.key.startsWith('ei:')){ const im=imgs.get(job.key), k=job.key.slice(3); if((!im||!imgReady(im.kind)) && !imgs.has('el:'+k) && !queue.some(q=>q.key==='el:'+k)) queue.unshift({key:'el:'+k, urls:elUrls(k)}); }
       if(!job.key.includes(':')) queueNc(job.key); else if(job.key.startsWith('s:')) queueNa(job.key.slice(2));
       running--; pump(); updateNote();
     });
@@ -969,7 +989,7 @@ let imgIO=null;
 function imgJob(c){
   const tallArt=S.view==='tall', key=tallArt?'g:'+c.id:c.id;
   if(imgs.has(key) || queue.some(q=>q.key===key)) return null;
-  return tallArt?{key,urls:c.ids.map(gachaUrl),shrink:{h:800}}:{key,urls:c.ids.map(charUrl)};
+  return tallArt?{key,urls:assetUrls('gachaicon', c, gachaUrl),shrink:{h:800}}:{key,urls:assetUrls('avataricon', c, charUrl)};
 }
 function queueImages(list){
   if(imgIO){ imgIO.disconnect(); imgIO=null; }
@@ -983,18 +1003,18 @@ function queueImages(list){
   document.querySelectorAll('#main .card[data-card]').forEach(el=>imgIO.observe(el));
 }
 function queueNa(id){
-  const key='na:'+id; if(imgs.has(key)||queue.some(q=>q.key===key)) return;
-  const c=SEED.find(x=>x.id===id); if(c) queue.push({key,urls:c.ids.map(naUrl),shrink:{w:800}});
+  const key='na:'+id; if(LOCAL_MISSING.has(key)||imgs.has(key)||queue.some(q=>q.key===key)) return;
+  const c=SEED.find(x=>x.id===id); if(c) queue.push({key,urls:assetUrls('namecardalpha', c, naUrl),shrink:{w:800}});
 }
 function queueNc(id){
-  const key='nc:'+id; if(imgs.has(key)||queue.some(q=>q.key===key)) return;
-  const c=SEED.find(x=>x.id===id); if(c) queue.push({key,urls:c.ids.map(ncUrl),shrink:{h:360}});
+  const key='nc:'+id; if(LOCAL_MISSING.has(key)||imgs.has(key)||queue.some(q=>q.key===key)) return;
+  const c=SEED.find(x=>x.id===id); if(c) queue.push({key,urls:assetUrls('namecardpic', c, ncUrl),shrink:{h:360}});
 }
 function loadCard(id){
   const key='card:'+id; if(imgs.has(key)||queue.some(q=>q.key===key)) return;
-  const c=SEED.find(x=>x.id===id); if(c){ queue.unshift({key,urls:c.ids.map(cardUrl)}); pump(); }
+  const c=SEED.find(x=>x.id===id); if(c){ queue.unshift({key,urls:assetUrls('avatarcard', c, cardUrl)}); pump(); }
 }
-function queueElements(){ WP_ORDER.forEach(k=>queue.unshift({key:'wp:'+k, urls:[wpUrl(k)]})); EL_ORDER.forEach(k=>queue.unshift({key:'ei:'+k, urls:[altUrl(k)]})); pump(); }
+function queueElements(){ WP_ORDER.forEach(k=>queue.unshift({key:'wp:'+k, urls:iconUrls(k)})); EL_ORDER.forEach(k=>queue.unshift({key:'ei:'+k, urls:iconUrls(k)})); pump(); }
 
 function updateNote(){
   const w=$('#warn');
@@ -1238,8 +1258,8 @@ async function ensureCaptureImages(items,onProg){
   const tallArt=S.view==='tall', jobs=[];
   items.forEach(c=>{
     const k=tallArt?'g:'+c.id:c.id;
-    if(!imgs.has(k)) jobs.push({key:k,urls:tallArt?c.ids.map(gachaUrl):c.ids.map(charUrl),shrink:tallArt?{h:800}:undefined});
-    if(!tallArt && !imgs.has('nc:'+c.id)) jobs.push({key:'nc:'+c.id,urls:c.ids.map(ncUrl),shrink:{h:360}});
+    if(!imgs.has(k)) jobs.push({key:k,urls:tallArt?assetUrls('gachaicon', c, gachaUrl):assetUrls('avataricon', c, charUrl),shrink:tallArt?{h:800}:undefined});
+    if(!tallArt && !imgs.has('nc:'+c.id) && !LOCAL_MISSING.has('nc:'+c.id)) jobs.push({key:'nc:'+c.id,urls:assetUrls('namecardpic', c, ncUrl),shrink:{h:360}});
   });
   let done=0, i=0; const total=jobs.length; onProg(0,total);
   await Promise.all(Array.from({length:6},async()=>{ while(i<jobs.length){ const j=jobs[i++]; try{ await loadAsset(j.key,j.urls,j.shrink); }catch(e){} onProg(++done,total); } }));
@@ -1283,7 +1303,7 @@ async function buildExport(){
   const elImgs=new Map();
   await Promise.all(EL_ORDER.map(async k=>{
     const ei=imgs.get('ei:'+k);
-    if(ei&&ei.kind==='blob'){ const i=await loadEl(ei.src,false); if(i){ elImgs.set(k,{img:i,mask:true}); return; } }
+    if(ei&&imgReady(ei.kind)){ const i=await loadEl(ei.src,false); if(i){ elImgs.set(k,{img:i,mask:true}); return; } }
     const im=imgs.get('el:'+k); if(im&&im.src){ const i=await loadEl(im.src,im.kind==='remote'); if(i) elImgs.set(k,{img:i,mask:false}); }
   }));
   await ensureCaptureImages(items, X.onProg||(()=>{}));
@@ -1426,16 +1446,18 @@ function newParty(type){
 }
 /* ---- party modes (4-character teams) ---- */
 function partyArtInner(id, el){
-  const c=byIdAll(id), icon=imgs.get(id), src=icon&&icon.src ? icon.src : (c&&c.ids&&c.ids[0]?charUrl(c.ids[0]):'');
+  const c=byIdAll(id), icon=imgs.get(id), fallback=c?assetUrls('avataricon', c, charUrl)[0]:'';
+  const src=icon&&icon.src ? icon.src : (fallback||'');
   return ncHtml(id)+(src?`<img class="pic" src="${esc(src)}" alt="" draggable="false" loading="lazy">`:`<span class="ph">${esc(((c&&c.name)||'?').trim().charAt(0))}</span>`);
 }
 function partyPickerAvatarInner(id){
-  const c=byIdAll(id), im=imgs.get(id), src=im&&im.src ? im.src : (c&&c.ids&&c.ids[0]?charUrl(c.ids[0]):'');
+  const c=byIdAll(id), im=imgs.get(id), fallback=c?assetUrls('avataricon', c, charUrl)[0]:'';
+  const src=im&&im.src ? im.src : (fallback||'');
   const img=src?`<img class="pic" src="${esc(src)}" alt="" draggable="false" loading="lazy">`:`<span class="ph">${esc(((c&&c.name)||'?').trim().charAt(0))}</span>`;
   return ncHtml(id)+img+(c&&c.el?`<span class="elb" title="${esc((EL[c.el]||{}).n||'')}">${elIcon(c.el)}</span>`:'');
 }
 function queuePartyPickerImages(list){
-  list.forEach(c=>{ if(!imgs.has(c.id)&&!queue.some(q=>q.key===c.id)) queue.push({key:c.id, urls:c.ids.map(charUrl)}); });
+  list.forEach(c=>{ if(!imgs.has(c.id)&&!queue.some(q=>q.key===c.id)) queue.push({key:c.id, urls:assetUrls('avataricon', c, charUrl)}); });
   pump();
 }
 function partyDuplicateIds(lu){
@@ -1870,10 +1892,10 @@ function renderLineups(){
   });
   need.forEach(id=>{
     const key='s:'+id; if(imgs.has(key)||queue.some(q=>q.key===key)) return;
-    const c=id==='traveler'?TRAV:SEED.find(x=>x.id===id); if(c) queue.push({key,urls:c.ids.map(sideUrl)});
+    const c=id==='traveler'?TRAV:SEED.find(x=>x.id===id); if(c) queue.push({key,urls:assetUrls('avatarside', c, sideUrl)});
   });
   partyNeed.forEach(id=>{
-    const c=id==='traveler'?TRAV:SEED.find(x=>x.id===id); if(c&&!imgs.has(id)&&!queue.some(q=>q.key===id)) queue.push({key:id,urls:c.ids.map(charUrl)});
+    const c=id==='traveler'?TRAV:SEED.find(x=>x.id===id); if(c&&!imgs.has(id)&&!queue.some(q=>q.key===id)) queue.push({key:id,urls:assetUrls('avataricon', c, charUrl)});
   });
   pump();
 }
@@ -2057,13 +2079,13 @@ async function buildTeamImage(lu){
   const list=lu.list.filter(e=>byIdAll(e.id));
   // wait for the head icons
   const ids=[...new Set(list.map(e=>e.id))];
-  ids.forEach(id=>{ const key='s:'+id; if(imgs.has(key)||queue.some(q=>q.key===key)) return; const c=id==='traveler'?TRAV:SEED.find(x=>x.id===id); if(c) queue.push({key,urls:c.ids.map(sideUrl)}); });
+  ids.forEach(id=>{ const key='s:'+id; if(imgs.has(key)||queue.some(q=>q.key===key)) return; const c=id==='traveler'?TRAV:SEED.find(x=>x.id===id); if(c) queue.push({key,urls:assetUrls('avatarside', c, sideUrl)}); });
   pump(); for(let i=0;i<100&&(running>0||queue.length);i++) await new Promise(r=>setTimeout(r,150));
   const loadI=async src=>src?await loadEl(src.src,src.kind==='remote'):null;
   const sideI=new Map(); await Promise.all(ids.map(async id=>{ const im=imgs.get('s:'+id); if(im&&im.src){ const i=await loadEl(im.src,im.kind==='remote'); if(i) sideI.set(id,i); } }));
   const naI=new Map(); await Promise.all(ids.map(async id=>{ const im=imgs.get('na:'+id); if(im&&im.src){ const i=await loadEl(im.src,im.kind==='remote'); if(i) naI.set(id,i); } }));
   const elI=new Map(); await Promise.all(EL_ORDER.map(async k=>{
-    const ei=imgs.get('ei:'+k); if(ei&&ei.kind==='blob'){ const i=await loadEl(ei.src,false); if(i){ elI.set(k,{img:i,mask:true}); return; } }
+    const ei=imgs.get('ei:'+k); if(ei&&imgReady(ei.kind)){ const i=await loadEl(ei.src,false); if(i){ elI.set(k,{img:i,mask:true}); return; } }
     const im=imgs.get('el:'+k); if(im&&im.src){ const i=await loadEl(im.src,im.kind==='remote'); if(i) elI.set(k,{img:i,mask:false}); } }));
   const PAD=40, W=1480, HH=196, RH=64, G=8, GX=16, rowsN=Math.ceil(list.length/2), rw=(W-PAD*2-GX)/2, H=PAD+HH+rowsN*(RH+G)+PAD+26;
   const scale=Math.min(2,Math.sqrt(13e6/(W*H))), cv=document.createElement('canvas'); cv.width=Math.round(W*scale); cv.height=Math.round(H*scale);
