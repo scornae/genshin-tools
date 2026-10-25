@@ -951,7 +951,6 @@ function setImg(key, src, kind){
   document.querySelectorAll(`.party-art[data-party-art="${CSS.escape(id)}"]`).forEach(n=>{ n.innerHTML=partyArtInner(id, n.dataset.el||''); });
   document.querySelectorAll(`[data-party-pick-avatar="${CSS.escape(id)}"]`).forEach(n=>{ n.innerHTML=partyPickerAvatarInner(id); });
   if(curId===id){ const d=document.querySelector('#detail .dpic'); if(d) d.innerHTML=dpicImg(id); if(key.startsWith('nc:')){ const h=document.querySelector('#detail .dhero'), n=imgs.get(key); if(h&&n&&n.src) h.style.setProperty('--ncb',`url('${n.src}')`); } }
-  if(key.startsWith('nc:') && SHARE_VIEW && (SHARE_VIEW.teams||[]).some(t=>(t||[]).some(s=>s&&s.id===id))){ clearTimeout(shareT); shareT=setTimeout(()=>{ if(SHARE_VIEW) renderShareView(); },120); }
 }
 async function shrinkImg(b,o){
   try{
@@ -1527,7 +1526,7 @@ function shareCardHtml(slot){
   const elb=isT&&slot.el?`<span class="elb" title="${esc((EL[slot.el]||{}).n||'')}">${elIcon(slot.el)}</span>`:'';
   return `<article class="card r${c.rar}" style="--el:${elc((isT?slot.el:c.el)||'anemo')}"><span class="portrait">${partyPickerAvatarInner(c.id)}${elb}<span class="svr svr-c svr${c.rar}">${c.rar}\u2605</span></span><span class="nm" title="${esc(c.name)} ${c.rar}\u2605"><span class="nt">${esc(c.name)}</span><span class="nr nr${c.rar}">${c.rar}\u2605</span></span></article>`;
 }
-let SHARE_VIEW=null, shareT;
+let SHARE_VIEW=null;
 function closeShareView(){ const v=document.getElementById('shareView'); if(v) v.remove(); SHARE_VIEW=null; }
 function shareViewInner(d){
   const teams=d.teams.map(t=>t.filter(Boolean)).filter(t=>t.length), multi=teams.length>1, total=teams.reduce((n,t)=>n+t.length,0);
@@ -1546,10 +1545,6 @@ function renderShareView(){
 function showShareView(d){
   closeShareView(); SHARE_VIEW=d;
   const el=document.createElement('div'); el.id='shareView'; document.body.appendChild(el); renderShareView();
-  const ids=new Set();
-  (d.teams||[]).forEach(t=>(t||[]).forEach(s=>{ if(s&&s.id&&s.id!=='traveler') ids.add(s.id); }));
-  ids.forEach(id=>queueNc(id));
-  pump();
 }
 function initShareView(){ const d=shareDecode(location.hash); if(d) showShareView(d); else closeShareView(); }
 window.addEventListener('hashchange',initShareView);
