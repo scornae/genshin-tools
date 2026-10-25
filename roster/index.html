@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Genshin Character Tracker</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%232a2450%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23090714%22/%3E%3C/linearGradient%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff0c2%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ffc654%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22url%28%23b%29%22/%3E%3Cpath%20d%3D%22M32%208%20Q38.72%2025.28%2056%2032%20Q38.72%2038.72%2032%2056%20Q25.28%2038.72%208%2032%20Q25.28%2025.28%2032%208Z%22%20fill%3D%22url%28%23g%29%22/%3E%3Cpath%20d%3D%22M49%209%20Q50.68%2013.32%2055%2015%20Q50.68%2016.68%2049%2021%20Q47.32%2016.68%2043%2015%20Q47.32%2013.32%2049%209Z%22%20fill%3D%22%23ffd27a%22/%3E%3C/svg%3E">
 <meta name="color-scheme" content="dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -141,6 +142,17 @@ main.tall .nm{font-size:15px}
 .ring.sp{padding:4px}
 .ring.sp i{inset:auto;left:50%;top:50%;width:420%;aspect-ratio:1;transform:translate(-50%,-50%);animation:ringspin 7s linear infinite}
 @keyframes ringspin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@media(max-width:700px){
+#main .grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+#main.tall .grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+#main .elb{left:2px;top:2px}
+#main .elb img,#main .elb svg,#main .elb .eic{width:14px;height:14px}
+#main.tall .elb img,#main.tall .elb svg,#main.tall .elb .eic{width:20px;height:20px}
+#main .clab,#main .clab.sm{right:2px;bottom:3px;padding:0 4px;font-size:9.5px;line-height:15px}
+#main .nm,#main.tall .nm{padding:4px 2px 5px;font-size:10px}
+#main .ph{font-size:22px}
+#main .portrait::after{height:2px}
+}
 @media(prefers-reduced-motion:reduce){.ring.sp i{animation:none}}
 .ring{position:absolute;inset:0;border-radius:var(--r-card);padding:2.5px;pointer-events:none;z-index:4;overflow:hidden;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
 .ring i{position:absolute;inset:0;background:conic-gradient(from 200deg,#ff5f6d,#ffc371,#fff56b,#6bffb0,#5fc8ff,#a07bff,#ff6bd6,#ff5f6d)}
@@ -555,6 +567,10 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 .party-picker-filters #partySearch{flex:1 1 200px}
 .party-picker-filters .chips{flex-wrap:wrap;overflow:visible}
 .party-picker-filters .traveler-add{margin-left:auto}
+.party-picker-filters .pp-mid{align-items:stretch}
+.party-picker-filters #ppSort{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:140px;white-space:nowrap}
+.party-picker-filters #ppSort .sort-ar{color:var(--gold);font-weight:700;font-size:15px;line-height:1}
+.party-picker-filters #ppRar button{min-width:52px}
 .filter-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .filter-label{font:500 11px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-right:6px}
 .party-picker-actions{display:flex;justify-content:flex-end;margin:-2px 0 10px}
@@ -590,6 +606,97 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 .tec-ic{display:grid;place-items:center;color:var(--el)}
 .tec-ic img,.tec-ic svg,.tec-ic .eic{width:38px;height:38px;object-fit:contain;display:block}
 @media(max-width:420px){.traveler-element-choice{flex-basis:calc(33.333% - 7px)}}
+/* ---- phone layout pass (screens up to 700px only; desktop untouched) ---- */
+@media(max-width:700px){
+body{font-size:14px}
+.wrap{padding:0 12px}
+.navin button{padding:8px 10px;font-size:14px}
+.top{padding:16px 0 12px;gap:12px 24px}
+#player{font-size:28px}
+.prog{margin-top:10px;gap:2px 14px}
+.prog .pct{font-size:32px}
+.prog .frac{font-size:14px}
+.prog .rar b{font-size:16px}
+.elstat{grid-template-columns:repeat(7,1fr);gap:6px}
+.elstat img,.elstat svg,.elstat .eic{width:20px;height:20px}
+.elstat b{font-size:13px}
+.bar{padding:8px 0 6px}
+.row{gap:6px}
+.row+.row{margin-top:6px}
+.field-in{padding:5px 8px;font-size:13px}
+#q{flex:1 1 100%}
+.seg button{padding:5px 10px;font-size:13px}
+#fStatus{flex:1 1 auto}
+#fStatus button{flex:1}
+.chips{gap:4px;flex:1 1 100%}
+.chip{font-size:0;gap:0;padding:5px}
+.chip img,.chip svg,.chip .eic{width:20px;height:20px}
+.chip.reset{font-size:12px;padding:3px 10px}
+#fC,#sort{flex:1 1 calc(50% - 3px)}
+.btn{padding:5px 10px;font-size:13px}
+main{padding:14px 0 60px}
+.sec h2{font-size:22px;margin-bottom:10px;padding-bottom:6px;gap:10px}
+.sec h2 small{font-size:10px}
+.sec+.sec{margin-top:24px}
+/* Team Builder boards */
+.party-progress{padding:8px 10px;margin-bottom:10px}
+.party-progress strong{font-size:16px}
+.party-team{padding:8px}
+.party-team-head{margin-bottom:8px}
+.party-team-head h3{font-size:15px}
+.party-slots{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.party-slot .nm{font-size:10px;padding:4px 2px 5px}
+.party-board .party-slot .elb{left:2px;top:2px}
+.party-board .party-slot .elb img,.party-board .party-slot .elb svg,.party-board .party-slot .elb .eic{width:15px;height:15px}
+.party-slot .clab,.party-slot .clab.sm{right:2px;bottom:3px;padding:0 4px;font-size:9.5px;line-height:15px}
+.party-chip,.party-chip.r{font-size:8px;line-height:14px;padding:0 4px;left:2px;bottom:2px}
+.party-chip.r{left:auto;right:2px}
+.svr{font-size:11px;right:3px;top:3px}
+.party-remove{width:18px;height:18px;top:2px;right:2px;font-size:12px}
+.party-empty .plus{font-size:26px}
+.party-placeholder{font-size:24px}
+/* shared view */
+#shareView .party-slots{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+#shareView .party-slots .nm{font-size:11px;padding:5px 2px 6px;gap:3px}
+#shareView .elb{left:2px;top:2px}
+#shareView .elb img,#shareView .elb svg,#shareView .elb .eic{width:16px;height:16px}
+/* Choose a character dialog */
+.party-picker-dialog .dbody{padding:14px 12px 16px}
+.party-picker-head{margin:2px 34px 8px 0}
+.party-picker-head h3{font-size:20px}
+.party-picker-close{width:30px;height:30px;top:8px;right:8px;font-size:17px}
+.party-picker-filters{margin:8px 0 2px}
+.party-picker-summary{font-size:12px;margin:6px 0}
+.party-picker-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.party-picker-grid .elb{left:2px;top:2px}
+.party-picker-grid .elb img,.party-picker-grid .elb svg,.party-picker-grid .elb .eic{width:14px;height:14px}
+.party-picker-grid .nm{font-size:10px;padding:4px 2px 5px}
+.party-picker-grid .clab,.party-picker-grid .clab.sm{right:2px;bottom:3px;padding:0 4px;font-size:9.5px;line-height:15px}
+.party-picker-grid .svr{font-size:10px}
+.party-picker-filters .row+.row{margin-top:6px}
+.party-picker-filters #partySearch{flex:1 1 0}
+.party-picker-filters .traveler-add{margin-left:0;flex:none}
+.party-picker-filters .pp-mid #ppRar{flex:1 1 0}
+.party-picker-filters .pp-mid #ppRar button{flex:1}
+.party-picker-filters #ppSort{flex:1 1 0;min-width:0}
+}
+@media(max-width:360px){.party-picker-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:520px) and (max-width:700px){.party-picker-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+/* Add team dialog: tidy card alignment, setup note */
+#dlgMode .mode{text-align:left}
+#dlgMode .mode small{min-height:calc(2 * 1.45em);text-align:left}
+#dlgMode .mode-wide small{min-height:0}
+#dlgMode .mode-pips{min-height:45px}
+#dlgMode .pip-row i{width:11px;height:11px}
+#dlgMode .pips-label{white-space:nowrap}
+#dlgMode .mode-note{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;padding:10px 12px;border:1px solid color-mix(in srgb,#65d9c2 38%,var(--line2));border-radius:var(--r);background:color-mix(in srgb,#65d9c2 8%,var(--panel))}
+#dlgMode .mode-note p{margin:0;font-size:13px;line-height:1.5;color:var(--mute)}
+#dlgMode .mode-note b{color:var(--text);font-weight:600}
+#dlgMode .mode-note-ic{flex:none;width:18px;height:18px;margin-top:1px;border-radius:50%;background:#65d9c2;color:#0b2a25;font:700 12px/18px var(--f-body);text-align:center}
+@media(max-width:520px){#dlgMode .dbody{padding:16px 14px 18px}#dlgMode .mode small{min-height:0}#dlgMode .pips-label{white-space:normal}}
+/* Close buttons: red */
+.btn.x[data-close]{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 55%,var(--line2));background:color-mix(in srgb,var(--danger) 12%,var(--panel))}
+.btn.x[data-close]:hover{color:#fff;border-color:var(--danger);background:color-mix(in srgb,var(--danger) 55%,var(--panel))}
 </style>
 </head>
 <body>
@@ -661,10 +768,11 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 
 <dialog id="dlgMode"><div class="dbody">
   <div class="mode-head"><div><h3>Add team</h3><p>Pick what you want to plan. Each card shows how many teams you get and the rules that apply.</p></div><button class="btn x" data-close>Close</button></div>
+  <div class="mode-note"><span class="mode-note-ic" aria-hidden="true">i</span><p>Modes tagged <b>Owned characters only</b> (My Party, Abyss, Stygian) use the characters you mark as owned in the <b>Roster</b> tab, so set those up first. Don’t want to? Use <b>Create &amp; Share</b>, which lets you pick any character.</p></div>
   <div class="mode-sec">Build &amp; share</div>
   <div class="modes">
-    <button class="btn mode" data-mode="myparty"><span class="mode-top"><span class="mode-title">My Party</span><span class="mode-lock">Added</span></span><small>Build one team of 4 from the characters you own.</small><span class="mode-pips"><span class="pip-grid"><span class="pip-row"><i></i><i></i><i></i><i></i></span></span><span class="pips-label">1 team × 4 = 4 characters</span></span><span class="mode-rules"><span class="mr yes">Owned characters only</span></span></button>
     <button class="btn mode" data-mode="share"><span class="mode-top"><span class="mode-title">Create &amp; Share</span><span class="mode-lock">Added</span></span><small>Build up to 3 teams from any character, then send them to a friend as a link.</small><span class="mode-pips"><span class="pip-grid"><span class="pip-row"><i></i><i></i><i></i><i></i></span><span class="pip-row" style="opacity:.55"><i></i><i></i><i></i><i></i></span><span class="pip-row" style="opacity:.3"><i></i><i></i><i></i><i></i></span></span><span class="pips-label">1–3 teams × 4 characters</span></span><span class="mode-rules"><span class="mr yes">Any character</span><span class="mr no">No repeats across teams</span></span></button>
+    <button class="btn mode" data-mode="myparty"><span class="mode-top"><span class="mode-title">My Party</span><span class="mode-lock">Added</span></span><small>Build one team of 4 from the characters you own.</small><span class="mode-pips"><span class="pip-grid"><span class="pip-row"><i></i><i></i><i></i><i></i></span></span><span class="pips-label">1 team × 4 = 4 characters</span></span><span class="mode-rules"><span class="mr yes">Owned characters only</span></span></button>
   </div>
   <div class="mode-sec">Challenges</div>
   <div class="modes">
@@ -689,18 +797,16 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
   <button class="btn x party-picker-close" data-close aria-label="Close"><span>&times;</span></button>
   <div class="party-picker-head"><h3 id="partyPickerTitle">Choose a character</h3></div>
   <div class="party-picker-filters">
-    <div class="row">
+    <div class="row pp-top">
       <input id="partySearch" class="field-in" type="search" placeholder="Search by name or version" aria-label="Search characters">
-      <div class="seg" id="ppStatus" role="group" aria-label="Ownership"><button data-v="all" aria-pressed="true">All</button><button data-v="own" aria-pressed="false">Owned</button><button data-v="miss" aria-pressed="false">Not owned</button></div>
-      <div class="seg" id="ppRar" role="group" aria-label="Rarity"><button data-v="5" aria-pressed="true">5★</button><button data-v="4" aria-pressed="true">4★</button></div>
       <button type="button" class="btn traveler-add" id="btnAddTraveler"><span class="traveler-add-icon">✦</span> Add Traveler</button>
     </div>
-    <div class="row"><div class="chips" id="ppEl" role="group" aria-label="Element"></div></div>
-    <div class="row">
-      <div class="chips" id="ppWp" role="group" aria-label="Weapon type"></div>
-      <select id="ppC" class="field-in" aria-label="Constellation level"><option value="all">All constellations</option><option value="0">C0</option><option value="1">C1</option><option value="2">C2</option><option value="3">C3</option><option value="4">C4</option><option value="5">C5</option><option value="6">C6</option></select>
-      <select id="ppSort" class="field-in" aria-label="Sort"><option value="verDesc">Version: newest first</option><option value="verAsc">Version: oldest first</option><option value="cDesc">Constellation: high to low</option><option value="name">Name: A to Z</option><option value="el">Element</option></select>
+    <div class="row pp-mid">
+      <div class="seg" id="ppRar" role="group" aria-label="Rarity"><button data-v="5" aria-pressed="true">5★</button><button data-v="4" aria-pressed="true">4★</button></div>
+      <button type="button" class="btn" id="ppSort" aria-label="Sort order" data-v="verDesc"></button>
     </div>
+    <div class="row"><div class="chips" id="ppEl" role="group" aria-label="Element"></div></div>
+    <div class="row"><div class="chips" id="ppWp" role="group" aria-label="Weapon type"></div></div>
   </div>
   <p class="party-picker-summary" id="partyPickerSummary"></p>
   <div class="party-picker-grid" id="partyPickerGrid"></div>
@@ -786,7 +892,21 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const norm = s => String(s).toLowerCase().replace(/ui_avataricon_|_card|_side|\.[a-z0-9]+$/g,'').replace(/[^a-z0-9]/g,'');
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),2800); }
-const chars = () => SEED.map((c,i)=>({...c, ord:i, lvl:S.owned[c.id], ref:(c.rar===5&&S.owned[c.id]!==undefined)?S.refine[c.id]:undefined}));
+// Display order of all characters, newest first (used by every "newest first" sort, Theater lists and pickers).
+// A new character that is not listed yet is treated as newer than all listed ones until it is added at the top.
+const REL_ORDER = ["mitya", "valeriy", "vodyanitsa", "vesna", "alyosha", "odette", "sandrone", "lohen", "nicole", "prune", "linnea", "varka", "zibai", "illuga", "columbina", "durin", "jahoda", "nefer", "flins", "lauma", "aino", "ineffa", "skirk", "dahlia", "escoffier", "ifa", "iansan", "varesa", "yumemizuki-mizuki", "lan-yan", "mavuika", "citlali", "chasca", "ororon", "xilonen", "kinich", "kachina", "mualani", "emilie", "sigewinne", "sethos", "clorinde", "arlecchino", "chiori", "gaming", "xianyun", "chevreuse", "navia", "charlotte", "furina", "wriothesley", "neuvillette", "freminet", "lynette", "lyney", "kirara", "kaveh", "baizhu", "mika", "dehya", "yaoyao", "alhaitham", "the-wanderer", "faruzan", "layla", "nahida", "nilou", "cyno", "candace", "dori", "collei", "tighnari", "shikanoin-heizou", "kuki-shinobu", "yelan", "kamisato-ayato", "yae-miko", "shenhe", "yun-jin", "gorou", "arataki-itto", "thoma", "sangonomiya-kokomi", "raiden-shogun", "kujou-sara", "aloy", "yoimiya", "sayu", "kamisato-ayaka", "kaedehara-kazuha", "eula", "yanfei", "rosaria", "hu-tao", "xiao", "ganyu", "albedo", "zhongli", "xinyan", "tartaglia", "diona", "venti", "klee", "keqing", "qiqi", "mona", "diluc", "jean", "xiangling", "xingqiu", "ningguang", "chongyun", "beidou", "sucrose", "razor", "noelle", "fischl", "bennett", "barbara", "lisa", "kaeya", "amber"];
+const relIdx = new Map(REL_ORDER.map((id,i)=>[id,i]));
+const verNum = v => { const [a,b]=String(v).split('.'); return (+a||0)*100+(+b||0); };
+const ordMap = (() => {
+  const idx=SEED.map((_,i)=>i);
+  idx.sort((i,j)=>{ const a=SEED[i], b=SEED[j], ra=relIdx.get(a.id), rb=relIdx.get(b.id);
+    if(ra!==undefined && rb!==undefined) return rb-ra;
+    if(ra===undefined && rb!==undefined) return 1;
+    if(ra!==undefined && rb===undefined) return -1;
+    return verNum(a.ver)-verNum(b.ver) || (a.rar-b.rar) || (i-j); });
+  const m={}; idx.forEach((i,k)=>{ m[SEED[i].id]=k; }); return m;
+})();
+const chars = () => SEED.map((c,i)=>({...c, ord:ordMap[c.id]??i, lvl:S.owned[c.id], ref:(c.rar===5&&S.owned[c.id]!==undefined)?S.refine[c.id]:undefined}));
 const byId = id => chars().find(c=>c.id===id);
 
 /* ---------- image cache (IndexedDB) ---------- */
@@ -845,12 +965,22 @@ function pump(){
     });
   }
 }
+let imgIO=null;
+function imgJob(c){
+  const tallArt=S.view==='tall', key=tallArt?'g:'+c.id:c.id;
+  if(imgs.has(key) || queue.some(q=>q.key===key)) return null;
+  return tallArt?{key,urls:c.ids.map(gachaUrl),shrink:{h:800}}:{key,urls:c.ids.map(charUrl)};
+}
 function queueImages(list){
-  list.forEach(c=>{
-    const tallArt=S.view==='tall', key=tallArt?'g:'+c.id:c.id;
-    if(!imgs.has(key) && !queue.some(q=>q.key===key)) queue.push(tallArt?{key,urls:c.ids.map(gachaUrl),shrink:{h:800}}:{key,urls:c.ids.map(charUrl)});
-  });
-  pump();
+  if(imgIO){ imgIO.disconnect(); imgIO=null; }
+  if(!('IntersectionObserver' in window)){ list.forEach(c=>{ const j=imgJob(c); if(j) queue.push(j); }); pump(); return; }
+  const want=new Map(list.map(c=>[c.id,c]));
+  imgIO=new IntersectionObserver(es=>{
+    const batch=[];
+    es.forEach(e=>{ if(!e.isIntersecting) return; imgIO.unobserve(e.target); const c=want.get(e.target.dataset.card), j=c&&imgJob(c); if(j) batch.push(j); });
+    if(batch.length){ queue.unshift(...batch); pump(); }
+  },{rootMargin:'700px 0px'});
+  document.querySelectorAll('#main .card[data-card]').forEach(el=>imgIO.observe(el));
 }
 function queueNa(id){
   const key='na:'+id; if(imgs.has(key)||queue.some(q=>q.key===key)) return;
@@ -1070,7 +1200,19 @@ $('#inFiles').onchange=async e=>{
 /* ---------- save as image ---------- */
 const X={layout:'tall',blob:null,url:null};
 $('#xLayout').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; $('#xLayout').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)); X.layout=b.dataset.v; buildPreview(); });
-$('#btnImage').onclick=()=>{ $('#dlgExport').showModal(); buildPreview(); };
+$('#btnImage').onclick=async()=>{
+  const btn=$('#btnImage'); if(btn.disabled) return;
+  if(!Object.keys(S.owned).length){ toast('Mark the characters you own first'); return; }
+  const label=btn.textContent; btn.disabled=true;
+  try{
+    btn.textContent='Preparing\u2026';
+    X.onProg=(d,t)=>{ btn.textContent=t?`Images ${d}/${t}`:'Preparing\u2026'; };
+    const {blob}=await buildExport();
+    btn.textContent='Saving\u2026';
+    download(blob,'genshin-roster.jpg'); toast('Image saved');
+  }catch(err){ toast('Could not build the image. Try again.'); }
+  finally{ X.onProg=null; btn.disabled=false; btn.textContent=label; }
+};
 const loadEl=(src,cors)=>new Promise(r=>{const i=new Image(); if(cors) i.crossOrigin='anonymous'; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src;});
 function rr(ctx,x,y,w,h,r){ ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x,y,w,h,r); else { ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); } }
 function rainbow(ctx,x,y,w,h){
@@ -1092,20 +1234,32 @@ function drawEl(ctx,k,cx,cy,size,color,elImgs){
   const p=new Path2D(e.d); if(e.t==='f'){ctx.fillStyle=color;ctx.fill(p);} else {ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke(p);}
   ctx.restore();
 }
+async function ensureCaptureImages(items,onProg){
+  const tallArt=S.view==='tall', jobs=[];
+  items.forEach(c=>{
+    const k=tallArt?'g:'+c.id:c.id;
+    if(!imgs.has(k)) jobs.push({key:k,urls:tallArt?c.ids.map(gachaUrl):c.ids.map(charUrl),shrink:tallArt?{h:800}:undefined});
+    if(!tallArt && !imgs.has('nc:'+c.id)) jobs.push({key:'nc:'+c.id,urls:c.ids.map(ncUrl),shrink:{h:360}});
+  });
+  let done=0, i=0; const total=jobs.length; onProg(0,total);
+  await Promise.all(Array.from({length:6},async()=>{ while(i<jobs.length){ const j=jobs[i++]; try{ await loadAsset(j.key,j.urls,j.shrink); }catch(e){} onProg(++done,total); } }));
+}
 async function buildExport(){
   const T0=T(), FH=T0.head, FB=T0.body, FM=T0.mono;
   try{ await Promise.all(T0.fonts.map(f=>document.fonts.load(f))); }catch(e){}
   const all=chars(), st=stats(all);
   const items=all.filter(c=>c.lvl!==undefined).sort(SORTS[S.sort]||SORTS.verDesc);
-  const tallArt=S.view==='tall', tall=X.layout==='tall', G=10, PAD=40, SEC=56;
-  const cols=tallArt?(tall?6:9):(tall?5:10), CW=tallArt?140:128;
+  const tallArt=S.view==='tall', tall=false, G=10, PAD=40, SEC=56;
+  const cols=10, CW=128;
   const ps=CW-8, PH=tallArt?Math.round(ps*1024/320):ps, CH=4+PH+38;
   const secs=[5,4].map(r=>({r,list:items.filter(c=>c.rar===r),tot:all.filter(c=>c.rar===r).length,own:all.filter(c=>c.rar===r&&c.lvl!==undefined).length})).filter(s=>s.list.length);
   const W=PAD*2+cols*CW+(cols-1)*G, HH=tall?246:150;
   let H=PAD+HH; secs.forEach(s=>{ H+=SEC+Math.ceil(s.list.length/cols)*(CH+G); }); H+=PAD+24;
-  const scale=Math.min(2,Math.sqrt(13e6/(W*H)));
+  const scale=Math.min(1.5,Math.sqrt(13e6/(W*H)));
   const cv=document.createElement('canvas'); cv.width=Math.round(W*scale); cv.height=Math.round(H*scale);
   const ctx=cv.getContext('2d'); ctx.scale(scale,scale);
+  const mixH=(a,b,t)=>{ const A=parseInt(a.slice(1),16), B=parseInt(b.slice(1),16), f=sh=>Math.round((A>>sh&255)*t+(B>>sh&255)*(1-t)); return `rgb(${f(16)},${f(8)},${f(0)})`; };
+  const ell=(cx,cy,rx,ry,stops,x,y,w,h)=>{ const k=rx/ry; ctx.save(); ctx.translate(cx,cy); ctx.scale(1,1/k); const g=ctx.createRadialGradient(0,0,0,0,0,rx); stops.forEach(([o,c])=>g.addColorStop(o,c)); ctx.fillStyle=g; ctx.fillRect(x-cx,(y-cy)*k,w,h*k); ctx.restore(); };
   const TEXT=T0.text, MUTE=T0.mute, GOLD=T0.gold, VIOLET=T0.violet, LINE=T0.line, LINE2=T0.line2, R=T0.r, cel=T0.id==='celestial';
   const hexA=(h,a)=>{ const n=parseInt(h.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
   const sp=v=>{ if('letterSpacing' in ctx) ctx.letterSpacing=v; };
@@ -1132,6 +1286,10 @@ async function buildExport(){
     if(ei&&ei.kind==='blob'){ const i=await loadEl(ei.src,false); if(i){ elImgs.set(k,{img:i,mask:true}); return; } }
     const im=imgs.get('el:'+k); if(im&&im.src){ const i=await loadEl(im.src,im.kind==='remote'); if(i) elImgs.set(k,{img:i,mask:false}); }
   }));
+  await ensureCaptureImages(items, X.onProg||(()=>{}));
+  for(let i=0;i<60 && (running>0||queue.length);i++) await new Promise(r=>setTimeout(r,150));
+  const ncs=new Map();
+  if(!tallArt) await Promise.all(items.map(async c=>{ const n=imgs.get('nc:'+c.id); if(n&&n.src){ const i=await loadEl(n.src,n.kind==='remote'); if(i) ncs.set(c.id,i); } }));
   let missing=0; const pics=new Map();
   await Promise.all(items.map(async c=>{ const im=picOf(c.id); if(!im){ missing++; return; } const i=await loadEl(im.src,im.kind==='remote'); if(i) pics.set(c.id,{img:i,tall:im.tall}); else missing++; }));
   // header
@@ -1173,15 +1331,20 @@ async function buildExport(){
       ctx.fillStyle=T0.card; fillR(x,cy,CW,CH,R);
       const px=x+4, py=cy+4, pr=Math.max(2,R-4);
       ctx.save(); rr(ctx,px,py,ps,PH,pr); ctx.clip();
-      const base=ctx.createLinearGradient(0,py,0,py+PH); base.addColorStop(0,T0.pA); base.addColorStop(1,T0.pB); ctx.fillStyle=base; ctx.fillRect(px,py,ps,PH);
-      const rg=ctx.createRadialGradient(px+ps/2,py+PH*1.08,0,px+ps/2,py+PH*1.08,Math.max(ps,PH*.72)); rg.addColorStop(0,hexA(col,.58)); rg.addColorStop(1,hexA(col,0)); ctx.fillStyle=rg; ctx.fillRect(px,py,ps,PH);
-      const rim=c.rar===5?T0.rim5c:T0.rim4c, rm=ctx.createLinearGradient(0,py,0,py+PH*.48); rm.addColorStop(0,hexA(rim,c.rar===5?T0.rim5:T0.rim4)); rm.addColorStop(1,hexA(rim,0)); ctx.fillStyle=rm; ctx.fillRect(px,py,ps,PH);
+      // same layers as the Roster card (.portrait CSS): base, mid glow, bottom glow, rim
+      const base=ctx.createLinearGradient(0,py,0,py+PH); base.addColorStop(0,mixH(col,T0.pA,.17)); base.addColorStop(1,mixH(col,T0.pB,.09)); ctx.fillStyle=base; ctx.fillRect(px,py,ps,PH);
+      ell(px+ps*.5,py+PH*.28,ps*.9,PH*.7,[[0,hexA(col,.2)],[.78,hexA(col,0)]],px,py,ps,PH);
+      ell(px+ps*.5,py+PH*1.05,ps*1.15,PH*.85,[[0,hexA(col,.66)],[.72,hexA(col,0)]],px,py,ps,PH);
+      const rim=c.rar===5?T0.rim5c:T0.rim4c, rm=ctx.createLinearGradient(0,py,0,py+PH*.4); rm.addColorStop(0,hexA(rim,c.rar===5?T0.rim5:T0.rim4)); rm.addColorStop(1,hexA(rim,0)); ctx.fillStyle=rm; ctx.fillRect(px,py,ps,PH);
+      const nci=ncs.get(c.id);
+      if(nci){ const nw=nci.naturalWidth||nci.width, nh=nci.naturalHeight||nci.height, z=Math.max(ps/nw,PH/nh), dw=nw*z, dh=nh*z; ctx.save(); ctx.globalAlpha=.5; ctx.drawImage(nci,px+(ps-dw)/2,py+(PH-dh)/2,dw,dh); ctx.restore(); }
       const p=pics.get(c.id);
       if(p){ const iw=p.img.naturalWidth||p.img.width, ih=p.img.naturalHeight||p.img.height;
         if(tallArt&&p.tall){ ctx.drawImage(p.img,px,py,ps,PH); }
         else if(tallArt){ const sc=ps/iw, dh=ih*sc; ctx.drawImage(p.img,px,py+(PH-dh)*.35,ps,dh); }
         else ctx.drawImage(p.img,px,py,ps,PH); }
       else { ctx.fillStyle='rgba(255,255,255,.11)'; ctx.font=`${T0.wB} 52px ${FH}`; ctx.textAlign='center'; ctx.fillText(c.name.trim().charAt(0),px+ps/2,py+PH/2+18); }
+      ctx.fillStyle=col; ctx.fillRect(px,py+PH-3,ps,3);
       ctx.restore();
       { const es=tallArt?40:21; drawEl(ctx,c.el,px+4+es/2,py+4+es/2,es,col,elImgs); }
       { const sm=!!c.ref, lab='C'+c.lvl+(sm?'R'+c.ref:''), hh=sm?21:23, c6=c.lvl===6;
@@ -1202,7 +1365,7 @@ async function buildExport(){
   }
   ctx.textAlign='left'; ctx.fillStyle=MUTE; ctx.font=`${T0.wM} 11px ${FM}`; sp('3.5px'); ctx.fillText('CHARACTER TRACKER',PAD,y+30); sp('0px');
   ctx.textAlign='right'; ctx.font=`${T0.wM} 12px ${FM}`; ctx.fillText(new Date().toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'}).toUpperCase(),W-PAD,y+30);
-  const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+  const blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',0.88));
   return {blob,missing};
 }
 let prevTok=0;
@@ -1217,7 +1380,7 @@ async function buildPreview(){
     $('#xNote').textContent = missing ? `${missing} owned character${missing>1?'s have':' has'} no portrait in this image because the browser blocks images from other sites. Use "Load images from files" at the top of the page.` : '';
   }catch(err){ box.innerHTML='<p>Could not build the image. Try again.</p>'; }
 }
-$('#xSave').onclick=()=>{ if(X.blob) download(X.blob,'genshin-roster.png'); };
+$('#xSave').onclick=()=>{ if(X.blob) download(X.blob,'genshin-roster.jpg'); };
 
 /* ---------- Lineups: Imaginarium Theater ---------- */
 const DIFF = {easy:{n:'Easy',min:8,max:10},normal:{n:'Normal',min:12,max:14},hard:{n:'Hard',min:16,max:20},visionary:{n:'Visionary',min:22,max:26},lunar:{n:'Lunar',min:28,max:32}};
@@ -1372,7 +1535,7 @@ function partyHtml(lu){
   return `<div class="party-board"><div class="party-progress"><strong>${filled}/${max}</strong><span>${multiple?'characters assigned across '+teams.length+' teams':'characters in team'}</span><span class="party-rule">${esc(mode.rule)}</span></div>${teams.map((team,ti)=>`<section class="party-team">${multiple?`<header class="party-team-head"><h3>${esc(teamLabel(mode,team,ti))}</h3><span>${(team.slots||[]).filter(Boolean).length}/4 members</span></header>`:''}<div class="party-slots">${(team.slots||[]).map((slot,si)=>partySlotHtml(lu,ti,si,slot,new Set())).join('')}</div></section>`).join('')}${mode.flex?shareBarHtml(lu):''}</div>`;
 }
 function openPartyPicker(lu, team, slot){
-  PARTY_PICKER.luId=lu.id; PARTY_PICKER.team=team; PARTY_PICKER.slot=slot; PARTY_PICKER.f=newPickerFilters(); PARTY_PICKER.sort=S.sort;
+  PARTY_PICKER.luId=lu.id; PARTY_PICKER.team=team; PARTY_PICKER.slot=slot; PARTY_PICKER.f=newPickerFilters(); PARTY_PICKER.sort='verDesc';
   buildPartyFilters();
   const dlg=$('#dlgPartyPicker'); if(dlg && typeof dlg.showModal==='function') dlg.showModal(); else if(dlg) dlg.setAttribute('open','');
   renderPartyPicker(); syncPartyPickerFilters();
@@ -1382,7 +1545,7 @@ function renderPartyPicker(){
   const mode=PARTY_MODES[lu.type];
   const team=lu.teams[PARTY_PICKER.team], slotIndex=PARTY_PICKER.slot;
   const pool=chars().filter(c=>mode.source==='all'||c.lvl!==undefined);
-  const candidates=filterSort(pool, PARTY_PICKER.f, PARTY_PICKER.sort).sort((a,b)=>b.rar-a.rar);
+  const candidates=filterSort(pool, PARTY_PICKER.f, PARTY_PICKER.sort);
   const countUsed=id=>lu.teams.reduce((n,t)=>n+(t.slots||[]).filter((s,i)=>s&&s.id===id&&!(t===team&&i===slotIndex)).length,0);
   const tile=c=>{
     const sameTeam=team.slots.some((s,i)=>i!==slotIndex&&s&&s.id===c.id), used=countUsed(c.id);
@@ -1403,12 +1566,11 @@ function buildPartyFilters(){
   $('#ppEl').innerHTML=EL_ORDER.map(k=>`<button class="chip" data-pp-el="${k}" aria-pressed="${f.els.has(k)}" style="--el:${elc(k)}">${elIcon(k)}${EL[k].n}</button>`).join('');
   $('#ppWp').innerHTML=WP_ORDER.map(k=>`<button class="chip" data-pp-wp="${k}" aria-pressed="${f.wps.has(k)}" style="--el:#e8ecf1">${wpIcon(k)}${WP[k]}</button>`).join('')+'<button class="chip reset" data-pp-reset>Reset</button>';
   syncPartyPickerFilters();
-  $('#ppStatus').style.display=(mode&&mode.source==='all')?'':'none';
 }
 function syncPartyPickerFilters(){
   const f=PARTY_PICKER.f;
-  $('#partySearch').value=f.q; $('#ppC').value=f.c; $('#ppSort').value=PARTY_PICKER.sort;
-  $('#ppStatus').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===f.status)));
+  $('#partySearch').value=f.q;
+  const sb=$('#ppSort'), asc=PARTY_PICKER.sort==='verAsc'; sb.dataset.v=PARTY_PICKER.sort; sb.innerHTML=asc?'<span class="sort-ar">\u2191</span> Oldest first':'<span class="sort-ar">\u2193</span> Newest first';
   $('#ppRar').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(!!f['r'+b.dataset.v])));
 }
 function renderTravelerElementChoices(){
@@ -1617,7 +1779,7 @@ function rowHtml(lu,e,idx,u){
 function poolOf(lu){
   const els=elsOf(lu), inList=new Set(lu.list.map(e=>e.id));
   return chars().filter(c=>c.lvl!==undefined && els.includes(c.el) && !inList.has(c.id))
-    .sort((a,b)=>EL_ORDER.indexOf(a.el)-EL_ORDER.indexOf(b.el)||b.rar-a.rar||b.ord-a.ord);
+    .sort((a,b)=>EL_ORDER.indexOf(a.el)-EL_ORDER.indexOf(b.el)||b.ord-a.ord);
 }
 const bonusHtml=(n,d)=>{ if(n<d.min) return ''; const room=d.max-d.min, extra=n-d.min; return `<span class="bonus${extra?' on':''}" title="Each character beyond the minimum gives you a buff when the show starts">Extra characters ${extra} / ${room}</span>`; };
 const roleWarnHtml=lu=>{ const c=roleCounts(lu), n=lu.list.length; if(!n) return ''; let h=''; if(c.none>0) h+=`<button type="button" class="norole" data-act="norole" title="Show only characters without a role">${c.none} ${c.none>1?'characters have':'character has'} no role yet</button>`; if(c.dps===0 && c.none<n) h+=`<span class="norole static">No On-Field DPS yet</span>`; return h; };
@@ -1842,13 +2004,11 @@ $('#dlgMode').addEventListener('click',e=>{
 });
 const PPF=()=>PARTY_PICKER.f;
 $('#partySearch').addEventListener('input',e=>{PPF().q=e.target.value;renderPartyPicker();});
-$('#ppC').addEventListener('change',e=>{PPF().c=e.target.value;renderPartyPicker();});
-$('#ppSort').addEventListener('change',e=>{PARTY_PICKER.sort=e.target.value;renderPartyPicker();});
-$('#ppStatus').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; PPF().status=b.dataset.v; syncPartyPickerFilters(); renderPartyPicker(); });
+$('#ppSort').addEventListener('click',()=>{PARTY_PICKER.sort=PARTY_PICKER.sort==='verAsc'?'verDesc':'verAsc'; syncPartyPickerFilters(); renderPartyPicker(); const g=$('#partyPickerGrid'); if(g) g.scrollTop=0;});
 $('#ppRar').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; const k='r'+b.dataset.v; PPF()[k]=!PPF()[k]; syncPartyPickerFilters(); renderPartyPicker(); });
 $('#ppEl').addEventListener('click',e=>{ const b=e.target.closest('[data-pp-el]'); if(!b) return; const k=b.dataset.ppEl, f=PPF(); f.els.has(k)?f.els.delete(k):f.els.add(k); b.setAttribute('aria-pressed',f.els.has(k)); renderPartyPicker(); });
 $('#ppWp').addEventListener('click',e=>{
-  if(e.target.closest('[data-pp-reset]')){ PARTY_PICKER.f=newPickerFilters(); PARTY_PICKER.sort=S.sort; buildPartyFilters(); renderPartyPicker(); return; }
+  if(e.target.closest('[data-pp-reset]')){ PARTY_PICKER.f=newPickerFilters(); PARTY_PICKER.sort='verDesc'; buildPartyFilters(); renderPartyPicker(); return; }
   const b=e.target.closest('[data-pp-wp]'); if(!b) return; const k=b.dataset.ppWp, f=PPF(); f.wps.has(k)?f.wps.delete(k):f.wps.add(k); b.setAttribute('aria-pressed',f.wps.has(k)); renderPartyPicker();
 });
 $('#btnAddTraveler').onclick=()=>{ if(renderTravelerElementChoices()) { const dlg=$('#dlgTravelerElement'); if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open',''); } };
