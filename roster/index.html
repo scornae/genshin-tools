@@ -1479,7 +1479,7 @@ function partySlotHtml(lu, ti, si, slot, duplicates){
 }
 function shareBarHtml(lu){
   const n=lu.teams.length, any=lu.teams.some(t=>t.slots.some(Boolean));
-  return `<div class="share-bar"><div class="share-grp"><button type="button" class="btn" data-act="share-addteam" ${n>=3?'disabled':''}>+ Add team</button><button type="button" class="btn" data-act="share-delteam" ${n<=1?'disabled':''}>Remove last team</button></div><div class="share-grp"><button type="button" class="btn primary" data-act="share-link" ${any?'':'disabled'}>Copy link</button><button type="button" class="btn" data-act="share-text" ${any?'':'disabled'}>Copy as text</button></div></div>`;
+  return `<div class="share-bar"><div class="share-grp"><button type="button" class="btn" data-act="share-addteam" ${n>=3?'disabled':''}>+ Add team</button><button type="button" class="btn" data-act="share-delteam" ${n<=1?'disabled':''}>Remove last team</button></div><div class="share-grp"><button type="button" class="btn primary" data-act="share-link" ${any?'':'disabled'}>Copy link</button><button type="button" class="btn" data-act="share-text" ${any?'':'disabled'}>Copy as text</button><button type="button" class="btn" data-act="share-capture" ${any?'':'disabled'}>Capture</button></div></div>`;
 }
 /* ---- share links: #s1=<team>.<team>  (team = 4 tokens x 2 chars; token = character list position, _0..._6 = Traveler + element, __ = empty) ---- */
 const SHARE_ALPHA='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -1991,6 +1991,7 @@ $('#luList').addEventListener('click',e=>{
   else if(act==='share-addteam'){ if(lu.teams.length<3){ lu.teams.push({name:'Team '+(lu.teams.length+1),slots:Array(4).fill(null)}); done(); } }
   else if(act==='share-delteam'){ if(lu.teams.length>1){ const last=lu.teams[lu.teams.length-1]; if(last.slots.some(Boolean)&&!confirm('Remove the last team and its characters?')) return; lu.teams.pop(); done(); } }
   else if(act==='share-link'){ if(lu.teams.some(t=>t.slots.some(Boolean))) copyShare(shareLink(lu),'Link copied'); }
+  else if(act==='share-capture'){ if(lu.teams.some(t=>t.slots.some(Boolean))) captureShare(lu); }
   else if(act==='share-text'){ const t=shareText(lu); if(t) copyShare(t,'Text copied'); }
   else if(act==='party-pick'){ openPartyPicker(lu, +b.dataset.team, +b.dataset.slot); }
   else if(act==='party-remove'){ const slot=lu.teams&&lu.teams[+b.dataset.team]&&lu.teams[+b.dataset.team].slots[+b.dataset.slot]; if(slot){ lu.teams[+b.dataset.team].slots[+b.dataset.slot]=null; done(); } }
@@ -2142,6 +2143,98 @@ async function captureTeam(lu){
   toast('Building image');
   try{ const blob=await buildTeamImage(lu); download(blob,(lu.name||'team').replace(/[^\w\-]+/g,'-').replace(/^-|-$/g,'')+'.png'); toast('Image saved'); }
   catch(err){ toast('Could not build the image'); }
+}
+
+/* ---- image of the shared-teams page (same look as the read-only link page) ---- */
+async function buildShareImage(lu){
+  const T0=T(), FH=T0.head, FB=T0.body, FM=T0.mono, GOLD=T0.gold, TEXT=T0.text, MUTE=T0.mute, LINE=T0.line;
+  try{ await Promise.all(T0.fonts.map(f=>document.fonts.load(f))); }catch(e){}
+  const teams=lu.teams.map(t=>t.slots.filter(Boolean)).filter(t=>t.length), multi=teams.length>1, total=teams.reduce((n,t)=>n+t.length,0);
+  const ids=[...new Set(teams.flat().map(x=>x.id))], chs=new Map(ids.map(id=>[id,byIdAll(id)]));
+  // ask for what is missing (first in line), then wait until every image has either arrived or failed
+  ids.forEach(id=>{ const c=chs.get(id); if(!c) return;
+    if(!imgs.has(id)&&!queue.some(q=>q.key===id)) queue.unshift({key:id,urls:charUrls(c)});
+    if(id!=='traveler'&&!imgs.has('nc:'+id)&&!queue.some(q=>q.key==='nc:'+id)) queue.unshift({key:'nc:'+id,urls:ncUrls(c),shrink:{h:360}}); });
+  pump();
+  const need=()=>ids.every(id=>imgs.has(id)&&(id==='traveler'||imgs.has('nc:'+id)))&&EL_ORDER.every(k=>imgs.has('ei:'+k));
+  for(let i=0;i<100&&!need();i++) await new Promise(r=>setTimeout(r,150));
+  const pics=new Map(), ncs=new Map();
+  await Promise.all(ids.map(async id=>{
+    const im=imgs.get(id); if(im&&im.src){ const i=await loadEl(im.src,im.kind==='remote'); if(i) pics.set(id,i); }
+    const nc=imgs.get('nc:'+id); if(nc&&nc.src){ const i=await loadEl(nc.src,nc.kind==='remote'); if(i) ncs.set(id,i); } }));
+  const elI=new Map(); await Promise.all(EL_ORDER.map(async k=>{
+    const ei=imgs.get('ei:'+k); if(ei&&ei.kind==='blob'){ const i=await loadEl(ei.src,false); if(i){ elI.set(k,{img:i,mask:true}); return; } }
+    const im=imgs.get('el:'+k); if(im&&im.src){ const i=await loadEl(im.src,im.kind==='remote'); if(i) elI.set(k,{img:i,mask:false}); } }));
+  const hexA=(h,a)=>{ const n=parseInt(h.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
+  const mixH=(a,b,t)=>{ const A=parseInt(a.slice(1),16), B=parseInt(b.slice(1),16), f=sh=>Math.round((A>>sh&255)*t+(B>>sh&255)*(1-t)); return `rgb(${f(16)},${f(8)},${f(0)})`; };
+  // layout (matches the page: 4 cards per team, square portraits, name bar under each)
+  const W=1000, PAD=48, G=12, CW=(W-PAD*2-G*3)/4, PS=CW-2, NMH=46, CH=1+PS+NMH+1, TH=52, TG=26;
+  const HEAD=210, FOOT=70, H=PAD+HEAD+teams.length*(TH+CH+TG)+FOOT;
+  // never enlarge the character art: pick the output scale from the smallest portrait image (fewer jagged edges), at most 2x
+  const nat=[...pics.values()].map(i=>Math.min(i.naturalWidth||i.width,i.naturalHeight||i.height)).filter(Boolean);
+  const scale=Math.min(2,Math.sqrt(13e6/(W*H)),Math.max(1,nat.length?Math.min(...nat)/PS:1.5)), cv=document.createElement('canvas'); cv.width=Math.round(W*scale); cv.height=Math.round(H*scale);
+  const ctx=cv.getContext('2d'); ctx.scale(scale,scale); ctx.textBaseline='alphabetic'; ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+  const sp=v=>{ if('letterSpacing' in ctx) ctx.letterSpacing=v; };
+  ctx.fillStyle=T0.bg; ctx.fillRect(0,0,W,H);
+  { ctx.save(); ctx.translate(W/2,-H*.08); ctx.scale(1,(H*.45)/(W*.425)); const g=ctx.createRadialGradient(0,0,0,0,0,W*.425); g.addColorStop(0,hexA(GOLD,.15)); g.addColorStop(1,hexA(GOLD,0)); ctx.fillStyle=g; ctx.fillRect(-W/2,-H,W,H*4); ctx.restore(); }
+  // top bar
+  const date=new Date().toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'});
+  ctx.fillStyle=MUTE; ctx.font=`${T0.wM} 12px ${FM}`; sp('3.3px'); ctx.textAlign='left'; ctx.fillText('GENSHIN ROSTER',PAD,PAD+4); ctx.textAlign='right'; ctx.fillText(date.toUpperCase(),W-PAD+3,PAD+4); sp('0px');
+  // header: tag, title, rule, meta
+  const tag='SHARED TEAM'+(multi?'S':''); ctx.font=`600 12px ${FB}`; sp('2.4px'); const tw=ctx.measureText(tag).width+26, ty=PAD+44;
+  ctx.strokeStyle=hexA(GOLD,.55); ctx.lineWidth=1; rrp(ctx,W/2-tw/2,ty,tw,24,12); ctx.stroke();
+  ctx.fillStyle=GOLD; ctx.textAlign='center'; ctx.fillText(tag,W/2+1,ty+16.5); sp('0px');
+  const title=shareName(lu)||('Shared team'+(multi?'s':'')); ctx.fillStyle=TEXT; ctx.font=`${T0.wB} 50px ${FH}`;
+  let ttl=title; while(ctx.measureText(ttl).width>W-PAD*2 && ttl.length>3) ttl=ttl.slice(0,-1); if(ttl!==title) ttl=ttl.trimEnd()+'\u2026';
+  ctx.fillText(ttl,W/2,PAD+128);
+  { const ry=PAD+152, half=140; [[-1],[1]].forEach(([d])=>{ const g=ctx.createLinearGradient(W/2+d*19,0,W/2+d*(19+half-19),0); g.addColorStop(0,GOLD); g.addColorStop(1,hexA(GOLD,0)); ctx.fillStyle=g; ctx.fillRect(d>0?W/2+19:W/2-19-(half-19),ry,half-19,1); });
+    ctx.save(); ctx.translate(W/2,ry+.5); ctx.rotate(Math.PI/4); ctx.fillStyle=GOLD; ctx.fillRect(-3.5,-3.5,7,7); ctx.restore(); }
+  ctx.fillStyle=MUTE; ctx.font=`400 15px ${FB}`; ctx.fillText((multi?teams.length+' teams \u00b7 ':'')+total+' character'+(total>1?'s':''),W/2,PAD+184);
+  // teams
+  teams.forEach((t,ti)=>{
+    const ty0=PAD+HEAD+ti*(TH+CH+TG), yc=ty0+22;
+    ctx.textAlign='left'; ctx.fillStyle=MUTE; ctx.font=`${T0.wM} 11px ${FM}`; sp('3.3px'); ctx.fillText('TEAM',PAD,yc+4); const lw=ctx.measureText('TEAM').width; sp('0px');
+    const rn=['I','II','III'][ti]||String(ti+1); ctx.fillStyle=GOLD; ctx.font=`${T0.wB} 28px ${FH}`; sp('1.1px'); ctx.fillText(rn,PAD+lw+14,yc+10); const rw=ctx.measureText(rn).width; sp('0px');
+    const els=[...new Set(t.map(s=>s.id==='traveler'?s.el:(chs.get(s.id)||{}).el).filter(Boolean))], ew=els.length*28;
+    const lx=PAD+lw+14+rw+12, lx2=W-PAD-ew-10; if(lx2>lx){ const g=ctx.createLinearGradient(lx,0,lx2,0); g.addColorStop(0,hexA(GOLD,.65)); g.addColorStop(1,hexA(GOLD,0)); ctx.fillStyle=g; ctx.fillRect(lx,yc,lx2-lx,1); }
+    els.forEach((k,i)=>drawEl(ctx,k,W-PAD-ew+i*28+14,yc,21,elc(k),elI));
+    t.forEach((slot,i)=>{
+      const c=chs.get(slot.id); if(!c) return; const isT=slot.id==='traveler', ek=(isT?slot.el:c.el)||'anemo', col=elc(ek);
+      const x=PAD+i*(CW+G), y=ty0+TH, px=x+1, py=y+1;
+      ctx.fillStyle=T0.card; ctx.fillRect(x,y,CW,CH);
+      ctx.save(); ctx.beginPath(); ctx.rect(px,py,PS,PS); ctx.clip();
+      const base=ctx.createLinearGradient(0,py,0,py+PS); base.addColorStop(0,mixH(col,T0.pA,.17)); base.addColorStop(1,mixH(col,T0.pB,.09)); ctx.fillStyle=base; ctx.fillRect(px,py,PS,PS);
+      const ell=(cx,cy,rx,ry,stops)=>{ const k=rx/ry; ctx.save(); ctx.translate(cx,cy); ctx.scale(1,1/k); const g=ctx.createRadialGradient(0,0,0,0,0,rx); stops.forEach(([o,cc])=>g.addColorStop(o,cc)); ctx.fillStyle=g; ctx.fillRect(px-cx,(py-cy)*k,PS,PS*k); ctx.restore(); };
+      ell(px+PS*.5,py+PS*.28,PS*.9,PS*.7,[[0,hexA(col,.2)],[.78,hexA(col,0)]]);
+      ell(px+PS*.5,py+PS*1.05,PS*1.15,PS*.85,[[0,hexA(col,.66)],[.72,hexA(col,0)]]);
+      const rim=c.rar===5?T0.rim5c:T0.rim4c, rm=ctx.createLinearGradient(0,py,0,py+PS*.4); rm.addColorStop(0,hexA(rim,c.rar===5?T0.rim5:T0.rim4)); rm.addColorStop(1,hexA(rim,0)); ctx.fillStyle=rm; ctx.fillRect(px,py,PS,PS);
+      const nci=ncs.get(slot.id);
+      if(nci){ const nw=nci.naturalWidth||nci.width, nh=nci.naturalHeight||nci.height, z=Math.max(PS/nw,PS/nh), dw=nw*z, dh=nh*z; ctx.save(); ctx.globalAlpha=.5; ctx.drawImage(nci,px+(PS-dw)/2,py+(PS-dh)/2,dw,dh); ctx.restore(); }
+      const pi=pics.get(slot.id);
+      if(pi){ const iw=pi.naturalWidth||pi.width, ih=pi.naturalHeight||pi.height, z=Math.max(PS/iw,PS/ih), dw=iw*z, dh=ih*z; ctx.drawImage(pi,px+(PS-dw)/2,py+(PS-dh)/2,dw,dh); }
+      else { ctx.fillStyle='rgba(255,255,255,.11)'; ctx.font=`${T0.wB} 70px ${FH}`; ctx.textAlign='center'; ctx.fillText(c.name.trim().charAt(0),px+PS/2,py+PS/2+24); }
+      ctx.fillStyle=col; ctx.fillRect(px,py+PS-3,PS,3);
+      ctx.restore();
+      drawEl(ctx,ek,px+6+17,py+6+17,34,col,elI);
+      ctx.fillStyle=LINE; ctx.fillRect(x+1,y+1+PS,CW-2,1);
+      const star='\u2605', rt=c.rar+star; ctx.font=`${T0.wM} 17px ${FH}`; let nm=c.name; const rf=`700 14.6px ${FB}`;
+      const meas=n=>{ ctx.font=`${T0.wM} 17px ${FH}`; const a=ctx.measureText(n).width; ctx.font=rf; return a+7+ctx.measureText(rt).width; };
+      while(meas(nm)>CW-16 && nm.length>3) nm=nm.slice(0,-1); if(nm!==c.name) nm=nm.trimEnd()+'\u2026';
+      const tot=meas(nm); let tx=x+CW/2-tot/2, by=y+1+PS+NMH/2+6;
+      ctx.textAlign='left'; ctx.font=`${T0.wM} 17px ${FH}`; ctx.fillStyle=TEXT; ctx.fillText(nm,tx,by); tx+=ctx.measureText(nm).width+7;
+      ctx.font=rf; ctx.fillStyle=c.rar===5?GOLD:T0.violet; ctx.fillText(rt,tx,by);
+      ctx.strokeStyle=LINE; ctx.lineWidth=1; ctx.strokeRect(x+.5,y+.5,CW-1,CH-1);
+    });
+  });
+  // footer
+  const fy=H-FOOT+8; ctx.fillStyle=LINE; ctx.fillRect(PAD,fy,W-PAD*2,1);
+  ctx.textAlign='left'; ctx.fillStyle=MUTE; ctx.font=`${T0.wM} 11px ${FM}`; sp('3.3px'); ctx.fillText('CHARACTER TRACKER',PAD,fy+34); sp('0px');
+  return await new Promise(r=>cv.toBlob(r,'image/jpeg',0.94));
+}
+async function captureShare(lu){
+  toast('Building image');
+  try{ const blob=await buildShareImage(lu); const nm=(shareName(lu)||'shared-teams').replace(/[^\w\-]+/g,'-').replace(/^-|-$/g,'')||'shared-teams'; download(blob,nm+'.jpg'); toast('Image saved'); }
+  catch(err){ console.error(err); toast('Could not build the image'); }
 }
 
 /* ---------- init ---------- */
