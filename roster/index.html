@@ -253,6 +253,12 @@ dialog::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
 .tf-toggle,.tf-reset{font-size:13.5px;padding:5px 12px}
 .tf-toggle .car{margin-left:7px;font-size:11px;color:var(--mute)}
 .tf-badge{display:inline-grid;place-items:center;min-width:19px;height:19px;margin-left:7px;padding:0 5px;border-radius:999px;background:var(--gold);color:var(--on-gold);font:700 11px var(--f-body)}
+.tf-panel{display:grid;gap:8px;margin-bottom:12px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:color-mix(in srgb,var(--panel) 60%,transparent)}
+.tf-grp{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:start}
+.tf-lab{padding-top:6px;color:var(--mute);font:600 11px var(--f-body);letter-spacing:.08em;text-transform:uppercase}
+.tf-chips{display:flex;flex-wrap:wrap;gap:6px}
+.tf-grp+.tf-grp{padding-top:8px;border-top:1px solid var(--line)}
+@media(max-width:700px){.tf-panel{padding:8px 10px}.tf-grp{grid-template-columns:1fr;gap:4px}.tf-lab{padding-top:0}.tf-chips{gap:4px}.tf-panel .chip.rc{font-size:13px;gap:6px;padding:4px 10px 4px 8px}.tf-panel .chip:not(.rc){font-size:0;gap:0;padding:5px}}
 .diff-line{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;margin-top:9px;color:var(--mute);font-size:14px}
 .diff-line .dl b{font:700 17px var(--f-head);color:var(--text);margin-right:5px}
 .diff-more summary{cursor:pointer;color:var(--gold);font-weight:600;list-style:none}
@@ -1195,7 +1201,7 @@ $('#inData').onchange=async e=>{
     const refine={}, five=new Set(SEED.filter(c=>c.rar===5).map(c=>c.id));
     for(const [k,v] of Object.entries(j.refine||{})) if(five.has(k) && owned[k]!==undefined && Number.isInteger(v) && v>=1 && v<=5) refine[k]=v;
     if(!confirm(`Import ${Object.keys(owned).length} characters? This replaces your current data.`)) return;
-    S.owned=owned; S.refine=refine; S.lineups=cleanLineups(j.lineups); S.player=j.player||(j.state&&j.state.player)||S.player; S.uid=j.uid||(j.state&&j.state.uid)||S.uid;
+    S.owned=owned; S.refine=refine; S.lineups=cleanLineups(j.lineups); const pl=j.player||(j.state&&j.state.player), ui=j.uid||(j.state&&j.state.uid); if(typeof pl==='string') S.player=pl.slice(0,60); if(typeof ui==='string'||Number.isInteger(ui)) S.uid=String(ui).replace(/\D/g,'').slice(0,12);
     $('#player').value=S.player; $('#uid').value=S.uid; persist(); render(); if(S.tab==='lineups') renderLineups(); toast('Data imported');
   }catch(err){ toast('That file is not a roster export from this tool'); }
 };
@@ -1425,7 +1431,7 @@ const isPartyType = type => Object.prototype.hasOwnProperty.call(PARTY_MODES,typ
 const SINGLETON_LINEUP_TYPES = new Set(['abyss','stygian','theater']);
 const sideUrl = id => `https://api.lunaris.moe/data/assets/avatarside/UI_AvatarIcon_Side_${encodeURIComponent(id)}.webp`;
 const UIS = {};
-const uiOf = id => UIS[id] || (UIS[id] = {fold:false, edit:false, tf:{els:new Set(),roles:new Set()}});
+const uiOf = id => UIS[id] || (UIS[id] = {fold:false, edit:false, tf:{els:new Set(),wps:new Set(),roles:new Set()}});
 const newPickerFilters=()=>({q:'', r5:true, r4:true, els:new Set(), wps:new Set(), status:'all', c:'all'});
 const PARTY_PICKER = {luId:'',team:0,slot:0,f:newPickerFilters(),sort:'verDesc'};
 const byIdAll = id => id==='traveler' ? {...TRAV, lvl:6, ref:0, ord:9999} : (chars().find(c=>c.id===id) || null);
@@ -1507,7 +1513,8 @@ function shareDecode(hash){
   const teams=m[1].split('.').map(t=>[0,2,4,6].map(o=>{
     const a=t[o], b=t[o+1];
     if(a==='_'){ const el=EL_ORDER[+b]; return (b!=='_'&&el)?{id:'traveler',el}:null; }
-    const i=SHARE_ALPHA.indexOf(a)*62+SHARE_ALPHA.indexOf(b), c=SEED[i];
+    const ai=SHARE_ALPHA.indexOf(a), bi=SHARE_ALPHA.indexOf(b); if(ai<0||bi<0) return null;
+    const c=SEED[ai*62+bi];
     return c?{id:c.id}:null;
   }));
   return {teams,name};
@@ -1628,7 +1635,7 @@ function cleanLineups(arr){
     if(SINGLETON_LINEUP_TYPES.has(x.type)){ if(seenSingletons.has(x.type)) return false; seenSingletons.add(x.type); }
     return true;
   }).slice(0,200).map(x=>{
-    const id=String(x.id||('lu'+Math.random().toString(36).slice(2,8))).slice(0,24);
+    const id=String(x.id||'').replace(/[^\w-]/g,'').slice(0,24)||('lu'+Math.random().toString(36).slice(2,8));
     if(x.type==='createparty') x={...x,type:'share'};
     if(isPartyType(x.type)){
       const mode=PARTY_MODES[x.type], incoming=Array.isArray(x.teams)?x.teams:[], expected=mode.flex ? Array.from({length:Math.min(mode.maxTeams,Math.max(1,incoming.length))},(_,i)=>'Team '+(i+1)) : (mode.teamNames||[mode.label]);
@@ -1817,9 +1824,9 @@ function setupSum(lu,d){
 }
 function planHtml(lu,u){
   const d=DIFF[lu.diff]||DIFF.lunar, n=lu.list.length, els=elsOf(lu), full=n>=d.max, tf=u.tf;
-  const filtering=!u.edit&&(tf.els.size||tf.roles.size);
-  const entEl=e=>e.id==='traveler'?e.el:(byIdAll(e.id)||{}).el;
-  const shown=lu.list.map((e,i)=>({e,i})).filter(({e})=>!filtering||((!tf.els.size||tf.els.has(entEl(e)))&&(!tf.roles.size||tf.roles.has(e.role||'none'))));
+  const filtering=!u.edit&&(tf.els.size||tf.wps.size||tf.roles.size);
+  const entEl=e=>e.id==='traveler'?e.el:(byIdAll(e.id)||{}).el, entWp=e=>e.id==='traveler'?'sword':(byIdAll(e.id)||{}).w;
+  const shown=lu.list.map((e,i)=>({e,i})).filter(({e})=>!filtering||((!tf.els.size||tf.els.has(entEl(e)))&&(!tf.wps.size||tf.wps.has(entWp(e)))&&(!tf.roles.size||tf.roles.has(e.role||'none'))));
   const rowsHtml=shown.map(({e,i})=>rowHtml(lu,e,i,u)).join('');
   let empties=''; if(!filtering) for(let i=n;i<d.min;i++) empties+=`<li class="ent empty"><span class="no">${i+1}</span><span class="nm2">Empty slot</span></li>`;
   const pool=poolOf(lu), inList=new Set(lu.list.map(e=>e.id));
@@ -1827,10 +1834,11 @@ function planHtml(lu,u){
   const travRow=inList.has('traveler')?'':`<li class="ent pool-ent" style="--el:${elc(travEl)}"><span class="av" data-side="traveler">${sideImgHtml('traveler')}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(travEl)}">${elIcon(travEl)}</span><span class="nm2">Traveler</span><span class="elpick">${els.map(k=>`<button class="elb-pick" data-act="trav-el" data-el="${k}" style="--el:${elc(k)}" aria-pressed="${k===travEl}" title="${EL[k].n}" aria-label="${EL[k].n}">${elIcon(k)}</button>`).join('')}</span></div><div class="l2"><span class="rolebtns">${Object.entries(ROLES).map(([k,v])=>`<button class="rbtn r-${k}" data-act="addt" data-el="${travEl}" data-r="${k}" ${full?'disabled':''} title="Add Traveler as ${v}">${ROLE_SHORT[k]}</button>`).join('')}</span></div></div><span class="chipcell"><span class="pc c6">C6</span></span></li>`;
   const poolRows=pool.map(c=>`<li class="ent pool-ent" style="--el:${elc(c.el)};${naVar(c.id)}"><span class="av" data-side="${c.id}">${sideImgHtml(c.id)}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(c.el)}">${elIcon(c.el)}</span><span class="nm2">${esc(c.name)}</span></div><div class="l2"><span class="rolebtns">${Object.entries(ROLES).map(([k,v])=>`<button class="rbtn r-${k}" data-act="add" data-id="${c.id}" data-r="${k}" ${full?'disabled':''} title="Add ${esc(c.name)} as ${v}">${ROLE_SHORT[k]}</button>`).join('')}</span></div></div><span class="chipcell"><span class="pc${c.lvl===6?' c6':''}">C${c.lvl}${c.ref?'R'+c.ref:''}</span></span></li>`).join('');
   const dis=u.edit?'disabled':'';
-  const filt=els.map(k=>`<button class="chip" data-act="tf" data-k="el" data-v="${k}" aria-pressed="${tf.els.has(k)}" style="--el:${elc(k)}" ${dis}>${elIcon(k)}${EL[k].n}</button>`).join('')
-    +Object.entries(ROLES).map(([k,v])=>`<button class="chip rc r-${k}" data-act="tf" data-k="role" data-v="${k}" aria-pressed="${tf.roles.has(k)}" ${dis}><i></i>${v}</button>`).join('')
-    +`<button class="chip rc" data-act="tf" data-k="role" data-v="none" aria-pressed="${tf.roles.has('none')}" style="--rc:var(--mute)" ${dis}><i></i>No role</button>`
-    +`<button class="chip reset" data-act="tclear" ${(!filtering)?'disabled':''}>Reset</button>`;
+  const grp=(lab,html)=>`<div class="tf-grp"><span class="tf-lab">${lab}</span><div class="tf-chips">${html}</div></div>`;
+  const filt=grp('Element',els.map(k=>`<button class="chip" data-act="tf" data-k="el" data-v="${k}" aria-pressed="${tf.els.has(k)}" title="${EL[k].n}" style="--el:${elc(k)}" ${dis}>${elIcon(k)}${EL[k].n}</button>`).join(''))
+    +grp('Weapon',WP_ORDER.map(k=>`<button class="chip" data-act="tf" data-k="wp" data-v="${k}" aria-pressed="${tf.wps.has(k)}" title="${WP[k]}" style="--el:#e8ecf1" ${dis}>${wpIcon(k)}${WP[k]}</button>`).join(''))
+    +grp('Role',Object.entries(ROLES).map(([k,v])=>`<button class="chip rc r-${k}" data-act="tf" data-k="role" data-v="${k}" aria-pressed="${tf.roles.has(k)}" ${dis}><i></i>${v}</button>`).join('')
+      +`<button class="chip rc" data-act="tf" data-k="role" data-v="none" aria-pressed="${tf.roles.has('none')}" style="--rc:var(--mute)" ${dis}><i></i>No role</button>`);
   return `
     <div class="plan-sticky">
       <div class="cnt"><b class="${n>=d.min?'ok':''}">${n}</b><span>of ${d.min} needed, up to ${d.max}${n<d.min?`. ${d.min-n} more to go`:full?'. Full':''}</span>${bonusHtml(n,d)}${roleWarnHtml(lu)}</div>
@@ -1845,7 +1853,7 @@ function planHtml(lu,u){
       <div class="tl">
         <h3>Team list<small>${u.edit?'Drag to reorder or remove':esc(setupSum(lu,d))}</small></h3>
         <div class="tag-key"><span><i class="tdot open"></i>Opening</span><span><i class="tdot guest"></i>Special guest</span><span><i class="tdot bor"></i>Borrowed</span></div>
-        ${u.edit?'':`<div class="tf-bar"><button type="button" class="btn tf-toggle" data-act="fopen" aria-expanded="${!!u.fopen}">Filter${filtering?`<span class="tf-badge">${tf.els.size+tf.roles.size}</span>`:''}<span class="car">${u.fopen?'\u25B4':'\u25BE'}</span></button>${filtering?'<button type="button" class="btn tf-reset" data-act="tclear">Reset</button>':''}</div>${u.fopen?`<div class="pf" style="margin-bottom:12px">${filt}</div>`:''}`}
+        ${u.edit?'':`<div class="tf-bar"><button type="button" class="btn tf-toggle" data-act="fopen" aria-expanded="${!!u.fopen}">Filter${filtering?`<span class="tf-badge">${tf.els.size+tf.wps.size+tf.roles.size}</span>`:''}<span class="car">${u.fopen?'\u25B4':'\u25BE'}</span></button>${filtering?'<button type="button" class="btn tf-reset" data-act="tclear">Reset</button>':''}</div>${u.fopen?`<div class="tf-panel">${filt}</div>`:''}`}
         <ol class="ents">${rowsHtml}${empties}</ol>
       </div>
       <div class="pool">
@@ -1973,7 +1981,7 @@ $('#luList').addEventListener('click',e=>{
   if(act==='fold'){ u.fold=!u.fold; renderLineups(); }
   else if(act==='del'){ if(!confirm(`Delete "${lu.name}"?`)) return; S.lineups=S.lineups.filter(x=>x!==lu); delete UIS[lu.id]; done(); }
   else if(act==='back'){ lu.stage='setup'; u.edit=false; done(); }
-  else if(act==='edit'){ u.edit=!u.edit; if(u.edit){ u.tf.els.clear(); u.tf.roles.clear(); } renderLineups(); }
+  else if(act==='edit'){ u.edit=!u.edit; if(u.edit){ u.tf.els.clear(); u.tf.wps.clear(); u.tf.roles.clear(); } renderLineups(); }
   else if(act==='tocard'){ if(lu.list.length<d.min) return; lu.stage='card'; u.edit=false; done(); window.scrollTo(0,$('#lineupView').offsetTop); }
   else if(act==='cardback'){ lu.stage='plan'; done(); }
   else if(act==='capture'){ captureTeam(lu); }
@@ -1991,10 +1999,10 @@ $('#luList').addEventListener('click',e=>{
     lu.guests[i]=byIdAll(id).name; lu.supLink=i; lu.support=lu.guests[i]; done();
   }
   else if(act==='linkno'){ lu.guests[+b.dataset.i]=''; done(); }
-  else if(act==='tf'){ const set=b.dataset.k==='el'?u.tf.els:u.tf.roles, v=b.dataset.v; set.has(v)?set.delete(v):set.add(v); renderLineups(); }
+  else if(act==='tf'){ const set=b.dataset.k==='el'?u.tf.els:b.dataset.k==='wp'?u.tf.wps:u.tf.roles, v=b.dataset.v; set.has(v)?set.delete(v):set.add(v); renderLineups(); }
   else if(act==='fopen'){ u.fopen=!u.fopen; renderLineups(); }
-  else if(act==='norole'){ u.edit=false; u.fopen=true; u.tf.els.clear(); u.tf.roles.clear(); u.tf.roles.add('none'); renderLineups(); }
-  else if(act==='tclear'){ u.tf.els.clear(); u.tf.roles.clear(); renderLineups(); }
+  else if(act==='norole'){ u.edit=false; u.fopen=true; u.tf.els.clear(); u.tf.wps.clear(); u.tf.roles.clear(); u.tf.roles.add('none'); renderLineups(); }
+  else if(act==='tclear'){ u.tf.els.clear(); u.tf.wps.clear(); u.tf.roles.clear(); renderLineups(); }
   else if(act==='add'){ if(lu.list.length>=d.max) return toast(`${d.n} mode holds up to ${d.max} characters`); const id=b.dataset.id; if(lu.list.some(x=>x.id===id)) return; lu.list.push({id,el:'',role:ROLES[b.dataset.r]?b.dataset.r:null,borrowed:false,kind:'extra'}); done(); }
   else if(act==='addt'){ if(lu.list.length>=d.max) return toast(`${d.n} mode holds up to ${d.max} characters`); if(lu.list.some(x=>x.id==='traveler')) return; lu.list.push({id:'traveler',el:b.dataset.el,role:ROLES[b.dataset.r]?b.dataset.r:null,borrowed:false,kind:'extra'}); done(); }
   else if(act==='trav-el'){ u.travEl=b.dataset.el; renderLineups(); }
@@ -2146,12 +2154,12 @@ async function buildTeamImage(lu){
   });
   ctx.textAlign='left'; ctx.fillStyle=T0.mute; ctx.font=`${T0.wM} 11px ${FM}`; sp('3.5px'); ctx.fillText('CHARACTER COLLECTION',PAD,H-PAD+8); sp('0px');
   ctx.textAlign='right'; ctx.font=`${T0.wM} 12px ${FM}`; ctx.fillText(new Date().toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'}).toUpperCase(),W-PAD,H-PAD+8);
-  return await new Promise(r=>cv.toBlob(r,'image/png'));
+  return await new Promise(r=>cv.toBlob(r,'image/jpeg',0.92));
 }
 function rrp(ctx,x,y,w,h,r){ ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(x,y,w,h,r); else { ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); } }
 async function captureTeam(lu){
   toast('Building image');
-  try{ const blob=await buildTeamImage(lu); download(blob,(lu.name||'team').replace(/[^\w\-]+/g,'-').replace(/^-|-$/g,'')+'.png'); toast('Image saved'); }
+  try{ const blob=await buildTeamImage(lu); download(blob,(lu.name||'team').replace(/[^\w\-]+/g,'-').replace(/^-|-$/g,'')+'.jpg'); toast('Image saved'); }
   catch(err){ toast('Could not build the image'); }
 }
 
