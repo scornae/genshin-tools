@@ -1797,7 +1797,7 @@ function entInfo(e){
   const c=byIdAll(e.id); if(!c) return null;
   const trav=e.id==='traveler', el=trav?e.el:c.el;
   const own=c.lvl!==undefined;
-  const tags=(e.kind==='guest'?'<span class="tag tag-guest">Special guest</span>':'')+(e.borrowed?'<span class="tag inv">Invited</span>':'')+(e.kind==='open'?(own?'<span class="tag tag-open">Opening</span>':'<span class="tag tag-trial">Trial</span>'):'');
+  const tags=(e.kind==='guest'?'<span class="tag tag-guest">Guest</span>':'')+(e.borrowed?'<span class="tag inv">Invited</span>':'')+(e.kind==='open'?(own?'<span class="tag tag-open">Opening</span>':'<span class="tag tag-trial">Trial</span>'):'');
   const tagsR=(e.borrowed?'<span class="tag inv">Invited</span>':'')+(e.kind==='guest'?'<span class="tag tag-guest">Guest</span>':'')+(e.kind==='open'?(own?'<span class="tag tag-open">Opening</span>':'<span class="tag tag-trial">Trial</span>'):'');
   return {c,trav,el,tags,tagsR};
 }
@@ -1875,7 +1875,7 @@ function cardHtml(lu){
   const d=DIFF[lu.diff]||DIFF.lunar, n=lu.list.length;
   const rows=lu.list.map((e,i)=>{
     const f=entInfo(e); if(!f) return '';
-    return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" style="${naVar(e.id)}"><span class="no">${i+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(f.el)}">${elIcon(f.el)}</span><span class="nm2">${esc(f.c.name)}</span>${e.role?`<span class="rolename r-${e.role}" style="margin-left:6px">${ROLES[e.role]}</span>`:''}</div>${f.tags?`<div class="l2"><span class="tags">${f.tags}</span></div>`:''}</div></li>`;
+    return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" style="${naVar(e.id)}"><span class="no">${i+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(f.el)}">${elIcon(f.el)}</span><span class="nm2">${esc(f.c.name)}</span><span class="tags">${f.tags}</span></div>${e.role?`<div class="l2"><span class="rolename r-${e.role}">${ROLES[e.role]}</span></div>`:''}</div></li>`;
   }).join('');
   const rowsN=Math.ceil(n/2);
   return `<div class="tc-page">Team list card</div>
@@ -2136,17 +2136,16 @@ async function buildTeamImage(lu){
     ctx.restore();
     if(rc){ ctx.strokeStyle=rc; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(acx,acy,ar+1.5,0,7); ctx.stroke(); }
     const own0=f.c.lvl!==undefined, tg=[];
-    if(e.kind==='guest') tg.push(['SPECIAL GUEST',T0.violet,false]);
+    if(e.kind==='guest') tg.push(['GUEST',T0.violet,false]);
     if(e.borrowed) tg.push(['INVITED',T0.borrow||T0.violet,true]);
     if(e.kind==='open') tg.push(own0?['OPENING',T0.gold,false]:['TRIAL','#ff8fb1',false]);
-    const hasT=tg.length>0, ny=y+RH/2+(hasT?-3:7);
-    const col=elc(f.el); drawEl(ctx,f.el,x0+130,y+RH/2-(hasT?7:0),24,col,elI);
-    ctx.textAlign='left'; ctx.fillStyle=T0.text; ctx.font=`${T0.wM} 21px ${FH}`; ctx.fillText(f.c.name,x0+152,ny);
-    if(e.role){ const nx=x0+152+ctx.measureText(f.c.name).width+12; ctx.fillStyle=rc; ctx.font=`600 14px ${FB}`; ctx.fillText(ROLES[e.role],nx,ny); }
-    let tx=x0+152;
-    tg.forEach(([lab,tc,solid])=>{ ctx.font=`600 11px ${FB}`; sp('1.2px'); const w=ctx.measureText(lab).width+14; sp('0px'); const ty=y+RH/2+5;
+    const col=elc(f.el); drawEl(ctx,f.el,x0+130,y+RH/2-(e.role?7:0),24,col,elI);
+    ctx.textAlign='left'; ctx.fillStyle=T0.text; ctx.font=`${T0.wM} 21px ${FH}`; ctx.fillText(f.c.name,x0+152,y+RH/2+(e.role?-3:7));
+    let tx=x0+152+ctx.measureText(f.c.name).width+12; const ty=y+RH/2-(e.role?3:-1)-15;
+    tg.forEach(([lab,tc,solid])=>{ ctx.font=`600 11px ${FB}`; sp('1.2px'); const w=ctx.measureText(lab).width+14; sp('0px');
       rrp(ctx,tx,ty,w,20,10); if(solid){ ctx.fillStyle=tc; ctx.fill(); } else { ctx.strokeStyle=tc; ctx.lineWidth=1; ctx.stroke(); }
-      ctx.fillStyle=solid?'#0b1220':tc; sp('1.2px'); ctx.textAlign='left'; ctx.fillText(lab,tx+7,ty+14.5); sp('0px'); tx+=w+6; });
+      ctx.fillStyle=solid?'#0b1220':tc; sp('1.2px'); ctx.textAlign='left'; ctx.fillText(lab,tx+7,ty+14); sp('0px'); tx+=w+6; });
+    if(e.role){ ctx.fillStyle=rc; ctx.font=`600 14px ${FB}`; ctx.textAlign='left'; ctx.fillText(ROLES[e.role],x0+152,y+RH/2+18); }
   });
   ctx.textAlign='left'; ctx.fillStyle=T0.mute; ctx.font=`${T0.wM} 11px ${FM}`; sp('3.5px'); ctx.fillText('CHARACTER COLLECTION',PAD,H-PAD+8); sp('0px');
   ctx.textAlign='right'; ctx.font=`${T0.wM} 12px ${FM}`; ctx.fillText(new Date().toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'}).toUpperCase(),W-PAD,H-PAD+8);
