@@ -96,6 +96,8 @@ button{cursor:pointer}
 .btn{display:inline-flex;align-items:center;gap:6px;border-radius:var(--r);border:1px solid var(--line2);background:var(--panel);padding:8px 14px;font-weight:600;color:var(--text)}
 .btn:hover{background:var(--panel2);border-color:var(--mute)}
 .btn.primary{background:var(--pri-bg);border-color:var(--pri-bg);color:var(--pri-fg)}
+.btn.cap{background:transparent;border-color:var(--gold);color:var(--gold)}
+.btn.cap:hover:not(:disabled){background:color-mix(in srgb,var(--gold) 14%,transparent)}
 .btn.primary:hover{filter:brightness(1.1)}
 .btn.danger{color:var(--danger);border-color:#5a2e33;background:transparent}
 .spacer{flex:1}
@@ -250,8 +252,7 @@ dialog::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
 .cnt .norole.static{cursor:default}
 .cnt .norole:not(.static):hover{border-color:var(--gold)}
 .tf-bar{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-.tf-toggle,.tf-reset{font-size:13.5px;padding:5px 12px}
-.tf-toggle .car{margin-left:7px;font-size:11px;color:var(--mute)}
+.tf-reset{font-size:13.5px;padding:5px 12px}
 .tf-badge{display:inline-grid;place-items:center;min-width:19px;height:19px;margin-left:7px;padding:0 5px;border-radius:999px;background:var(--gold);color:var(--on-gold);font:700 11px var(--f-body)}
 .tf-panel{display:grid;gap:8px;margin-bottom:12px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:color-mix(in srgb,var(--panel) 60%,transparent)}
 .tf-grp{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:start}
@@ -265,12 +266,6 @@ dialog::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
 .diff-more summary::-webkit-details-marker{display:none}
 .diff-more summary::before{content:"\24D8\00a0"}
 .diff-more p{margin:8px 0 0;max-width:62ch;line-height:1.5;flex-basis:100%}
-.tdot{display:inline-block;width:11px;height:11px;border-radius:50%;flex:none}
-.tdot.open{background:var(--gold)}
-.tdot.guest{background:var(--violet)}
-.tdot.bor{border:2.5px solid var(--borrow);width:13px;height:13px;box-sizing:border-box}
-.tag-key{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center;margin:0 0 10px;font-size:13px;color:var(--mute)}
-.tag-key span{display:inline-flex;align-items:center;gap:6px}
 .ent .tags{align-items:center}
 .ent.has-role .rbtn[aria-pressed=false]{opacity:.4}
 .ent.has-role:hover .rbtn,.ent.has-role:focus-within .rbtn{opacity:1}
@@ -321,7 +316,6 @@ body::after{background-image:var(--stars2);background-size:520px 520px;animation
 button.eli{background:transparent;border:0;padding:0;cursor:pointer}
 .st{margin-top:14px;font-size:15.5px;color:var(--mute);display:grid;gap:5px}
 .st .bad{color:var(--danger)}
-.st .good{color:var(--text)}
 .st .els{display:inline-flex;gap:8px;align-items:center;margin-right:14px;vertical-align:middle;color:var(--text)}
 .st .els .sico{width:26px;height:26px;color:var(--el)}
 .plan{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
@@ -332,7 +326,6 @@ button.eli{background:transparent;border:0;padding:0;cursor:pointer}
 .cnt .ok{color:var(--gold)}
 .plan-body h3{margin:0 0 10px;font:700 22px var(--f-head);text-transform:var(--tt);display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
 .plan-body h3 small{font:500 12px var(--f-mono);letter-spacing:.16em;color:var(--mute);text-transform:uppercase}
-.plan .bar2{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:15px;color:var(--mute);margin:10px 0 12px}
 .legend i{display:inline-block;width:13px;height:13px;border-radius:50%;background:var(--rc);margin-right:7px;vertical-align:-1px}
 .legend b{color:var(--text);margin-left:7px;font:700 16px var(--f-head)}
@@ -348,14 +341,13 @@ ol.ents{list-style:none;margin:0;padding:0;display:grid;gap:7px}
 .ent .nm2{flex:1 1 130px;min-width:0;font:500 18px var(--f-head);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
 .tag{font:700 11.5px var(--f-body);letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border:1px solid color-mix(in srgb,var(--line2) 80%,transparent);border-radius:var(--chip-r);color:var(--mute);background:color-mix(in srgb,var(--line2) 20%,transparent);white-space:nowrap}
 .tag-open{color:var(--gold);border-color:color-mix(in srgb,var(--gold) 58%,transparent);background:color-mix(in srgb,var(--gold) 15%,transparent)}
-.tag-guest{color:var(--violet);border-color:color-mix(in srgb,var(--violet) 55%,transparent);background:color-mix(in srgb,var(--violet) 15%,transparent)}
+.tag-guest{color:#efe7ff;border-color:var(--violet);background:color-mix(in srgb,var(--violet) 42%,transparent)}
+.tag.inv{color:#0b1220;font-weight:700;border:1px solid var(--borrow);background:var(--borrow)}
 .tag.bor{color:var(--borrow);border:1px solid color-mix(in srgb,var(--borrow) 70%,transparent);background:color-mix(in srgb,var(--borrow) 12%,transparent)}
 .pc{font:700 14px/22px var(--f-body);padding:0 8px;border:1px solid var(--chip-bd);background:var(--chip-bg);color:var(--chip-fg);border-radius:var(--chip-r)}
 .pc.c6{background:var(--gold);border-color:var(--gold);color:var(--on-gold)}
 .noown{font-size:13.5px;color:var(--dim)}
 .roles{display:flex;gap:8px}
-.rd{width:24px;height:24px;border-radius:50%;border:2px solid var(--rc);background:transparent;padding:0}
-.rd[aria-pressed=true]{background:var(--rc);box-shadow:0 0 10px -1px var(--rc)}
 .rolebtns{display:flex;gap:6px;flex-wrap:wrap}
 .rbtn{--rc:var(--mute);background:transparent;border:1px solid color-mix(in srgb,var(--rc) 58%,var(--line2));color:color-mix(in srgb,var(--rc) 72%,var(--text));border-radius:999px;padding:4px 9px;font:600 11px/1 var(--f-body);letter-spacing:.06em;cursor:pointer;white-space:nowrap}
 .rbtn:hover:not(:disabled){background:color-mix(in srgb,var(--rc) 22%,transparent);color:var(--text);border-color:var(--rc)}
@@ -365,7 +357,6 @@ ol.ents{list-style:none;margin:0;padding:0;display:grid;gap:7px}
 .mini{background:transparent;border:1px solid var(--line2);color:var(--mute);border-radius:var(--r);padding:5px 11px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
 .mini:hover:not(:disabled){color:var(--text);border-color:var(--mute)}
 .mini:disabled{opacity:.35;cursor:not-allowed}
-.ctl{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
 .pool .ent{cursor:default}
 .pool .ent.pool-ent{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:0 10px;align-items:center}
 .pool .ent.pool-ent .inf{min-width:0}
@@ -378,7 +369,6 @@ ol.ents{list-style:none;margin:0;padding:0;display:grid;gap:7px}
 .elb-pick:hover{opacity:1;border-color:var(--el)}
 .elb-pick[aria-pressed=true]{opacity:1;border-color:var(--el);background:color-mix(in srgb,var(--el) 20%,transparent)}
 .elb-pick svg,.elb-pick img,.elb-pick .eic{width:15px;height:15px;display:block;object-fit:contain}
-.pf{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
 .modes{display:grid;gap:8px;margin-top:14px}
 .mode{justify-content:space-between;text-align:left;padding:12px 14px;width:100%}
 .mode small{color:var(--mute);font-weight:500;margin-left:12px;text-align:right}
@@ -391,7 +381,6 @@ html[data-theme=celestial] .navin button,html[data-theme=celestial] .luhead h2,h
 .plan-sticky .cnt b{font-size:34px}
 .plan-sticky .legend{margin:0}
 .plan-tools{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-bottom:12px}
-.plan-tools .sep{width:1px;align-self:stretch;background:var(--line2);margin:0 4px}
 .plan-body{display:grid;grid-template-columns:minmax(0,55fr) minmax(0,45fr);gap:22px;align-items:start}
 @media(max-width:1000px){.plan-body{grid-template-columns:1fr}}
 .tl .ent,.tcl .ent{display:grid;grid-template-columns:26px 44px minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:8px 10px}
@@ -400,9 +389,8 @@ html[data-theme=celestial] .navin button,html[data-theme=celestial] .luhead h2,h
 .ent .l1 .nm2{flex:0 1 auto;display:inline}
 .ent .tags{display:inline-flex;flex-wrap:wrap;gap:4px}
 .ent .l2{display:flex;gap:8px;align-items:center;margin-top:6px;min-height:24px}
-.ent .chipcell{justify-self:end}
 .ent.has-role{border-left-width:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--rc) 30%,var(--panel2)),var(--panel2) 42%)}
-.ent.has-role .av{box-shadow:0 0 0 3px var(--rc)}
+.ent.has-role .av{box-shadow:0 0 0 2px var(--rc)}
 .ent.dragging{opacity:.35}
 .ent.drop-b{box-shadow:0 -4px 0 0 var(--gold)}
 .ent.drop-a{box-shadow:0 4px 0 0 var(--gold)}
@@ -495,7 +483,6 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 .party-progress{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;padding:10px 12px;margin-bottom:14px;border:1px solid var(--line2);border-radius:var(--r);background:var(--panel2);color:var(--mute)}
 .party-progress strong{font:700 20px var(--f-head);color:var(--text)}
 .party-rule{font-size:13px}
-.party-warning{padding:10px 12px;border:1px solid rgba(255,180,80,.55);border-radius:var(--r);background:rgba(255,154,60,.1);color:#ffd397;font-size:14px}
 .party-team{min-width:0;padding:12px;border:1px solid var(--line);border-radius:var(--r-card);background:color-mix(in srgb,var(--panel2) 62%,transparent)}
 .party-team-head{display:flex;align-items:center;justify-content:space-between;gap:8px 14px;flex-wrap:wrap;margin-bottom:10px}
 .share-bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:4px}
@@ -566,7 +553,6 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 .party-empty .plus{font:300 40px/1 var(--f-head);color:var(--gold)}
 .party-team-head h3{padding-left:10px;border-left:3px solid var(--gold);line-height:1.1}
 .party-team-head span{padding:3px 9px;border:1px solid var(--line2);border-radius:var(--chip-r)}
-.party-placeholder{font:700 44px var(--f-head);color:var(--mute)}
 /* party picker dialog */
 .party-picker-dialog{width:min(1240px,calc(100vw - 32px));max-height:calc(100dvh - 24px);overflow-x:hidden;overflow-y:auto}
 .party-picker-dialog .dbody{padding:24px 26px 26px;position:relative}
@@ -575,9 +561,6 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 .party-picker-close span{display:block;line-height:1;transform:translateY(-1px)}
 .party-picker-head{text-align:center;margin:4px 40px 14px 0;padding-right:0}
 .party-picker-head h3{margin:0;font:700 28px/1.1 var(--f-head);color:var(--text);letter-spacing:.02em}
-.party-picker-toolbar{margin:12px 0}
-.party-picker-bottom{display:flex;gap:10px;align-items:center;margin:12px 0 4px}
-.party-picker-bottom #partySearch{flex:1 1 auto;min-width:0}
 .party-picker-filters{margin:12px 0 4px}
 .party-picker-filters .row+.row{margin-top:8px}
 .party-picker-filters #partySearch{flex:1 1 200px}
@@ -587,11 +570,7 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 .party-picker-filters #ppSort{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:140px;white-space:nowrap}
 .party-picker-filters #ppSort .sort-ar{color:var(--gold);font-weight:700;font-size:15px;line-height:1}
 .party-picker-filters #ppRar button{min-width:52px}
-.filter-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.filter-label{font:500 11px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-right:6px}
-.party-picker-actions{display:flex;justify-content:flex-end;margin:-2px 0 10px}
 .luhead-actions{display:flex;gap:8px;align-items:center}
-.party-picker-actions .traveler-add-icon{margin-right:6px;font-size:16px}
 .traveler-add{border-color:color-mix(in srgb,#32d7a0 54%,var(--line2));color:var(--text);background:color-mix(in srgb,#32d7a0 14%,var(--panel))}
 .party-picker-summary{color:var(--mute);font-size:14px;margin:8px 0}
 .party-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;max-height:min(66vh,760px);overflow:auto;align-content:start;padding:2px}
@@ -602,10 +581,6 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 .party-pick-card:disabled{opacity:.45;cursor:not-allowed}
 .party-pick-card:disabled:hover{border-color:var(--line)}
 .party-pick-card .portrait{pointer-events:none}
-.party-pick-name{font:600 14px var(--f-head);color:var(--text);display:block}
-.party-pick-stars{color:var(--gold);font-size:11px;display:block;margin-top:2px;letter-spacing:2px}
-.party-pick-element{display:grid;place-items:center;width:24px;height:24px;margin:0 auto;color:var(--el)}
-.party-pick-badge{display:block;font:600 10px var(--f-mono);color:var(--mute);margin-top:2px}
 .party-no-results{color:var(--mute);padding:20px;text-align:center}
 .traveler-element-dialog{width:min(470px,calc(100vw - 20px))}
 .trav-head{display:flex;gap:14px;align-items:center}
@@ -670,7 +645,6 @@ main{padding:14px 0 60px}
 .svr{font-size:11px;right:3px;top:3px}
 .party-remove{width:18px;height:18px;top:2px;right:2px;font-size:12px}
 .party-empty .plus{font-size:26px}
-.party-placeholder{font-size:24px}
 /* shared view */
 #shareView .party-slots{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 #shareView .party-slots .nm{font-size:11px;padding:5px 2px 6px;gap:3px}
@@ -705,7 +679,7 @@ main{padding:14px 0 60px}
 #dlgMode .mode-pips{min-height:45px}
 #dlgMode .pip-row i{width:11px;height:11px}
 #dlgMode .pips-label{white-space:nowrap}
-#dlgMode .mode-note{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;padding:10px 12px;border:1px solid color-mix(in srgb,#65d9c2 38%,var(--line2));border-radius:var(--r);background:color-mix(in srgb,#65d9c2 8%,var(--panel))}
+#dlgMode .mode-note{display:flex;gap:8px;align-items:center;margin:10px 0 0;padding:6px 10px;border:1px solid color-mix(in srgb,#65d9c2 38%,var(--line2));border-radius:var(--r);background:color-mix(in srgb,#65d9c2 8%,var(--panel))}
 #dlgMode .mode-note p{margin:0;font-size:13px;line-height:1.5;color:var(--mute)}
 #dlgMode .mode-note b{color:var(--text);font-weight:600}
 #dlgMode .mode-note-ic{flex:none;width:18px;height:18px;margin-top:1px;border-radius:50%;background:#65d9c2;color:#0b2a25;font:700 12px/18px var(--f-body);text-align:center}
@@ -713,6 +687,128 @@ main{padding:14px 0 60px}
 /* Close buttons: red */
 .btn.x[data-close]{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 55%,var(--line2));background:color-mix(in srgb,var(--danger) 12%,var(--panel))}
 .btn.x[data-close]:hover{color:#fff;border-color:var(--danger);background:color-mix(in srgb,var(--danger) 55%,var(--panel))}
+/* ---- Team Builder: phone only (<=700px). PC layout is untouched ---- */
+.lu-acts{display:contents}
+.plan-tabs{display:none}
+@media(max-width:700px){
+  .lu-h{gap:6px 8px;padding:10px 12px}
+  .lu-name{flex:1 1 100%;font-size:20px}
+  .lu-tag{font-size:10px;letter-spacing:.06em}
+  .lu-acts{display:flex;gap:6px;margin-left:auto;flex:none}
+  .lu-acts .btn{padding:3px 10px;font-size:12px}
+  .lu-body{padding:10px}
+  .plan-sticky{position:static;margin:-10px -10px 8px;padding:6px 10px;gap:4px 14px;box-shadow:none}
+  .plan-sticky .cnt b{font-size:24px}
+  .plan-sticky .legend{font-size:11px}
+  .plan-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;position:sticky;top:var(--nav-h);z-index:15;background:var(--panel);margin:0 -10px 8px;padding:6px 10px;border-bottom:1px solid var(--line)}
+  .plan-tabs button{display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 8px;border:1px solid var(--line2);border-radius:var(--r);background:var(--panel2);color:var(--mute);font:600 13px var(--f-body)}
+  .plan-tabs button b{display:inline-grid;place-items:center;min-width:20px;height:18px;padding:0 6px;border-radius:999px;background:var(--line2);color:var(--text);font:700 11px var(--f-body)}
+  .plan-tabs button[aria-pressed=true]{border-color:var(--gold);color:var(--text);background:color-mix(in srgb,var(--gold) 16%,var(--panel2))}
+  .plan-tabs button[aria-pressed=true] b{background:var(--gold);color:var(--on-gold)}
+  .plan-body.tab-list .pool,.plan-body.tab-pool .tl{display:none}
+  .plan-tools{gap:6px;margin-bottom:8px}
+  .plan-tools .btn.primary{margin-left:0;flex:1 1 100%}
+  .plan-body h3{font-size:18px;margin-bottom:6px}
+  .ents{gap:4px}
+  .tl .ent,.tcl .ent{grid-template-columns:18px 34px minmax(0,1fr) auto;gap:0 8px;padding:4px 8px}
+  .ent .no{font-size:12px;width:18px}
+  .av{width:34px;height:34px;font-size:13px}
+  .ent .nm2{font-size:15px}
+  .tl .ent .eli,.pool .ent .eli{width:18px;height:18px}
+  .tl .ent .eli svg,.tl .ent .eli img,.tl .ent .eli .eic,.pool .ent .eli svg,.pool .ent .eli img,.pool .ent .eli .eic{width:16px;height:16px}
+  .ent .l1{gap:2px 6px;line-height:1.15}
+  .ent .l2{margin-top:2px;min-height:18px}
+  .rolebtns{gap:4px}
+  .rbtn{padding:2px 7px;font-size:10px}
+  .pool .ent.pool-ent{grid-template-columns:34px minmax(0,1fr) auto;gap:0 8px;padding:4px 8px}
+  .pool .ent.pool-ent .l2{margin-top:3px}
+}
+
+/* Imaginarium Theater: Opening page, Special Guest strip, Supporting Cast bar */
+.tag-trial{color:#ff8fb1;border-color:color-mix(in srgb,#ff8fb1 55%,transparent);background:color-mix(in srgb,#ff8fb1 14%,transparent)}
+.op{display:grid;gap:30px;max-width:1040px;margin:0 auto;padding:6px 0 10px}
+.op-sec{text-align:center}
+.op-hero{padding:26px 18px 22px;border-radius:var(--r);border:1px solid var(--line);text-align:center;background:linear-gradient(100deg,color-mix(in srgb,var(--e1,#888) 26%,var(--panel2)),color-mix(in srgb,var(--e2,#888) 22%,var(--panel2)) 55%,color-mix(in srgb,var(--e3,#888) 26%,var(--panel2)));display:grid;justify-items:center;gap:8px}
+.op-eyebrow{font:600 24px var(--f-head);letter-spacing:.16em;text-transform:uppercase;color:var(--text)}
+.op-season{font:600 64px/1 var(--f-head);color:var(--gold)}
+.op-season small{display:block;font:600 13px var(--f-body);letter-spacing:.3em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
+.op-dates{color:var(--mute);font-size:15px}
+.op-els{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:8px}
+.op-eic{display:inline-flex;width:46px;height:46px}
+.op-eic>*{width:100%;height:100%}
+.op-h{margin:0;font:600 22px var(--f-head)}
+.op-sub{margin:2px 0 14px;color:var(--mute);font-size:14px}
+.op-grid{list-style:none;margin:0 auto;padding:0;width:100%;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;text-align:left}
+.op-card{position:relative;display:flex;flex-direction:column;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);border-bottom:4px solid var(--el);background:linear-gradient(180deg,color-mix(in srgb,var(--el) 34%,var(--panel2)),var(--panel2));box-shadow:0 8px 22px -12px var(--el)}
+.op-card.own{border-color:color-mix(in srgb,var(--gold) 55%,transparent);border-bottom-color:var(--el)}
+.op-art{display:block;position:relative;min-height:120px}
+.op-art img{display:block;width:100%;height:auto}
+.op-ph{display:flex;align-items:center;justify-content:center;min-height:240px;font:600 34px var(--f-head);color:var(--mute)}
+.op-card.trial .op-art{filter:saturate(.7) brightness(.9)}
+.op-el{position:absolute;top:6px;left:6px;z-index:1}
+.op-trial{position:absolute;top:6px;right:6px;z-index:1}
+.op-plate{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 6px 9px;background:rgba(0,0,0,.35)}
+.op-nm{font:600 16px var(--f-head);color:var(--text,#fff)}
+.op-st{font-size:12px;color:var(--mute)}
+.op-note{margin:14px auto 0;color:var(--mute);font-size:15px;line-height:1.5;max-width:68ch}
+.op-rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;text-align:left}
+.op-rule{padding:14px 16px;border:1px solid var(--line);border-radius:var(--r);background:color-mix(in srgb,var(--panel2) 70%,transparent)}
+.op-rule b{display:block;margin-bottom:5px;font:600 16px var(--f-head);color:var(--gold)}
+.op-rule p{margin:0;color:var(--mute);font-size:14px;line-height:1.5}
+.op-start{display:grid;justify-items:center;gap:12px}
+.op-start .field-in{margin:0;width:auto;min-width:200px}
+.op-start .diff-line{justify-content:center;text-align:center}
+.op-start .btn{margin-top:6px;padding:12px 28px}
+.add-btn{padding:3px 14px;min-height:0;font-size:14px;background:transparent;border-color:var(--line2);color:var(--mute);box-shadow:none}
+.pool .ent.pool-ent{cursor:pointer}
+.pool .ent.pool-ent:hover .add-btn{color:var(--gold);border-color:var(--gold)}
+.add-btn.is-full{opacity:.45}
+.tagcell{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:4px;justify-self:end}
+.tagcell .tag{white-space:nowrap}
+.pool .ent.pool-ent .addcell{justify-self:end}
+.gs-wrap{margin:0 0 12px}
+.gs-head{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+.gs-head small{color:var(--mute);font-size:13px}
+.gs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.gs{position:relative;padding:0;margin:0;border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;background:linear-gradient(180deg,color-mix(in srgb,var(--el) 35%,var(--panel2)),var(--panel2));aspect-ratio:1/1.15;cursor:pointer;color:inherit;font:inherit}
+.gs:hover{border-color:var(--gold)}
+.gs-art,.gs-art img{position:absolute;inset:0;width:100%;height:100%}
+.gs-art img{object-fit:cover;object-position:center top}
+.gs-el{position:absolute;top:5px;left:5px;z-index:1}
+.gs-nm{position:absolute;left:0;right:0;bottom:0;padding:16px 4px 5px;text-align:center;font:600 14px var(--f-head);color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.78));z-index:1}
+.gs-tag{position:absolute;top:5px;right:5px;z-index:1;font:600 11px var(--f-body);padding:2px 7px;border-radius:10px;background:rgba(0,0,0,.6);color:#fff}
+.gs-tag.bor{color:var(--borrow);border:1px solid var(--borrow)}
+.gs-no{cursor:help}
+.gs-no .gs-art,.gs-no .gs-el{filter:grayscale(1);opacity:.5}
+.gs-in .gs-art,.gs-sup .gs-art{opacity:.55}
+.sup-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0 0 12px;padding:8px 10px;border:1px dashed color-mix(in srgb,var(--borrow) 70%,transparent);border-radius:var(--r);background:color-mix(in srgb,var(--borrow) 8%,transparent)}
+.sup-bar .btn{background:transparent;border-color:var(--borrow);color:var(--borrow);box-shadow:none}
+.sup-bar.sup-pick{cursor:pointer}
+.sup-bar.sup-pick:hover{border-color:var(--borrow)}
+.sup-lab{font-weight:600;color:var(--borrow)}
+.sup-none{color:var(--mute);font-size:14px;margin-right:auto}
+.sup-who{display:inline-flex;align-items:center;gap:8px;margin-right:auto;min-width:0}
+.sup-who .av{width:36px;height:36px;flex:none}
+.sup-who b{font:500 17px var(--f-head);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:900px){.op-rules{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){
+  .op-eyebrow{font-size:19px}
+  .op-eic{width:40px;height:40px}
+  .op-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .op-rules-sec{display:none}
+  .op-season{font-size:52px}
+  .gs-nm{font-size:12px}
+  .gs-tag{font-size:10px;padding:1px 5px}
+}
+
+.tc-page{margin:0 0 10px;font:600 13px var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.tocard-bottom{display:none}
+@media (max-width:700px){
+  .tocard-top{display:none}
+  .tocard-bottom{display:block;margin-top:16px}
+  .tocard-bottom .btn{display:flex;justify-content:center;align-items:center;text-align:center;width:100%;padding:14px}
+  .tagcell .tag{font-size:10px;padding:2px 6px}
+}
 </style>
 </head>
 <body>
@@ -755,18 +851,18 @@ main{padding:14px 0 60px}
       </select>
     </div>
     <div class="row">
-      <button class="btn primary" id="btnImage">Capture</button>
+      <button class="btn cap" id="btnImage">Capture</button>
       <div class="seg" id="fView" role="group" aria-label="Display"><button data-v="tall" aria-pressed="true">Display 1</button><button data-v="icon" aria-pressed="false">Display 2</button></div>
       <span class="spacer"></span>
-      <button class="btn" id="btnExport">Export data</button>
-      <button class="btn" id="btnImport">Import data</button>
       <button class="btn danger" id="btnClear">Clear data</button>
+      <button class="btn" id="btnImport">Import data</button>
+      <button class="btn" id="btnExport">Export data</button>
     </div>
   </div>
 </div>
 
 <div class="wrap" id="rosterView">
-  <div class="note" id="warn"><span id="warnTxt"></span><button class="btn" id="warnBtn">Load images from files</button></div>
+  <div class="note" id="warn"><span id="warnTxt"></span></div>
   <div class="note hint" id="hint">Tap a character to set whether you own it and its constellation. Everything is saved in this browser only.</div>
   <main id="main"></main>
 </div>
@@ -779,12 +875,12 @@ main{padding:14px 0 60px}
 <footer class="legal"><p>Genshin Roster is an unofficial fan-made tool and is not affiliated with or endorsed by HoYoverse. Genshin Impact, its characters and related assets belong to HoYoverse and their respective owners.</p></footer>
 
 </div>
-<input type="file" id="inFiles" accept="image/*" multiple hidden>
+
 <input type="file" id="inData" accept="application/json,.json" hidden>
 
 <dialog id="dlgMode"><div class="dbody">
   <div class="mode-head"><div><h3>Add team</h3><p>Pick what you want to plan. Each card shows how many teams you get and the rules that apply.</p></div><button class="btn x" data-close>Close</button></div>
-  <div class="mode-note"><span class="mode-note-ic" aria-hidden="true">i</span><p>Modes tagged <b>Owned characters only</b> (My Party, Abyss, Stygian) use the characters you mark as owned in the <b>Roster</b> tab, so set those up first. Don’t want to? Use <b>Create &amp; Share</b>, which lets you pick any character.</p></div>
+  <div class="mode-note"><span class="mode-note-ic" aria-hidden="true">i</span><p>Owned-only modes use your Roster picks. <b>Create &amp; Share</b> lets you pick any character.</p></div>
   <div class="mode-sec">Build &amp; share</div>
   <div class="modes">
     <button class="btn mode" data-mode="share"><span class="mode-top"><span class="mode-title">Create &amp; Share</span><span class="mode-lock">Added</span></span><small>Build up to 3 teams from any character, then send them to a friend as a link.</small><span class="mode-pips"><span class="pip-grid"><span class="pip-row"><i></i><i></i><i></i><i></i></span><span class="pip-row" style="opacity:.55"><i></i><i></i><i></i><i></i></span><span class="pip-row" style="opacity:.3"><i></i><i></i><i></i><i></i></span></span><span class="pips-label">1–3 teams × 4 characters</span></span><span class="mode-rules"><span class="mr yes">Any character</span><span class="mr no">No repeats across teams</span></span></button>
@@ -805,7 +901,6 @@ main{padding:14px 0 60px}
   <div class="f" style="margin-top:12px"><span class="l">Layout</span>
     <div class="seg" id="xLayout"><button data-v="tall" aria-pressed="true">Portrait (phone)</button><button data-v="wide" aria-pressed="false">Landscape</button></div></div>
   <div class="preview" id="xPrev"><p>Building image</p></div>
-  <p class="hint" id="xNote"></p>
   <div class="acts"><button class="btn primary" id="xSave">Download PNG</button></div>
 </div></dialog>
 
@@ -863,34 +958,27 @@ const THEMES = {
     r:2, chipR:999, upper:false, dotted:true }
 };
 const T = () => THEMES.celestial;
+/* colour helpers shared by the three image builders */
+const mixH=(a,b,t)=>{ const A=parseInt(a.slice(1),16), B=parseInt(b.slice(1),16), f=sh=>Math.round((A>>sh&255)*t+(B>>sh&255)*(1-t)); return `rgb(${f(16)},${f(8)},${f(0)})`; };
+const hexA=(h,a)=>{ const n=parseInt(h.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
 const elc = k => (T().el && T().el[k]) || EL[k].c;
 const WP = {sword:'Sword',claymore:'Claymore',polearm:'Polearm',bow:'Bow',catalyst:'Catalyst'};
 const WP_ORDER = ['sword','claymore','polearm','bow','catalyst'];
-const altUrl = k => `https://api.lunaris.moe/data/assets/icons/${k}.webp`;
-const wpUrl = k => `https://api.lunaris.moe/data/assets/icons/${k}.webp`;
 const wpIcon = k => { const im=imgs.get('wp:'+k); return im&&im.src ? `<img src="${esc(im.src)}" alt="">` : ''; };
-const IMG_PATTERN = 'https://api.lunaris.moe/data/assets/avataricon/UI_AvatarIcon_{id}.webp';
-const EL_PATTERN = 'https://gi.yatta.moe/assets/UI/UI_Buff_Element_{id}.png?vh=2024123000';
-const elUrl = k => EL_PATTERN.replace('{id}', EL[k].u);
-const charUrl = id => IMG_PATTERN.replace('{id}', encodeURIComponent(id));
-const cardUrl = id => `https://api.lunaris.moe/data/assets/avatarcard/UI_AvatarIcon_${encodeURIComponent(id)}_Card.webp`;
-const naUrl = id => `https://api.lunaris.moe/data/assets/namecardalpha/UI_NameCardPic_${encodeURIComponent(id)}_Alpha.png`;
 const naVar = id => { const n=imgs.get('na:'+id); return n&&n.src?`--na:url('${esc(n.src)}');`:''; };
-const ncUrl = id => `https://api.lunaris.moe/data/assets/namecardpic/UI_NameCardPic_${encodeURIComponent(id)}_P.png`;
-const gachaUrl = id => `https://api.lunaris.moe/data/assets/gachaicon/UI_Gacha_AvatarIcon_${encodeURIComponent(id)}.png`;
-/* Local copies (assets-optimized/<folder>/<character-id>.webp) are tried first; the lunaris URLs stay as a fallback. */
+/* All images come from our own repo: assets-optimized/<folder>/<character-id>.webp (no third-party hosts). */
 const ASSET = 'assets-optimized/';
-const locUrl = (dir,c) => c.id==='traveler' ? [] : [`${ASSET}${dir}/${encodeURIComponent(c.id)}.webp`];
-const charUrls  = c => [...locUrl('avataricon',c),   ...c.ids.map(charUrl)];
-const cardUrls  = c => [...locUrl('avatarcard',c),   ...c.ids.map(cardUrl)];
-const gachaUrls = c => [...locUrl('gachaicon',c),    ...c.ids.map(gachaUrl)];
-const sideUrls  = c => [...locUrl('avatarside',c),   ...c.ids.map(sideUrl)];
-const naUrls    = c => [...locUrl('namecardalpha',c),...c.ids.map(naUrl)];
-const ncUrls    = c => [...locUrl('namecardpic',c),  ...c.ids.map(ncUrl)];
-const charSrc = c => c ? (locUrl('avataricon',c)[0] || (c.ids&&c.ids[0]?charUrl(c.ids[0]):'')) : '';
-const iconLun  = k => [`${ASSET}icons_lunaris/${k}.webp`, altUrl(k)];   // black element icons (ei:) and weapon icons (wp:)
-const iconYat  = k => [`${ASSET}icons_yatta/${k}.webp`, elUrl(k)];      // coloured element icons (el:)
-const charFallback = c => c&&c.ids&&c.ids[0] ? esc(charUrl(c.ids[0])) : '';
+const locUrl = (dir,c) => [`${ASSET}${dir}/${encodeURIComponent(c.id)}.webp`];
+const charUrls  = c => locUrl('avataricon',c);
+const cardUrls  = c => locUrl('avatarcard',c);
+const gachaUrls = c => locUrl('gachaicon',c);
+const sideUrls  = c => locUrl('avatarside',c);
+const naUrls    = c => locUrl('namecardalpha',c);
+const ncUrls    = c => locUrl('namecardpic',c);
+const charSrc = c => c ? locUrl('avataricon',c)[0] : '';
+const iconLun  = k => [`${ASSET}icons_lunaris/${k}.webp`];   // black element icons (ei:) and weapon icons (wp:)
+const iconYat  = k => [`${ASSET}icons_yatta/${k}.webp`];      // coloured element icons (el:)
+const charFallback = c => '';
 const glyph = el => {
   const e = EL[el]; if(!e) return '';
   return e.t==='f'
@@ -919,8 +1007,7 @@ const F = {q:'', r5:true, r4:true, els:new Set(), wps:new Set(), status:'all', c
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const norm = s => String(s).toLowerCase().replace(/ui_avataricon_|_card|_side|\.[a-z0-9]+$/g,'').replace(/[^a-z0-9]/g,'');
-function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),2800); }
+function toast(msg){ const t=$('#toast'), dlg=document.querySelector('dialog[open]'); if(dlg&&t.parentElement!==dlg) dlg.appendChild(t); else if(!dlg&&t.parentElement!==document.body) document.body.appendChild(t); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),2800); }
 // Display order of all characters, newest first (used by every "newest first" sort, Theater lists and pickers).
 // A new character that is not listed yet is treated as newer than all listed ones until it is added at the top.
 const REL_ORDER = ["mitya", "valeriy", "vodyanitsa", "vesna", "alyosha", "odette", "sandrone", "lohen", "nicole", "prune", "linnea", "varka", "zibai", "illuga", "columbina", "durin", "jahoda", "nefer", "flins", "lauma", "aino", "ineffa", "skirk", "dahlia", "escoffier", "ifa", "iansan", "varesa", "yumemizuki-mizuki", "lan-yan", "mavuika", "citlali", "chasca", "ororon", "xilonen", "kinich", "kachina", "mualani", "emilie", "sigewinne", "sethos", "clorinde", "arlecchino", "chiori", "gaming", "xianyun", "chevreuse", "navia", "charlotte", "furina", "wriothesley", "neuvillette", "freminet", "lynette", "lyney", "kirara", "kaveh", "baizhu", "mika", "dehya", "yaoyao", "alhaitham", "the-wanderer", "faruzan", "layla", "nahida", "nilou", "cyno", "candace", "dori", "collei", "tighnari", "shikanoin-heizou", "kuki-shinobu", "yelan", "kamisato-ayato", "yae-miko", "shenhe", "yun-jin", "gorou", "arataki-itto", "thoma", "sangonomiya-kokomi", "raiden-shogun", "kujou-sara", "aloy", "yoimiya", "sayu", "kamisato-ayaka", "kaedehara-kazuha", "eula", "yanfei", "rosaria", "hu-tao", "xiao", "ganyu", "albedo", "zhongli", "xinyan", "tartaglia", "diona", "venti", "klee", "keqing", "qiqi", "mona", "diluc", "jean", "xiangling", "xingqiu", "ningguang", "chongyun", "beidou", "sucrose", "razor", "noelle", "fischl", "bennett", "barbara", "lisa", "kaeya", "amber"];
@@ -958,6 +1045,7 @@ function setImg(key, src, kind){
   if(key.startsWith('s:')){ const sid=key.slice(2); document.querySelectorAll(`[data-side="${CSS.escape(sid)}"]`).forEach(n=>{ n.innerHTML=sideImgHtml(sid); }); return; }
   if(key.startsWith('el:')||key.startsWith('wp:')||key.startsWith('ei:')){ clearTimeout(chromeT); chromeT=setTimeout(()=>{ buildChips(); render(); if(S.tab==='lineups' && !document.querySelector('#lineupView input:focus')) renderLineups(); if(typeof renderShareView==='function') renderShareView(); },120); return; }
   const id=key.startsWith('g:')?key.slice(2):key.startsWith('card:')?key.slice(5):key.startsWith('nc:')?key.slice(3):key;
+  if(key.startsWith('card:')||key.startsWith('g:')||!key.includes(':')){ const q=CSS.escape(id); if(key.startsWith('card:')||!key.includes(':')) document.querySelectorAll(`[data-gcard="${q}"]`).forEach(n=>{ n.innerHTML=gcardImgHtml(id); }); if(!key.startsWith('card:')) document.querySelectorAll(`[data-gacha="${q}"]`).forEach(n=>{ n.innerHTML=gachaImgHtml(id); }); }
   if(!key.startsWith('card:')){ const p=document.querySelector(`[data-card="${CSS.escape(id)}"] .portrait`); if(p) p.innerHTML=picHtml(id); }
   document.querySelectorAll(`.party-art[data-party-art="${CSS.escape(id)}"]`).forEach(n=>{ n.innerHTML=partyArtInner(id, n.dataset.el||''); });
   document.querySelectorAll(`[data-party-pick-avatar="${CSS.escape(id)}"]`).forEach(n=>{ n.innerHTML=partyPickerAvatarInner(id); });
@@ -1029,18 +1117,9 @@ function queueElements(){ WP_ORDER.forEach(k=>queue.unshift({key:'wp:'+k, urls:i
 
 function updateNote(){
   const w=$('#warn');
-  let fails=0, remote=0;
-  SEED.forEach(c=>{
-    const g=imgs.get('g:'+c.id), a=imgs.get(c.id), tallArt=S.view==='tall';
-    const im=(tallArt&&g&&g.src)?g:(a||(tallArt?g:null));
-    if(!im) return; if(im.kind==='fail') fails++; else if(im.kind==='remote') remote++;
-  });
   let txt='';
   if(!storageOK) txt='This browser will not keep data between visits. Use Export data to keep a copy before you close the page.';
-  else if(running===0 && fails) txt=`${fails} portrait${fails>1?'s':''} could not be loaded and show a colored card instead.`;
-  else if(running===0 && remote) txt=`${remote} portrait${remote>1?'s are':' is'} shown from the web but cannot be copied into saved images.`;
   $('#warnTxt').textContent=txt;
-  $('#warnBtn').style.display = (running===0 && (fails||remote)) ? '' : 'none';
   w.classList.toggle('show', !!txt);
   $('#hint').classList.toggle('show', Object.keys(S.owned).length===0);
 }
@@ -1210,24 +1289,6 @@ $('#btnClear').onclick=()=>{
   S.owned={}; S.refine={}; persist(); render(); if(S.tab==='lineups') renderLineups(); toast('Roster data cleared');
 };
 
-/* ---------- load portraits from local files (fallback) ---------- */
-async function shrink(file,size=256){
-  const bmp=await createImageBitmap(file), cv=document.createElement('canvas'); cv.width=cv.height=size;
-  const s=Math.max(size/bmp.width,size/bmp.height), w=bmp.width*s, h=bmp.height*s;
-  cv.getContext('2d').drawImage(bmp,(size-w)/2,(size-h)*0.25,w,h);
-  return new Promise(res=>cv.toBlob(res,'image/png'));
-}
-$('#warnBtn').onclick=()=>$('#inFiles').click();
-$('#inFiles').onchange=async e=>{
-  const files=[...e.target.files]; e.target.value=''; const all=chars(); let n=0;
-  for(const f of files){
-    if(!f.type.startsWith('image/')) continue; const key=norm(f.name); if(!key) continue;
-    const c=all.find(c=>c.ids.some(i=>norm(i)===key)||norm(c.name)===key); if(!c) continue;
-    try{ const b=await shrink(f); await idbPut(c.id,b); setImg(c.id,URL.createObjectURL(b),'blob'); n++; }catch(err){}
-  }
-  updateNote(); toast(n?`Matched ${n} image${n>1?'s':''}`:'No file names matched a character');
-};
-
 /* ---------- save as image ---------- */
 const X={layout:'tall',blob:null,url:null};
 $('#xLayout').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; $('#xLayout').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)); X.layout=b.dataset.v; buildPreview(); });
@@ -1289,10 +1350,8 @@ async function buildExport(){
   const scale=Math.min(1.5,Math.sqrt(13e6/(W*H)));
   const cv=document.createElement('canvas'); cv.width=Math.round(W*scale); cv.height=Math.round(H*scale);
   const ctx=cv.getContext('2d'); ctx.scale(scale,scale);
-  const mixH=(a,b,t)=>{ const A=parseInt(a.slice(1),16), B=parseInt(b.slice(1),16), f=sh=>Math.round((A>>sh&255)*t+(B>>sh&255)*(1-t)); return `rgb(${f(16)},${f(8)},${f(0)})`; };
   const ell=(cx,cy,rx,ry,stops,x,y,w,h)=>{ const k=rx/ry; ctx.save(); ctx.translate(cx,cy); ctx.scale(1,1/k); const g=ctx.createRadialGradient(0,0,0,0,0,rx); stops.forEach(([o,c])=>g.addColorStop(o,c)); ctx.fillStyle=g; ctx.fillRect(x-cx,(y-cy)*k,w,h*k); ctx.restore(); };
   const TEXT=T0.text, MUTE=T0.mute, GOLD=T0.gold, VIOLET=T0.violet, LINE=T0.line, LINE2=T0.line2, R=T0.r, cel=T0.id==='celestial';
-  const hexA=(h,a)=>{ const n=parseInt(h.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
   const sp=v=>{ if('letterSpacing' in ctx) ctx.letterSpacing=v; };
   const fillR=(x,y,w,h,r)=>{ if(r>0){ rr(ctx,x,y,w,h,Math.min(r,h/2,w/2)); ctx.fill(); } else ctx.fillRect(x,y,w,h); };
   const strokeR=(x,y,w,h,r)=>{ if(r>0){ rr(ctx,x,y,w,h,Math.max(0,Math.min(r,h/2,w/2))); ctx.stroke(); } else ctx.strokeRect(x,y,w,h); };
@@ -1310,7 +1369,7 @@ async function buildExport(){
     ctx.strokeStyle='rgba(190,180,255,.22)'; ctx.lineWidth=1; strokeR(16.5,16.5,W-33,H-33,22);
     [[16,16],[W-16,16],[16,H-16],[W-16,H-16]].forEach(([x,y])=>star4(x,y,8,GOLD));
   }
-  // images: tinted lunaris silhouettes first, official colour icons as fallback
+  // images: tinted black silhouettes first, coloured icons as fallback (both local)
   const elImgs=new Map();
   await Promise.all(EL_ORDER.map(async k=>{
     const ei=imgs.get('ei:'+k);
@@ -1401,14 +1460,14 @@ async function buildExport(){
 }
 let prevTok=0;
 async function buildPreview(){
-  const tok=++prevTok, box=$('#xPrev'); box.innerHTML='<p>Building image</p>'; $('#xNote').textContent='';
+  const tok=++prevTok, box=$('#xPrev'); box.innerHTML='<p>Building image</p>';
   try{
     if(!Object.keys(S.owned).length){ X.blob=null; box.innerHTML='<p>Nothing to show yet. Mark the characters you own first.</p>'; return; }
     for(let i=0;i<100 && (running>0||queue.length);i++) await new Promise(r=>setTimeout(r,150));
     const {blob,missing}=await buildExport(); if(tok!==prevTok) return;
     X.blob=blob; if(X.url) URL.revokeObjectURL(X.url); X.url=URL.createObjectURL(blob);
     box.innerHTML=`<img src="${X.url}" alt="Roster preview">`;
-    $('#xNote').textContent = missing ? `${missing} owned character${missing>1?'s have':' has'} no portrait in this image because the browser blocks images from other sites. Use "Load images from files" at the top of the page.` : '';
+
   }catch(err){ box.innerHTML='<p>Could not build the image. Try again.</p>'; }
 }
 $('#xSave').onclick=()=>{ if(X.blob) download(X.blob,'genshin-roster.jpg'); };
@@ -1418,7 +1477,10 @@ const DIFF = {easy:{n:'Easy',min:8,max:10},normal:{n:'Normal',min:12,max:14},har
 const ROLES = {dps:'On-Field DPS',dmg:'Damage Support',sus:'Support & Sustain'};
 const ROLE_SHORT = {dps:'DPS',dmg:'DMG',sus:'SUP'};
 const ROLE_C = {dps:'#ff4f6d',dmg:'#ff9a3c',sus:'#4fc3ff'};
-const MAX_GUESTS = 4;
+/* Season data (updated by hand each month). Opening = 6 characters, Guests = 4 special guest characters. */
+const SEASON = {no:29, from:'Nov 1, 2026', to:'Dec 1, 2026',
+  opening:['yelan','aino','flins','fischl','zhongli','kachina'],
+  guests:['qiqi','odette','vesna','jahoda']};
 const TRAV = {id:'traveler',name:'Traveler',rar:5,el:'',ids:['PlayerBoy']};
 const PARTY_MODES = {
   myparty:{label:'My Party',badge:'OWNED CHARACTERS',rule:'Owned characters. Repeats allowed across teams',source:'owned',noRepeats:false,teamNames:null,defaultName:'My Party'},
@@ -1429,25 +1491,18 @@ const PARTY_MODES = {
 const teamLabel=(mode,team,ti)=> mode.flex ? ((team&&team.name)||('Team '+(ti+1))) : (mode.teamNames?mode.teamNames[ti]:mode.label);
 const isPartyType = type => Object.prototype.hasOwnProperty.call(PARTY_MODES,type);
 const SINGLETON_LINEUP_TYPES = new Set(['abyss','stygian','theater']);
-const sideUrl = id => `https://api.lunaris.moe/data/assets/avatarside/UI_AvatarIcon_Side_${encodeURIComponent(id)}.webp`;
+const MULTI_TYPES = new Set(['share','myparty']), MULTI_MAX = 10;
 const UIS = {};
 const uiOf = id => UIS[id] || (UIS[id] = {fold:false, edit:false, tf:{els:new Set(),wps:new Set(),roles:new Set()}});
 const newPickerFilters=()=>({q:'', r5:true, r4:true, els:new Set(), wps:new Set(), status:'all', c:'all'});
-const PARTY_PICKER = {luId:'',team:0,slot:0,f:newPickerFilters(),sort:'verDesc'};
+const PARTY_PICKER = {sup:false,luId:'',team:0,slot:0,f:newPickerFilters(),sort:'verDesc'};
 const byIdAll = id => id==='traveler' ? {...TRAV, lvl:6, ref:0, ord:9999} : (chars().find(c=>c.id===id) || null);
 function sideImgHtml(id){
   const im=imgs.get('s:'+id), c=byIdAll(id);
   return im&&im.src ? `<img src="${esc(im.src)}" alt="">` : esc((c?c.name:'?').trim().charAt(0));
 }
-function resolveName(txt, mode){
-  const t=String(txt||'').trim().toLowerCase(); if(!t) return '';
-  if(mode==='owned' && t==='traveler') return 'traveler';
-  const cs=chars().filter(c=>mode!=='owned'||c.lvl!==undefined);
-  const ex=cs.find(c=>c.name.toLowerCase()===t); if(ex) return ex.id;
-  const p=cs.filter(c=>c.name.toLowerCase().startsWith(t)); return p.length===1 ? p[0].id : '';
-}
 function newTheater(){
-  return {id:'lu'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), type:'theater', name:'Imaginarium Theater', diff:'lunar', stage:'setup', opening:['','','','','',''], guests:[], support:'', supLink:-1, list:[]};
+  return {id:'lu'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), type:'theater', name:'Imaginarium Theater', diff:'lunar', stage:'open', season:SEASON.no, list:SEASON.opening.map(id=>({id,el:'',role:null,borrowed:false,kind:'open'}))};
 }
 function newParty(type){
   if(!isPartyType(type)) return null;
@@ -1495,7 +1550,8 @@ function partySlotHtml(lu, ti, si, slot, duplicates){
 }
 function shareBarHtml(lu){
   const n=lu.teams.length, any=lu.teams.some(t=>t.slots.some(Boolean));
-  return `<div class="share-bar"><div class="share-grp"><button type="button" class="btn" data-act="share-addteam" ${n>=3?'disabled':''}>+ Add team</button><button type="button" class="btn" data-act="share-delteam" ${n<=1?'disabled':''}>Remove last team</button></div><div class="share-grp"><button type="button" class="btn primary" data-act="share-link" ${any?'':'disabled'}>Copy link</button><button type="button" class="btn" data-act="share-text" ${any?'':'disabled'}>Copy as text</button><button type="button" class="btn" data-act="share-capture" ${any?'':'disabled'}>Capture</button></div></div>`;
+  if(!PARTY_MODES[lu.type].flex) return `<div class="share-bar"><div class="share-grp"><button type="button" class="btn cap" data-act="share-capture" ${any?'':'disabled'}>Capture</button></div></div>`;
+  return `<div class="share-bar"><div class="share-grp"><button type="button" class="btn" data-act="share-addteam" ${n>=3?'disabled':''}>+ Add team</button><button type="button" class="btn" data-act="share-delteam" ${n<=1?'disabled':''}>Remove last team</button></div><div class="share-grp"><button type="button" class="btn primary" data-act="share-link" ${any?'':'disabled'}>Copy link</button><button type="button" class="btn" data-act="share-text" ${any?'':'disabled'}>Copy as text</button><button type="button" class="btn cap" data-act="share-capture" ${any?'':'disabled'}>Capture</button></div></div>`;
 }
 /* ---- share links: #s1=<team>.<team>  (team = 4 tokens x 2 chars; token = character list position, _0..._6 = Traveler + element, __ = empty) ---- */
 const SHARE_ALPHA='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -1565,16 +1621,30 @@ function partyHtml(lu){
   const counts=new Map();
   teams.forEach((t,ti)=>(t.slots||[]).forEach(s=>{ if(s&&s.id){ const row=counts.get(s.id)||[]; row.push(teamLabel(mode,t,ti)); counts.set(s.id,row); } }));
   const multiple=teams.length>1;
-  return `<div class="party-board"><div class="party-progress"><strong>${filled}/${max}</strong><span>${multiple?'characters assigned across '+teams.length+' teams':'characters in team'}</span><span class="party-rule">${esc(mode.rule)}</span></div>${teams.map((team,ti)=>`<section class="party-team">${multiple?`<header class="party-team-head"><h3>${esc(teamLabel(mode,team,ti))}</h3><span>${(team.slots||[]).filter(Boolean).length}/4 members</span></header>`:''}<div class="party-slots">${(team.slots||[]).map((slot,si)=>partySlotHtml(lu,ti,si,slot,new Set())).join('')}</div></section>`).join('')}${mode.flex?shareBarHtml(lu):''}</div>`;
+  return `<div class="party-board"><div class="party-progress"><strong>${filled}/${max}</strong><span>${multiple?'characters assigned across '+teams.length+' teams':'characters in team'}</span><span class="party-rule">${esc(mode.rule)}</span></div>${teams.map((team,ti)=>`<section class="party-team">${multiple?`<header class="party-team-head"><h3>${esc(teamLabel(mode,team,ti))}</h3><span>${(team.slots||[]).filter(Boolean).length}/4 members</span></header>`:''}<div class="party-slots">${(team.slots||[]).map((slot,si)=>partySlotHtml(lu,ti,si,slot,new Set())).join('')}</div></section>`).join('')}${shareBarHtml(lu)}</div>`;
 }
-function openPartyPicker(lu, team, slot){
-  PARTY_PICKER.luId=lu.id; PARTY_PICKER.team=team; PARTY_PICKER.slot=slot; PARTY_PICKER.f.q=''; // element, weapon, rarity and sort stay as the user left them
+function openPartyPicker(lu, team, slot, sup){
+  PARTY_PICKER.sup=!!sup; PARTY_PICKER.luId=lu.id; PARTY_PICKER.team=team; PARTY_PICKER.slot=slot; PARTY_PICKER.f.q=''; // element, weapon, rarity and sort stay as the user left them
   buildPartyFilters();
   const dlg=$('#dlgPartyPicker'); if(dlg && typeof dlg.showModal==='function') dlg.showModal(); else if(dlg) dlg.setAttribute('open','');
   renderPartyPicker(); syncPartyPickerFilters();
 }
+function renderSupPicker(lu){
+  const open=new Set(lu.list.filter(e=>e.kind==='open').map(e=>e.id)), cur=(lu.list.find(e=>e.borrowed)||{}).id;
+  const candidates=filterSort(chars(), PARTY_PICKER.f, PARTY_PICKER.sort);
+  const tile=c=>{
+    const dis=open.has(c.id);
+    return `<button type="button" class="card r${c.rar} party-pick-card${c.id===cur?' picked':''}" data-pick-char="${esc(c.id)}" ${dis?'disabled title="Opening characters cannot be invited"':''} style="--el:${elc(c.el||'anemo')}" aria-label="${esc(c.name)}"><span class="portrait" data-party-pick-avatar="${esc(c.id)}">${partyPickerAvatarInner(c.id)}</span><span class="nm" title="${esc(c.name)}" style="display:block">${esc(c.name)}</span></button>`;
+  };
+  const bt=$('#btnAddTraveler'); if(bt) bt.style.display='none';
+  const grid=$('#partyPickerGrid'); if(grid) grid.innerHTML=candidates.map(tile).join('')||'<p class="party-no-results">No characters match these filters.</p>';
+  const title=$('#partyPickerTitle'); if(title) title.textContent='Choose invited character';
+  const summary=$('#partyPickerSummary'); if(summary) summary.textContent=`${candidates.length} characters shown. Pick the one you invite from a friend. Opening characters and Traveler cannot be chosen.`;
+  queuePartyPickerImages(candidates);
+}
 function renderPartyPicker(){
-  const lu=S.lineups.find(x=>x.id===PARTY_PICKER.luId); if(!lu||!isPartyType(lu.type)) return;
+  const lu=S.lineups.find(x=>x.id===PARTY_PICKER.luId); if(lu&&PARTY_PICKER.sup&&lu.type==='theater') return renderSupPicker(lu);
+  if(!lu||!isPartyType(lu.type)) return;
   const mode=PARTY_MODES[lu.type];
   const team=lu.teams[PARTY_PICKER.team], slotIndex=PARTY_PICKER.slot;
   const pool=chars().filter(c=>mode.source==='all'||c.lvl!==undefined);
@@ -1588,7 +1658,7 @@ function renderPartyPicker(){
     return `<button type="button" class="card r${c.rar} party-pick-card" data-pick-char="${esc(c.id)}" ${disabled?'disabled':''} style="--el:${elc(c.el||'anemo')}" aria-label="${esc(c.name)}">${avatar}${name}</button>`;
   };
   const travelerElsewhere=team.slots.some((s,i)=>i!==slotIndex&&s&&s.id==='traveler');
-  const btnTraveler=$('#btnAddTraveler'); if(btnTraveler){ btnTraveler.disabled=travelerElsewhere; btnTraveler.title=travelerElsewhere?'Traveler is already in this party.':'Choose Traveler\u2019s element'; }
+  const btnTraveler=$('#btnAddTraveler'); if(btnTraveler){ btnTraveler.style.display=''; btnTraveler.disabled=travelerElsewhere; btnTraveler.title=travelerElsewhere?'Traveler is already in this party.':'Choose Traveler\u2019s element'; }
   const grid=$('#partyPickerGrid'); if(grid) grid.innerHTML=candidates.map(tile).join('')||'<p class="party-no-results">No characters match these filters.</p>';
   const title=$('#partyPickerTitle'); if(title) title.textContent='Choose a character';
   const summary=$('#partyPickerSummary'); if(summary) summary.textContent=`${candidates.length} characters shown. Traveler is available separately.`;
@@ -1629,10 +1699,11 @@ function cleanLineups(arr){
   if(!Array.isArray(arr)) return [];
   const known=new Set(SEED.map(c=>c.id)); known.add('traveler');
   const roles=new Set(['dps','dmg','sus']), kinds=new Set(['open','guest','support','extra']);
-  const seenSingletons=new Set();
+  const seenSingletons=new Set(); let multiN=0;
   return arr.filter(x=>{
     if(!x||(x.type!=='theater'&&x.type!=='createparty'&&!isPartyType(x.type))) return false;
     if(SINGLETON_LINEUP_TYPES.has(x.type)){ if(seenSingletons.has(x.type)) return false; seenSingletons.add(x.type); }
+    if(MULTI_TYPES.has(x.type)&&++multiN>MULTI_MAX) return false;
     return true;
   }).slice(0,200).map(x=>{
     const id=String(x.id||'').replace(/[^\w-]/g,'').slice(0,24)||('lu'+Math.random().toString(36).slice(2,8));
@@ -1642,163 +1713,93 @@ function cleanLineups(arr){
       const teams=expected.map((name,ti)=>{ const input=incoming[ti], slots=Array.isArray(input&&input.slots)?input.slots:[]; return {name:String((input&&input.name)||name).slice(0,40), slots:Array.from({length:4},(_,si)=>{ const slot=slots[si]; if(!slot||!known.has(slot.id)) return null; return slot.id==='traveler'?{id:'traveler',el:EL[slot.el]?slot.el:''}:{id:slot.id}; })}; });
       return {id, type:x.type, name:String(x.name||mode.defaultName).slice(0,50), teams};
     }
-    let seenB=false;
-    const list=(Array.isArray(x.list)?x.list:[]).filter(e=>e&&known.has(e.id)).slice(0,32).map(e=>{
-      const kind=kinds.has(e.kind)?e.kind:'extra';
-      let borrowed=(kind==='support')||(kind==='guest'&&!!e.borrowed);
-      if(borrowed){ if(seenB) borrowed=false; seenB=true; }
-      return {id:e.id,el:EL[e.el]?e.el:'',role:roles.has(e.role)?e.role:null,borrowed,kind};
+    const inList=Array.isArray(x.list)?x.list:[], prevRole=new Map(inList.filter(e=>e&&typeof e.id==='string').map(e=>[e.id,e.role]));
+    const seasonEls=[...new Set(SEASON.opening.map(i=>(SEED.find(c=>c.id===i)||{}).el).filter(Boolean))];
+    const seen=new Set(SEASON.opening), rest=[]; let seenB=false;
+    const open=SEASON.opening.map(i=>({id:i,el:'',role:roles.has(prevRole.get(i))?prevRole.get(i):null,borrowed:false,kind:'open'}));
+    inList.forEach(e=>{
+      if(!e||!known.has(e.id)||seen.has(e.id)) return; seen.add(e.id);
+      let borrowed=!!e.borrowed||e.kind==='support'; if(borrowed){ if(seenB||e.id==='traveler') borrowed=false; else seenB=true; }
+      let kind=kinds.has(e.kind)?e.kind:'extra'; if(kind==='open') kind='extra';
+      if(kind==='guest'&&!SEASON.guests.includes(e.id)) kind='extra';
+      if(kind==='support'&&!borrowed) kind='extra';
+      let el=EL[e.el]?e.el:''; if(e.id==='traveler'&&!seasonEls.includes(el)) el=seasonEls[0]||'';
+      rest.push({id:e.id,el,role:roles.has(e.role)?e.role:null,borrowed,kind,...(borrowed&&kind!=='support'&&e.rep?{rep:true}:{})});
     });
-    const guests=(Array.isArray(x.guests)?x.guests:[]).slice(0,MAX_GUESTS).map(s=>String(s).slice(0,40));
+    const list=open.concat(rest).slice(0,32);
     return {
       id, type:'theater', name:String(x.name||'Imaginarium Theater').slice(0,50),
-      diff:DIFF[x.diff]?x.diff:'lunar', stage:(['plan','card'].includes(x.stage)&&list.length)?x.stage:'setup',
-      opening:Array.from({length:6},(_,i)=>String((x.opening||[])[i]||'').slice(0,40)),
-      guests, support:String(x.support||'').slice(0,40),
-      supLink:(Number.isInteger(x.supLink)&&x.supLink>=0&&x.supLink<guests.length)?x.supLink:-1, list
+      diff:DIFF[x.diff]?x.diff:'lunar', stage:['open','plan','card'].includes(x.stage)?x.stage:'open',
+      season:SEASON.no, list
     };
   });
-}
-/* validation of the setup step (works on the typed names) */
-function vSetup(lu){
-  const d=DIFF[lu.diff]||DIFF.lunar, bad=[], ask=[], flag=new Set(), todo=new Set();
-  const openIds=lu.opening.map(r=>resolveName(r,'all'));
-  lu.opening.forEach((r,i)=>{ const s=r.trim(); if(s && !openIds[i]) flag.add('open:'+i), bad.push(s.toLowerCase()==='traveler' ? 'Traveler cannot be an opening character.' : `Opening ${i+1}: "${s}" is not a character.`); });
-  const fOpen=openIds.filter(Boolean);
-  if(new Set(fOpen).size!==fOpen.length){ openIds.forEach((id,i)=>{ if(id && openIds.filter(x=>x===id).length>1) flag.add('open:'+i); }); bad.push('Each opening character must be different.'); }
-  const els=[...new Set(fOpen.map(id=>byIdAll(id).el))].sort((a,b)=>EL_ORDER.indexOf(a)-EL_ORDER.indexOf(b));
-  if(!bad.length){
-    if(fOpen.length<6) bad.push(`Fill all 6 opening characters (${fOpen.length} of 6).`);
-    else if(els.length!==3) bad.push(`The 6 opening characters must cover exactly 3 elements (found ${els.length}).`);
-  }
-  if(lu.guests.map(r=>r.trim()).filter(Boolean).length>MAX_GUESTS) bad.push(`You can add up to ${MAX_GUESTS} special guest stars.`);
-  const guestIds=[]; let linkedId='';
-  lu.guests.forEach((r,i)=>{
-    const s=r.trim(); if(!s) return;
-    let id=resolveName(s,'owned'), borrowed=(i===lu.supLink);
-    if(!id){
-      const any=resolveName(s,'all');
-      if(any && borrowed){ id=any; }
-      else if(any){ const nm=byIdAll(any).name; flag.add('guest:'+i); bad.push(`"${nm}" is not in your roster.`); ask.push({i,name:nm}); return; }
-      else { flag.add('guest:'+i); bad.push(`Guest "${s}" is not a character.`); return; }
-    }
-    const nm=byIdAll(id).name;
-    if(fOpen.includes(id)||guestIds.includes(id)) flag.add('guest:'+i);
-    if(fOpen.includes(id)) bad.push(`"${nm}" is already in the Opening list.`);
-    else if(guestIds.includes(id)) bad.push(`"${nm}" is listed twice in the guest list.`);
-    else { guestIds.push(id); if(borrowed) linkedId=id; }
-  });
-  let supId='';
-  if(lu.supLink>=0){
-    if(!linkedId) flag.add('guest:'+lu.supLink), bad.push('The guest linked to the supporting cast needs a valid name.');
-  } else {
-    const ss=(lu.support||'').trim();
-    if(ss){
-      if(ss.toLowerCase()==='traveler') flag.add('sup:0'), bad.push('Traveler cannot be the supporting cast.');
-      else {
-        supId=resolveName(ss,'all');
-        if(!supId) flag.add('sup:0'), bad.push(`Supporting cast "${ss}" is not a character.`);
-        else { const nm=byIdAll(supId).name; if(fOpen.includes(supId)||guestIds.includes(supId)) flag.add('sup:0'); if(fOpen.includes(supId)) bad.push(`"${nm}" is already in the Opening list.`); else if(guestIds.includes(supId)) bad.push(`"${nm}" is already in the guest list.`); }
-      }
-    }
-  }
-  const total=fOpen.length+guestIds.length+(supId?1:0);
-  if(total>d.max) bad.push(`That is ${total} characters, but ${d.n} mode allows up to ${d.max}.`);
-  bad.forEach(m=>{ if(/^Fill all 6|^The 6 opening/.test(m)) todo.add(m); });
-  return {err:bad, flag, todo, ask, ok:bad.length===0, els, openIds:fOpen, guestIds, linkedId, supId, total, d};
-}
-function generateList(lu){
-  const v=vSetup(lu); if(!v.ok) return false;
-  const prev=new Map((lu.list||[]).map(e=>[e.id,e]));
-  const mk=(id,kind,borrowed)=>{ const p=prev.get(id); return {id, el:id==='traveler'?((p&&v.els.includes(p.el))?p.el:v.els[0]):'', role:p?p.role:null, borrowed:!!borrowed, kind}; };
-  const list=[];
-  v.openIds.forEach(id=>list.push(mk(id,'open',false)));
-  v.guestIds.forEach(id=>list.push(mk(id,'guest',id===v.linkedId)));
-  if(v.supId) list.push(mk(v.supId,'support',true));
-  (lu.list||[]).forEach(e=>{
-    if(e.kind!=='extra' || list.some(x=>x.id===e.id)) return;
-    const c=byIdAll(e.id); if(!c) return;
-    const el=e.id==='traveler'?e.el:c.el;
-    if(e.id!=='traveler' && c.lvl===undefined) return;
-    if(!v.els.includes(el)) return;
-    list.push({...e, el, borrowed:false});
-  });
-  lu.list=list.slice(0,v.d.max); lu.stage='plan'; return true;
 }
 const elsOf = lu => [...new Set(lu.list.filter(e=>e.kind==='open').map(e=>{ const c=byIdAll(e.id); return c?c.el:''; }).filter(Boolean))].sort((a,b)=>EL_ORDER.indexOf(a)-EL_ORDER.indexOf(b));
 function diffDesc(lu){ const d=DIFF[lu.diff]||DIFF.lunar; return `Add at least ${d.min} characters to start the show. You can add up to ${d.max}; every character beyond the minimum gives you a buff when the show starts. You can invite 1 Supporting Cast character.`; }
 function diffLineHtml(lu){ const d=DIFF[lu.diff]||DIFF.lunar; return `<span class="dl"><b>${d.min}</b>minimum</span><span class="dl"><b>${d.max}</b>maximum</span><span class="dl">Extra characters give buffs</span><details class="diff-more"><summary>Full rules</summary><p>${esc(diffDesc(lu))}</p></details>`; }
-function statusHtml(v){
-  let h='';
-  if(v.els.length) h+=`<div>${v.els.map(k=>`<span class="els" style="--el:${elc(k)}"><span class="sico">${elIcon(k)}</span>${EL[k].n}</span>`).join('')}</div>`;
-  h+='<ul class="st-list">'+(v.err.length
-    ? v.err.map(m=>`<li class="${v.todo.has(m)?'todo':'err'}"><i aria-hidden="true"></i><span>${esc(m)}</span></li>`).join('')
-    : `<li class="ok"><i aria-hidden="true"></i><span>Ready. The list will start with ${v.total} of ${v.d.min} needed (up to ${v.d.max}).</span></li>`)+'</ul>';
-  h+=v.ask.map(a=>`<div class="ask"><span>Is <b>${esc(a.name)}</b> your Supporting cast, borrowed from a friend?</span><button class="btn" data-act="linkyes" data-i="${a.i}">Yes, borrow it</button><button class="btn" data-act="linkno" data-i="${a.i}">No, clear it</button></div>`).join('');
-  return h;
+/* ---- opening page (first page of a Theater) ---- */
+const gachaImgHtml = id => { const im=imgs.get('g:'+id)||imgs.get(id), c=byIdAll(id); return im&&im.src ? `<img src="${esc(im.src)}" alt="" draggable="false">` : `<span class="op-ph">${esc((c?c.name:'?').trim().charAt(0))}</span>`; };
+const gcardImgHtml = id => { const im=imgs.get('card:'+id)||imgs.get(id), c=byIdAll(id); return im&&im.src ? `<img src="${esc(im.src)}" alt="" draggable="false">` : `<span class="op-ph">${esc((c?c.name:'?').trim().charAt(0))}</span>`; };
+function queueGacha(id){
+  const key='g:'+id; if(imgs.has(key)||queue.some(q=>q.key===key)) return;
+  const c=SEED.find(x=>x.id===id); if(c){ queue.unshift({key,urls:gachaUrls(c),shrink:{h:800}}); pump(); }
 }
-/* name suggestions that leave out names already used in another part of the same team */
-function optionsFor(lu){
-  const nrm=s=>String(s||'').trim().toLowerCase();
-  const openN=new Set(lu.opening.map(nrm).filter(Boolean)), guestN=new Set(lu.guests.map(nrm).filter(Boolean)), supN=nrm(lu.support);
-  const all=SEED.map(c=>c.name), owned=chars().filter(c=>c.lvl!==undefined).map(c=>c.name).concat('Traveler');
-  const opt=a=>a.map(n=>`<option value="${esc(n)}">`).join('');
-  return {
-    open:opt(all.filter(n=>!guestN.has(nrm(n)) && nrm(n)!==supN)),
-    guest:opt(owned.filter(n=>!openN.has(nrm(n)) && nrm(n)!==supN)),
-    sup:opt(all.filter(n=>!openN.has(nrm(n)) && !guestN.has(nrm(n))))
-  };
+const OP_RULES=[
+  ['Principal Cast','The pool you can send into battle right away. It starts with the six Opening characters.'],
+  ['Alternate Cast','Cannot be used directly. They join the Principal Cast through Combat Events, Companion Events and other methods. Only characters of the season\u2019s three elements qualify.'],
+  ['Special Guest Stars','Four characters who don\u2019t need to match the season\u2019s elements. You must own them, or invite them.'],
+  ['Invited character','A character a friend offers you. Pick one on the team page; it replaces your own copy if you already have that character.'],
+  ['Vigor','Every character starts with 2 Vigor and loses 1 after each Combat Event. At 0 they can no longer fight.'],
+  ['Monthly reset','The Theater resets on the 1st of every month, with new challenges and new element requirements.']
+];
+function openHtml(lu){
+  const open=lu.list.filter(e=>e.kind==='open'), els=[];
+  open.forEach(e=>{ const c=byIdAll(e.id); if(c&&!els.includes(c.el)) els.push(c.el); });
+  const nOwn=open.filter(e=>{ const c=byIdAll(e.id); return c&&c.lvl!==undefined; }).length;
+  const cards=open.map(e=>{
+    const c=byIdAll(e.id); if(!c) return '';
+    const own=c.lvl!==undefined;
+    return `<li class="op-card ${own?'own':'trial'}" style="--el:${elc(c.el)}"><span class="op-art" data-gacha="${esc(c.id)}">${gachaImgHtml(c.id)}</span><span class="eli op-el">${elIcon(c.el)}</span>${own?'':'<span class="tag tag-trial op-trial">Trial</span>'}<span class="op-plate"><b class="op-nm">${esc(c.name)}</b><span class="op-st">${own?'Owned':'Trial version'}</span></span></li>`;
+  }).join('');
+  const ev=els.map((k,i)=>`--e${i+1}:${elc(k)};`).join('');
+  return `<div class="op">
+    <div class="op-hero" style="${ev}">
+      <span class="op-eyebrow">Imaginarium Theater</span>
+      <div class="op-season"><small>Season</small>${SEASON.no}</div>
+      <div class="op-dates">${esc(SEASON.from)} \u2013 ${esc(SEASON.to)}</div>
+      <div class="op-els">${els.map(k=>`<span class="op-eic" style="--el:${elc(k)}" title="${EL[k].n}">${elIcon(k)}</span>`).join('')}</div>
+    </div>
+    <section class="op-sec"><h3 class="op-h">Opening characters</h3><p class="op-sub">${nOwn} of 6 owned</p><ol class="op-grid">${cards}</ol>
+      <p class="op-note">These six start every run. Each one you own gets +20% Max HP, ATK and DEF for the whole season, inside and outside the Theater. Any you don\u2019t own join as Trial characters.</p></section>
+    <section class="op-sec op-rules-sec"><h3 class="op-h">How it works</h3><div class="op-rules">${OP_RULES.map(([t,x])=>`<div class="op-rule"><b>${t}</b><p>${x}</p></div>`).join('')}</div></section>
+    <section class="op-sec op-start"><h3 class="op-h">Difficulty</h3>
+      <select class="field-in" data-act="diff" aria-label="Difficulty">${Object.entries(DIFF).map(([k,v])=>`<option value="${k}" ${k===lu.diff?'selected':''}>${v.n} mode</option>`).join('')}</select>
+      <div class="diff-line" data-role="desc" data-diff="${lu.diff}">${diffLineHtml(lu)}</div>
+      <button class="btn primary" data-act="toplan">Continue to team setup</button></section>
+  </div>`;
 }
-function slotHtml(lu,kind,i,val,rm){
-  const list=`${kind==='guest'?'dlG':kind==='sup'?'dlS':'dlO'}-${lu.id}`;
-  const ph=kind==='open'?`Opening character ${i+1}`:kind==='guest'?'Guest star name':'Supporting cast name';
-  const linked=kind==='guest'&&i===lu.supLink, locked=kind==='sup'&&lu.supLink>=0;
-  return `<div class="slot${linked?' linked':''}"><span class="sn">${kind==='sup'?'':i+1}</span><span class="sico" data-ico></span><input list="${list}" data-act="${kind}" data-i="${i}" value="${esc(val)}" placeholder="${ph}" autocomplete="off" spellcheck="false" ${locked?'readonly title="Linked to a guest star. Change it in the guest list."':''}>${linked?'<span class="tag bor">Borrowed</span>':''}${rm?`<button type="button" class="x" data-act="rmg" data-i="${i}" aria-label="Remove guest">\u00d7</button>`:''}</div>`;
+/* Supporting Cast: one borrowed character. A character already in the list is replaced in place (rep), otherwise it is added. */
+function clearSupporting(lu){
+  const i=lu.list.findIndex(e=>e.borrowed); if(i<0) return;
+  const e=lu.list[i]; if(e.rep){ e.borrowed=false; delete e.rep; } else lu.list.splice(i,1);
 }
-function setupHtml(lu){
-  const d=DIFF[lu.diff]||DIFF.lunar;
-  return `
-  <datalist id="dlO-${lu.id}"></datalist><datalist id="dlG-${lu.id}"></datalist><datalist id="dlS-${lu.id}"></datalist>
-  <div class="f" style="margin-top:0"><span class="l"><b>Difficulty</b></span>
-    <select class="field-in" data-act="diff" aria-label="Difficulty">${Object.entries(DIFF).map(([k,v])=>`<option value="${k}" ${k===lu.diff?'selected':''}>${v.n} mode</option>`).join('')}</select>
-    <div class="diff-line" data-role="desc" data-diff="${lu.diff}">${diffLineHtml(lu)}</div></div>
-  <div class="f"><span class="l"><span class="lh"><i class="stepno">1</i><b>Opening characters</b><span class="cnt-pill" data-cnt="open"></span></span><em>6 of any character in the game. Together they must cover exactly 3 elements.</em></span>
-    <div class="slots">${lu.opening.map((r,i)=>slotHtml(lu,'open',i,r)).join('')}</div></div>
-  <div class="f"><span class="l"><span class="lh"><i class="stepno">2</i><b>Special guest stars</b><span class="cnt-pill" data-cnt="guest"></span></span><em>Optional, up to ${MAX_GUESTS}. Characters you own, or one you borrow.</em></span>
-    <div class="slots">${lu.guests.map((r,i)=>slotHtml(lu,'guest',i,r,true)).join('')}</div>
-    <div class="acts" style="margin-top:8px"><button class="btn" data-act="addg" ${lu.guests.length>=Math.min(MAX_GUESTS,d.max-6)?'disabled':''}>Add guest</button></div></div>
-  <div class="f"><span class="l"><span class="lh"><i class="stepno">3</i><b>Supporting cast</b><span class="cnt-pill" data-cnt="sup"></span></span><em>Optional. A character borrowed from a friend; can also be one of your guest stars.</em></span>
-    <div class="slots">${slotHtml(lu,'sup',0,lu.support||'')}</div></div>
-  <div class="st" data-role="status"></div>
-  <div class="acts"><button class="btn primary" data-act="gen">Generate team list</button></div>`;
-}
-function refreshSetup(box,lu){
-  const v=vSetup(lu), o=optionsFor(lu);
-  const set=(pre,html)=>{ const el=box.querySelector(`#${pre}-${lu.id}`); if(el) el.innerHTML=html; };
-  set('dlO',o.open); set('dlG',o.guest); set('dlS',o.sup);
-  box.querySelectorAll('.slot input').forEach(inp=>{
-    const kind=inp.dataset.act, val=inp.value;
-    const id = kind==='open'?resolveName(val,'all'):kind==='guest'?(resolveName(val,'owned')||resolveName(val,'all')):(val.trim().toLowerCase()==='traveler'?'':resolveName(val,'all'));
-    const c=id?byIdAll(id):null, ico=inp.parentElement.querySelector('[data-ico]');
-    ico.innerHTML=c&&c.el?elIcon(c.el):''; ico.style.setProperty('--el',c&&c.el?elc(c.el):'inherit');
-    const unowned=kind==='guest'&&val.trim()&&!resolveName(val,'owned')&&id&&(+inp.dataset.i)!==lu.supLink;
-    inp.setAttribute('aria-invalid', String(!!val.trim() && (!id || unowned)));
-    inp.parentElement.classList.toggle('flag', v.flag.has(kind==='sup'?'sup:0':kind+':'+inp.dataset.i));
-  });
-  const cnts={open:[v.openIds.length,6,v.openIds.length>=6],guest:[v.guestIds.length,MAX_GUESTS,false],sup:[(v.supId||v.linkedId)?1:0,1,false]};
-  box.querySelectorAll('[data-cnt]').forEach(el=>{ const c=cnts[el.dataset.cnt]; el.textContent=c[0]+' / '+c[1]; el.classList.toggle('ok',c[2]); el.classList.toggle('has',!c[2]&&c[0]>0); });
-  const st=box.querySelector('[data-role=status]'); if(st) st.innerHTML=statusHtml(v);
-  const g=box.querySelector('[data-act=gen]'); if(g) g.disabled=!v.ok;
-  const ds=box.querySelector('[data-role=desc]'); if(ds && ds.dataset.diff!==lu.diff){ ds.innerHTML=diffLineHtml(lu); ds.dataset.diff=lu.diff; }
+function setSupporting(lu,id){
+  const d=DIFF[lu.diff]||DIFF.lunar, snap=JSON.stringify(lu.list);
+  clearSupporting(lu);
+  const ex=lu.list.find(e=>e.id===id);
+  if(ex){ ex.borrowed=true; ex.rep=true; return true; }
+  if(lu.list.length>=d.max){ lu.list=JSON.parse(snap); toast(`Team list is full: ${d.n} mode holds up to ${d.max} characters`); return false; }
+  lu.list.push({id,el:'',role:null,borrowed:true,kind:SEASON.guests.includes(id)?'guest':'support'});
+  return true;
 }
 /* ---- team list (plan step) ---- */
 function entInfo(e){
   const c=byIdAll(e.id); if(!c) return null;
   const trav=e.id==='traveler', el=trav?e.el:c.el;
-  const chip=(c.lvl!==undefined?`<span class="pc${c.lvl===6?' c6':''}">C${c.lvl}${c.ref?'R'+c.ref:''}</span>`:'<span class="noown">Not owned</span>');
-  const tags=(e.kind==='open'?'<span class="tag tag-open">Opening</span>':'')+(e.kind==='guest'?'<span class="tag tag-guest">Special guest</span>':'')+(e.borrowed?'<span class="tag bor">Borrowed</span>':'');
-  const tagsC=(e.kind==='open'?'<span class="tdot open" role="img" title="Opening" aria-label="Opening"></span>':'')+(e.kind==='guest'?'<span class="tdot guest" role="img" title="Special guest" aria-label="Special guest"></span>':'')+(e.borrowed?'<span class="tdot bor" role="img" title="Borrowed" aria-label="Borrowed"></span>':'');
-  return {c,trav,el,chip,tags,tagsC};
+  const own=c.lvl!==undefined;
+  const tags=(e.kind==='guest'?'<span class="tag tag-guest">Special guest</span>':'')+(e.borrowed?'<span class="tag inv">Invited</span>':'')+(e.kind==='open'?(own?'<span class="tag tag-open">Opening</span>':'<span class="tag tag-trial">Trial</span>'):'');
+  const tagsR=(e.borrowed?'<span class="tag inv">Invited</span>':'')+(e.kind==='guest'?'<span class="tag tag-guest">Guest</span>':'')+(e.kind==='open'?(own?'<span class="tag tag-open">Opening</span>':'<span class="tag tag-trial">Trial</span>'):'');
+  return {c,trav,el,tags,tagsR};
 }
 function rowHtml(lu,e,idx,u){
   const f=entInfo(e); if(!f) return '';
@@ -1807,11 +1808,11 @@ function rowHtml(lu,e,idx,u){
   let l2;
   if(u.edit) l2=open?'<span class="tag">Locked</span>':'<button class="dh" data-act="drag" aria-label="Drag to reorder">\u2630 Drag</button><button class="mini" data-act="rm" aria-label="Remove">Remove</button>';
   else l2=`<span class="rolebtns">${Object.keys(ROLES).map(r=>`<button class="rbtn r-${r}" data-act="role" data-r="${r}" aria-pressed="${e.role===r}" title="${ROLES[r]}" aria-label="${ROLES[r]}">${ROLE_SHORT[r]}</button>`).join('')}</span>`;
-  return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" data-i="${idx}" style="${naVar(e.id)}"><span class="no">${idx+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1">${eli}<span class="nm2">${esc(f.c.name)}</span><span class="tags">${f.tagsC}</span></div><div class="l2">${l2}</div></div><span class="chipcell">${f.chip}</span></li>`;
+  return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" data-i="${idx}" style="${naVar(e.id)}"><span class="no">${idx+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1">${eli}<span class="nm2">${esc(f.c.name)}</span></div><div class="l2">${l2}</div></div><span class="chipcell tagcell">${f.tagsR}</span></li>`;
 }
 function poolOf(lu){
   const els=elsOf(lu), inList=new Set(lu.list.map(e=>e.id));
-  return chars().filter(c=>c.lvl!==undefined && els.includes(c.el) && !inList.has(c.id))
+  return chars().filter(c=>c.lvl!==undefined && els.includes(c.el) && !inList.has(c.id) && !SEASON.guests.includes(c.id))
     .sort((a,b)=>EL_ORDER.indexOf(a.el)-EL_ORDER.indexOf(b.el)||b.ord-a.ord);
 }
 const bonusHtml=(n,d)=>{ if(n<d.min) return ''; const room=d.max-d.min, extra=n-d.min; return `<span class="bonus${extra?' on':''}" title="Each character beyond the minimum gives you a buff when the show starts">Extra characters ${extra} / ${room}</span>`; };
@@ -1819,8 +1820,8 @@ const roleWarnHtml=lu=>{ const c=roleCounts(lu), n=lu.list.length; if(!n) return
 const roleCounts = lu => { const c={dps:0,dmg:0,sus:0,none:0}; lu.list.forEach(e=>{ c[e.role||'none']++; }); return c; };
 const legendHtml = lu => { const cnt=roleCounts(lu); return Object.entries(ROLES).map(([k,v])=>`<span class="r-${k}"><i></i>${v}<b>${cnt[k]}</b></span>`).join('')+`<span><i style="background:var(--line2)"></i>No role<b>${cnt.none}</b></span>`; };
 function setupSum(lu,d){
-  const o=lu.list.filter(e=>e.kind==='open').length, g=lu.list.filter(e=>e.kind==='guest').length, sp=lu.list.filter(e=>e.kind==='support').length, a=lu.list.length-o-g-sp;
-  return `${d.n} mode \u00b7 ${o} opening`+(g?` \u00b7 ${g} guest star${g>1?'s':''}`:'')+(sp?` \u00b7 ${sp} supporting`:'')+(a>0?` \u00b7 ${a} added`:'');
+  const o=lu.list.filter(e=>e.kind==='open').length, g=lu.list.filter(e=>e.kind==='guest').length, sp=lu.list.filter(e=>e.borrowed).length, a=lu.list.filter(e=>e.kind==='extra'&&!e.borrowed).length;
+  return `${d.n} mode \u00b7 ${o} opening`+(g?` \u00b7 ${g} guest star${g>1?'s':''}`:'')+(sp?` \u00b7 ${sp} invited`:'')+(a>0?` \u00b7 ${a} added`:'');
 }
 function planHtml(lu,u){
   const d=DIFF[lu.diff]||DIFF.lunar, n=lu.list.length, els=elsOf(lu), full=n>=d.max, tf=u.tf;
@@ -1831,9 +1832,13 @@ function planHtml(lu,u){
   let empties=''; if(!filtering) for(let i=n;i<d.min;i++) empties+=`<li class="ent empty"><span class="no">${i+1}</span><span class="nm2">Empty slot</span></li>`;
   const pool=poolOf(lu), inList=new Set(lu.list.map(e=>e.id));
   const travEl=(u.travEl&&els.includes(u.travEl))?u.travEl:els[0];
-  const travRow=inList.has('traveler')?'':`<li class="ent pool-ent" style="--el:${elc(travEl)}"><span class="av" data-side="traveler">${sideImgHtml('traveler')}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(travEl)}">${elIcon(travEl)}</span><span class="nm2">Traveler</span><span class="elpick">${els.map(k=>`<button class="elb-pick" data-act="trav-el" data-el="${k}" style="--el:${elc(k)}" aria-pressed="${k===travEl}" title="${EL[k].n}" aria-label="${EL[k].n}">${elIcon(k)}</button>`).join('')}</span></div><div class="l2"><span class="rolebtns">${Object.entries(ROLES).map(([k,v])=>`<button class="rbtn r-${k}" data-act="addt" data-el="${travEl}" data-r="${k}" ${full?'disabled':''} title="Add Traveler as ${v}">${ROLE_SHORT[k]}</button>`).join('')}</span></div></div><span class="chipcell"><span class="pc c6">C6</span></span></li>`;
-  const poolRows=pool.map(c=>`<li class="ent pool-ent" style="--el:${elc(c.el)};${naVar(c.id)}"><span class="av" data-side="${c.id}">${sideImgHtml(c.id)}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(c.el)}">${elIcon(c.el)}</span><span class="nm2">${esc(c.name)}</span></div><div class="l2"><span class="rolebtns">${Object.entries(ROLES).map(([k,v])=>`<button class="rbtn r-${k}" data-act="add" data-id="${c.id}" data-r="${k}" ${full?'disabled':''} title="Add ${esc(c.name)} as ${v}">${ROLE_SHORT[k]}</button>`).join('')}</span></div></div><span class="chipcell"><span class="pc${c.lvl===6?' c6':''}">C${c.lvl}${c.ref?'R'+c.ref:''}</span></span></li>`).join('');
-  const dis=u.edit?'disabled':'';
+  const travRow=inList.has('traveler')?'':`<li class="ent pool-ent" data-act="addt" data-el="${travEl}" style="--el:${elc(travEl)}"><span class="av" data-side="traveler">${sideImgHtml('traveler')}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(travEl)}">${elIcon(travEl)}</span><span class="nm2">Traveler</span><span class="elpick">${els.map(k=>`<button class="elb-pick" data-act="trav-el" data-el="${k}" style="--el:${elc(k)}" aria-pressed="${k===travEl}" title="${EL[k].n}" aria-label="${EL[k].n}">${elIcon(k)}</button>`).join('')}</span></div></div><span class="addcell"><button class="btn add-btn${full?' is-full':''}" data-act="addt" data-el="${travEl}" title="Add Traveler">Add</button></span></li>`;
+  const poolRows=pool.map(c=>`<li class="ent pool-ent" data-act="add" data-id="${c.id}" style="--el:${elc(c.el)};${naVar(c.id)}"><span class="av" data-side="${c.id}">${sideImgHtml(c.id)}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(c.el)}">${elIcon(c.el)}</span><span class="nm2">${esc(c.name)}</span></div></div><span class="addcell"><button class="btn add-btn${full?' is-full':''}" data-act="add" data-id="${c.id}" title="Add ${esc(c.name)}">Add</button></span></li>`).join('');
+  const gOwn=id=>{ const c=byIdAll(id); return !!c&&c.lvl!==undefined; };
+  const gsHtml=`<div class="gs-wrap"><div class="gs-head"><b>Special guests</b><small>Any element</small></div><div class="gs-grid">${SEASON.guests.map(id=>{ const c=byIdAll(id); if(!c) return ''; const ent=lu.list.find(x=>x.id===id), st=ent?(ent.borrowed?'sup':'in'):(gOwn(id)?'ok':'no'); return `<button type="button" class="gs gs-${st}" data-act="gpick" data-id="${esc(id)}" style="--el:${elc(c.el)}" aria-label="${esc(c.name)}"><span class="gs-art" data-gcard="${esc(id)}">${gcardImgHtml(id)}</span><span class="eli gs-el">${elIcon(c.el)}</span>${st==='in'?'<span class="gs-tag">In list</span>':st==='sup'?'<span class="gs-tag bor">Invited</span>':''}<span class="gs-nm">${esc(c.name)}</span></button>`; }).join('')}</div></div>`;
+  const supE=lu.list.find(x=>x.borrowed), supC=supE&&byIdAll(supE.id);
+  const supBar=`<div class="sup-bar${supC?' sup-pick':''}"${supC?' data-act="supset" title="Tap to change"':''}><span class="sup-lab">Invited character</span>${supC?`<span class="sup-who" style="--el:${elc(supE.el||supC.el)}"><span class="av" data-side="${esc(supC.id)}">${sideImgHtml(supC.id)}</span><b>${esc(supC.name)}</b></span><button type="button" class="mini" data-act="supclear">Clear</button>`:`<span class="sup-none">Not chosen</span><button type="button" class="btn" data-act="supset">Invite a character</button>`}</div>`;
+  const dis=u.edit?'disabled':'', ptab=u.ptab==='pool'?'pool':'list';
   const grp=(lab,html)=>`<div class="tf-grp"><span class="tf-lab">${lab}</span><div class="tf-chips">${html}</div></div>`;
   const filt=grp('Element',els.map(k=>`<button class="chip" data-act="tf" data-k="el" data-v="${k}" aria-pressed="${tf.els.has(k)}" title="${EL[k].n}" style="--el:${elc(k)}" ${dis}>${elIcon(k)}${EL[k].n}</button>`).join(''))
     +grp('Weapon',WP_ORDER.map(k=>`<button class="chip" data-act="tf" data-k="wp" data-v="${k}" aria-pressed="${tf.wps.has(k)}" title="${WP[k]}" style="--el:#e8ecf1" ${dis}>${wpIcon(k)}${WP[k]}</button>`).join(''))
@@ -1843,52 +1848,56 @@ function planHtml(lu,u){
     <div class="plan-sticky">
       <div class="cnt"><b class="${n>=d.min?'ok':''}">${n}</b><span>of ${d.min} needed, up to ${d.max}${n<d.min?`. ${d.min-n} more to go`:full?'. Full':''}</span>${bonusHtml(n,d)}${roleWarnHtml(lu)}</div>
       <div class="legend">${legendHtml(lu)}</div>
+
     </div>
+    <div class="plan-tabs" role="group" aria-label="Show"><button type="button" data-act="ptab" data-t="list" aria-pressed="${ptab==='list'}">Team list<b>${n}/${d.min}</b></button><button type="button" data-act="ptab" data-t="pool" aria-pressed="${ptab==='pool'}">Available<b>${pool.length+(inList.has('traveler')?0:1)}</b></button></div>
     <div class="plan-tools">
-      <button class="btn" data-act="back">Back to setup</button>
-      <button class="btn" data-act="edit" aria-pressed="${u.edit}">${u.edit?'Done editing':'Edit order &amp; remove'}</button>
-      <button class="btn primary" data-act="tocard" ${n<d.min?'disabled title="Add more characters to reach the minimum first"':''}>Create team list card</button>
+      <button class="btn" data-act="back">\u2190 Back to Opening</button>
+      <button class="btn" data-act="edit" aria-pressed="${u.edit}">${u.edit?'\u2713 Done editing':'\u270E Edit order &amp; remove'}</button>
+      <button class="btn primary tocard-top" data-act="tocard" ${n<d.min?'disabled title="Add more characters to reach the minimum first"':''}>Create team list card</button>
     </div>
-    <div class="plan-body">
+    <div class="plan-body tab-${ptab}">
       <div class="tl">
         <h3>Team list<small>${u.edit?'Drag to reorder or remove':esc(setupSum(lu,d))}</small></h3>
-        <div class="tag-key"><span><i class="tdot open"></i>Opening</span><span><i class="tdot guest"></i>Special guest</span><span><i class="tdot bor"></i>Borrowed</span></div>
-        ${u.edit?'':`<div class="tf-bar"><button type="button" class="btn tf-toggle" data-act="fopen" aria-expanded="${!!u.fopen}">Filter${filtering?`<span class="tf-badge">${tf.els.size+tf.wps.size+tf.roles.size}</span>`:''}<span class="car">${u.fopen?'\u25B4':'\u25BE'}</span></button>${filtering?'<button type="button" class="btn tf-reset" data-act="tclear">Reset</button>':''}</div>${u.fopen?`<div class="tf-panel">${filt}</div>`:''}`}
+        ${u.edit?'':`<div class="tf-panel">${filt}</div>${filtering?'<div class="tf-bar"><button type="button" class="btn tf-reset" data-act="tclear">Reset</button></div>':''}`}
         <ol class="ents">${rowsHtml}${empties}</ol>
       </div>
       <div class="pool">
-        <h3>Available characters<small title="Pick a role to add a character">${pool.length+(inList.has('traveler')?0:1)} available${els.map(k=>`<span class="mi" style="--el:${elc(k)}" title="${EL[k].n}">${elIcon(k)}</span>`).join('')}</small></h3>
+        <h3>Available characters<small title="Tap Add to put a character in the team list">${pool.length+(inList.has('traveler')?0:1)} available${els.map(k=>`<span class="mi" style="--el:${elc(k)}" title="${EL[k].n}">${elIcon(k)}</span>`).join('')}</small></h3>
+        ${gsHtml}${supBar}
         <ol class="ents">${travRow}${poolRows||'<li class="luempty">Nothing left to add.</li>'}</ol>
       </div>
-    </div>`;
+    </div>
+    <div class="tocard-bottom"><button class="btn primary" data-act="tocard" ${n<d.min?'disabled title="Add more characters to reach the minimum first"':''}>Create team list card</button></div>`;
 }
 /* ---- final read-only card ---- */
 function cardHtml(lu){
   const d=DIFF[lu.diff]||DIFF.lunar, n=lu.list.length;
   const rows=lu.list.map((e,i)=>{
     const f=entInfo(e); if(!f) return '';
-    return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" style="${naVar(e.id)}"><span class="no">${i+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(f.el)}">${elIcon(f.el)}</span><span class="nm2">${esc(f.c.name)}</span><span class="tags">${f.tags}</span></div>${e.role?`<div class="l2"><span class="rolename r-${e.role}">${ROLES[e.role]}</span></div>`:''}</div><span class="chipcell">${f.chip}</span></li>`;
+    return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" style="${naVar(e.id)}"><span class="no">${i+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(f.el)}">${elIcon(f.el)}</span><span class="nm2">${esc(f.c.name)}</span>${e.role?`<span class="rolename r-${e.role}" style="margin-left:6px">${ROLES[e.role]}</span>`:''}</div>${f.tags?`<div class="l2"><span class="tags">${f.tags}</span></div>`:''}</div></li>`;
   }).join('');
   const rowsN=Math.ceil(n/2);
-  return `<div class="tc">
+  return `<div class="tc-page">Team list card</div>
+  <div class="tc">
     <div class="tc-head"><span class="lu-tag">Imaginarium Theater</span> <span class="lu-tag">${d.n} mode</span><h3>${esc(lu.name)}</h3>
       <div class="cnt"><b class="${n>=d.min?'ok':''}">${n}</b><span>characters, ${d.min} needed, up to ${d.max}</span>${bonusHtml(n,d)}</div>
       <div class="legend">${legendHtml(lu)}</div></div>
     <ol class="ents tcl" style="--rows:${rowsN}">${rows}</ol>
-    <div class="acts"><button class="btn" data-act="cardback">Back to team list</button><button class="btn primary" data-act="capture">Capture</button></div>
+    <div class="acts"><button class="btn" data-act="cardback">\u2190 Back to team list</button><button class="btn cap" data-act="capture">Capture</button></div>
   </div>`;
 }
 function luHtml(lu){
   const u=uiOf(lu.id);
   if(isPartyType(lu.type)){
     const mode=PARTY_MODES[lu.type];
-    const head=`<header class="lu-h"><input class="lu-name" data-act="name" value="${esc(lu.name)}" maxlength="50" aria-label="${esc(mode.label)} team name"><span class="lu-tag">${esc(mode.label)}</span><span class="lu-tag">${esc(mode.badge)}</span><button class="btn" data-act="fold">${u.fold?'Expand':'Collapse'}</button><button class="btn danger" data-act="del">Delete</button></header>`;
+    const head=`<header class="lu-h"><input class="lu-name" data-act="name" value="${esc(lu.name)}" maxlength="50" aria-label="${esc(mode.label)} team name"><span class="lu-tag">${esc(mode.label)}</span><span class="lu-tag">${esc(mode.badge)}</span><span class="lu-acts"><button class="btn" data-act="fold">${u.fold?'Expand':'Collapse'}</button><button class="btn danger" data-act="del">Delete</button></span></header>`;
     const body=partyHtml(lu);
     return `<section class="lu" data-lu="${lu.id}">${head}${u.fold?'':`<div class="lu-body">${body}</div>`}</section>`;
   }
   const d=DIFF[lu.diff]||DIFF.lunar;
-  const head=`<header class="lu-h"><input class="lu-name" data-act="name" value="${esc(lu.name)}" maxlength="50" aria-label="Team name"><span class="lu-tag">Imaginarium Theater</span><span class="lu-tag">${d.n} mode</span><button class="btn" data-act="fold">${u.fold?'Expand':'Collapse'}</button><button class="btn danger" data-act="del">Delete</button></header>`;
-  const body=lu.stage==='plan'?planHtml(lu,u):lu.stage==='card'?cardHtml(lu):setupHtml(lu);
+  const head=`<header class="lu-h"><input class="lu-name" data-act="name" value="${esc(lu.name)}" maxlength="50" aria-label="Team name"><span class="lu-tag">Imaginarium Theater</span><span class="lu-tag">${d.n} mode</span><span class="lu-acts"><button class="btn" data-act="fold">${u.fold?'Expand':'Collapse'}</button><button class="btn danger" data-act="del">Delete</button></span></header>`;
+  const body=lu.stage==='plan'?planHtml(lu,u):lu.stage==='card'?cardHtml(lu):openHtml(lu);
   return `<section class="lu" data-lu="${lu.id}">${head}${u.fold?'':`<div class="lu-body">${body}</div>`}</section>`;
 }
 function renderLineups(){
@@ -1899,8 +1908,9 @@ function renderLineups(){
   host.querySelectorAll('.lu').forEach(box=>{
     const lu=S.lineups.find(x=>x.id===box.dataset.lu), u=lu&&uiOf(lu.id); if(!lu||u.fold) return;
     if(isPartyType(lu.type)){ (lu.teams||[]).forEach(t=>(t.slots||[]).forEach(s=>{ if(s&&s.id) partyNeed.add(s.id); })); return; }
-    if(lu.stage==='setup') refreshSetup(box,lu);
-    else { lu.list.forEach(e=>need.add(e.id)); if(lu.stage==='plan'){ poolOf(lu).forEach(c=>need.add(c.id)); need.add('traveler'); } }
+    if(lu.stage==='open'){ SEASON.opening.forEach(queueGacha); return; }
+    lu.list.forEach(e=>need.add(e.id));
+    if(lu.stage==='plan'){ poolOf(lu).forEach(c=>need.add(c.id)); need.add('traveler'); SEASON.guests.forEach(loadCard); }
   });
   need.forEach(id=>{
     const key='s:'+id; if(imgs.has(key)||queue.some(q=>q.key===key)) return;
@@ -1920,18 +1930,13 @@ $('#luList').addEventListener('input',e=>{
 $('#luList').addEventListener('change',e=>{
   const a=e.target.dataset.act, lu=luOf(e.target); if(!lu) return;
   if(isPartyType(lu.type)) return;
-  const box=e.target.closest('.lu'), i=+e.target.dataset.i;
-  if(a==='diff'){ lu.diff=e.target.value; box.querySelector('.lu-tag + .lu-tag').textContent=DIFF[lu.diff].n+' mode'; refreshSetup(box,lu); persist(); }
-  else if(a==='open'){ lu.opening[i]=e.target.value; refreshSetup(box,lu); persist(); }
-  else if(a==='guest'){
-    lu.guests[i]=e.target.value;
-    if(i===lu.supLink){
-      const a1=resolveName(e.target.value,'all'), a2=resolveName(lu.support,'all');
-      if(!a1||a1!==a2){ lu.supLink=-1; lu.support=''; persist(); renderLineups(); return; }
-    }
-    refreshSetup(box,lu); persist();
+  const box=e.target.closest('.lu');
+  if(a==='diff'){
+    lu.diff=e.target.value; const dd=DIFF[lu.diff], tag=box.querySelector('.lu-tag + .lu-tag'); if(tag) tag.textContent=dd.n+' mode';
+    if(lu.list.length>dd.max){ lu.list=lu.list.slice(0,dd.max); toast(`List trimmed to ${dd.max} for ${dd.n} mode`); }
+    const ds=box.querySelector('[data-role=desc]'); if(ds){ ds.innerHTML=diffLineHtml(lu); ds.dataset.diff=lu.diff; }
+    persist();
   }
-  else if(a==='sup'&&lu.supLink<0){ lu.support=e.target.value; refreshSetup(box,lu); persist(); }
 });
 /* drag to reorder (mouse and touch) */
 let DR=null;
@@ -1980,31 +1985,27 @@ $('#luList').addEventListener('click',e=>{
   const done=()=>{ persist(); renderLineups(); };
   if(act==='fold'){ u.fold=!u.fold; renderLineups(); }
   else if(act==='del'){ if(!confirm(`Delete "${lu.name}"?`)) return; S.lineups=S.lineups.filter(x=>x!==lu); delete UIS[lu.id]; done(); }
-  else if(act==='back'){ lu.stage='setup'; u.edit=false; done(); }
+  else if(act==='back'){ lu.stage='open'; u.edit=false; done(); }
+  else if(act==='toplan'){ lu.stage='plan'; done(); }
   else if(act==='edit'){ u.edit=!u.edit; if(u.edit){ u.tf.els.clear(); u.tf.wps.clear(); u.tf.roles.clear(); } renderLineups(); }
   else if(act==='tocard'){ if(lu.list.length<d.min) return; lu.stage='card'; u.edit=false; done(); window.scrollTo(0,$('#lineupView').offsetTop); }
   else if(act==='cardback'){ lu.stage='plan'; done(); }
   else if(act==='capture'){ captureTeam(lu); }
-  else if(act==='gen'){ if(generateList(lu)) done(); else toast('Fix the highlighted problems first'); }
-  else if(act==='addg'){ lu.guests.push(''); persist(); renderLineups(); const ins=[...$('#luList').querySelectorAll(`[data-lu="${lu.id}"] input[data-act=guest]`)]; if(ins.length) ins[ins.length-1].focus(); }
-  else if(act==='rmg'){
-    const i=+b.dataset.i; lu.guests.splice(i,1);
-    if(lu.supLink===i){ lu.supLink=-1; lu.support=''; } else if(lu.supLink>i) lu.supLink--;
-    done();
+  else if(act==='gpick'){
+    const id=b.dataset.id, c=byIdAll(id); if(!c||!SEASON.guests.includes(id)) return;
+    { const en=lu.list.find(x=>x.id===id); if(en){ if(en.borrowed) clearSupporting(lu); else lu.list=lu.list.filter(x=>x!==en); return done(); } }
+    if(c.lvl===undefined) return toast(`${c.name} is not in your roster. Use the invited character bar to borrow it.`);
+    if(lu.list.length>=d.max) return toast(`Team list is full: ${d.n} mode holds up to ${d.max} characters`);
+    lu.list.push({id,el:'',role:null,borrowed:false,kind:'guest'}); done();
   }
-  else if(act==='linkyes'){
-    const i=+b.dataset.i;
-    if(lu.supLink>=0&&lu.supLink!==i) return toast('Only one guest can be your borrowed supporting cast');
-    const id=resolveName(lu.guests[i],'all'); if(!id) return;
-    lu.guests[i]=byIdAll(id).name; lu.supLink=i; lu.support=lu.guests[i]; done();
-  }
-  else if(act==='linkno'){ lu.guests[+b.dataset.i]=''; done(); }
+  else if(act==='supset'){ openPartyPicker(lu,0,0,true); }
+  else if(act==='supclear'){ clearSupporting(lu); done(); }
+  else if(act==='ptab'){ u.ptab=b.dataset.t==='pool'?'pool':'list'; renderLineups(); }
   else if(act==='tf'){ const set=b.dataset.k==='el'?u.tf.els:b.dataset.k==='wp'?u.tf.wps:u.tf.roles, v=b.dataset.v; set.has(v)?set.delete(v):set.add(v); renderLineups(); }
-  else if(act==='fopen'){ u.fopen=!u.fopen; renderLineups(); }
-  else if(act==='norole'){ u.edit=false; u.fopen=true; u.tf.els.clear(); u.tf.wps.clear(); u.tf.roles.clear(); u.tf.roles.add('none'); renderLineups(); }
+  else if(act==='norole'){ u.edit=false; u.tf.els.clear(); u.tf.wps.clear(); u.tf.roles.clear(); u.tf.roles.add('none'); renderLineups(); }
   else if(act==='tclear'){ u.tf.els.clear(); u.tf.wps.clear(); u.tf.roles.clear(); renderLineups(); }
-  else if(act==='add'){ if(lu.list.length>=d.max) return toast(`${d.n} mode holds up to ${d.max} characters`); const id=b.dataset.id; if(lu.list.some(x=>x.id===id)) return; lu.list.push({id,el:'',role:ROLES[b.dataset.r]?b.dataset.r:null,borrowed:false,kind:'extra'}); done(); }
-  else if(act==='addt'){ if(lu.list.length>=d.max) return toast(`${d.n} mode holds up to ${d.max} characters`); if(lu.list.some(x=>x.id==='traveler')) return; lu.list.push({id:'traveler',el:b.dataset.el,role:ROLES[b.dataset.r]?b.dataset.r:null,borrowed:false,kind:'extra'}); done(); }
+  else if(act==='add'){ if(lu.list.length>=d.max) return toast(`Team list is full: ${d.n} mode holds up to ${d.max} characters`); const id=b.dataset.id; if(lu.list.some(x=>x.id===id)) return; lu.list.push({id,el:'',role:ROLES[b.dataset.r]?b.dataset.r:null,borrowed:false,kind:'extra'}); done(); }
+  else if(act==='addt'){ if(lu.list.length>=d.max) return toast(`Team list is full: ${d.n} mode holds up to ${d.max} characters`); if(lu.list.some(x=>x.id==='traveler')) return; lu.list.push({id:'traveler',el:b.dataset.el,role:ROLES[b.dataset.r]?b.dataset.r:null,borrowed:false,kind:'extra'}); done(); }
   else if(act==='trav-el'){ u.travEl=b.dataset.el; renderLineups(); }
   else if(act==='share-addteam'){ if(lu.teams.length<3){ lu.teams.push({name:'Team '+(lu.teams.length+1),slots:Array(4).fill(null)}); done(); } }
   else if(act==='share-delteam'){ if(lu.teams.length>1){ const last=lu.teams[lu.teams.length-1]; if(last.slots.some(Boolean)&&!confirm('Remove the last team and its characters?')) return; lu.teams.pop(); done(); } }
@@ -2017,15 +2018,7 @@ $('#luList').addEventListener('click',e=>{
     const en=lu.list[idx]; if(!en) return;
     if(act==='role'&&!u.edit){ const r=b.dataset.r; en.role=en.role===r?null:r; done(); }
     else if(act==='tel'){ const els=elsOf(lu); if(els.length){ en.el=els[(els.indexOf(en.el)+1)%els.length]; } done(); }
-    else if(act==='rm'&&u.edit&&en.kind!=='open'){
-      lu.list.splice(idx,1);
-      if(en.kind==='guest'){
-        const gi=lu.guests.findIndex(r=>{ const o=resolveName(r,'owned'); return (o||resolveName(r,'all'))===en.id; });
-        if(gi>=0){ lu.guests.splice(gi,1); if(lu.supLink===gi){ lu.supLink=-1; lu.support=''; } else if(lu.supLink>gi) lu.supLink--; }
-      }
-      if(en.kind==='support') lu.support='';
-      done();
-    }
+    else if(act==='rm'&&u.edit&&en.kind!=='open'){ lu.list.splice(idx,1); done(); }
   }
 });
 $('#btnAddLu').onclick=()=>{ const dlg=$('#dlgMode'); if(dlg.open) return; syncPlanModeOptions(); if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open',''); };
@@ -2033,6 +2026,7 @@ $('#btnResetLu').onclick=()=>{ if(!confirm('Reset all teams? Your Roster and cha
 $('#dlgMode').addEventListener('click',e=>{
   const b=e.target.closest('[data-mode]'); if(!b||b.disabled) return;
   const lu=b.dataset.mode==='theater'?newTheater():newParty(b.dataset.mode); if(!lu) return;
+  if(MULTI_TYPES.has(lu.type)&&S.lineups.filter(x=>MULTI_TYPES.has(x.type)).length>=MULTI_MAX) return toast(`You can keep up to ${MULTI_MAX} teams of Create & Share and My Party combined.`);
   if(SINGLETON_LINEUP_TYPES.has(lu.type)&&S.lineups.some(x=>x.type===lu.type)) return toast('This challenge already has a saved lineup.');
   if(!Array.isArray(S.lineups)) S.lineups=[];
   S.lineups.push(lu); persist(); $('#dlgMode').close(); renderLineups(); const el=document.querySelector(`[data-lu="${lu.id}"]`); if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
@@ -2055,7 +2049,9 @@ $('#travelerElementChoices').addEventListener('click',e=>{
 });
 $('#partyPickerGrid').addEventListener('click',e=>{
   const b=e.target.closest('[data-pick-char]'); if(!b||b.disabled) return;
-  const lu=S.lineups.find(x=>x.id===PARTY_PICKER.luId); if(!lu||!lu.teams) return;
+  const lu=S.lineups.find(x=>x.id===PARTY_PICKER.luId);
+  if(lu&&PARTY_PICKER.sup&&lu.type==='theater'){ if(setSupporting(lu,b.dataset.pickChar)){ const d0=$('#dlgPartyPicker'); if(d0) d0.close(); persist(); renderLineups(); } return; }
+  if(!lu||!lu.teams) return;
   const team=lu.teams[PARTY_PICKER.team], slotIndex=PARTY_PICKER.slot, id=b.dataset.pickChar;
   if(team.slots.some((s,i)=>i!==slotIndex&&s&&s.id===id)) return toast('A character can only appear once in the same team.');
   team.slots[slotIndex]={id};
@@ -2118,7 +2114,6 @@ async function buildTeamImage(lu){
     ctx.fillStyle=T0.text; ctx.font=`700 16px ${FB}`; const s=String(cnt[k]); ctx.fillText(s,lx,ly); lx+=ctx.measureText(s).width+22;
   });
   ctx.strokeStyle=T0.hl; ctx.setLineDash([2,4]); ctx.beginPath(); ctx.moveTo(PAD,PAD+HH-14.5); ctx.lineTo(W-PAD,PAD+HH-14.5); ctx.stroke(); ctx.setLineDash([]);
-  const hexA=(h,a)=>{ const n=parseInt(h.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
   list.forEach((e,i)=>{
     const col0=i<rowsN?0:1, row0=i%rowsN, x0=PAD+col0*(rw+GX);
     const f=entInfo(e), y=PAD+HH+row0*(RH+G), rc=e.role?ROLE_C[e.role]:null;
@@ -2140,17 +2135,18 @@ async function buildTeamImage(lu){
     else { ctx.fillStyle='rgba(255,255,255,.18)'; ctx.font=`${T0.wB} 20px ${FH}`; ctx.textAlign='center'; ctx.fillText(f.c.name.trim().charAt(0),acx,acy+7); }
     ctx.restore();
     if(rc){ ctx.strokeStyle=rc; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(acx,acy,ar+1.5,0,7); ctx.stroke(); }
-    const col=elc(f.el); drawEl(ctx,f.el,x0+130,y+RH/2-(e.role?7:0),24,col,elI);
-    ctx.textAlign='left'; ctx.fillStyle=T0.text; ctx.font=`${T0.wM} 21px ${FH}`; ctx.fillText(f.c.name,x0+152,y+RH/2+(e.role?-3:7));
-    let tx=x0+152+ctx.measureText(f.c.name).width+12;
-    const tg=[]; if(e.kind==='open') tg.push(['OPENING',false]); if(e.kind==='guest') tg.push(['SPECIAL GUEST',false]); if(e.borrowed) tg.push(['BORROWED',true]);
-    tg.forEach(([lab,bor])=>{ ctx.font=`600 11px ${FB}`; sp('1.2px'); const w=ctx.measureText(lab).width+14; sp('0px'); ctx.strokeStyle=bor?(T0.borrow||T0.violet):T0.line2; ctx.lineWidth=1; rrp(ctx,tx,y+RH/2-(e.role?3:-1)-15,w,20,10); ctx.stroke(); ctx.fillStyle=bor?(T0.borrow||T0.violet):T0.mute; sp('1.2px'); ctx.textAlign='left'; ctx.fillText(lab,tx+7,y+RH/2-(e.role?3:-1)-1); sp('0px'); tx+=w+6; });
-    if(e.role){ ctx.fillStyle=rc; ctx.font=`600 14px ${FB}`; ctx.textAlign='left'; ctx.fillText(ROLES[e.role],x0+152,y+RH/2+18); }
-    {
-      const c=f.c, lab=c.lvl!==undefined?'C'+c.lvl+(c.ref?'R'+c.ref:''):'Not owned';
-      if(c.lvl!==undefined){ const c6=c.lvl===6; ctx.font=`700 16px ${FB}`; const w=ctx.measureText(lab).width+18, bx=(x0+rw-14)-w, by=y+RH/2-12; ctx.fillStyle=c6?T0.gold:T0.chipBg; rrp(ctx,bx,by,w,24,12); ctx.fill(); ctx.strokeStyle=c6?T0.gold:T0.chipBd; ctx.stroke(); ctx.fillStyle=c6?T0.onGold:T0.chipFg; ctx.textAlign='center'; ctx.fillText(lab,bx+w/2,by+17); }
-      else { ctx.fillStyle=T0.dim||T0.mute; ctx.font=`400 14px ${FB}`; ctx.textAlign='right'; ctx.fillText(lab,(x0+rw-14),y+RH/2+5); }
-    }
+    const own0=f.c.lvl!==undefined, tg=[];
+    if(e.kind==='guest') tg.push(['SPECIAL GUEST',T0.violet,false]);
+    if(e.borrowed) tg.push(['INVITED',T0.borrow||T0.violet,true]);
+    if(e.kind==='open') tg.push(own0?['OPENING',T0.gold,false]:['TRIAL','#ff8fb1',false]);
+    const hasT=tg.length>0, ny=y+RH/2+(hasT?-3:7);
+    const col=elc(f.el); drawEl(ctx,f.el,x0+130,y+RH/2-(hasT?7:0),24,col,elI);
+    ctx.textAlign='left'; ctx.fillStyle=T0.text; ctx.font=`${T0.wM} 21px ${FH}`; ctx.fillText(f.c.name,x0+152,ny);
+    if(e.role){ const nx=x0+152+ctx.measureText(f.c.name).width+12; ctx.fillStyle=rc; ctx.font=`600 14px ${FB}`; ctx.fillText(ROLES[e.role],nx,ny); }
+    let tx=x0+152;
+    tg.forEach(([lab,tc,solid])=>{ ctx.font=`600 11px ${FB}`; sp('1.2px'); const w=ctx.measureText(lab).width+14; sp('0px'); const ty=y+RH/2+5;
+      rrp(ctx,tx,ty,w,20,10); if(solid){ ctx.fillStyle=tc; ctx.fill(); } else { ctx.strokeStyle=tc; ctx.lineWidth=1; ctx.stroke(); }
+      ctx.fillStyle=solid?'#0b1220':tc; sp('1.2px'); ctx.textAlign='left'; ctx.fillText(lab,tx+7,ty+14.5); sp('0px'); tx+=w+6; });
   });
   ctx.textAlign='left'; ctx.fillStyle=T0.mute; ctx.font=`${T0.wM} 11px ${FM}`; sp('3.5px'); ctx.fillText('CHARACTER COLLECTION',PAD,H-PAD+8); sp('0px');
   ctx.textAlign='right'; ctx.font=`${T0.wM} 12px ${FM}`; ctx.fillText(new Date().toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'}).toUpperCase(),W-PAD,H-PAD+8);
@@ -2183,8 +2179,6 @@ async function buildShareImage(lu){
   const elI=new Map(); await Promise.all(EL_ORDER.map(async k=>{
     const ei=imgs.get('ei:'+k); if(ei&&ei.kind==='blob'){ const i=await loadEl(ei.src,false); if(i){ elI.set(k,{img:i,mask:true}); return; } }
     const im=imgs.get('el:'+k); if(im&&im.src){ const i=await loadEl(im.src,im.kind==='remote'); if(i) elI.set(k,{img:i,mask:false}); } }));
-  const hexA=(h,a)=>{ const n=parseInt(h.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; };
-  const mixH=(a,b,t)=>{ const A=parseInt(a.slice(1),16), B=parseInt(b.slice(1),16), f=sh=>Math.round((A>>sh&255)*t+(B>>sh&255)*(1-t)); return `rgb(${f(16)},${f(8)},${f(0)})`; };
   // layout (matches the page: 4 cards per team, square portraits, name bar under each)
   const W=1000, PAD=48, G=12, CW=(W-PAD*2-G*3)/4, PS=CW-2, NMH=46, CH=1+PS+NMH+1, TH=52, TG=26;
   const HEAD=210, FOOT=70, H=PAD+HEAD+teams.length*(TH+CH+TG)+FOOT;
@@ -2199,7 +2193,7 @@ async function buildShareImage(lu){
   const date=new Date().toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'});
   ctx.fillStyle=MUTE; ctx.font=`${T0.wM} 12px ${FM}`; sp('3.3px'); ctx.textAlign='left'; ctx.fillText('GENSHIN ROSTER',PAD,PAD+4); ctx.textAlign='right'; ctx.fillText(date.toUpperCase(),W-PAD+3,PAD+4); sp('0px');
   // header: tag, title, rule, meta
-  const tag='SHARED TEAM'+(multi?'S':''); ctx.font=`600 12px ${FB}`; sp('2.4px'); const tw=ctx.measureText(tag).width+26, ty=PAD+44;
+  const tag=lu.type==='share'?'SHARED TEAM'+(multi?'S':''):PARTY_MODES[lu.type].label.toUpperCase(); ctx.font=`600 12px ${FB}`; sp('2.4px'); const tw=ctx.measureText(tag).width+26, ty=PAD+44;
   ctx.strokeStyle=hexA(GOLD,.55); ctx.lineWidth=1; rrp(ctx,W/2-tw/2,ty,tw,24,12); ctx.stroke();
   ctx.fillStyle=GOLD; ctx.textAlign='center'; ctx.fillText(tag,W/2+1,ty+16.5); sp('0px');
   const title=shareName(lu)||('Shared team'+(multi?'s':'')); ctx.fillStyle=TEXT; ctx.font=`${T0.wB} 50px ${FH}`;
