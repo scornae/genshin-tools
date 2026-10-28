@@ -1266,15 +1266,15 @@ function profileNums(all){
 }
 // line 0 = start date + stats (one row of equal plates), line 1 = favourite / first 5-star characters (pictures only)
 function profileData(all){
-  const pf=S.profile, own=id=>all.find(c=>c.id===id&&c.lvl!==undefined), out=[];
+  const pf=S.profile, pick=id=>all.find(c=>c.id===id), out=[];
   if(pf.start&&!pf.hide.start){
     const d=new Date(pf.start+'T00:00:00'), n='Day '+Math.max(1,Math.floor((Date.now()-d.getTime())/864e5)+1).toLocaleString('en-US'), date=d.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'});
     out.push(pf.mode==='date'?{k:'plate',line:0,v:date,cap:'Playing since'}:pf.mode==='both'?{k:'plate',line:0,v:n,cap:'Since '+date}:{k:'plate',line:0,v:n,cap:'Playing'});
   }
   const nm=profileNums(all);
   [['lim','Limited 5\u2605 at C1+','gold'],['swep','Signature weapons',''],['s4c6','4\u2605 at C6','violet']].forEach(([k,l,tone])=>{ if(nm[k]>0&&!pf.hide[k]) out.push({k:'plate',line:0,v:String(nm[k]),cap:l,tone}); });
-  if(pf.first5&&!pf.hide.first5){ const c=own(pf.first5); if(c) out.push({k:'group',line:1,cap:'First 5\u2605',chars:[c]}); }
-  const favs=pf.hide.favs?[]:pf.favs.map(own).filter(Boolean); if(favs.length) out.push({k:'group',line:1,cap:'Favourite',chars:favs});
+  if(pf.first5&&!pf.hide.first5){ const c=pick(pf.first5); if(c) out.push({k:'group',line:1,cap:'First 5\u2605',chars:[c]}); }
+  const favs=pf.hide.favs?[]:pf.favs.map(pick).filter(Boolean); if(favs.length) out.push({k:'group',line:1,cap:'Favourite',chars:favs});
   return out;
 }
 function renderProfile(all){
@@ -1287,11 +1287,11 @@ function renderProfile(all){
   queuePartyPickerImages(items.filter(i=>i.k==='group').flatMap(i=>i.chars));
 }
 function openProfile(){
-  const all=chars(), owned=all.filter(c=>c.lvl!==undefined).sort((a,b)=>a.name.localeCompare(b.name)), pf=S.profile;
+  const all=chars(), list=all.slice().sort((a,b)=>a.name.localeCompare(b.name)), pf=S.profile;
   const opts=list=>'<option value="">None</option>'+list.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
   $('#pfName').value=S.player; $('#pfUid').value=S.uid;
-  for(let i=0;i<PF_FAVS;i++){ const el=$('#pfFav'+i); el.innerHTML=opts(owned); el.value=pf.favs[i]||''; }
-  $('#pfFirst5').innerHTML=opts(owned.filter(c=>c.rar===5)); $('#pfFirst5').value=pf.first5;
+  for(let i=0;i<PF_FAVS;i++){ const el=$('#pfFav'+i); el.innerHTML=opts(list); el.value=pf.favs[i]||''; }
+  $('#pfFirst5').innerHTML=opts(list.filter(c=>c.rar===5)); $('#pfFirst5').value=pf.first5;
   $('#pfStart').value=pf.start; $('#pfStart').max=new Date().toISOString().slice(0,10);
   $('#pfMode').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===pf.mode)));
   document.querySelectorAll('[data-pf-show]').forEach(c=>{ c.checked=!pf.hide[c.dataset.pfShow]; });
