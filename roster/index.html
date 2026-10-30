@@ -266,11 +266,9 @@ body::after{background-image:var(--stars2);background-size:520px 520px;animation
 .navin button[aria-pressed=true]{background:var(--pri-bg);border-color:var(--pri-bg);color:var(--pri-fg)}
 .luhead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:24px 0 6px}
 .luhead h2{margin:0;font:700 30px var(--f-head);text-transform:var(--tt)}
-.luintro{margin:0 0 8px;color:var(--mute);font-size:14px;line-height:1.5;max-width:62ch}
+.luintro{margin:0 0 8px;color:var(--mute);font-size:14px;line-height:1.5;text-wrap:pretty}
 .lu{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);margin:14px 0 24px}
 .lu-h{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
-.lu-name{flex:1 1 220px;min-width:0;background:transparent;border:0;border-bottom:1px solid transparent;font:700 24px var(--f-head);color:var(--text);padding:2px 0}
-.lu-name:hover,.lu-name:focus{border-bottom-color:var(--line2);outline:none}
 .lu-tag{font:500 12px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
 .lu-body{padding:16px}
 .sico,.eli{width:28px;height:28px;display:grid;place-items:center;flex:none;color:var(--el)}
@@ -328,7 +326,7 @@ ol.ents{list-style:none;margin:0;padding:0;display:grid;gap:7px}
 .mode:disabled{opacity:.45;cursor:not-allowed}
 .luempty{color:var(--mute);padding:40px 0;text-align:center}
 @media(max-width:700px){.navin{padding:0 14px}.navin button{flex:1;padding:10px 12px}}
-html[data-theme=celestial] .navin button,html[data-theme=celestial] .luhead h2,html[data-theme=celestial] .lu-name,html[data-theme=celestial] .cnt b,html[data-theme=celestial] .plan-body h3,html[data-theme=celestial] .ent .nm2,html[data-theme=celestial] .ent .no,html[data-theme=celestial] .av,html[data-theme=celestial] .legend b{font-weight:400}
+html[data-theme=celestial] .navin button,html[data-theme=celestial] .luhead h2,html[data-theme=celestial] .lu-title,html[data-theme=celestial] .cnt b,html[data-theme=celestial] .plan-body h3,html[data-theme=celestial] .ent .nm2,html[data-theme=celestial] .ent .no,html[data-theme=celestial] .av,html[data-theme=celestial] .legend b{font-weight:400}
 
 .plan-sticky{position:sticky;top:var(--nav-h);z-index:15;background:var(--panel);border-bottom:1px solid var(--line);margin:-16px -16px 14px;padding:10px 16px;display:flex;flex-wrap:wrap;gap:6px 26px;align-items:center;box-shadow:0 8px 14px -10px #000}
 .plan-sticky .cnt b{font-size:34px}
@@ -393,46 +391,13 @@ html[data-theme=celestial] .nm{letter-spacing:.05em;border-top-style:dotted}
 html[data-theme=celestial] .pbar,html[data-theme=celestial] .pbar i{border-radius:999px}
 html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 /* add team dialog */
-#dlgMode{width:min(660px,calc(100vw - 20px))}
-#dlgMode .dbody{padding:22px 22px 24px}
-#dlgMode .mode-head{display:flex;gap:14px;align-items:flex-start}
-#dlgMode .mode-head h3{margin:0;font:700 26px/1.1 var(--f-head);text-transform:var(--tt)}
-#dlgMode .mode-head p{margin:6px 0 0;color:var(--mute);font-size:14px;line-height:1.45}
-#dlgMode .mode-head .x{margin-left:auto;flex:none}
-#dlgMode .mode-sec{margin:20px 0 9px;display:flex;align-items:center;gap:10px;font:600 11px var(--f-body);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
-#dlgMode .mode-sec::after{content:"";flex:1;height:1px;background:var(--line)}
-#dlgMode .modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
-#dlgMode .mode{--mc:var(--gold);position:relative;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:9px;height:auto;min-height:0;padding:14px 16px 14px 19px;border:1px solid var(--line2);border-radius:var(--r);background:linear-gradient(135deg,color-mix(in srgb,var(--mc) 11%,var(--panel2)),var(--panel));color:var(--text);text-align:left;white-space:normal;cursor:pointer;overflow:hidden;transition:transform .16s,border-color .16s,box-shadow .16s}
-#dlgMode .mode::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--mc)}
-#dlgMode .mode:hover:not(:disabled){transform:translateY(-2px);border-color:var(--mc);box-shadow:0 8px 22px color-mix(in srgb,var(--mc) 22%,transparent)}
-#dlgMode .mode:disabled{opacity:.6;cursor:not-allowed}
-#dlgMode .mode-wide{grid-column:1/-1}
-#dlgMode .mode-top{display:flex;align-items:center;gap:10px}
-#dlgMode .mode-title{font:700 18px/1.2 var(--f-head);text-transform:var(--tt)}
-#dlgMode .mode-lock{display:none;margin-left:auto;font:700 10px/18px var(--f-body);letter-spacing:.1em;text-transform:uppercase;padding:0 8px;border:1px solid var(--line2);border-radius:var(--chip-r);color:var(--mute)}
-#dlgMode .mode.is-prepared .mode-lock{display:inline-block}
-#dlgMode .mode small{display:block;margin:0;color:var(--mute);font:400 13px/1.45 var(--f-body)}
-#dlgMode .mode-pips{display:flex;align-items:center;gap:10px}
-#dlgMode .pip-grid{display:grid;gap:3px}
-#dlgMode .pip-row{display:flex;gap:3px}
-#dlgMode .pip-row i{width:13px;height:13px;border-radius:2px;background:color-mix(in srgb,var(--mc) 72%,transparent)}
-#dlgMode .pip-row.gap{margin-bottom:5px}
-#dlgMode .pips-label{font:600 12px var(--f-body);color:var(--text);letter-spacing:.02em}
-#dlgMode .mode-rules{display:flex;flex-wrap:wrap;gap:6px}
-#dlgMode .mr{font:600 11px/20px var(--f-body);padding:0 9px;border:1px solid var(--line2);border-radius:var(--chip-r);color:var(--mute);background:color-mix(in srgb,var(--panel) 60%,transparent)}
-#dlgMode .mr.yes::before{content:"\2713\00a0";color:#6fe0b0}
-#dlgMode .mr.no::before{content:"\2715\00a0";color:#ffb36b}
-#dlgMode .mode[data-mode="myparty"]{--mc:#9b8aff}
-#dlgMode .mode[data-mode="share"]{--mc:#65d9c2}
-#dlgMode .mode[data-mode="abyss"]{--mc:#ff9a64}
-#dlgMode .mode[data-mode="stygian"]{--mc:#73b8ff}
-#dlgMode .mode[data-mode="theater"]{--mc:var(--gold)}
-@media(max-width:520px){#dlgMode .modes{grid-template-columns:1fr}}
 /* party modes */
 .party-board{display:grid;gap:18px}
-.party-progress{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;padding:10px 12px;margin-bottom:14px;border:1px solid var(--line2);border-radius:var(--r);background:var(--panel2);color:var(--mute)}
-.party-progress strong{font:700 20px var(--f-head);color:var(--text)}
-.party-rule{font-size:13px}
+.party-progress{display:flex;align-items:center;gap:6px 18px;flex-wrap:wrap;padding:10px 14px;margin-bottom:14px;border:1px solid var(--line2);border-radius:var(--r);background:var(--panel2);color:var(--mute)}
+.party-progress strong{font:700 20px/1 var(--f-head);color:var(--text)}
+.pp-count{display:inline-flex;align-items:center;gap:10px}
+.pp-label{font-size:14px;line-height:1.3;color:var(--mc,var(--gold))}
+.party-rule{font-size:14px;line-height:1.3;padding-left:18px;border-left:1px solid var(--line2)}
 .party-team{min-width:0;padding:12px;border:1px solid var(--line);border-radius:var(--r-card);background:color-mix(in srgb,var(--panel2) 62%,transparent)}
 .party-team-head{display:flex;align-items:center;justify-content:space-between;gap:8px 14px;flex-wrap:wrap;margin-bottom:10px}
 .share-bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:4px}
@@ -520,7 +485,6 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 .party-picker-filters #ppSort{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:140px;white-space:nowrap}
 .party-picker-filters #ppSort .sort-ar{color:var(--gold);font-weight:700;font-size:15px;line-height:1}
 .party-picker-filters #ppRar button{min-width:52px}
-.luhead-actions{display:flex;gap:8px;align-items:center}
 .traveler-add{border-color:color-mix(in srgb,#32d7a0 54%,var(--line2));color:var(--text);background:color-mix(in srgb,#32d7a0 14%,var(--panel))}
 .party-picker-summary{color:var(--mute);font-size:14px;margin:8px 0}
 .party-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;max-height:min(66vh,760px);overflow:auto;align-content:start;padding:2px}
@@ -658,17 +622,6 @@ main{padding:14px 0 60px}
 @media(max-width:360px){.party-picker-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(min-width:520px) and (max-width:700px){.party-picker-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
 /* Add team dialog: tidy card alignment, setup note */
-#dlgMode .mode{text-align:left}
-#dlgMode .mode small{min-height:calc(2 * 1.45em);text-align:left}
-#dlgMode .mode-wide small{min-height:0}
-#dlgMode .mode-pips{min-height:45px}
-#dlgMode .pip-row i{width:11px;height:11px}
-#dlgMode .pips-label{white-space:nowrap}
-#dlgMode .mode-note{display:flex;gap:8px;align-items:center;margin:10px 0 0;padding:6px 10px;border:1px solid color-mix(in srgb,#65d9c2 38%,var(--line2));border-radius:var(--r);background:color-mix(in srgb,#65d9c2 8%,var(--panel))}
-#dlgMode .mode-note p{margin:0;font-size:13px;line-height:1.5;color:var(--mute)}
-#dlgMode .mode-note b{color:var(--text);font-weight:600}
-#dlgMode .mode-note-ic{flex:none;width:18px;height:18px;margin-top:1px;border-radius:50%;background:#65d9c2;color:#0b2a25;font:700 12px/18px var(--f-body);text-align:center}
-@media(max-width:520px){#dlgMode .dbody{padding:16px 14px 18px}#dlgMode .mode small{min-height:0}#dlgMode .pips-label{white-space:normal}}
 /* Close buttons: red */
 .btn.x[data-close]{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 55%,var(--line2));background:color-mix(in srgb,var(--danger) 12%,var(--panel))}
 .btn.x[data-close]:hover{color:#fff;border-color:var(--danger);background:color-mix(in srgb,var(--danger) 55%,var(--panel))}
@@ -676,10 +629,10 @@ main{padding:14px 0 60px}
 .lu-acts{display:contents}
 .plan-tabs{display:none}
 @media(max-width:700px){
-  .lu-h{gap:6px 8px;padding:10px 12px}
-  .lu-name{flex:1 1 100%;font-size:20px}
-  .lu-tag{font-size:10px;letter-spacing:.06em}
-  .lu-acts{display:flex;gap:6px;margin-left:auto;flex:none}
+  .lu-h{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 8px;padding:10px 12px}
+  .lu-title{grid-column:1;grid-row:1;font-size:20px}
+  .lu-tag{grid-column:1/-1;grid-row:2;font-size:10px;letter-spacing:.06em}
+  .lu-acts{display:flex;gap:6px;grid-column:2;grid-row:1}
   .lu-acts .btn{padding:3px 10px;font-size:12px}
   .lu-body{padding:10px}
   .plan-sticky{position:static;margin:-10px -10px 8px;padding:6px 10px;gap:4px 14px;box-shadow:none}
@@ -802,6 +755,50 @@ main{padding:14px 0 60px}
 .clr-opt:hover{border-color:var(--gold)}
 .clr-all b{color:var(--danger)}
 .clr-all:hover{border-color:var(--danger)}
+.lu-title{flex:1 1 220px;min-width:0;margin:0;font:700 24px var(--f-head);color:var(--text);padding:2px 0}
+.lu-tabs{display:flex;gap:8px;margin:0 0 14px;padding:0 0 12px;border-bottom:1px solid var(--line)}
+.lu-tab{--mc:var(--gold);flex:0 0 auto;min-width:0;padding:9px 20px;font:600 15px var(--f-head);letter-spacing:.03em;border:1px solid var(--line2);border-radius:var(--r);background:var(--panel);color:var(--mute);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lu-tab:hover{color:var(--text);border-color:var(--mc)}
+.lu-tab[aria-selected=true]{background:color-mix(in srgb,var(--mc) 26%,var(--panel));border-color:var(--mc);color:var(--text)}
+.lu-tab[data-lu-tab=share],.lu[data-type=share]{--mc:#2fd3c9}
+.lu-tab[data-lu-tab=myparty],.lu[data-type=myparty]{--mc:#f6b92b}
+.lu-tab[data-lu-tab=abyss],.lu[data-type=abyss]{--mc:#6a86ea}
+.lu-tab[data-lu-tab=stygian],.lu[data-type=stygian]{--mc:#b8243a}
+.lu-tab[data-lu-tab=theater],.lu[data-type=theater]{--mc:#bb93ff}
+.lu .lu-h{box-shadow:inset 3px 0 0 var(--mc,var(--gold))}
+.tname-sel,.tname-in{font:600 14px var(--f-body);color:var(--text);background:var(--panel);border:1px solid var(--line2);border-radius:var(--r);padding:6px 10px;min-width:0}
+.tname-in{width:min(220px,100%)}
+.tname-sel:focus,.tname-in:focus{outline:none;border-color:var(--mc,var(--gold))}
+.tname-grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.sv-nm{font:700 20px/1.2 var(--f-head);color:var(--gold);letter-spacing:.03em}
+.pp-used{position:absolute;top:4px;right:4px;z-index:2;max-width:calc(100% - 8px);padding:0 6px;border-radius:8px;background:rgba(0,0,0,.74);color:#ffd9b3;font:700 10px/16px var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.party-pick-card{position:relative}
+@media(max-width:600px){
+  .lu-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+  .lu-tab{padding:9px 2px;font-size:clamp(11px,3.4vw,15px);letter-spacing:0;text-align:center}
+}
+@media(max-width:700px){.party-rule{padding-left:0;border-left:0;flex-basis:100%}}
+.lu-tab .l-short{display:none}
+@media(max-width:760px){.lu-tab .l-long{display:none}.lu-tab .l-short{display:inline}}
+html[data-lumode=share]{--mc:#2fd3c9}
+html[data-lumode=myparty]{--mc:#f6b92b}
+html[data-lumode=abyss]{--mc:#6a86ea}
+html[data-lumode=stygian]{--mc:#b8243a}
+html[data-lumode=theater]{--mc:#bb93ff}
+.lu .lu-title{color:var(--mc,var(--text))}
+.lu .party-team-head h3{border-left-color:var(--mc,var(--gold))}
+.lu-tag.lu-season{display:grid;gap:4px;width:min(330px,100%);font:500 13px var(--f-body);letter-spacing:0;text-transform:none;text-align:right}
+.lu-season b{color:var(--text)}
+.ls-bar{display:block;height:7px;border-radius:99px;background:var(--line2);overflow:hidden}
+.ls-bar i{display:block;height:100%;border-radius:99px;background:var(--mc,var(--gold))}
+.ls-when{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:4px 8px;font-size:12px;color:var(--mute)}
+.ls-srv{font:600 11px var(--f-body);letter-spacing:.03em;padding:2px 8px;border:1px solid color-mix(in srgb,var(--mc,var(--gold)) 55%,var(--line2));border-radius:var(--chip-r);background:transparent;color:var(--mc,var(--gold));cursor:pointer}
+.ls-srv:hover{background:color-mix(in srgb,var(--mc,var(--gold)) 14%,transparent)}
+@media(max-width:700px){.lu-tag.lu-season{font-size:13px;letter-spacing:0;text-align:left}.ls-when{justify-content:flex-start}}
+.lu .btn.cap{border-color:var(--mc,var(--gold));color:var(--mc,var(--gold))}
+.lu .btn.cap:hover:not(:disabled){background:color-mix(in srgb,var(--mc,var(--gold)) 14%,transparent)}
+.lu .lu-acts .btn.danger{color:var(--mc,var(--danger));border-color:color-mix(in srgb,var(--mc,var(--danger)) 55%,transparent)}
+.lu .party-team-head span{color:var(--mc,var(--mute));border-color:color-mix(in srgb,var(--mc,var(--line2)) 55%,var(--line2))}
 </style>
 </head>
 <body>
@@ -862,8 +859,9 @@ main{padding:14px 0 60px}
 </div>
 
 <div class="wrap" id="lineupView" hidden>
-  <div class="luhead"><h2>Team Builder</h2><div class="luhead-actions"><button class="btn primary" id="btnAddLu">Add team</button><button class="btn" id="btnResetLu">Reset teams</button></div></div>
-  <p class="luintro">Plan teams for your party, Spiral Abyss, Stygian Onslaught and Imaginarium Theater, or build one to share with friends.</p>
+  <div class="luhead"><h2>Team Builder</h2></div>
+  <p class="luintro">Share teams with friends, plan from your Roster, or prepare Abyss, Stygian and Imaginarium Theater.</p>
+  <div class="lu-tabs" id="luTabs" role="tablist" aria-label="Your teams"></div>
   <div id="luList"></div>
 </div>
 <footer class="legal"><p>Genshin Roster is an unofficial fan-made tool and is not affiliated with or endorsed by HoYoverse. Genshin Impact, its characters and related assets belong to HoYoverse and their respective owners.</p></footer>
@@ -871,22 +869,6 @@ main{padding:14px 0 60px}
 </div>
 
 <input type="file" id="inData" accept="application/json,.json" hidden>
-
-<dialog id="dlgMode"><div class="dbody">
-  <div class="mode-head"><div><h3>Add team</h3><p>Pick what you want to plan. Each card shows how many teams you get and the rules that apply.</p></div><button class="btn x" data-close>Close</button></div>
-  <div class="mode-note"><span class="mode-note-ic" aria-hidden="true">i</span><p>Owned-only modes use your Roster picks. <b>Create &amp; Share</b> lets you pick any character.</p></div>
-  <div class="mode-sec">Build &amp; share</div>
-  <div class="modes">
-    <button class="btn mode" data-mode="share"><span class="mode-top"><span class="mode-title">Create &amp; Share</span><span class="mode-lock">Added</span></span><small>Build up to 3 teams from any character, then send them to a friend as a link.</small><span class="mode-pips"><span class="pip-grid"><span class="pip-row"><i></i><i></i><i></i><i></i></span><span class="pip-row" style="opacity:.55"><i></i><i></i><i></i><i></i></span><span class="pip-row" style="opacity:.3"><i></i><i></i><i></i><i></i></span></span><span class="pips-label">1–3 teams × 4 characters</span></span><span class="mode-rules"><span class="mr yes">Any character</span><span class="mr no">No repeats across teams</span></span></button>
-    <button class="btn mode" data-mode="myparty"><span class="mode-top"><span class="mode-title">My Party</span><span class="mode-lock">Added</span></span><small>Build one team of 4 from the characters you own.</small><span class="mode-pips"><span class="pip-grid"><span class="pip-row"><i></i><i></i><i></i><i></i></span></span><span class="pips-label">1 team × 4 = 4 characters</span></span><span class="mode-rules"><span class="mr yes">Owned characters only</span></span></button>
-  </div>
-  <div class="mode-sec">Challenges</div>
-  <div class="modes">
-    <button class="btn mode" data-mode="abyss"><span class="mode-top"><span class="mode-title">Abyss</span><span class="mode-lock">Added</span></span><small>Two teams for the two halves of Floor 12.</small><span class="mode-pips"><span class="pip-grid"><span class="pip-row"><i></i><i></i><i></i><i></i></span><span class="pip-row"><i></i><i></i><i></i><i></i></span></span><span class="pips-label">2 teams × 4 = 8 characters</span></span><span class="mode-rules"><span class="mr yes">Owned characters only</span><span class="mr no">No repeats across teams</span></span></button>
-    <button class="btn mode" data-mode="stygian"><span class="mode-top"><span class="mode-title">Stygian</span><span class="mode-lock">Added</span></span><small>Three teams, one for each trial.</small><span class="mode-pips"><span class="pip-grid"><span class="pip-row"><i></i><i></i><i></i><i></i></span><span class="pip-row"><i></i><i></i><i></i><i></i></span><span class="pip-row"><i></i><i></i><i></i><i></i></span></span><span class="pips-label">3 teams × 4 = 12 characters</span></span><span class="mode-rules"><span class="mr yes">Owned characters only</span><span class="mr no">No repeats across teams</span></span></button>
-    <button class="btn mode mode-wide" data-mode="theater"><span class="mode-top"><span class="mode-title">Imaginarium Theater</span><span class="mode-lock">Added</span></span><small>Plan the full cast for a difficulty: the season opening cast, your guest stars and a supporting cast, then give every character a role.</small><span class="mode-pips"><span class="pip-grid"><span class="pip-row gap"><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="pip-row"><i></i><i></i><i></i><i></i><i></i></span></span><span class="pips-label">8–32 characters, by difficulty</span></span><span class="mode-rules"><span class="mr ">6 opening characters</span><span class="mr ">Up to 4 guest stars</span><span class="mr ">1 supporting cast</span></span></button>
-  </div>
-</div></dialog>
 
 <dialog id="dlgDetail"><div class="dbody" id="detail"></div></dialog>
 
@@ -953,6 +935,7 @@ main{padding:14px 0 60px}
 <script>
 (() => {
 'use strict';
+/* Share links store each character as its position in SEED. Add new characters at the END of this list only, never in the middle, or links people already shared will show the wrong characters. */
 const SEED = [{"id":"jean","rar":5,"ver":"1.0","name":"Jean","el":"anemo","ids":["Qin","Jean","JeanNew"],"w":"sword"},{"id":"diluc","rar":5,"ver":"1.0","name":"Diluc","el":"pyro","ids":["Diluc","DilucNew"],"w":"claymore"},{"id":"qiqi","rar":5,"ver":"1.0","name":"Qiqi","el":"cryo","ids":["Qiqi","QiqiNew"],"w":"sword"},{"id":"mona","rar":5,"ver":"1.0","name":"Mona","el":"hydro","ids":["Mona","MonaNew"],"w":"catalyst"},{"id":"keqing","rar":5,"ver":"1.0","name":"Keqing","el":"electro","ids":["Keqing","KeqingNew"],"w":"sword"},{"id":"venti","rar":5,"ver":"1.0","name":"Venti","el":"anemo","ids":["Venti","VentiNew"],"w":"bow"},{"id":"klee","rar":5,"ver":"1.0","name":"Klee","el":"pyro","ids":["Klee","KleeNew"],"w":"catalyst"},{"id":"tartaglia","rar":5,"ver":"1.1","name":"Tartaglia","el":"hydro","ids":["Tartaglia","TartagliaNew"],"w":"bow"},{"id":"zhongli","rar":5,"ver":"1.1","name":"Zhongli","el":"geo","ids":["Zhongli","ZhongliNew"],"w":"polearm"},{"id":"albedo","rar":5,"ver":"1.2","name":"Albedo","el":"geo","ids":["Albedo","AlbedoNew"],"w":"sword"},{"id":"ganyu","rar":5,"ver":"1.2","name":"Ganyu","el":"cryo","ids":["Ganyu","GanyuNew"],"w":"bow"},{"id":"xiao","rar":5,"ver":"1.3","name":"Xiao","el":"anemo","ids":["Xiao","XiaoNew"],"w":"polearm"},{"id":"hu-tao","rar":5,"ver":"1.3","name":"Hu Tao","el":"pyro","ids":["Hutao","HuTao","HuTaoNew"],"w":"polearm"},{"id":"eula","rar":5,"ver":"1.5","name":"Eula","el":"cryo","ids":["Eula","EulaNew"],"w":"claymore"},{"id":"kaedehara-kazuha","rar":5,"ver":"1.6","name":"Kaedehara Kazuha","el":"anemo","ids":["Kazuha","KaedeharaKazuha","KaedeharaKazuhaNew"],"w":"sword"},{"id":"kamisato-ayaka","rar":5,"ver":"2.0","name":"Kamisato Ayaka","el":"cryo","ids":["Ayaka","KamisatoAyaka","KamisatoAyakaNew"],"w":"sword"},{"id":"yoimiya","rar":5,"ver":"2.0","name":"Yoimiya","el":"pyro","ids":["Yoimiya","YoimiyaNew"],"w":"bow"},{"id":"aloy","rar":5,"ver":"2.1","name":"Aloy","el":"cryo","ids":["Aloy","AloyNew"],"w":"bow"},{"id":"raiden-shogun","rar":5,"ver":"2.1","name":"Raiden Shogun","el":"electro","ids":["Shougun","Shogun","Raiden","RaidenShogun","RaidenShogunNew"],"w":"polearm"},{"id":"sangonomiya-kokomi","rar":5,"ver":"2.1","name":"Sangonomiya Kokomi","el":"hydro","ids":["Kokomi","SangonomiyaKokomi","SangonomiyaKokomiNew"],"w":"catalyst"},{"id":"arataki-itto","rar":5,"ver":"2.3","name":"Arataki Itto","el":"geo","ids":["Itto","AratakiItto","AratakiIttoNew"],"w":"claymore"},{"id":"shenhe","rar":5,"ver":"2.4","name":"Shenhe","el":"cryo","ids":["Shenhe","ShenheNew"],"w":"polearm"},{"id":"yae-miko","rar":5,"ver":"2.5","name":"Yae Miko","el":"electro","ids":["Yae","YaeMiko","YaeMikoNew"],"w":"catalyst"},{"id":"kamisato-ayato","rar":5,"ver":"2.6","name":"Kamisato Ayato","el":"hydro","ids":["Ayato","KamisatoAyato","KamisatoAyatoNew"],"w":"sword"},{"id":"yelan","rar":5,"ver":"2.7","name":"Yelan","el":"hydro","ids":["Yelan","YelanNew"],"w":"bow"},{"id":"tighnari","rar":5,"ver":"3.0","name":"Tighnari","el":"dendro","ids":["Tighnari","TighnariNew"],"w":"bow"},{"id":"cyno","rar":5,"ver":"3.1","name":"Cyno","el":"electro","ids":["Cyno","CynoNew"],"w":"polearm"},{"id":"nilou","rar":5,"ver":"3.1","name":"Nilou","el":"hydro","ids":["Nilou","NilouNew"],"w":"sword"},{"id":"nahida","rar":5,"ver":"3.2","name":"Nahida","el":"dendro","ids":["Nahida","NahidaNew"],"w":"catalyst"},{"id":"the-wanderer","rar":5,"ver":"3.3","name":"The Wanderer","el":"anemo","ids":["Wanderer","Kunikuzushi","TheWanderer","TheWandererNew"],"w":"catalyst"},{"id":"alhaitham","rar":5,"ver":"3.4","name":"Alhaitham","el":"dendro","ids":["Alhatham","Alhaitham","AlhaithamNew"],"w":"sword"},{"id":"dehya","rar":5,"ver":"3.5","name":"Dehya","el":"pyro","ids":["Dehya","DehyaNew"],"w":"claymore"},{"id":"baizhu","rar":5,"ver":"3.6","name":"Baizhu","el":"dendro","ids":["Baizhuer","Baizhu","BaizhuNew"],"w":"catalyst"},{"id":"lyney","rar":5,"ver":"4.0","name":"Lyney","el":"pyro","ids":["Liney","Lyney","LyneyNew"],"w":"bow"},{"id":"neuvillette","rar":5,"ver":"4.1","name":"Neuvillette","el":"hydro","ids":["Neuvillette","NeuvilletteNew"],"w":"catalyst"},{"id":"wriothesley","rar":5,"ver":"4.1","name":"Wriothesley","el":"cryo","ids":["Wriothesley","WriothesleyNew"],"w":"catalyst"},{"id":"furina","rar":5,"ver":"4.2","name":"Furina","el":"hydro","ids":["Furina","FurinaNew"],"w":"sword"},{"id":"navia","rar":5,"ver":"4.3","name":"Navia","el":"geo","ids":["Navia","NaviaNew"],"w":"claymore"},{"id":"xianyun","rar":5,"ver":"4.4","name":"Xianyun","el":"anemo","ids":["Liuyun","Xianyun","XianyunNew"],"w":"catalyst"},{"id":"chiori","rar":5,"ver":"4.5","name":"Chiori","el":"geo","ids":["Chiori","ChioriNew"],"w":"sword"},{"id":"arlecchino","rar":5,"ver":"4.6","name":"Arlecchino","el":"pyro","ids":["Arlecchino","ArlecchinoNew"],"w":"polearm"},{"id":"clorinde","rar":5,"ver":"4.7","name":"Clorinde","el":"electro","ids":["Clorinde","ClorindeNew"],"w":"sword"},{"id":"sigewinne","rar":5,"ver":"4.7","name":"Sigewinne","el":"hydro","ids":["Sigewinne","SigewinneNew"],"w":"bow"},{"id":"emilie","rar":5,"ver":"4.8","name":"Emilie","el":"dendro","ids":["Emilie","EmilieNew"],"w":"polearm"},{"id":"mualani","rar":5,"ver":"5.0","name":"Mualani","el":"hydro","ids":["Mualani","MualaniNew"],"w":"catalyst"},{"id":"kinich","rar":5,"ver":"5.0","name":"Kinich","el":"dendro","ids":["Kinich","KinichNew"],"w":"claymore"},{"id":"xilonen","rar":5,"ver":"5.1","name":"Xilonen","el":"geo","ids":["Xilonen","XilonenNew"],"w":"sword"},{"id":"chasca","rar":5,"ver":"5.2","name":"Chasca","el":"anemo","ids":["Chasca","ChascaNew"],"w":"bow"},{"id":"citlali","rar":5,"ver":"5.3","name":"Citlali","el":"cryo","ids":["Citlali","CitlaliNew"],"w":"catalyst"},{"id":"mavuika","rar":5,"ver":"5.3","name":"Mavuika","el":"pyro","ids":["Mavuika","MavuikaNew"],"w":"claymore"},{"id":"yumemizuki-mizuki","rar":5,"ver":"5.4","name":"Yumemizuki Mizuki","el":"anemo","ids":["Mizuki","YumemizukiMizuki","YumemizukiMizukiNew"],"w":"catalyst"},{"id":"varesa","rar":5,"ver":"5.5","name":"Varesa","el":"electro","ids":["Varesa","VaresaNew"],"w":"catalyst"},{"id":"escoffier","rar":5,"ver":"5.6","name":"Escoffier","el":"cryo","ids":["Escoffier","EscoffierNew"],"w":"polearm"},{"id":"skirk","rar":5,"ver":"5.7","name":"Skirk","el":"cryo","ids":["SkirkNew","Skirk"],"w":"sword"},{"id":"ineffa","rar":5,"ver":"5.8","name":"Ineffa","el":"electro","ids":["Ineffa","IneffaNew"],"w":"polearm"},{"id":"lauma","rar":5,"ver":"6.0","name":"Lauma","el":"dendro","ids":["Lauma","LaumaNew"],"w":"catalyst"},{"id":"flins","rar":5,"ver":"6.0","name":"Flins","el":"electro","ids":["Flins","FlinsNew"],"w":"polearm"},{"id":"nefer","rar":5,"ver":"6.1","name":"Nefer","el":"dendro","ids":["Nefer","NeferNew"],"w":"catalyst"},{"id":"durin","rar":5,"ver":"6.2","name":"Durin","el":"pyro","ids":["Durin","DurinNew"],"w":"sword"},{"id":"columbina","rar":5,"ver":"6.3","name":"Columbina","el":"hydro","ids":["Columbina","ColumbinaNew"],"w":"catalyst"},{"id":"zibai","rar":5,"ver":"6.3","name":"Zibai","el":"geo","ids":["Zibai","ZibaiNew"],"w":"sword"},{"id":"varka","rar":5,"ver":"6.4","name":"Varka","el":"anemo","ids":["Varka","VarkaNew"],"w":"claymore"},{"id":"linnea","rar":5,"ver":"6.5","name":"Linnea","el":"geo","ids":["Linnea","LinneaNew"],"w":"bow"},{"id":"nicole","rar":5,"ver":"6.6","name":"Nicole","el":"pyro","ids":["Nicole","NicoleNew"],"w":"catalyst"},{"id":"lohen","rar":5,"ver":"6.6","name":"Lohen","el":"cryo","ids":["Lohen","LohenNew"],"w":"polearm"},{"id":"sandrone","rar":5,"ver":"6.7","name":"Sandrone","el":"cryo","ids":["MarionetteNew","Marionette","Sandrone","SandroneNew"],"w":"claymore"},{"id":"odette","rar":5,"ver":"7.0","name":"Odette","el":"cryo","ids":["Odette","OdetteNew"],"w":"sword"},{"id":"vesna","rar":5,"ver":"7.1","name":"Vesna","el":"anemo","ids":["Vesna","VesnaNew"],"w":"sword"},{"id":"vodyanitsa","rar":5,"ver":"7.1","name":"Vodyanitsa","el":"hydro","ids":["Vodyanitsa","VodyanitsaNew"],"w":"catalyst"},{"id":"mitya","rar":5,"ver":"7.2","name":"Mitya","el":"electro","ids":["Mitya","MityaNew"],"w":"catalyst"},{"id":"lisa","rar":4,"ver":"1.0","name":"Lisa","el":"electro","ids":["Lisa","LisaNew"],"w":"catalyst"},{"id":"barbara","rar":4,"ver":"1.0","name":"Barbara","el":"hydro","ids":["Barbara","BarbaraNew"],"w":"catalyst"},{"id":"kaeya","rar":4,"ver":"1.0","name":"Kaeya","el":"cryo","ids":["Kaeya","KaeyaNew"],"w":"sword"},{"id":"razor","rar":4,"ver":"1.0","name":"Razor","el":"electro","ids":["Razor","RazorNew"],"w":"claymore"},{"id":"amber","rar":4,"ver":"1.0","name":"Amber","el":"pyro","ids":["Ambor","Amber","AmberNew"],"w":"bow"},{"id":"xiangling","rar":4,"ver":"1.0","name":"Xiangling","el":"pyro","ids":["Xiangling","XianglingNew"],"w":"polearm"},{"id":"beidou","rar":4,"ver":"1.0","name":"Beidou","el":"electro","ids":["Beidou","BeidouNew"],"w":"claymore"},{"id":"xingqiu","rar":4,"ver":"1.0","name":"Xingqiu","el":"hydro","ids":["Xingqiu","XingqiuNew"],"w":"sword"},{"id":"ningguang","rar":4,"ver":"1.0","name":"Ningguang","el":"geo","ids":["Ningguang","NingguangNew"],"w":"catalyst"},{"id":"fischl","rar":4,"ver":"1.0","name":"Fischl","el":"electro","ids":["Fischl","FischlNew"],"w":"bow"},{"id":"bennett","rar":4,"ver":"1.0","name":"Bennett","el":"pyro","ids":["Bennett","BennettNew"],"w":"sword"},{"id":"noelle","rar":4,"ver":"1.0","name":"Noelle","el":"geo","ids":["Noel","Noelle","NoelleNew"],"w":"claymore"},{"id":"chongyun","rar":4,"ver":"1.0","name":"Chongyun","el":"cryo","ids":["Chongyun","ChongyunNew"],"w":"claymore"},{"id":"sucrose","rar":4,"ver":"1.0","name":"Sucrose","el":"anemo","ids":["Sucrose","SucroseNew"],"w":"catalyst"},{"id":"diona","rar":4,"ver":"1.1","name":"Diona","el":"cryo","ids":["Diona","DionaNew"],"w":"bow"},{"id":"xinyan","rar":4,"ver":"1.1","name":"Xinyan","el":"pyro","ids":["Xinyan","XinyanNew"],"w":"claymore"},{"id":"rosaria","rar":4,"ver":"1.4","name":"Rosaria","el":"cryo","ids":["Rosaria","RosariaNew"],"w":"polearm"},{"id":"yanfei","rar":4,"ver":"1.5","name":"Yanfei","el":"pyro","ids":["Feiyan","Yanfei","YanfeiNew"],"w":"catalyst"},{"id":"sayu","rar":4,"ver":"2.0","name":"Sayu","el":"anemo","ids":["Sayu","SayuNew"],"w":"claymore"},{"id":"kujou-sara","rar":4,"ver":"2.1","name":"Kujou Sara","el":"electro","ids":["Sara","KujouSara","KujouSaraNew"],"w":"bow"},{"id":"thoma","rar":4,"ver":"2.2","name":"Thoma","el":"pyro","ids":["Tohma","Thoma","ThomaNew"],"w":"polearm"},{"id":"gorou","rar":4,"ver":"2.3","name":"Gorou","el":"geo","ids":["Gorou","GorouNew"],"w":"bow"},{"id":"yun-jin","rar":4,"ver":"2.4","name":"Yun Jin","el":"geo","ids":["Yunjin","YunJin","YunJinNew"],"w":"polearm"},{"id":"kuki-shinobu","rar":4,"ver":"2.7","name":"Kuki Shinobu","el":"electro","ids":["Shinobu","KukiShinobu","KukiShinobuNew"],"w":"sword"},{"id":"shikanoin-heizou","rar":4,"ver":"2.8","name":"Shikanoin Heizou","el":"anemo","ids":["Heizo","Heizou","ShikanoinHeizou","ShikanoinHeizouNew"],"w":"catalyst"},{"id":"collei","rar":4,"ver":"3.0","name":"Collei","el":"dendro","ids":["Collei","ColleiNew"],"w":"bow"},{"id":"dori","rar":4,"ver":"3.0","name":"Dori","el":"electro","ids":["Dori","DoriNew"],"w":"claymore"},{"id":"candace","rar":4,"ver":"3.1","name":"Candace","el":"hydro","ids":["Candace","CandaceNew"],"w":"polearm"},{"id":"layla","rar":4,"ver":"3.2","name":"Layla","el":"cryo","ids":["Layla","LaylaNew"],"w":"sword"},{"id":"faruzan","rar":4,"ver":"3.3","name":"Faruzan","el":"anemo","ids":["Faruzan","FaruzanNew"],"w":"bow"},{"id":"yaoyao","rar":4,"ver":"3.4","name":"Yaoyao","el":"dendro","ids":["Yaoyao","YaoyaoNew"],"w":"polearm"},{"id":"mika","rar":4,"ver":"3.5","name":"Mika","el":"cryo","ids":["Mika","MikaNew"],"w":"polearm"},{"id":"kaveh","rar":4,"ver":"3.6","name":"Kaveh","el":"dendro","ids":["Kaveh","KavehNew"],"w":"claymore"},{"id":"kirara","rar":4,"ver":"3.7","name":"Kirara","el":"dendro","ids":["Momoka","Kirara","KiraraNew"],"w":"sword"},{"id":"lynette","rar":4,"ver":"4.0","name":"Lynette","el":"anemo","ids":["Linette","Lynette","LynetteNew"],"w":"sword"},{"id":"freminet","rar":4,"ver":"4.0","name":"Freminet","el":"cryo","ids":["Freminet","FreminetNew"],"w":"claymore"},{"id":"charlotte","rar":4,"ver":"4.2","name":"Charlotte","el":"cryo","ids":["Charlotte","CharlotteNew"],"w":"catalyst"},{"id":"chevreuse","rar":4,"ver":"4.3","name":"Chevreuse","el":"pyro","ids":["Chevreuse","ChevreuseNew"],"w":"polearm"},{"id":"gaming","rar":4,"ver":"4.4","name":"Gaming","el":"pyro","ids":["Gaming","GamingNew"],"w":"claymore"},{"id":"sethos","rar":4,"ver":"4.7","name":"Sethos","el":"electro","ids":["Sethos","SethosNew"],"w":"bow"},{"id":"kachina","rar":4,"ver":"5.0","name":"Kachina","el":"geo","ids":["Kachina","KachinaNew"],"w":"polearm"},{"id":"ororon","rar":4,"ver":"5.2","name":"Ororon","el":"electro","ids":["Olorun","Ororon","OroronNew"],"w":"bow"},{"id":"lan-yan","rar":4,"ver":"5.3","name":"Lan Yan","el":"anemo","ids":["LanYan","Lanyan","LanYanNew"],"w":"catalyst"},{"id":"iansan","rar":4,"ver":"5.5","name":"Iansan","el":"electro","ids":["Iansan","IansanNew"],"w":"polearm"},{"id":"ifa","rar":4,"ver":"5.6","name":"Ifa","el":"anemo","ids":["Ifa","IfaNew"],"w":"catalyst"},{"id":"dahlia","rar":4,"ver":"5.7","name":"Dahlia","el":"hydro","ids":["Dahlia","DahliaNew"],"w":"sword"},{"id":"aino","rar":4,"ver":"6.0","name":"Aino","el":"hydro","ids":["Aino","AinoNew"],"w":"claymore"},{"id":"jahoda","rar":4,"ver":"6.2","name":"Jahoda","el":"anemo","ids":["Jahoda","JahodaNew"],"w":"bow"},{"id":"illuga","rar":4,"ver":"6.3","name":"Illuga","el":"geo","ids":["Illuga","IllugaNew"],"w":"polearm"},{"id":"prune","rar":4,"ver":"6.6","name":"Prune","el":"anemo","ids":["Prune","PruneNew"],"w":"catalyst"},{"id":"alyosha","rar":4,"ver":"7.0","name":"Alyosha","el":"electro","ids":["Alyosha","AlyoshaNew"],"w":"polearm"},{"id":"valeriy","rar":4,"ver":"7.2","name":"Valeriy","el":"electro","ids":["Valeriy","ValeriyNew"],"w":"sword"}];
 
 /* ---------- elements ---------- */
@@ -1012,7 +995,7 @@ const elIcon = el => {
 /* ---------- state ---------- */
 const STORE = 'gi-roster-v2';
 let storageOK = true;
-const freshState = () => ({v:2, player:'', uid:'', owned:{}, refine:{}, sort:'verDesc', view:'tall', theme:'scifi', lineups:[], tab:'roster'});
+const freshState = () => ({v:2, player:'', uid:'', owned:{}, refine:{}, sort:'verDesc', view:'tall', theme:'scifi', lineups:[], luTab:'', tab:'roster', server:''});
 let S = (() => {
   try{ const raw = localStorage.getItem(STORE); if(raw) return Object.assign(freshState(), JSON.parse(raw)); }
   catch(e){ storageOK = false; }
@@ -1600,22 +1583,44 @@ const ROLES = {dps:'On-Field DPS',dmg:'Damage Support',sus:'Support & Sustain'};
 const ROLE_SHORT = {dps:'DPS',dmg:'DMG',sus:'SUP'};
 const ROLE_C = {dps:'#ff4f6d',dmg:'#ff9a3c',sus:'#4fc3ff'};
 /* Season data (updated by hand each month). Opening = 6 characters, Guests = 4 special guest characters. */
-const SEASON = {no:29, from:'Nov 1, 2026', to:'Dec 1, 2026',
+const SEASON = {no:29, from:'Nov 1, 2026', to:'Dec 1, 2026', startDay:'2026-11-01', endDay:'2026-12-01',
   opening:['yelan','aino','flins','fischl','zhongli','kachina'],
   guests:['qiqi','odette','vesna','jahoda']};
 const TRAV = {id:'traveler',name:'Traveler',rar:5,el:'',ids:['PlayerBoy']};
 const PARTY_MODES = {
-  myparty:{label:'My Party',badge:'OWNED CHARACTERS',rule:'Owned characters. Repeats allowed across teams',source:'owned',noRepeats:false,teamNames:null,defaultName:'My Party'},
-  share:{label:'Create & Share',badge:'ALL CHARACTERS, NO REPEATS',rule:'Any character. No repeats across teams. Tap a C / R badge to raise it, hold to lower it',source:'all',noRepeats:true,teamNames:null,flex:true,maxTeams:3,defaultName:'Shared Team'},
-  abyss:{label:'Abyss',badge:'2 TEAMS, NO REPEATS',rule:'Owned characters. Repeated characters are flagged',source:'owned',noRepeats:true,teamNames:['Floor 12 - First half','Floor 12 - Second half'],defaultName:'Abyss - Floor 12'},
-  stygian:{label:'Stygian',badge:'3 TEAMS, NO REPEATS',rule:'Owned characters. Repeated characters are flagged',source:'owned',noRepeats:true,teamNames:['Trial 1','Trial 2','Trial 3'],defaultName:'Stygian Challenge'}
+  share:{label:'Share',title:'Create & Share',badge:'ALL CHARACTERS, NO REPEATS',rule:'Any character. No repeats across teams. Tap a C / R badge to raise it, hold to lower it',source:'all',noRepeats:true,teamNames:null,flex:true,maxTeams:3},
+  myparty:{label:'My Teams',title:'My Teams',badge:'OWNED, REPEATS ALLOWED',rule:'Owned characters. Repeats allowed across teams',source:'owned',noRepeats:false,teamNames:null,flex:true,maxTeams:3},
+  abyss:{label:'Abyss',title:'Spiral Abyss',badge:'2 TEAMS, NO REPEATS',rule:'Owned characters. No repeats across the two halves',source:'owned',noRepeats:true,teamNames:['First Half','Second Half']},
+  stygian:{label:'Stygian',title:'Stygian Onslaught',badge:'3 TEAMS, NO REPEATS',rule:'Owned characters. No repeats across the three battlefields',source:'owned',noRepeats:true,teamNames:['Battlefield 1','Battlefield 2','Battlefield 3']}
 };
-const teamLabel=(mode,team,ti)=> mode.flex ? ((team&&team.name)||('Team '+(ti+1))) : (mode.teamNames?mode.teamNames[ti]:mode.label);
+/* Preset team names for Share. Share links store only the 1-character id, so an id must never change meaning or be reused; the text can be edited and new presets go at the end. */
+const NAME_PRESETS=[{id:'a',n:'Abyss First Half'},{id:'b',n:'Abyss Second Half'},{id:'c',n:'Stygian Onslaught: Battlefield 1'},{id:'d',n:'Stygian Onslaught: Battlefield 2'},{id:'e',n:'Stygian Onslaught: Battlefield 3'}];
+const presetName=id=>(NAME_PRESETS.find(p=>p.id===id)||{}).n||'';
+const CUSTOM_NAME_MAX=24;
+const cleanName=t=>String(t||'').replace(/[^A-Za-z0-9 .,!?'":;&()+\/#-]/g,'').slice(0,CUSTOM_NAME_MAX);
+const teamName=(mode,team)=> mode.flex ? ((team&&team.pre&&presetName(team.pre))||((team&&team.cus&&cleanName(team.name).trim())||'')) : '';
+/* Season timer: the game resets at 04:00 server time (fixed offsets, no daylight saving). The server is guessed from the browser time zone and can be changed by tapping the label. */
+const SERVERS=[{id:'america',name:'America',off:'-05:00'},{id:'europe',name:'Europe',off:'+01:00'},{id:'asia',name:'Asia',off:'+08:00'}];
+function guessServer(){
+  let tz=''; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''; }catch(e){}
+  return /^(Europe|Africa)\//.test(tz)?'europe':/^(America|Atlantic)\//.test(tz)||tz==='Pacific/Honolulu'?'america':'asia';
+}
+const serverNow=()=>SERVERS.find(x=>x.id===(S.server||guessServer()));
+function seasonInner(now=Date.now()){
+  const sv=serverNow(), a=Date.parse(SEASON.startDay+'T04:00:00'+sv.off), b=Date.parse(SEASON.endDay+'T04:00:00'+sv.off);
+  const dur=ms=>{ const m=Math.max(0,Math.floor(ms/60000)), d=Math.floor(m/1440), h=Math.floor(m%1440/60), mi=m%60; return d?d+'d '+h+'h':h?h+'h '+mi+'m':mi+'m'; };
+  const when=t=>new Date(t).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
+  const upcoming=now<a, over=now>=b, pct=upcoming?0:over?100:Math.round((now-a)/(b-a)*100);
+  const line=upcoming?'Starts in <b>'+dur(a-now)+'</b>':over?'Season ended':'Ends in <b>'+dur(b-now)+'</b>';
+  return '<span class="ls-line">'+line+'</span><span class="ls-bar"><i style="width:'+pct+'%"></i></span><span class="ls-when">'+esc(when(upcoming?a:b))+'<button type="button" class="ls-srv" data-act="season-server" title="Server reset time used for this timer. Tap to switch server." aria-label="'+sv.name+' server, tap to switch">'+sv.name+' server \u27f3</button></span>';
+}
+setInterval(()=>{ const e=document.getElementById('luSeason'); if(e) e.innerHTML=seasonInner(); },60000);
+const NAV_MODES=[['share','Share','Share'],['myparty','My Teams','My Teams'],['abyss','Spiral Abyss','Abyss'],['stygian','Stygian Onslaught','Stygian'],['theater','Imaginarium Theater','Theater']];
+const teamLabel=(mode,team,ti)=> mode.flex ? (teamName(mode,team)||('Team '+(ti+1))) : mode.teamNames[ti];
+const noRepOf = lu => !!(PARTY_MODES[lu.type]&&PARTY_MODES[lu.type].noRepeats);
 const isPartyType = type => Object.prototype.hasOwnProperty.call(PARTY_MODES,type);
-const SINGLETON_LINEUP_TYPES = new Set(['abyss','stygian','theater']);
-const MULTI_TYPES = new Set(['share','myparty']), MULTI_MAX = 10;
 const UIS = {};
-const uiOf = id => UIS[id] || (UIS[id] = {fold:false, edit:false, tf:{els:new Set(),wps:new Set(),roles:new Set()}});
+const uiOf = id => UIS[id] || (UIS[id] = {edit:false, tf:{els:new Set(),wps:new Set(),roles:new Set()}});
 const newPickerFilters=()=>({q:'', rars:new Set(), els:new Set(), wps:new Set(), status:'all', c:'all'});
 const PARTY_PICKER = {sup:false,luId:'',team:0,slot:0,f:newPickerFilters(),sort:'verDesc'};
 const byIdAll = id => id==='traveler' ? {...TRAV, lvl:6, ref:0, ord:9999} : (chars().find(c=>c.id===id) || null);
@@ -1629,8 +1634,8 @@ function newTheater(){
 function newParty(type){
   if(!isPartyType(type)) return null;
   const mode=PARTY_MODES[type];
-  const names=mode.flex ? ['Team 1'] : (mode.teamNames || [mode.label]);
-  return {id:'lu'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), type, name:mode.defaultName, teams:names.map(name=>({name, slots:Array(4).fill(null)}))};
+  const names=mode.flex ? [''] : mode.teamNames;
+  return {id:'lu'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), type, teams:names.map(name=>({name, slots:Array(4).fill(null)}))};
 }
 /* ---- party modes (4-character teams) ---- */
 function partyArtInner(id, el){
@@ -1647,7 +1652,7 @@ function queuePartyPickerImages(list){
   pump();
 }
 function partyDuplicateIds(lu){
-  const mode=PARTY_MODES[lu.type]; if(!mode||!mode.noRepeats) return new Set();
+  if(!PARTY_MODES[lu.type]||!noRepOf(lu)) return new Set();
   const count=new Map();
   (lu.teams||[]).forEach(t=>(t.slots||[]).forEach(s=>{ if(s&&s.id) count.set(s.id,(count.get(s.id)||0)+1); }));
   return new Set([...count].filter(([,n])=>n>1).map(([id])=>id));
@@ -1683,11 +1688,13 @@ function partySlotHtml(lu, ti, si, slot, duplicates){
   </article>`;
 }
 function shareBarHtml(lu){
-  const n=lu.teams.length, any=lu.teams.some(t=>t.slots.some(Boolean));
-  if(!PARTY_MODES[lu.type].flex) return `<div class="share-bar"><div class="share-grp"><button type="button" class="btn cap" data-act="share-capture" ${any?'':'disabled'}>Capture</button></div></div>`;
-  return `<div class="share-bar"><div class="share-grp"><button type="button" class="btn" data-act="share-addteam" ${n>=3?'disabled':''}>+ Add team</button><button type="button" class="btn" data-act="share-delteam" ${n<=1?'disabled':''}>Remove last team</button></div><div class="share-grp"><button type="button" class="btn primary" data-act="share-link" ${any?'':'disabled'}>Copy link</button><button type="button" class="btn cap" data-act="share-capture" ${any?'':'disabled'}>Capture</button></div></div>`;
+  const mode=PARTY_MODES[lu.type], n=lu.teams.length, any=lu.teams.some(t=>t.slots.some(Boolean)), share=lu.type==='share';
+  const teamBtns=mode.flex?`<button type="button" class="btn" data-act="share-addteam" ${n>=mode.maxTeams?'disabled':''}>+ Add team</button><button type="button" class="btn" data-act="share-delteam" ${n<=1?'disabled':''}>Remove last team</button>`:'';
+  const cap=`<button type="button" class="btn${share?'':' primary'} cap" data-act="share-capture" ${any?'':'disabled'}>Capture</button>`;
+  const link=share?`<button type="button" class="btn primary" data-act="share-link" ${any?'':'disabled'}>Copy link</button>`:'';
+  return `<div class="share-bar"><div class="share-grp">${teamBtns}</div><div class="share-grp">${link}${cap}</div></div>`;
 }
-/* ---- share links: #s2=<team>.<team>  (team = 4 tokens x 3 chars; chars 1-2 = character list position, or _0..._6 = Traveler + element, __ = empty; char 3 = C + 7 x R) ---- */
+/* ---- share links: #s2=<team>.<team>[~<name>.<name>]  (names are optional: empty = none, 1 character = preset id, longer = custom text in base64url) (team = 4 tokens x 3 chars; chars 1-2 = character list position, or _0..._6 = Traveler + element, __ = empty; char 3 = C + 7 x R) ---- */
 const SHARE_ALPHA='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 function shareTok(slot){
   if(!slot||!slot.id) return '__';
@@ -1699,8 +1706,8 @@ const crTok=slot=>{ const c=slot&&slot.id&&byIdAll(slot.id); if(!c) return '0'; 
 const b64u=str=>{ let bin=''; new TextEncoder().encode(str).forEach(x=>{ bin+=String.fromCharCode(x); }); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); };
 const unb64u=t=>{ t=t.replace(/-/g,'+').replace(/_/g,'/'); while(t.length%4) t+='='; return new TextDecoder().decode(Uint8Array.from(atob(t),c=>c.charCodeAt(0))); };
 function shareDecode(hash){
-  const m=/^#s2=([0-9A-Za-z_]{12}(?:\.[0-9A-Za-z_]{12}){0,2})(?:~([0-9A-Za-z_-]{1,300}))?$/.exec(String(hash||'')); if(!m) return null;
-  let name=''; if(m[2]){ try{ name=unb64u(m[2]).trim().slice(0,50); }catch(e){ name=''; } }
+  const m=/^#s2=([0-9A-Za-z_]{12}(?:\.[0-9A-Za-z_]{12}){0,2})(?:~([0-9A-Za-z_-]*(?:\.[0-9A-Za-z_-]*){0,2}))?$/.exec(String(hash||'')); if(!m) return null;
+  const names=(m[2]||'').split('.').map(t=>{ if(t.length===1) return presetName(t); if(t.length>1){ try{ return cleanName(unb64u(t)).trim(); }catch(e){ return ''; } } return ''; });
   const teams=m[1].split('.').map(t=>[0,3,6,9].map(o=>{
     const a=t[o], b=t[o+1], k=SHARE_ALPHA.indexOf(t[o+2]), cc=k<0?0:k%7, rr=k<0?0:Math.floor(k/7), cr={c:cc,r:rr>5?0:rr};
     if(a==='_'){ const el=EL_ORDER[+b]; return (b!=='_'&&el)?{id:'traveler',el,...cr}:null; }
@@ -1708,10 +1715,13 @@ function shareDecode(hash){
     const c=SEED[ai*62+bi];
     return c?{id:c.id,...cr}:null;
   }));
-  return {teams,name};
+  return {teams,names};
 }
-const shareName=lu=>{ const n=String(lu.name||'').trim().slice(0,50); return (n&&n!==PARTY_MODES.share.defaultName)?n:''; };
-const shareLink=lu=>location.href.split('#')[0]+'#s2='+lu.teams.map(t=>t.slots.map(sl=>shareTok(sl)+crTok(sl)).join('')).join('.')+(shareName(lu)?'~'+b64u(shareName(lu)):'');
+const shareLink=lu=>{
+  const names=lu.teams.map(t=>t.pre?t.pre:(t.cus&&cleanName(t.name).trim()?b64u(cleanName(t.name).trim()):''));
+  while(names.length&&!names[names.length-1]) names.pop();
+  return location.href.split('#')[0]+'#s2='+lu.teams.map(t=>t.slots.map(sl=>shareTok(sl)+crTok(sl)).join('')).join('.')+(names.length?'~'+names.join('.'):'');
+};
 async function copyShare(text,okMsg){
   try{ await navigator.clipboard.writeText(text); toast(okMsg); }
   catch(e){ const ta=document.createElement('textarea'); ta.value=text; ta.style.cssText='position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); let ok=false; try{ ok=document.execCommand('copy'); }catch(_){} ta.remove(); toast(ok?okMsg:'Could not copy. Select and copy it manually'); }
@@ -1724,12 +1734,12 @@ function shareCardHtml(slot){
 let SHARE_VIEW=null;
 function closeShareView(){ const v=document.getElementById('shareView'); if(v) v.remove(); SHARE_VIEW=null; }
 function shareViewInner(d){
-  const teams=d.teams.map(t=>t.filter(Boolean)).filter(t=>t.length), multi=teams.length>1, total=teams.reduce((n,t)=>n+t.length,0);
-  const title=d.name||('Shared team'+(multi?'s':'')), date=new Date().toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'});
+  const rows=d.teams.map((t,i)=>({t:t.filter(Boolean),n:(d.names||[])[i]||''})).filter(r=>r.t.length), teams=rows.map(r=>r.t), multi=teams.length>1, total=teams.reduce((n,t)=>n+t.length,0);
+  const title='Shared team'+(multi?'s':''), date=new Date().toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'});
   const elsOf=t=>[...new Set(t.map(s=>s.id==='traveler'?s.el:(byIdAll(s.id)||{}).el).filter(Boolean))];
   return `<div class="sv-wrap"><div class="sv-top"><span>Genshin Roster</span><span>${esc(date)}</span></div>
     <header class="sv-head"><span class="sv-tag">Shared team${multi?'s':''}</span><h1>${esc(title)}</h1><div class="sv-rule"><i></i></div><p class="sv-meta">${multi?teams.length+' teams \u00b7 ':''}${total} character${total>1?'s':''}</p></header>
-    ${teams.map((t,i)=>`<section class="sv-team"><h2 aria-label="Team ${i+1}"><span class="sv-tl">Team</span><span class="sv-rn">${['I','II','III'][i]||i+1}</span><span class="sv-line"></span><span class="sv-els">${elsOf(t).map(k=>`<span class="sico" style="--el:${elc(k)}" title="${esc(EL[k].n)}">${elIcon(k)}</span>`).join('')}</span></h2><div class="party-slots">${t.map(shareCardHtml).join('')}</div></section>`).join('')}
+    ${teams.map((t,i)=>`<section class="sv-team"><h2 aria-label="${esc(rows[i].n||'Team '+(i+1))}">${rows[i].n?`<span class="sv-nm">${esc(rows[i].n)}</span>`:`<span class="sv-tl">Team</span><span class="sv-rn">${['I','II','III'][i]||i+1}</span>`}<span class="sv-line"></span><span class="sv-els">${elsOf(t).map(k=>`<span class="sico" style="--el:${elc(k)}" title="${esc(EL[k].n)}">${elIcon(k)}</span>`).join('')}</span></h2><div class="party-slots">${t.map(shareCardHtml).join('')}</div></section>`).join('')}
     <footer class="sv-foot"><span class="sv-mark">Character collection</span><button type="button" class="sv-link" data-sv="close">Make your own teams in Genshin Roster <span aria-hidden="true">\u2197</span></button></footer></div>`;
 }
 function renderShareView(){
@@ -1744,13 +1754,21 @@ function showShareView(d){
 }
 function initShareView(){ const d=shareDecode(location.hash); if(d) showShareView(d); else closeShareView(); }
 window.addEventListener('hashchange',initShareView);
+function teamHeadHtml(lu,mode,team,ti,multiple){
+  const n=(team.slots||[]).filter(Boolean).length;
+  if(lu.type==='share'){
+    const custom=!!team.cus&&!team.pre;
+    return `<header class="party-team-head"><div class="tname-grp"><select class="tname-sel" data-act="tname" data-team="${ti}" aria-label="Team ${ti+1} name"><option value="">No name (Team ${ti+1})</option>${NAME_PRESETS.map(q=>`<option value="${q.id}"${team.pre===q.id?' selected':''}>${esc(q.n)}</option>`).join('')}<option value="custom"${custom?' selected':''}>Custom name...</option></select>${custom?`<input class="tname-in" data-act="tname-custom" data-team="${ti}" maxlength="${CUSTOM_NAME_MAX}" placeholder="Team name (A-Z, 0-9)" value="${esc(team.name||'')}" aria-label="Custom name for team ${ti+1}">`:''}</div><span>${n}/4 members</span></header>`;
+  }
+  return multiple?`<header class="party-team-head"><h3>${esc(teamLabel(mode,team,ti))}</h3><span>${n}/4 members</span></header>`:'';
+}
 function partyHtml(lu){
   const mode=PARTY_MODES[lu.type], teams=lu.teams||[], duplicates=partyDuplicateIds(lu);
   const filled=teams.reduce((sum,t)=>sum+(t.slots||[]).filter(Boolean).length,0), max=teams.length*4;
   const counts=new Map();
   teams.forEach((t,ti)=>(t.slots||[]).forEach(s=>{ if(s&&s.id){ const row=counts.get(s.id)||[]; row.push(teamLabel(mode,t,ti)); counts.set(s.id,row); } }));
   const multiple=teams.length>1;
-  return `<div class="party-board"><div class="party-progress"><strong>${filled}/${max}</strong><span>${multiple?'characters assigned across '+teams.length+' teams':'characters in team'}</span><span class="party-rule">${esc(mode.rule)}</span></div>${teams.map((team,ti)=>`<section class="party-team">${multiple?`<header class="party-team-head"><h3>${esc(teamLabel(mode,team,ti))}</h3><span>${(team.slots||[]).filter(Boolean).length}/4 members</span></header>`:''}<div class="party-slots">${(team.slots||[]).map((slot,si)=>partySlotHtml(lu,ti,si,slot,new Set())).join('')}</div></section>`).join('')}${shareBarHtml(lu)}</div>`;
+  return `<div class="party-board"><div class="party-progress"><span class="pp-count"><strong>${filled}/${max}</strong><span class="pp-label">${multiple?'characters assigned across '+teams.length+' teams':'characters in team'}</span></span><span class="party-rule">${esc(mode.rule)}</span></div>${teams.map((team,ti)=>`<section class="party-team">${teamHeadHtml(lu,mode,team,ti,multiple)}<div class="party-slots">${(team.slots||[]).map((slot,si)=>partySlotHtml(lu,ti,si,slot,duplicates)).join('')}</div></section>`).join('')}${shareBarHtml(lu)}</div>`;
 }
 function openPartyPicker(lu, team, slot, sup){
   PARTY_PICKER.sup=!!sup; PARTY_PICKER.luId=lu.id; PARTY_PICKER.team=team; PARTY_PICKER.slot=slot; PARTY_PICKER.f.q=''; // element, weapon, rarity and sort stay as the user left them
@@ -1781,10 +1799,12 @@ function renderPartyPicker(){
   const countUsed=id=>lu.teams.reduce((n,t)=>n+(t.slots||[]).filter((s,i)=>s&&s.id===id&&!(t===team&&i===slotIndex)).length,0);
   const tile=c=>{
     const sameTeam=team.slots.some((s,i)=>i!==slotIndex&&s&&s.id===c.id), used=countUsed(c.id);
-    const disabled=sameTeam || (mode.noRepeats && used>0);
+    const disabled=sameTeam || (noRepOf(lu) && used>0);
     const avatar=`<span class="portrait" data-party-pick-avatar="${esc(c.id)}">${partyPickerAvatarInner(c.id)}</span>`;
     const name=`<span class="nm" title="${esc(c.name)}" style="display:block">${esc(c.name)}</span>`;
-    return `<button type="button" class="card r${c.rar} party-pick-card" data-pick-char="${esc(c.id)}" ${disabled?'disabled':''} style="--el:${elc(c.el||'anemo')}" aria-label="${esc(c.name)}">${avatar}${name}</button>`;
+    const at=(disabled&&!sameTeam)?lu.teams.findIndex(t=>t!==team&&t.slots.some(s=>s&&s.id===c.id)):-1;
+    const tag=at>=0?`<span class="pp-used">${esc(teamLabel(PARTY_MODES[lu.type],lu.teams[at],at))}</span>`:'';
+    return `<button type="button" class="card r${c.rar} party-pick-card" data-pick-char="${esc(c.id)}" ${disabled?'disabled':''} style="--el:${elc(c.el||'anemo')}" aria-label="${esc(c.name)}">${tag}${avatar}${name}</button>`;
   };
   const travelerElsewhere=team.slots.some((s,i)=>i!==slotIndex&&s&&s.id==='traveler');
   const btnTraveler=$('#btnAddTraveler'); if(btnTraveler){ btnTraveler.style.display=''; btnTraveler.disabled=travelerElsewhere; btnTraveler.title=travelerElsewhere?'Traveler is already in this party.':'Choose Traveler\u2019s element'; }
@@ -1814,21 +1834,12 @@ function renderTravelerElementChoices(){
   const lu=S.lineups.find(x=>x.id===PARTY_PICKER.luId), team=lu&&lu.teams?lu.teams[PARTY_PICKER.team]:null, slotIndex=PARTY_PICKER.slot;
   if(!lu||!team) return false;
   if(team.slots.some((s,i)=>i!==slotIndex&&s&&s.id==='traveler')){ toast('Traveler is already in this party.'); return false; }
-  if(PARTY_MODES[lu.type].noRepeats && lu.teams.some(t=>t!==team&&t.slots.some(s=>s&&s.id==='traveler'))){ toast('Traveler is already in another team.'); return false; }
+  if(noRepOf(lu) && lu.teams.some(t=>t!==team&&t.slots.some(s=>s&&s.id==='traveler'))){ toast('Traveler is already in another team.'); return false; }
   { const cur=team.slots[slotIndex]; TRAV_PICK.c=cur&&cur.id==='traveler'?(cur.c||0):0; TRAV_PICK.r=cur&&cur.id==='traveler'?(cur.r||0):0; renderTravCR(); }
   const av=document.querySelector('#dlgTravelerElement [data-party-pick-avatar="traveler"]'); if(av) av.innerHTML=partyPickerAvatarInner('traveler');
   const el=$('#travelerElementChoices'); if(el) el.innerHTML=EL_ORDER.map(k=>`<button type="button" class="traveler-element-choice" data-traveler-element="${k}" style="--el:${elc(k)}" aria-label="${EL[k].n}"><span class="tec-ic">${elIcon(k)}</span><span>${EL[k].n}</span></button>`).join('');
   queuePartyPickerImages([TRAV]);
   return true;
-}
-function syncPlanModeOptions(){
-  const current=Array.isArray(S.lineups)?S.lineups:[];
-  document.querySelectorAll('#dlgMode [data-mode]').forEach(b=>{
-    const type=b.dataset.mode, locked=SINGLETON_LINEUP_TYPES.has(type)&&current.some(lu=>lu.type===type), note=b.querySelector('small');
-    if(note&&!note.dataset.original) note.dataset.original=note.textContent;
-    b.disabled=locked; b.classList.toggle('is-prepared',locked);
-    if(note) note.textContent=locked?'Already prepared. Open the saved lineup below.':note.dataset.original;
-  });
 }
 function cleanOwned(src,refSrc){
   const ids=new Set(SEED.map(c=>c.id)), five=new Set(SEED.filter(c=>c.rar===5).map(c=>c.id)), owned={}, refine={};
@@ -1836,22 +1847,29 @@ function cleanOwned(src,refSrc){
   if(refSrc&&typeof refSrc==='object') for(const [k,v] of Object.entries(refSrc)) if(five.has(k) && owned[k]!==undefined && Number.isInteger(v) && v>=1 && v<=5) refine[k]=v;
   return {owned,refine};
 }
+function nameFields(type,input,fixed){
+  if(!PARTY_MODES[type].flex) return {name:fixed};
+  if(type==='share'&&input){
+    if(NAME_PRESETS.some(q=>q.id===input.pre)) return {name:'',pre:input.pre};
+    if(input.cus===true) return {name:cleanName(input.name),cus:true};
+  }
+  return {name:''};
+}
 function cleanLineups(arr){
   if(!Array.isArray(arr)) return [];
   const known=new Set(SEED.map(c=>c.id)); known.add('traveler');
   const roles=new Set(['dps','dmg','sus']), kinds=new Set(['open','guest','support','extra']);
-  const seenSingletons=new Set(); let multiN=0;
+  const seenTypes=new Set();
   return arr.filter(x=>{
     if(!x||(x.type!=='theater'&&!isPartyType(x.type))) return false;
-    if(SINGLETON_LINEUP_TYPES.has(x.type)){ if(seenSingletons.has(x.type)) return false; seenSingletons.add(x.type); }
-    if(MULTI_TYPES.has(x.type)&&++multiN>MULTI_MAX) return false;
+    if(seenTypes.has(x.type)) return false; seenTypes.add(x.type);
     return true;
   }).slice(0,200).map(x=>{
     const id=String(x.id||'').replace(/[^\w-]/g,'').slice(0,24)||('lu'+Math.random().toString(36).slice(2,8));
     if(isPartyType(x.type)){
       const mode=PARTY_MODES[x.type], incoming=Array.isArray(x.teams)?x.teams:[], expected=mode.flex ? Array.from({length:Math.min(mode.maxTeams,Math.max(1,incoming.length))},(_,i)=>'Team '+(i+1)) : (mode.teamNames||[mode.label]);
-      const teams=expected.map((name,ti)=>{ const input=incoming[ti], slots=Array.isArray(input&&input.slots)?input.slots:[]; return {name:String((input&&input.name)||name).slice(0,40), slots:Array.from({length:4},(_,si)=>{ const slot=slots[si]; if(!slot||!known.has(slot.id)) return null; const sd=SEED.find(q=>q.id===slot.id), five=slot.id==='traveler'||(sd&&sd.rar===5), cc=Number.isInteger(slot.c)&&slot.c>=1&&slot.c<=6?slot.c:0, rr=five&&Number.isInteger(slot.r)&&slot.r>=1&&slot.r<=5?slot.r:0, cr=(slot.id==='traveler'||mode.source==='all')?{...(cc?{c:cc}:{}),...(rr?{r:rr}:{})}:{}; return slot.id==='traveler'?{id:'traveler',el:EL[slot.el]?slot.el:'',...cr}:{id:slot.id,...cr}; })}; });
-      return {id, type:x.type, name:String(x.name||mode.defaultName).slice(0,50), teams};
+      const teams=expected.map((name,ti)=>{ const input=incoming[ti], slots=Array.isArray(input&&input.slots)?input.slots:[]; return {...nameFields(x.type,input,name), slots:Array.from({length:4},(_,si)=>{ const slot=slots[si]; if(!slot||!known.has(slot.id)) return null; const sd=SEED.find(q=>q.id===slot.id), five=slot.id==='traveler'||(sd&&sd.rar===5), cc=Number.isInteger(slot.c)&&slot.c>=1&&slot.c<=6?slot.c:0, rr=five&&Number.isInteger(slot.r)&&slot.r>=1&&slot.r<=5?slot.r:0, cr=(slot.id==='traveler'||mode.source==='all')?{...(cc?{c:cc}:{}),...(rr?{r:rr}:{})}:{}; return slot.id==='traveler'?{id:'traveler',el:EL[slot.el]?slot.el:'',...cr}:{id:slot.id,...cr}; })}; });
+      return {id, type:x.type, teams};
     }
     const inList=Array.isArray(x.list)?x.list:[], prevRole=new Map(inList.filter(e=>e&&typeof e.id==='string').map(e=>[e.id,e.role]));
     const seasonEls=[...new Set(SEASON.opening.map(i=>(SEED.find(c=>c.id===i)||{}).el).filter(Boolean))];
@@ -1868,7 +1886,7 @@ function cleanLineups(arr){
     });
     const list=open.concat(rest).slice(0,32);
     return {
-      id, type:'theater', name:String(x.name||'Imaginarium Theater').slice(0,50),
+      id, type:'theater', name:'Imaginarium Theater',
       diff:DIFF[x.diff]?x.diff:'lunar', stage:(x.season===undefined||x.season===SEASON.no)&&['open','plan','card'].includes(x.stage)?x.stage:'open',
       season:SEASON.no, list
     };
@@ -2027,26 +2045,37 @@ function cardHtml(lu){
     <div class="acts"><button class="btn" data-act="cardback">\u2190 Back to team list</button><button class="btn cap" data-act="capture">Capture</button></div>
   </div>`;
 }
+const luModeType=()=>NAV_MODES.some(m=>m[0]===S.luTab)?S.luTab:'myparty';
+function ensureLu(type){
+  let lu=S.lineups.find(x=>x.type===type);
+  if(!lu){ lu=type==='theater'?newTheater():newParty(type); S.lineups.push(lu); persist(); }
+  return lu;
+}
+function renderLuTabs(){
+  const cur=luModeType();
+  $('#luTabs').innerHTML=NAV_MODES.map(([t,l,sh])=>`<button type="button" class="lu-tab" role="tab" data-lu-tab="${t}" aria-label="${esc(l)}" aria-selected="${t===cur}"><span class="l-long">${esc(l)}</span><span class="l-short">${esc(sh)}</span></button>`).join('');
+}
 function luHtml(lu){
   const u=uiOf(lu.id);
   if(isPartyType(lu.type)){
     const mode=PARTY_MODES[lu.type];
-    const head=`<header class="lu-h"><input class="lu-name" data-act="name" value="${esc(lu.name)}" maxlength="50" aria-label="${esc(mode.label)} team name"><span class="lu-tag">${esc(mode.label)}</span><span class="lu-tag">${esc(mode.badge)}</span><span class="lu-acts"><button class="btn" data-act="fold">${u.fold?'Expand':'Collapse'}</button><button class="btn danger" data-act="del">Delete</button></span></header>`;
+    const head=`<header class="lu-h"><h3 class="lu-title">${esc(mode.title)}</h3><span class="lu-tag">${esc(mode.badge)}</span><span class="lu-acts"><button class="btn danger" data-act="clear">Clear</button></span></header>`;
     const body=partyHtml(lu);
-    return `<section class="lu" data-lu="${lu.id}">${head}${u.fold?'':`<div class="lu-body">${body}</div>`}</section>`;
+    return `<section class="lu" data-lu="${lu.id}" data-type="${lu.type}">${head}<div class="lu-body">${body}</div></section>`;
   }
   const d=DIFF[lu.diff]||DIFF.lunar;
-  const head=`<header class="lu-h"><input class="lu-name" data-act="name" value="${esc(lu.name)}" maxlength="50" aria-label="Team name"><span class="lu-tag">Imaginarium Theater</span><span class="lu-tag">${d.n} mode</span><span class="lu-acts"><button class="btn" data-act="fold">${u.fold?'Expand':'Collapse'}</button><button class="btn danger" data-act="del">Delete</button></span></header>`;
+  const head=`<header class="lu-h"><h3 class="lu-title">Imaginarium Theater</h3><span class="lu-tag lu-season" id="luSeason">${seasonInner()}</span><span class="lu-acts"><button class="btn danger" data-act="clear">Clear</button></span></header>`;
   const body=lu.stage==='plan'?planHtml(lu,u):lu.stage==='card'?cardHtml(lu):openHtml(lu);
-  return `<section class="lu" data-lu="${lu.id}">${head}${u.fold?'':`<div class="lu-body">${body}</div>`}</section>`;
+  return `<section class="lu" data-lu="${lu.id}" data-type="${lu.type}">${head}<div class="lu-body">${body}</div></section>`;
 }
 function renderLineups(){
   const host=$('#luList');
-  host.innerHTML=S.lineups.length?S.lineups.map(luHtml).join(''):'<p class="luempty">No teams yet. Press Add team to start planning.</p>';
+  renderLuTabs(); document.documentElement.dataset.lumode=luModeType();
+  host.innerHTML=luHtml(ensureLu(luModeType()));
   const need=new Set();
   const partyNeed=new Set();
   host.querySelectorAll('.lu').forEach(box=>{
-    const lu=S.lineups.find(x=>x.id===box.dataset.lu), u=lu&&uiOf(lu.id); if(!lu||u.fold) return;
+    const lu=S.lineups.find(x=>x.id===box.dataset.lu); if(!lu) return;
     if(isPartyType(lu.type)){ (lu.teams||[]).forEach(t=>(t.slots||[]).forEach(s=>{ if(s&&s.id) partyNeed.add(s.id); })); return; }
     if(lu.stage==='open'){ SEASON.opening.forEach(queueGacha); return; }
     lu.list.forEach(e=>need.add(e.id));
@@ -2065,14 +2094,21 @@ const luOf = el => { const b=el.closest('.lu'); return b?S.lineups.find(x=>x.id=
 /* ---- events ---- */
 $('#luList').addEventListener('input',e=>{
   const a=e.target.dataset.act, lu=luOf(e.target); if(!lu) return;
-  if(a==='name'){ lu.name=e.target.value; persist(); }
+  if(a==='tname-custom'){ const t=lu.teams[+e.target.dataset.team]; if(t){ const v=cleanName(e.target.value); if(v!==e.target.value) e.target.value=v; t.name=v; persist(); } }
 });
 $('#luList').addEventListener('change',e=>{
   const a=e.target.dataset.act, lu=luOf(e.target); if(!lu) return;
+  if(a==='tname'){
+    const ti=e.target.dataset.team, v=e.target.value, t=lu.teams[+ti]; if(!t) return;
+    if(v==='custom'){ t.pre=''; t.cus=true; } else if(v===''){ t.pre=''; t.cus=false; t.name=''; } else if(presetName(v)){ t.pre=v; t.cus=false; t.name=''; }
+    persist(); renderLineups();
+    if(v==='custom'){ const inp=document.querySelector('.tname-in[data-team="'+ti+'"]'); if(inp) inp.focus(); }
+    return;
+  }
   if(isPartyType(lu.type)) return;
   const box=e.target.closest('.lu');
   if(a==='diff'){
-    lu.diff=e.target.value; const dd=DIFF[lu.diff], tag=box.querySelector('.lu-tag + .lu-tag'); if(tag) tag.textContent=dd.n+' mode';
+    lu.diff=e.target.value; const dd=DIFF[lu.diff];
     if(lu.list.length>dd.max){ lu.list=lu.list.slice(0,dd.max); toast(`List trimmed to ${dd.max} for ${dd.n} mode`); }
     const ds=box.querySelector('[data-role=desc]'); if(ds){ ds.innerHTML=diffLineHtml(lu); ds.dataset.diff=lu.diff; }
     persist();
@@ -2123,13 +2159,13 @@ $('#luList').addEventListener('click',e=>{
   const lu=luOf(b); if(!lu) return;
   const act=b.dataset.act, u=uiOf(lu.id), ent=b.closest('.ent'), idx=ent&&ent.dataset.i!==undefined?+ent.dataset.i:-1, d=DIFF[lu.diff]||DIFF.lunar;
   const done=()=>{ persist(); renderLineups(); };
-  if(act==='fold'){ u.fold=!u.fold; renderLineups(); }
-  else if(act==='del'){ if(!confirm(`Delete "${lu.name}"?`)) return; S.lineups=S.lineups.filter(x=>x!==lu); delete UIS[lu.id]; done(); }
+  if(act==='clear'){ if(!confirm('Clear this page? Your Roster stays unchanged.')) return; const at=S.lineups.indexOf(lu); S.lineups[at]=lu.type==='theater'?newTheater():newParty(lu.type); delete UIS[lu.id]; done(); }
   else if(act==='back'){ lu.stage='open'; u.edit=false; done(); }
   else if(act==='toplan'){ lu.stage='plan'; done(); }
   else if(act==='edit'){ u.edit=!u.edit; if(u.edit){ u.tf.els.clear(); u.tf.wps.clear(); u.tf.roles.clear(); } renderLineups(); }
   else if(act==='tocard'){ if(lu.list.length<d.min) return; lu.stage='card'; u.edit=false; done(); window.scrollTo(0,$('#lineupView').offsetTop); }
   else if(act==='cardback'){ lu.stage='plan'; done(); }
+  else if(act==='season-server'){ S.server=SERVERS[(SERVERS.indexOf(serverNow())+1)%SERVERS.length].id; persist(); $('#luSeason').innerHTML=seasonInner(); }
   else if(act==='capture'){ captureTeam(lu); }
   else if(act==='gpick'){
     const id=b.dataset.id, c=byIdAll(id); if(!c||!SEASON.guests.includes(id)) return;
@@ -2147,8 +2183,8 @@ $('#luList').addEventListener('click',e=>{
   else if(act==='add'){ if(lu.list.length>=d.max) return toast(`Team list is full: ${d.n} mode holds up to ${d.max} characters`); const id=b.dataset.id; if(lu.list.some(x=>x.id===id)) return; lu.list.push({id,el:'',role:ROLES[b.dataset.r]?b.dataset.r:null,borrowed:false,kind:'extra'}); done(); }
   else if(act==='addt'){ if(lu.list.length>=d.max) return toast(`Team list is full: ${d.n} mode holds up to ${d.max} characters`); if(lu.list.some(x=>x.id==='traveler')) return; lu.list.push({id:'traveler',el:b.dataset.el,role:ROLES[b.dataset.r]?b.dataset.r:null,borrowed:false,kind:'extra'}); done(); }
   else if(act==='trav-el'){ u.travEl=b.dataset.el; renderLineups(); }
-  else if(act==='share-addteam'){ if(lu.teams.length<3){ lu.teams.push({name:'Team '+(lu.teams.length+1),slots:Array(4).fill(null)}); done(); } }
-  else if(act==='share-delteam'){ if(lu.teams.length>1){ const last=lu.teams[lu.teams.length-1]; if(last.slots.some(Boolean)&&!confirm('Remove the last team and its characters?')) return; lu.teams.pop(); done(); } }
+  else if(act==='share-addteam'){ if(PARTY_MODES[lu.type].flex&&lu.teams.length<PARTY_MODES[lu.type].maxTeams){ lu.teams.push({name:'',slots:Array(4).fill(null)}); done(); } }
+  else if(act==='share-delteam'){ if(PARTY_MODES[lu.type].flex&&lu.teams.length>1){ const last=lu.teams[lu.teams.length-1]; if(last.slots.some(Boolean)&&!confirm('Remove the last team and its characters?')) return; lu.teams.pop(); done(); } }
   else if(act==='share-link'){ if(lu.teams.some(t=>t.slots.some(Boolean))) copyShare(shareLink(lu),'Link copied'); }
   else if(act==='share-capture'){ if(lu.teams.some(t=>t.slots.some(Boolean))) captureShare(lu); }
   else if(act==='party-pick'){ openPartyPicker(lu, +b.dataset.team, +b.dataset.slot); }
@@ -2160,15 +2196,10 @@ $('#luList').addEventListener('click',e=>{
     else if(act==='rm'&&u.edit&&en.kind!=='open'){ lu.list.splice(idx,1); done(); }
   }
 });
-$('#btnAddLu').onclick=()=>{ const dlg=$('#dlgMode'); if(dlg.open) return; syncPlanModeOptions(); if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open',''); };
-$('#btnResetLu').onclick=()=>{ if(!confirm('Reset all teams? Your Roster and character data will stay unchanged.')) return; S.lineups=[]; persist(); renderLineups(); toast('Teams reset'); };
-$('#dlgMode').addEventListener('click',e=>{
-  const b=e.target.closest('[data-mode]'); if(!b||b.disabled) return;
-  const lu=b.dataset.mode==='theater'?newTheater():newParty(b.dataset.mode); if(!lu) return;
-  if(MULTI_TYPES.has(lu.type)&&S.lineups.filter(x=>MULTI_TYPES.has(x.type)).length>=MULTI_MAX) return toast(`You can keep up to ${MULTI_MAX} teams of Create & Share and My Party combined.`);
-  if(SINGLETON_LINEUP_TYPES.has(lu.type)&&S.lineups.some(x=>x.type===lu.type)) return toast('This challenge already has a saved lineup.');
-  if(!Array.isArray(S.lineups)) S.lineups=[];
-  S.lineups.push(lu); persist(); $('#dlgMode').close(); renderLineups(); const el=document.querySelector(`[data-lu="${lu.id}"]`); if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+$('#luTabs').addEventListener('click',e=>{
+  const t=e.target.closest('[data-lu-tab]'); if(!t) return;
+  if(S.luTab===t.dataset.luTab) return;
+  S.luTab=t.dataset.luTab; persist(); renderLineups();
 });
 const PPF=()=>PARTY_PICKER.f;
 $('#partySearch').addEventListener('input',e=>{PPF().q=e.target.value;renderPartyPicker();});
@@ -2219,7 +2250,7 @@ function showTab(t){
   S.tab=t==='lineups'?'lineups':'roster';
   $('#rosterBar').hidden=S.tab!=='roster'; $('#pfStrip').hidden=S.tab!=='roster'; $('#rosterView').hidden=S.tab!=='roster'; $('#lineupView').hidden=S.tab!=='lineups';
   $('#tabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===S.tab));
-  if(S.tab==='lineups') renderLineups(); else render();
+  if(S.tab==='lineups') renderLineups(); else { delete document.documentElement.dataset.lumode; render(); }
   persist(); window.scrollTo(0,0);
 }
 $('#tabs').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) showTab(b.dataset.tab); });
@@ -2319,7 +2350,7 @@ async function captureTeam(lu){
 async function buildShareImage(lu){
   const T0=T(), FH=T0.head, FB=T0.body, FM=T0.mono, GOLD=T0.gold, TEXT=T0.text, MUTE=T0.mute, LINE=T0.line;
   try{ await Promise.all(T0.fonts.map(f=>document.fonts.load(f))); }catch(e){}
-  const teams=lu.teams.map(t=>t.slots.filter(Boolean)).filter(t=>t.length), multi=teams.length>1, total=teams.reduce((n,t)=>n+t.length,0);
+  const tl=lu.teams.map((t,ti)=>({s:t.slots.filter(Boolean),n:PARTY_MODES[lu.type].flex?teamName(PARTY_MODES[lu.type],t):PARTY_MODES[lu.type].teamNames[ti]})).filter(x=>x.s.length), teams=tl.map(x=>x.s), tnames=tl.map(x=>x.n), multi=teams.length>1, total=teams.reduce((n,t)=>n+t.length,0);
   const ids=[...new Set(teams.flat().map(x=>x.id))], chs=new Map(ids.map(id=>[id,byIdAll(id)]));
   // ask for what is missing (first in line), then wait until every image has either arrived or failed
   ids.forEach(id=>{ const c=chs.get(id); if(!c) return;
@@ -2352,7 +2383,7 @@ async function buildShareImage(lu){
   const tag=lu.type==='share'?'SHARED TEAM'+(multi?'S':''):PARTY_MODES[lu.type].label.toUpperCase(); ctx.font=`600 12px ${FB}`; sp('2.4px'); const tw=ctx.measureText(tag).width+26, ty=PAD+44;
   ctx.strokeStyle=hexA(GOLD,.55); ctx.lineWidth=1; rrp(ctx,W/2-tw/2,ty,tw,24,12); ctx.stroke();
   ctx.fillStyle=GOLD; ctx.textAlign='center'; ctx.fillText(tag,W/2+1,ty+16.5); sp('0px');
-  const title=shareName(lu)||('Shared team'+(multi?'s':'')); ctx.fillStyle=TEXT; ctx.font=`${T0.wB} 50px ${FH}`;
+  const title=lu.type==='share'?'Shared team'+(multi?'s':''):lu.type==='myparty'?'My team'+(multi?'s':''):PARTY_MODES[lu.type].title; ctx.fillStyle=TEXT; ctx.font=`${T0.wB} 50px ${FH}`;
   let ttl=title; while(ctx.measureText(ttl).width>W-PAD*2 && ttl.length>3) ttl=ttl.slice(0,-1); if(ttl!==title) ttl=ttl.trimEnd()+'\u2026';
   ctx.fillText(ttl,W/2,PAD+128);
   { const ry=PAD+152, half=140; [[-1],[1]].forEach(([d])=>{ const g=ctx.createLinearGradient(W/2+d*19,0,W/2+d*(19+half-19),0); g.addColorStop(0,GOLD); g.addColorStop(1,hexA(GOLD,0)); ctx.fillStyle=g; ctx.fillRect(d>0?W/2+19:W/2-19-(half-19),ry,half-19,1); });
@@ -2361,10 +2392,12 @@ async function buildShareImage(lu){
   // teams
   teams.forEach((t,ti)=>{
     const ty0=PAD+HEAD+ti*(TH+CH+TG), yc=ty0+22;
-    ctx.textAlign='left'; ctx.fillStyle=MUTE; ctx.font=`${T0.wM} 11px ${FM}`; sp('3.3px'); ctx.fillText('TEAM',PAD,yc+4); const lw=ctx.measureText('TEAM').width; sp('0px');
-    const rn=['I','II','III'][ti]||String(ti+1); ctx.fillStyle=GOLD; ctx.font=`${T0.wB} 28px ${FH}`; sp('1.1px'); ctx.fillText(rn,PAD+lw+14,yc+10); const rw=ctx.measureText(rn).width; sp('0px');
+    const tn=tnames[ti]; let lw=0, rw=0; ctx.textAlign='left';
+    if(tn){ ctx.fillStyle=GOLD; ctx.font=`${T0.wB} 24px ${FH}`; sp('0.8px'); ctx.fillText(tn,PAD,yc+9); rw=ctx.measureText(tn).width; sp('0px'); }
+    else{ ctx.fillStyle=MUTE; ctx.font=`${T0.wM} 11px ${FM}`; sp('3.3px'); ctx.fillText('TEAM',PAD,yc+4); lw=ctx.measureText('TEAM').width; sp('0px');
+      const rn=['I','II','III'][ti]||String(ti+1); ctx.fillStyle=GOLD; ctx.font=`${T0.wB} 28px ${FH}`; sp('1.1px'); ctx.fillText(rn,PAD+lw+14,yc+10); rw=ctx.measureText(rn).width; sp('0px'); }
     const els=[...new Set(t.map(s=>s.id==='traveler'?s.el:(chs.get(s.id)||{}).el).filter(Boolean))], ew=els.length*28;
-    const lx=PAD+lw+14+rw+12, lx2=W-PAD-ew-10; if(lx2>lx){ const g=ctx.createLinearGradient(lx,0,lx2,0); g.addColorStop(0,hexA(GOLD,.65)); g.addColorStop(1,hexA(GOLD,0)); ctx.fillStyle=g; ctx.fillRect(lx,yc,lx2-lx,1); }
+    const lx=PAD+(tn?0:lw+14)+rw+12, lx2=W-PAD-ew-10; if(lx2>lx){ const g=ctx.createLinearGradient(lx,0,lx2,0); g.addColorStop(0,hexA(GOLD,.65)); g.addColorStop(1,hexA(GOLD,0)); ctx.fillStyle=g; ctx.fillRect(lx,yc,lx2-lx,1); }
     els.forEach((k,i)=>drawEl(ctx,k,W-PAD-ew+i*28+14,yc,21,elc(k),elI));
     t.forEach((slot,i)=>{
       const c=chs.get(slot.id); if(!c) return; const isT=slot.id==='traveler', ek=(isT?slot.el:c.el)||'anemo', col=elc(ek);
@@ -2406,7 +2439,7 @@ async function buildShareImage(lu){
 }
 async function captureShare(lu){
   toast('Building image');
-  try{ const blob=await buildShareImage(lu); const nm=(shareName(lu)||'shared-teams').replace(/[^\w\-]+/g,'-').replace(/^-|-$/g,'')||'shared-teams'; download(blob,nm+'.jpg'); toast('Image saved'); }
+  try{ const blob=await buildShareImage(lu); const nm=lu.type==='share'?'shared-teams':lu.type==='myparty'?'my-teams':lu.type; download(blob,nm+'.jpg'); toast('Image saved'); }
   catch(err){ console.error(err); toast('Could not build the image'); }
 }
 
@@ -2416,7 +2449,7 @@ function sanitizeState(){
   const before=JSON.stringify(S), o=cleanOwned(S.owned,S.refine); S.owned=o.owned; S.refine=o.refine;
   S.player=typeof S.player==='string'?S.player.slice(0,40):''; S.uid=typeof S.uid==='string'?S.uid.replace(/\D/g,'').slice(0,12):'';
   if(S.tab!=='lineups') S.tab='roster';
-  S.lineups=cleanLineups(S.lineups);
+  S.lineups=cleanLineups(S.lineups); S.server=SERVERS.some(x=>x.id===S.server)?S.server:'';
   if(JSON.stringify(S)!==before) persist();
 }
 (async()=>{ sanitizeState(); db=await idbOpen(); await syncImgCache(); buildChips(); render(); queueElements(); showTab(S.tab); initShareView(); })();
