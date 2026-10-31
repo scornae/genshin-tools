@@ -352,6 +352,7 @@ ol.ents{list-style:none;margin:0;padding:0;display:grid;gap:7px}
 .pool .ent.pool-ent .l1{display:flex;align-items:center;gap:8px;min-width:0}
 .pool .ent.pool-ent .nm2{flex:1 1 auto;min-width:0;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pool .ent.pool-ent .l2{margin-top:6px}
+.trav-gold{color:var(--gold)}
 .pool .ent:hover{border-color:var(--gold)}
 .elpick{display:inline-flex;gap:4px;margin-left:auto;flex:none}
 .elb-pick{width:24px;height:24px;border-radius:50%;border:1px solid color-mix(in srgb,var(--el) 42%,var(--line2));background:transparent;color:var(--el);display:grid;place-items:center;padding:0;cursor:pointer;opacity:.55}
@@ -916,7 +917,7 @@ html[data-lumode=theater]{--mc:#bb93ff}
   <div class="lu-tabs" id="luTabs" role="tablist" aria-label="Your teams"></div>
   <div id="luList"></div>
 </div>
-<footer class="legal"><p>Genshin Roster is an unofficial fan-made tool and is not affiliated with or endorsed by HoYoverse. Genshin Impact, its characters and related assets belong to HoYoverse and their respective owners.</p></footer>
+<footer class="legal"><p>Genshin Roster is an unofficial fan-made tool and is not affiliated with or endorsed by HoYoverse. Genshin Impact, its characters and related assets belong to HoYoverse and their respective owners.<br>Your data is saved in this browser only. Use Export data on the Roster page to keep a backup.</p></footer>
 
 </div>
 
@@ -1063,7 +1064,7 @@ const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>'
 function toast(msg){ const t=$('#toast'), dlg=document.querySelector('dialog[open]'); if(dlg&&t.parentElement!==dlg) dlg.appendChild(t); else if(!dlg&&t.parentElement!==document.body) document.body.appendChild(t); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),2800); }
 // Display order of all characters, newest first (used by every "newest first" sort, Theater lists and pickers).
 // A new character that is not listed yet is treated as newer than all listed ones until it is added at the top.
-const REL_ORDER = ["mitya", "valeriy", "vodyanitsa", "vesna", "alyosha", "odette", "sandrone", "lohen", "nicole", "prune", "linnea", "varka", "zibai", "illuga", "columbina", "durin", "jahoda", "nefer", "flins", "lauma", "aino", "ineffa", "skirk", "dahlia", "escoffier", "ifa", "iansan", "varesa", "yumemizuki-mizuki", "lan-yan", "mavuika", "citlali", "chasca", "ororon", "xilonen", "kinich", "kachina", "mualani", "emilie", "sigewinne", "sethos", "clorinde", "arlecchino", "chiori", "gaming", "xianyun", "chevreuse", "navia", "charlotte", "furina", "wriothesley", "neuvillette", "freminet", "lynette", "lyney", "kirara", "kaveh", "baizhu", "mika", "dehya", "yaoyao", "alhaitham", "the-wanderer", "faruzan", "layla", "nahida", "nilou", "cyno", "candace", "dori", "collei", "tighnari", "shikanoin-heizou", "kuki-shinobu", "yelan", "kamisato-ayato", "yae-miko", "shenhe", "yun-jin", "gorou", "arataki-itto", "thoma", "sangonomiya-kokomi", "raiden-shogun", "kujou-sara", "aloy", "yoimiya", "sayu", "kamisato-ayaka", "kaedehara-kazuha", "eula", "yanfei", "rosaria", "hu-tao", "xiao", "ganyu", "albedo", "zhongli", "xinyan", "tartaglia", "diona", "venti", "klee", "keqing", "qiqi", "mona", "diluc", "jean", "xiangling", "xingqiu", "ningguang", "chongyun", "beidou", "sucrose", "razor", "noelle", "fischl", "bennett", "barbara", "lisa", "kaeya", "amber"];
+const REL_ORDER = ["mitya", "valeriy", "vodyanitsa", "vesna", "alyosha", "odette", "sandrone", "lohen", "nicole", "prune", "linnea", "varka", "zibai", "illuga", "columbina", "durin", "jahoda", "nefer", "flins", "lauma", "aino", "ineffa", "skirk", "dahlia", "escoffier", "ifa", "iansan", "varesa", "yumemizuki-mizuki", "lan-yan", "mavuika", "citlali", "chasca", "ororon", "xilonen", "kinich", "kachina", "mualani", "emilie", "sigewinne", "sethos", "clorinde", "arlecchino", "chiori", "gaming", "xianyun", "chevreuse", "navia", "charlotte", "furina", "wriothesley", "neuvillette", "freminet", "lynette", "lyney", "kirara", "kaveh", "baizhu", "mika", "dehya", "yaoyao", "alhaitham", "the-wanderer", "faruzan", "layla", "nahida", "nilou", "cyno", "candace", "dori", "collei", "tighnari", "shikanoin-heizou", "kuki-shinobu", "yelan", "kamisato-ayato", "yae-miko", "shenhe", "yun-jin", "gorou", "arataki-itto", "thoma", "sangonomiya-kokomi", "raiden-shogun", "kujou-sara", "aloy", "yoimiya", "sayu", "kamisato-ayaka", "kaedehara-kazuha", "eula", "yanfei", "rosaria", "hu-tao", "xiao", "ganyu", "albedo", "zhongli", "xinyan", "tartaglia", "diona", "klee", "venti", "keqing", "qiqi", "mona", "diluc", "jean", "xiangling", "xingqiu", "ningguang", "chongyun", "beidou", "sucrose", "razor", "noelle", "fischl", "bennett", "barbara", "lisa", "kaeya", "amber"];
 const relIdx = new Map(REL_ORDER.map((id,i)=>[id,i]));
 const verNum = v => { const [a,b]=String(v).split('.'); return (+a||0)*100+(+b||0); };
 const ordMap = (() => {
@@ -1773,7 +1774,7 @@ function partySlotHtml(lu, ti, si, slot, duplicates){
   return `<article class="card party-slot r${c.rar}${duplicate?' duplicate':''}" style="--el:${elc(elKey)}" data-party-slot="${ti}-${si}">
     <button type="button" class="party-pick-btn" data-act="party-pick" ${pos} aria-label="Change ${esc(c.name)} in slot ${si+1}">
       <span class="party-visual"><span class="portrait party-art" data-party-art="${esc(c.id)}" data-el="${esc(el||c.el)}">${partyArtInner(c.id, el||c.el)}</span><span class="elb" title="${esc((EL[elKey]||{}).n||'')}">${elIcon(elKey)}</span>${cLab}${chips}</span>
-      <span class="nm" title="${esc(c.name)}">${esc(c.name)}</span>
+      <span class="nm${c.id==='traveler'?' trav-gold':''}" title="${esc(c.name)}">${esc(c.name)}</span>
     </button>
     <button type="button" class="party-remove" data-act="party-remove" ${pos} aria-label="Remove ${esc(c.name)}">\u00d7</button>
   </article>`;
@@ -1820,7 +1821,7 @@ async function copyShare(text,okMsg){
 function shareCardHtml(slot){
   const c=byIdAll(slot.id), isT=slot.id==='traveler';
   const elb=isT&&slot.el?`<span class="elb" title="${esc((EL[slot.el]||{}).n||'')}">${elIcon(slot.el)}</span>`:'';
-  return `<article class="card r${c.rar}" style="--el:${elc((isT?slot.el:c.el)||'anemo')}"><span class="portrait">${partyPickerAvatarInner(c.id)}${elb}<span class="svr svr-c svr${c.rar}">${c.rar}\u2605</span>${crBadge(crOf(slot,false),false)}</span><span class="nm" title="${esc(c.name)} ${c.rar}\u2605"><span class="nt">${esc(c.name)}</span><span class="nr nr${c.rar}">${c.rar}\u2605</span></span></article>`;
+  return `<article class="card r${c.rar}" style="--el:${elc((isT?slot.el:c.el)||'anemo')}"><span class="portrait">${partyPickerAvatarInner(c.id)}${elb}<span class="svr svr-c svr${c.rar}">${c.rar}\u2605</span>${crBadge(crOf(slot,false),false)}</span><span class="nm" title="${esc(c.name)} ${c.rar}\u2605"><span class="nt${c.id==='traveler'?' trav-gold':''}">${esc(c.name)}</span><span class="nr nr${c.rar}">${c.rar}\u2605</span></span></article>`;
 }
 let SHARE_VIEW=null;
 function closeShareView(){ const v=document.getElementById('shareView'); if(v) v.remove(); SHARE_VIEW=null; document.documentElement.classList.remove('sv-open'); }
@@ -2064,7 +2065,7 @@ function rowHtml(lu,e,idx,u,num){
   let l2;
   if(u.edit) l2=open?'<span class="tag">Locked</span>':'<button class="dh" data-act="drag" aria-label="Drag to reorder">\u2630 Drag</button><button class="mini" data-act="rm" aria-label="Remove">Remove</button>';
   else l2=`<span class="rolebtns">${Object.keys(ROLES).map(r=>`<button class="rbtn r-${r}" data-act="role" data-r="${r}" aria-pressed="${e.role===r}" title="${ROLES[r]}" aria-label="${ROLES[r]}">${ROLE_SHORT[r]}</button>`).join('')}</span>`;
-  return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" data-i="${idx}" style="${naVar(e.id)}"><span class="no">${num||idx+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1">${eli}<span class="nm2">${esc(f.c.name)}</span></div><div class="l2">${l2}</div></div><span class="chipcell tagcell">${f.tagsR}</span></li>`;
+  return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" data-i="${idx}" style="${naVar(e.id)}"><span class="no">${num||idx+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1">${eli}<span class="nm2${f.trav?' trav-gold':''}">${esc(f.c.name)}</span></div><div class="l2">${l2}</div></div><span class="chipcell tagcell">${f.tagsR}</span></li>`;
 }
 function poolOf(lu){
   const els=elsOf(lu), inList=new Set(lu.list.map(e=>e.id));
@@ -2088,7 +2089,7 @@ function planHtml(lu,u){
   let empties=''; if(!filtering) for(let i=n;i<d.min;i++) empties+=`<li class="ent empty"><span class="no">${i+1}</span><span class="nm2">Empty slot</span></li>`;
   const pool=poolOf(lu), inList=new Set(lu.list.map(e=>e.id));
   const travEl=(u.travEl&&els.includes(u.travEl))?u.travEl:els[0];
-  const travRow=inList.has('traveler')?'':`<li class="ent pool-ent" data-act="addt" data-el="${travEl}" style="--el:${elc(travEl)}"><span class="av" data-side="traveler">${sideImgHtml('traveler')}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(travEl)}">${elIcon(travEl)}</span><span class="nm2">Traveler</span><span class="elpick">${els.map(k=>`<button class="elb-pick" data-act="trav-el" data-el="${k}" style="--el:${elc(k)}" aria-pressed="${k===travEl}" title="${EL[k].n}" aria-label="${EL[k].n}">${elIcon(k)}</button>`).join('')}</span></div></div><span class="addcell"><button class="btn add-btn${full?' is-full':''}" data-act="addt" data-el="${travEl}" title="Add Traveler">Add</button></span></li>`;
+  const travRow=inList.has('traveler')?'':`<li class="ent pool-ent" data-act="addt" data-el="${travEl}" style="--el:${elc(travEl)}"><span class="av" data-side="traveler">${sideImgHtml('traveler')}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(travEl)}">${elIcon(travEl)}</span><span class="nm2 trav-gold">Traveler</span><span class="elpick">${els.map(k=>`<button class="elb-pick" data-act="trav-el" data-el="${k}" style="--el:${elc(k)}" aria-pressed="${k===travEl}" title="${EL[k].n}" aria-label="${EL[k].n}">${elIcon(k)}</button>`).join('')}</span></div></div><span class="addcell"><button class="btn add-btn${full?' is-full':''}" data-act="addt" data-el="${travEl}" title="Add Traveler">Add</button></span></li>`;
   const poolRows=pool.map(c=>`<li class="ent pool-ent" data-act="add" data-id="${c.id}" style="--el:${elc(c.el)};${naVar(c.id)}"><span class="av" data-side="${c.id}">${sideImgHtml(c.id)}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(c.el)}">${elIcon(c.el)}</span><span class="nm2">${esc(c.name)}</span></div></div><span class="addcell"><button class="btn add-btn${full?' is-full':''}" data-act="add" data-id="${c.id}" title="Add ${esc(c.name)}">Add</button></span></li>`).join('');
   const gOwn=id=>{ const c=byIdAll(id); return !!c&&c.lvl!==undefined; };
   const gsHtml=`<div class="gs-wrap"><div class="gs-head"><b>Special guests</b><small>Any element</small></div><div class="gs-grid">${SEASON.guests.map(id=>{ const c=byIdAll(id); if(!c) return ''; const ent=lu.list.find(x=>x.id===id), st=ent?(ent.borrowed?'sup':'in'):(gOwn(id)?'ok':'no'); return `<button type="button" class="gs gs-${st}" data-act="gpick" data-id="${esc(id)}" style="--el:${elc(c.el)}" aria-label="${esc(c.name)}"><span class="gs-art" data-gcard="${esc(id)}">${gcardImgHtml(id)}</span><span class="eli gs-el">${elIcon(c.el)}</span>${st==='in'?'<span class="gs-tag">In list</span>':st==='sup'?'<span class="gs-tag bor">Invited</span>':''}<span class="gs-nm">${esc(c.name)}</span></button>`; }).join('')}</div></div>`;
@@ -2132,7 +2133,7 @@ function cardHtml(lu){
   const d=DIFF[lu.diff]||DIFF.lunar, n=lu.list.length;
   const rows=lu.list.map((e,i)=>{
     const f=entInfo(e); if(!f) return '';
-    return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" style="${naVar(e.id)}"><span class="no">${i+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(f.el)}">${elIcon(f.el)}</span><span class="nm2">${esc(f.c.name)}</span><span class="tags">${f.tags}</span></div>${e.role?`<div class="l2"><span class="rolename r-${e.role}">${ROLES[e.role]}</span></div>`:''}</div></li>`;
+    return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" style="${naVar(e.id)}"><span class="no">${i+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1"><span class="eli" style="--el:${elc(f.el)}">${elIcon(f.el)}</span><span class="nm2${f.trav?' trav-gold':''}">${esc(f.c.name)}</span><span class="tags">${f.tags}</span></div>${e.role?`<div class="l2"><span class="rolename r-${e.role}">${ROLES[e.role]}</span></div>`:''}</div></li>`;
   }).join('');
   const rowsN=Math.ceil(n/2);
   return `<div class="tc-page">Team list card</div>
@@ -2444,7 +2445,7 @@ async function buildTeamImage(lu){
     if(e.borrowed) tg.push(['INVITED',T0.borrow||T0.violet,true]);
     if(e.kind==='open') tg.push(own0?['OPENING',T0.gold,false]:['TRIAL','#ff8fb1',false]);
     const col=elc(f.el); drawEl(ctx,f.el,x0+130,y+RH/2-(e.role?7:0),24,col,elI);
-    ctx.textAlign='left'; ctx.fillStyle=T0.text; ctx.font=`${T0.wM} 21px ${FH}`; ctx.fillText(f.c.name,x0+152,y+RH/2+(e.role?-3:7));
+    ctx.textAlign='left'; ctx.fillStyle=f.trav?T0.gold:T0.text; ctx.font=`${T0.wM} 21px ${FH}`; ctx.fillText(f.c.name,x0+152,y+RH/2+(e.role?-3:7));
     let tx=x0+152+ctx.measureText(f.c.name).width+12; const ty=y+RH/2-(e.role?3:-1)-15;
     tg.forEach(([lab,tc,solid])=>{ ctx.font=`600 11px ${FB}`; sp('1.2px'); const w=ctx.measureText(lab).width+14; sp('0px');
       rrp(ctx,tx,ty,w,20,10); if(solid){ ctx.fillStyle=tc; ctx.fill(); } else { ctx.strokeStyle=tc; ctx.lineWidth=1; ctx.stroke(); }
@@ -2543,7 +2544,7 @@ async function buildShareImage(lu){
       const meas=n=>{ ctx.font=`${T0.wM} 17px ${FH}`; const a=ctx.measureText(n).width; ctx.font=rf; return a+7+ctx.measureText(rt).width; };
       while(meas(nm)>CW-16 && nm.length>3) nm=nm.slice(0,-1); if(nm!==c.name) nm=nm.trimEnd()+'\u2026';
       const tot=meas(nm); let tx=x+CW/2-tot/2, by=y+1+PS+NMH/2+6;
-      ctx.textAlign='left'; ctx.font=`${T0.wM} 17px ${FH}`; ctx.fillStyle=TEXT; ctx.fillText(nm,tx,by); tx+=ctx.measureText(nm).width+7;
+      ctx.textAlign='left'; ctx.font=`${T0.wM} 17px ${FH}`; ctx.fillStyle=c.id==='traveler'?GOLD:TEXT; ctx.fillText(nm,tx,by); tx+=ctx.measureText(nm).width+7;
       ctx.font=rf; ctx.fillStyle=c.rar===5?GOLD:T0.violet; ctx.fillText(rt,tx,by);
       ctx.strokeStyle=LINE; ctx.lineWidth=1; ctx.strokeRect(x+.5,y+.5,CW-1,CH-1);
     });
