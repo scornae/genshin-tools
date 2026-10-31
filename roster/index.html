@@ -11,9 +11,14 @@
 <meta property="og:title" content="Genshin Roster - Character Collection &amp; Team Builder">
 <meta property="og:description" content="A free fan-made Genshin Impact tool: record the characters you own and their constellations, build teams, and share them with a link or an image.">
 <meta property="og:url" content="https://scornae.github.io/genshin-tools/roster/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://scornae.github.io/genshin-tools/roster/og-preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Genshin Roster: record your characters, build teams and share them">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Genshin Roster - Character Collection &amp; Team Builder">
 <meta name="twitter:description" content="A free fan-made Genshin Impact tool: record the characters you own and their constellations, build teams, and share them with a link or an image.">
+<meta name="twitter:image" content="https://scornae.github.io/genshin-tools/roster/og-preview.jpg">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffd75e%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f2a516%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath%20d%3D%22M32%208%20Q38.72%2025.28%2056%2032%20Q38.72%2038.72%2032%2056%20Q25.28%2038.72%208%2032%20Q25.28%2025.28%2032%208Z%22%20fill%3D%22url%28%23g%29%22/%3E%3Cpath%20d%3D%22M49%209%20Q50.68%2013.32%2055%2015%20Q50.68%2016.68%2049%2021%20Q47.32%2016.68%2043%2015%20Q47.32%2013.32%2049%209Z%22%20fill%3D%22%23ffc43d%22/%3E%3C/svg%3E">
 <meta name="color-scheme" content="dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -403,8 +408,21 @@ html[data-theme=celestial] .elstat i{border-radius:6px 6px 2px 2px}
 .share-bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:4px}
 .share-grp{display:flex;flex-wrap:wrap;gap:8px}
 .share-bar .btn:disabled{opacity:.45;cursor:not-allowed}
-#shareView{position:fixed;inset:0;z-index:9999;overflow:auto;background:radial-gradient(ellipse 85% 45% at 50% -8%,color-mix(in srgb,var(--gold) 15%,transparent),transparent),var(--bg);color:var(--text);padding:calc(22px + env(safe-area-inset-top)) 18px calc(30px + env(safe-area-inset-bottom))}
+#shareView{position:fixed;inset:0;z-index:9999;overflow:auto;background:var(--page);color:var(--text);padding:calc(22px + env(safe-area-inset-top)) 18px calc(30px + env(safe-area-inset-bottom))}
 .sv-wrap{max-width:940px;margin:0 auto}
+html.sv-open,html.sv-open body{overflow:hidden}
+@media(min-width:900px){
+  #shareView{--svw:clamp(110px,calc((100vh - 475px)/3),215px)}
+  #shareView .sv-wrap{max-width:calc(var(--svw)*4 + 36px)}
+  #shareView .sv-top{margin-bottom:16px}
+  #shareView .sv-head{margin-bottom:16px}
+  #shareView .sv-head h1{margin-top:8px;font-size:34px}
+  #shareView .sv-rule{margin:10px auto 8px}
+  #shareView .sv-meta{font-size:14px}
+  #shareView .sv-team{margin-bottom:14px}
+  #shareView .sv-team h2{margin-bottom:8px}
+  #shareView .party-slots .nm{font-size:14px;padding:7px 6px 8px}
+}
 .sv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:34px;font:500 11px var(--f-mono);letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
 .sv-head{text-align:center;margin-bottom:32px}
 .sv-tag{display:inline-block;padding:3px 13px;border:1px solid color-mix(in srgb,var(--gold) 55%,transparent);border-radius:var(--chip-r);font:600 11px/18px var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
@@ -787,6 +805,20 @@ html[data-lumode=stygian]{--mc:#b8243a}
 html[data-lumode=theater]{--mc:#bb93ff}
 .lu .lu-title{color:var(--mc,var(--text))}
 .lu .party-team-head h3{border-left-color:var(--mc,var(--gold))}
+.set-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.set-tab{min-width:92px;padding:8px 22px;font:700 14px var(--f-head);letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line2);border-radius:var(--r);background:var(--panel2);color:var(--mute);cursor:pointer;box-shadow:inset 0 -3px 0 color-mix(in srgb,var(--mc,var(--gold)) 22%,transparent)}
+.set-tab:hover{color:var(--text);border-color:var(--mc,var(--gold))}
+.set-tab[aria-selected=true]{background:color-mix(in srgb,var(--mc,var(--gold)) 20%,var(--panel2));border-color:var(--mc,var(--gold));color:var(--text);box-shadow:inset 0 -3px 0 var(--mc,var(--gold))}
+@media(max-width:700px){.set-bar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.set-tab{min-width:0;padding:8px 6px}}
+@media(max-width:700px){
+  .party-team-head{flex-wrap:nowrap;align-items:flex-start}
+  .tname-grp{flex:1 1 0}
+  .tname-sel{width:100%}
+  .party-team-head>span{flex:none;margin-top:4px}
+  #ppEl.sup .chip[data-pp-guest]{font-size:13px;gap:6px;padding:4px 10px 4px 7px}
+  #ppEl.sup .gl{display:none}
+}
+.chip .gi{display:inline-block;width:19px;text-align:center;color:var(--el);font-size:15px;line-height:1}
 .lu-tag.lu-season{display:grid;gap:4px;width:min(330px,100%);font:500 13px var(--f-body);letter-spacing:0;text-transform:none;text-align:right}
 .lu-season b{color:var(--text)}
 .ls-bar{display:block;height:7px;border-radius:99px;background:var(--line2);overflow:hidden}
@@ -995,7 +1027,7 @@ const elIcon = el => {
 /* ---------- state ---------- */
 const STORE = 'gi-roster-v2';
 let storageOK = true;
-const freshState = () => ({v:2, player:'', uid:'', owned:{}, refine:{}, sort:'verDesc', view:'tall', theme:'scifi', lineups:[], luTab:'', tab:'roster', server:''});
+const freshState = () => ({v:2, player:'', uid:'', owned:{}, refine:{}, sort:'verDesc', view:'tall', theme:'scifi', lineups:[], luTab:'', luSet:{}, tab:'roster', server:''});
 let S = (() => {
   try{ const raw = localStorage.getItem(STORE); if(raw) return Object.assign(freshState(), JSON.parse(raw)); }
   catch(e){ storageOK = false; }
@@ -1585,11 +1617,12 @@ const ROLE_C = {dps:'#ff4f6d',dmg:'#ff9a3c',sus:'#4fc3ff'};
 /* Season data (updated by hand each month). Opening = 6 characters, Guests = 4 special guest characters. */
 const SEASON = {no:29, from:'Nov 1, 2026', to:'Dec 1, 2026', startDay:'2026-11-01', endDay:'2026-12-01',
   opening:['yelan','aino','flins','fischl','zhongli','kachina'],
+  els:['geo','electro','hydro'],
   guests:['qiqi','odette','vesna','jahoda']};
 const TRAV = {id:'traveler',name:'Traveler',rar:5,el:'',ids:['PlayerBoy']};
 const PARTY_MODES = {
-  share:{label:'Share',title:'Create & Share',badge:'ALL CHARACTERS, NO REPEATS',rule:'Any character. No repeats across teams. Tap a C / R badge to raise it, hold to lower it',source:'all',noRepeats:true,teamNames:null,flex:true,maxTeams:3},
-  myparty:{label:'My Teams',title:'My Teams',badge:'OWNED, REPEATS ALLOWED',rule:'Owned characters. Repeats allowed across teams',source:'owned',noRepeats:false,teamNames:null,flex:true,maxTeams:3},
+  share:{label:'Share',title:'Create & Share',badge:'ALL CHARACTERS, NO REPEATS',rule:'Any character. No repeats across teams. Tap a C / R badge to raise it, hold to lower it',source:'all',noRepeats:true,teamNames:null,flex:true,maxTeams:5,maxSets:3},
+  myparty:{label:'My Teams',title:'My Teams',badge:'OWNED, REPEATS ALLOWED',rule:'Owned characters. Repeats allowed across teams',source:'owned',noRepeats:false,teamNames:null,flex:true,maxTeams:5,maxSets:3},
   abyss:{label:'Abyss',title:'Spiral Abyss',badge:'2 TEAMS, NO REPEATS',rule:'Owned characters. No repeats across the two halves',source:'owned',noRepeats:true,teamNames:['First Half','Second Half']},
   stygian:{label:'Stygian',title:'Stygian Onslaught',badge:'3 TEAMS, NO REPEATS',rule:'Owned characters. No repeats across the three battlefields',source:'owned',noRepeats:true,teamNames:['Battlefield 1','Battlefield 2','Battlefield 3']}
 };
@@ -1621,8 +1654,8 @@ const noRepOf = lu => !!(PARTY_MODES[lu.type]&&PARTY_MODES[lu.type].noRepeats);
 const isPartyType = type => Object.prototype.hasOwnProperty.call(PARTY_MODES,type);
 const UIS = {};
 const uiOf = id => UIS[id] || (UIS[id] = {edit:false, tf:{els:new Set(),wps:new Set(),roles:new Set()}});
-const newPickerFilters=()=>({q:'', rars:new Set(), els:new Set(), wps:new Set(), status:'all', c:'all'});
-const PARTY_PICKER = {sup:false,luId:'',team:0,slot:0,f:newPickerFilters(),sort:'verDesc'};
+const newPickerFilters=()=>({q:'', rars:new Set(), els:new Set(), wps:new Set(), status:'all', c:'all', guest:false});
+const PARTY_PICKER = {sup:false,luId:'',team:0,slot:0,f:null,fp:newPickerFilters(),ft:newPickerFilters(),sort:'verDesc'}; PARTY_PICKER.f=PARTY_PICKER.fp;
 const byIdAll = id => id==='traveler' ? {...TRAV, lvl:6, ref:0, ord:9999} : (chars().find(c=>c.id===id) || null);
 function sideImgHtml(id){
   const im=imgs.get('s:'+id), c=byIdAll(id);
@@ -1706,7 +1739,7 @@ const crTok=slot=>{ const c=slot&&slot.id&&byIdAll(slot.id); if(!c) return '0'; 
 const b64u=str=>{ let bin=''; new TextEncoder().encode(str).forEach(x=>{ bin+=String.fromCharCode(x); }); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); };
 const unb64u=t=>{ t=t.replace(/-/g,'+').replace(/_/g,'/'); while(t.length%4) t+='='; return new TextDecoder().decode(Uint8Array.from(atob(t),c=>c.charCodeAt(0))); };
 function shareDecode(hash){
-  const m=/^#s2=([0-9A-Za-z_]{12}(?:\.[0-9A-Za-z_]{12}){0,2})(?:~([0-9A-Za-z_-]*(?:\.[0-9A-Za-z_-]*){0,2}))?$/.exec(String(hash||'')); if(!m) return null;
+  const m=/^#s2=([0-9A-Za-z_]{12}(?:\.[0-9A-Za-z_]{12}){0,4})(?:~([0-9A-Za-z_-]*(?:\.[0-9A-Za-z_-]*){0,4}))?$/.exec(String(hash||'')); if(!m) return null;
   const names=(m[2]||'').split('.').map(t=>{ if(t.length===1) return presetName(t); if(t.length>1){ try{ return cleanName(unb64u(t)).trim(); }catch(e){ return ''; } } return ''; });
   const teams=m[1].split('.').map(t=>[0,3,6,9].map(o=>{
     const a=t[o], b=t[o+1], k=SHARE_ALPHA.indexOf(t[o+2]), cc=k<0?0:k%7, rr=k<0?0:Math.floor(k/7), cr={c:cc,r:rr>5?0:rr};
@@ -1732,14 +1765,14 @@ function shareCardHtml(slot){
   return `<article class="card r${c.rar}" style="--el:${elc((isT?slot.el:c.el)||'anemo')}"><span class="portrait">${partyPickerAvatarInner(c.id)}${elb}<span class="svr svr-c svr${c.rar}">${c.rar}\u2605</span>${crBadge(crOf(slot,false),false)}</span><span class="nm" title="${esc(c.name)} ${c.rar}\u2605"><span class="nt">${esc(c.name)}</span><span class="nr nr${c.rar}">${c.rar}\u2605</span></span></article>`;
 }
 let SHARE_VIEW=null;
-function closeShareView(){ const v=document.getElementById('shareView'); if(v) v.remove(); SHARE_VIEW=null; }
+function closeShareView(){ const v=document.getElementById('shareView'); if(v) v.remove(); SHARE_VIEW=null; document.documentElement.classList.remove('sv-open'); }
 function shareViewInner(d){
   const rows=d.teams.map((t,i)=>({t:t.filter(Boolean),n:(d.names||[])[i]||''})).filter(r=>r.t.length), teams=rows.map(r=>r.t), multi=teams.length>1, total=teams.reduce((n,t)=>n+t.length,0);
   const title='Shared team'+(multi?'s':''), date=new Date().toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'});
   const elsOf=t=>[...new Set(t.map(s=>s.id==='traveler'?s.el:(byIdAll(s.id)||{}).el).filter(Boolean))];
   return `<div class="sv-wrap"><div class="sv-top"><span>Genshin Roster</span><span>${esc(date)}</span></div>
     <header class="sv-head"><span class="sv-tag">Shared team${multi?'s':''}</span><h1>${esc(title)}</h1><div class="sv-rule"><i></i></div><p class="sv-meta">${multi?teams.length+' teams \u00b7 ':''}${total} character${total>1?'s':''}</p></header>
-    ${teams.map((t,i)=>`<section class="sv-team"><h2 aria-label="${esc(rows[i].n||'Team '+(i+1))}">${rows[i].n?`<span class="sv-nm">${esc(rows[i].n)}</span>`:`<span class="sv-tl">Team</span><span class="sv-rn">${['I','II','III'][i]||i+1}</span>`}<span class="sv-line"></span><span class="sv-els">${elsOf(t).map(k=>`<span class="sico" style="--el:${elc(k)}" title="${esc(EL[k].n)}">${elIcon(k)}</span>`).join('')}</span></h2><div class="party-slots">${t.map(shareCardHtml).join('')}</div></section>`).join('')}
+    ${teams.map((t,i)=>`<section class="sv-team"><h2 aria-label="${esc(rows[i].n||'Team '+(i+1))}">${rows[i].n?`<span class="sv-nm">${esc(rows[i].n)}</span>`:`<span class="sv-tl">Team</span><span class="sv-rn">${['I','II','III','IV','V'][i]||i+1}</span>`}<span class="sv-line"></span><span class="sv-els">${elsOf(t).map(k=>`<span class="sico" style="--el:${elc(k)}" title="${esc(EL[k].n)}">${elIcon(k)}</span>`).join('')}</span></h2><div class="party-slots">${t.map(shareCardHtml).join('')}</div></section>`).join('')}
     <footer class="sv-foot"><span class="sv-mark">Character collection</span><button type="button" class="sv-link" data-sv="close">Make your own teams in Genshin Roster <span aria-hidden="true">\u2197</span></button></footer></div>`;
 }
 function renderShareView(){
@@ -1750,7 +1783,7 @@ function renderShareView(){
 function showShareView(d){
   closeShareView(); SHARE_VIEW=d;
   { const ids=[...new Set(d.teams.flat().filter(Boolean).map(x=>x.id))], list=ids.map(byIdAll).filter(Boolean); queuePartyPickerImages(list); ids.forEach(queueNc); pump(); }
-  const el=document.createElement('div'); el.id='shareView'; document.body.appendChild(el); renderShareView();
+  const el=document.createElement('div'); el.id='shareView'; document.body.appendChild(el); document.documentElement.classList.add('sv-open'); renderShareView();
 }
 function initShareView(){ const d=shareDecode(location.hash); if(d) showShareView(d); else closeShareView(); }
 window.addEventListener('hashchange',initShareView);
@@ -1771,14 +1804,16 @@ function partyHtml(lu){
   return `<div class="party-board"><div class="party-progress"><span class="pp-count"><strong>${filled}/${max}</strong><span class="pp-label">${multiple?'characters assigned across '+teams.length+' teams':'characters in team'}</span></span><span class="party-rule">${esc(mode.rule)}</span></div>${teams.map((team,ti)=>`<section class="party-team">${teamHeadHtml(lu,mode,team,ti,multiple)}<div class="party-slots">${(team.slots||[]).map((slot,si)=>partySlotHtml(lu,ti,si,slot,duplicates)).join('')}</div></section>`).join('')}${shareBarHtml(lu)}</div>`;
 }
 function openPartyPicker(lu, team, slot, sup){
-  PARTY_PICKER.sup=!!sup; PARTY_PICKER.luId=lu.id; PARTY_PICKER.team=team; PARTY_PICKER.slot=slot; PARTY_PICKER.f.q=''; // element, weapon, rarity and sort stay as the user left them
+  PARTY_PICKER.sup=!!sup; PARTY_PICKER.f=sup?PARTY_PICKER.ft:PARTY_PICKER.fp; PARTY_PICKER.luId=lu.id; PARTY_PICKER.team=team; PARTY_PICKER.slot=slot; PARTY_PICKER.f.q=''; // element, weapon, rarity and sort stay as the user left them
   buildPartyFilters();
   const dlg=$('#dlgPartyPicker'); if(dlg && typeof dlg.showModal==='function') dlg.showModal(); else if(dlg) dlg.setAttribute('open','');
   renderPartyPicker(); syncPartyPickerFilters();
 }
 function renderSupPicker(lu){
   const open=new Set(lu.list.filter(e=>e.kind==='open').map(e=>e.id)), cur=(lu.list.find(e=>e.borrowed)||{}).id;
-  const candidates=filterSort(chars(), PARTY_PICKER.f, PARTY_PICKER.sort);
+  const f=PARTY_PICKER.f, gs=new Set(SEASON.guests), seEls=new Set(SEASON.els), pool=chars().filter(c=>seEls.has(c.el)||gs.has(c.id));
+  let candidates=filterSort(pool,{...f,els:new Set()},PARTY_PICKER.sort);
+  if(f.els.size||f.guest) candidates=candidates.filter(c=>f.els.has(c.el)||(f.guest&&gs.has(c.id)));
   const tile=c=>{
     const dis=open.has(c.id);
     return `<button type="button" class="card r${c.rar} party-pick-card${c.id===cur?' picked':''}" data-pick-char="${esc(c.id)}" ${dis?'disabled title="Opening characters cannot be invited"':''} style="--el:${elc(c.el||'anemo')}" aria-label="${esc(c.name)}"><span class="portrait" data-party-pick-avatar="${esc(c.id)}">${partyPickerAvatarInner(c.id)}</span><span class="nm" title="${esc(c.name)}" style="display:block">${esc(c.name)}</span></button>`;
@@ -1786,7 +1821,7 @@ function renderSupPicker(lu){
   const bt=$('#btnAddTraveler'); if(bt) bt.style.display='none';
   const grid=$('#partyPickerGrid'); if(grid) grid.innerHTML=candidates.map(tile).join('')||'<p class="party-no-results">No characters match these filters.</p>';
   const title=$('#partyPickerTitle'); if(title) title.textContent='Choose invited character';
-  const summary=$('#partyPickerSummary'); if(summary) summary.textContent=`${candidates.length} characters shown. Pick the one you invite from a friend. Opening characters and Traveler cannot be chosen.`;
+  const summary=$('#partyPickerSummary'); if(summary) summary.textContent=`${candidates.length} characters shown. Only this season\u2019s elements and the guest stars can be invited. Opening characters and Traveler cannot be chosen.`;
   queuePartyPickerImages(candidates);
 }
 function renderPartyPicker(){
@@ -1815,7 +1850,9 @@ function renderPartyPicker(){
 }
 function buildPartyFilters(){
   const f=PARTY_PICKER.f, lu=S.lineups.find(x=>x.id===PARTY_PICKER.luId), mode=lu&&PARTY_MODES[lu.type];
-  $('#ppEl').innerHTML=EL_ORDER.map(k=>`<button class="chip" data-pp-el="${k}" aria-pressed="${f.els.has(k)}" style="--el:${elc(k)}">${elIcon(k)}${EL[k].n}</button>`).join('');
+  const sup=PARTY_PICKER.sup;
+  $('#ppEl').classList.toggle('sup',sup);
+  $('#ppEl').innerHTML=(sup?SEASON.els:EL_ORDER).map(k=>`<button class="chip" data-pp-el="${k}" aria-pressed="${f.els.has(k)}" title="${EL[k].n}" aria-label="${EL[k].n}" style="--el:${elc(k)}">${elIcon(k)}${EL[k].n}</button>`).join('')+(sup?`<button class="chip" data-pp-guest aria-pressed="${!!f.guest}" style="--el:#e8c872"><span class="gi" aria-hidden="true">\u2605</span>Guest<span class="gl"> stars</span></button>`:'');
   $('#ppWp').innerHTML=WP_ORDER.map(k=>`<button class="chip" data-pp-wp="${k}" aria-pressed="${f.wps.has(k)}" style="--el:#e8ecf1">${wpIcon(k)}${WP[k]}</button>`).join('')+'<button class="chip reset" data-pp-reset>Reset</button>';
   syncPartyPickerFilters();
 }
@@ -1859,10 +1896,11 @@ function cleanLineups(arr){
   if(!Array.isArray(arr)) return [];
   const known=new Set(SEED.map(c=>c.id)); known.add('traveler');
   const roles=new Set(['dps','dmg','sus']), kinds=new Set(['open','guest','support','extra']);
-  const seenTypes=new Set();
+  const seenTypes={};
   return arr.filter(x=>{
     if(!x||(x.type!=='theater'&&!isPartyType(x.type))) return false;
-    if(seenTypes.has(x.type)) return false; seenTypes.add(x.type);
+    const lim=(isPartyType(x.type)&&PARTY_MODES[x.type].maxSets)||1;
+    seenTypes[x.type]=(seenTypes[x.type]||0)+1; if(seenTypes[x.type]>lim) return false;
     return true;
   }).slice(0,200).map(x=>{
     const id=String(x.id||'').replace(/[^\w-]/g,'').slice(0,24)||('lu'+Math.random().toString(36).slice(2,8));
@@ -1959,14 +1997,14 @@ function entInfo(e){
   const tagsR=(e.borrowed?'<span class="tag inv">Invited</span>':'')+(e.kind==='guest'?'<span class="tag tag-guest">Guest</span>':'')+(e.kind==='open'?(own?'<span class="tag tag-open">Opening</span>':'<span class="tag tag-trial">Trial</span>'):'');
   return {c,trav,el,tags,tagsR};
 }
-function rowHtml(lu,e,idx,u){
+function rowHtml(lu,e,idx,u,num){
   const f=entInfo(e); if(!f) return '';
   const open=e.kind==='open';
   const eli=f.trav&&!u.edit?`<button class="eli" data-act="tel" title="Change element" style="--el:${elc(f.el)}">${elIcon(f.el)}</button>`:`<span class="eli" style="--el:${elc(f.el)}">${elIcon(f.el)}</span>`;
   let l2;
   if(u.edit) l2=open?'<span class="tag">Locked</span>':'<button class="dh" data-act="drag" aria-label="Drag to reorder">\u2630 Drag</button><button class="mini" data-act="rm" aria-label="Remove">Remove</button>';
   else l2=`<span class="rolebtns">${Object.keys(ROLES).map(r=>`<button class="rbtn r-${r}" data-act="role" data-r="${r}" aria-pressed="${e.role===r}" title="${ROLES[r]}" aria-label="${ROLES[r]}">${ROLE_SHORT[r]}</button>`).join('')}</span>`;
-  return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" data-i="${idx}" style="${naVar(e.id)}"><span class="no">${idx+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1">${eli}<span class="nm2">${esc(f.c.name)}</span></div><div class="l2">${l2}</div></div><span class="chipcell tagcell">${f.tagsR}</span></li>`;
+  return `<li class="ent${e.role?' has-role r-'+e.role:''}${e.borrowed?' bor':''}" data-i="${idx}" style="${naVar(e.id)}"><span class="no">${num||idx+1}</span><span class="av" data-side="${e.id}">${sideImgHtml(e.id)}</span><div class="inf"><div class="l1">${eli}<span class="nm2">${esc(f.c.name)}</span></div><div class="l2">${l2}</div></div><span class="chipcell tagcell">${f.tagsR}</span></li>`;
 }
 function poolOf(lu){
   const els=elsOf(lu), inList=new Set(lu.list.map(e=>e.id));
@@ -1986,7 +2024,7 @@ function planHtml(lu,u){
   const filtering=!u.edit&&(tf.els.size||tf.wps.size||tf.roles.size);
   const entEl=e=>e.id==='traveler'?e.el:(byIdAll(e.id)||{}).el, entWp=e=>e.id==='traveler'?'sword':(byIdAll(e.id)||{}).w;
   const shown=lu.list.map((e,i)=>({e,i})).filter(({e})=>!filtering||((!tf.els.size||tf.els.has(entEl(e)))&&(!tf.wps.size||tf.wps.has(entWp(e)))&&(!tf.roles.size||tf.roles.has(e.role||'none'))));
-  const rowsHtml=shown.map(({e,i})=>rowHtml(lu,e,i,u)).join('');
+  const rowsHtml=shown.map(({e,i},k)=>rowHtml(lu,e,i,u,filtering?k+1:i+1)).join('');
   let empties=''; if(!filtering) for(let i=n;i<d.min;i++) empties+=`<li class="ent empty"><span class="no">${i+1}</span><span class="nm2">Empty slot</span></li>`;
   const pool=poolOf(lu), inList=new Set(lu.list.map(e=>e.id));
   const travEl=(u.travEl&&els.includes(u.travEl))?u.travEl:els[0];
@@ -1995,10 +2033,11 @@ function planHtml(lu,u){
   const gOwn=id=>{ const c=byIdAll(id); return !!c&&c.lvl!==undefined; };
   const gsHtml=`<div class="gs-wrap"><div class="gs-head"><b>Special guests</b><small>Any element</small></div><div class="gs-grid">${SEASON.guests.map(id=>{ const c=byIdAll(id); if(!c) return ''; const ent=lu.list.find(x=>x.id===id), st=ent?(ent.borrowed?'sup':'in'):(gOwn(id)?'ok':'no'); return `<button type="button" class="gs gs-${st}" data-act="gpick" data-id="${esc(id)}" style="--el:${elc(c.el)}" aria-label="${esc(c.name)}"><span class="gs-art" data-gcard="${esc(id)}">${gcardImgHtml(id)}</span><span class="eli gs-el">${elIcon(c.el)}</span>${st==='in'?'<span class="gs-tag">In list</span>':st==='sup'?'<span class="gs-tag bor">Invited</span>':''}<span class="gs-nm">${esc(c.name)}</span></button>`; }).join('')}</div></div>`;
   const supE=lu.list.find(x=>x.borrowed), supC=supE&&byIdAll(supE.id);
-  const supBar=`<div class="sup-bar${supC?' sup-pick':''}"${supC?' data-act="supset" title="Tap to change"':''}><span class="sup-lab">Invited character</span>${supC?`<span class="sup-who" style="--el:${elc(supE.el||supC.el)}"><span class="av" data-side="${esc(supC.id)}">${sideImgHtml(supC.id)}</span><b>${esc(supC.name)}</b></span><button type="button" class="mini" data-act="supclear">Clear</button>`:`<span class="sup-none">Not chosen</span><button type="button" class="btn" data-act="supset">Invite a character</button>`}</div>`;
+  const supBar=`<div class="sup-bar${supC?' sup-pick':''}"${supC?' data-act="supset" title="Tap to change"':''}><span class="sup-lab">Invited character</span>${supC?`<span class="sup-who" style="--el:${elc(supE.el||supC.el)}"><span class="av" data-side="${esc(supC.id)}">${sideImgHtml(supC.id)}</span><b>${esc(supC.name)}</b></span><button type="button" class="mini" data-act="supclear">Clear</button>`:`<span class="sup-none">Not chosen</span><button type="button" class="btn" data-act="supset">+ Invite</button>`}</div>`;
   const dis=u.edit?'disabled':'', ptab=u.ptab==='pool'?'pool':'list';
   const grp=(lab,html)=>`<div class="tf-grp"><span class="tf-lab">${lab}</span><div class="tf-chips">${html}</div></div>`;
-  const filt=grp('Element',els.map(k=>`<button class="chip" data-act="tf" data-k="el" data-v="${k}" aria-pressed="${tf.els.has(k)}" title="${EL[k].n}" style="--el:${elc(k)}" ${dis}>${elIcon(k)}${EL[k].n}</button>`).join(''))
+  const fEls=[...els,...EL_ORDER.filter(k=>!els.includes(k)&&SEASON.guests.some(id=>(byIdAll(id)||{}).el===k))];
+  const filt=grp('Element',fEls.map(k=>`<button class="chip" data-act="tf" data-k="el" data-v="${k}" aria-pressed="${tf.els.has(k)}" title="${EL[k].n}" style="--el:${elc(k)}" ${dis}>${elIcon(k)}${EL[k].n}</button>`).join(''))
     +grp('Weapon',WP_ORDER.map(k=>`<button class="chip" data-act="tf" data-k="wp" data-v="${k}" aria-pressed="${tf.wps.has(k)}" title="${WP[k]}" style="--el:#e8ecf1" ${dis}>${wpIcon(k)}${WP[k]}</button>`).join(''))
     +grp('Role',Object.entries(ROLES).map(([k,v])=>`<button class="chip rc r-${k}" data-act="tf" data-k="role" data-v="${k}" aria-pressed="${tf.roles.has(k)}" ${dis}><i></i>${v}</button>`).join('')
       +`<button class="chip rc" data-act="tf" data-k="role" data-v="none" aria-pressed="${tf.roles.has('none')}" style="--rc:var(--mute)" ${dis}><i></i>No role</button>`);
@@ -2017,7 +2056,7 @@ function planHtml(lu,u){
     <div class="plan-body tab-${ptab}">
       <div class="tl">
         <h3>Team list<small>${u.edit?'Drag to reorder or remove':esc(setupSum(lu,d))}</small></h3>
-        ${u.edit?'':`<div class="tf-panel">${filt}</div>${filtering?'<div class="tf-bar"><button type="button" class="btn tf-reset" data-act="tclear">Reset</button></div>':''}`}
+        ${u.edit?'':`<div class="tf-panel">${filt}</div>${filtering?'<div class="tf-bar"><button type="button" class="btn tf-reset" data-act="tclear">Reset filter</button></div>':''}`}
         <ol class="ents">${rowsHtml}${empties}</ol>
       </div>
       <div class="pool">
@@ -2046,10 +2085,18 @@ function cardHtml(lu){
   </div>`;
 }
 const luModeType=()=>NAV_MODES.some(m=>m[0]===S.luTab)?S.luTab:'myparty';
+const setsOf=type=>S.lineups.filter(x=>x.type===type);
 function ensureLu(type){
-  let lu=S.lineups.find(x=>x.type===type);
-  if(!lu){ lu=type==='theater'?newTheater():newParty(type); S.lineups.push(lu); persist(); }
-  return lu;
+  const m=PARTY_MODES[type], want=(m&&m.maxSets)||1;
+  let sets=setsOf(type);
+  if(sets.length<want){ while(sets.length<want){ const lu=type==='theater'?newTheater():newParty(type); S.lineups.push(lu); sets.push(lu); } persist(); }
+  const v=(S.luSet&&S.luSet[type])|0;
+  return sets[Math.max(0,Math.min(v,sets.length-1))];
+}
+function setBarHtml(lu){
+  const mode=PARTY_MODES[lu.type]; if(!mode||!mode.maxSets) return '';
+  const sets=setsOf(lu.type), cur=sets.indexOf(lu);
+  return `<div class="set-bar" role="tablist" aria-label="Sets of teams">${sets.map((b,i)=>`<button type="button" class="set-tab" role="tab" data-act="set-tab" data-set="${i}" aria-selected="${i===cur}">Set ${i+1}</button>`).join('')}</div>`;
 }
 function renderLuTabs(){
   const cur=luModeType();
@@ -2061,7 +2108,7 @@ function luHtml(lu){
     const mode=PARTY_MODES[lu.type];
     const head=`<header class="lu-h"><h3 class="lu-title">${esc(mode.title)}</h3><span class="lu-tag">${esc(mode.badge)}</span><span class="lu-acts"><button class="btn danger" data-act="clear">Clear</button></span></header>`;
     const body=partyHtml(lu);
-    return `<section class="lu" data-lu="${lu.id}" data-type="${lu.type}">${head}<div class="lu-body">${body}</div></section>`;
+    return `<section class="lu" data-lu="${lu.id}" data-type="${lu.type}">${head}<div class="lu-body">${setBarHtml(lu)}${body}</div></section>`;
   }
   const d=DIFF[lu.diff]||DIFF.lunar;
   const head=`<header class="lu-h"><h3 class="lu-title">Imaginarium Theater</h3><span class="lu-tag lu-season" id="luSeason">${seasonInner()}</span><span class="lu-acts"><button class="btn danger" data-act="clear">Clear</button></span></header>`;
@@ -2159,7 +2206,7 @@ $('#luList').addEventListener('click',e=>{
   const lu=luOf(b); if(!lu) return;
   const act=b.dataset.act, u=uiOf(lu.id), ent=b.closest('.ent'), idx=ent&&ent.dataset.i!==undefined?+ent.dataset.i:-1, d=DIFF[lu.diff]||DIFF.lunar;
   const done=()=>{ persist(); renderLineups(); };
-  if(act==='clear'){ if(!confirm('Clear this page? Your Roster stays unchanged.')) return; const at=S.lineups.indexOf(lu); S.lineups[at]=lu.type==='theater'?newTheater():newParty(lu.type); delete UIS[lu.id]; done(); }
+  if(act==='clear'){ if(!confirm(PARTY_MODES[lu.type]&&PARTY_MODES[lu.type].maxSets?'Clear this set?':'Clear this page?')) return; const at=S.lineups.indexOf(lu); S.lineups[at]=lu.type==='theater'?newTheater():newParty(lu.type); delete UIS[lu.id]; done(); }
   else if(act==='back'){ lu.stage='open'; u.edit=false; done(); }
   else if(act==='toplan'){ lu.stage='plan'; done(); }
   else if(act==='edit'){ u.edit=!u.edit; if(u.edit){ u.tf.els.clear(); u.tf.wps.clear(); u.tf.roles.clear(); } renderLineups(); }
@@ -2183,6 +2230,7 @@ $('#luList').addEventListener('click',e=>{
   else if(act==='add'){ if(lu.list.length>=d.max) return toast(`Team list is full: ${d.n} mode holds up to ${d.max} characters`); const id=b.dataset.id; if(lu.list.some(x=>x.id===id)) return; lu.list.push({id,el:'',role:ROLES[b.dataset.r]?b.dataset.r:null,borrowed:false,kind:'extra'}); done(); }
   else if(act==='addt'){ if(lu.list.length>=d.max) return toast(`Team list is full: ${d.n} mode holds up to ${d.max} characters`); if(lu.list.some(x=>x.id==='traveler')) return; lu.list.push({id:'traveler',el:b.dataset.el,role:ROLES[b.dataset.r]?b.dataset.r:null,borrowed:false,kind:'extra'}); done(); }
   else if(act==='trav-el'){ u.travEl=b.dataset.el; renderLineups(); }
+  else if(act==='set-tab'){ S.luSet[lu.type]=+b.dataset.set||0; persist(); renderLineups(); }
   else if(act==='share-addteam'){ if(PARTY_MODES[lu.type].flex&&lu.teams.length<PARTY_MODES[lu.type].maxTeams){ lu.teams.push({name:'',slots:Array(4).fill(null)}); done(); } }
   else if(act==='share-delteam'){ if(PARTY_MODES[lu.type].flex&&lu.teams.length>1){ const last=lu.teams[lu.teams.length-1]; if(last.slots.some(Boolean)&&!confirm('Remove the last team and its characters?')) return; lu.teams.pop(); done(); } }
   else if(act==='share-link'){ if(lu.teams.some(t=>t.slots.some(Boolean))) copyShare(shareLink(lu),'Link copied'); }
@@ -2205,9 +2253,9 @@ const PPF=()=>PARTY_PICKER.f;
 $('#partySearch').addEventListener('input',e=>{PPF().q=e.target.value;renderPartyPicker();});
 $('#ppSort').addEventListener('click',()=>{PARTY_PICKER.sort=PARTY_PICKER.sort==='verAsc'?'verDesc':'verAsc'; syncPartyPickerFilters(); renderPartyPicker(); const g=$('#partyPickerGrid'); if(g) g.scrollTop=0;});
 $('#ppRar').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; togSet(PPF().rars,+b.dataset.v,2); syncPartyPickerFilters(); renderPartyPicker(); });
-$('#ppEl').addEventListener('click',e=>{ const b=e.target.closest('[data-pp-el]'); if(!b) return; const k=b.dataset.ppEl, f=PPF(); togSet(f.els,k,EL_ORDER.length); syncP('#ppEl','data-pp-el',f.els); renderPartyPicker(); });
+$('#ppEl').addEventListener('click',e=>{ const g=e.target.closest('[data-pp-guest]'); if(g){ const f=PPF(); f.guest=!f.guest; g.setAttribute('aria-pressed',String(f.guest)); renderPartyPicker(); return; } const b=e.target.closest('[data-pp-el]'); if(!b) return; const k=b.dataset.ppEl, f=PPF(); togSet(f.els,k,PARTY_PICKER.sup?99:EL_ORDER.length); syncP('#ppEl','data-pp-el',f.els); renderPartyPicker(); });
 $('#ppWp').addEventListener('click',e=>{
-  if(e.target.closest('[data-pp-reset]')){ PARTY_PICKER.f=newPickerFilters(); PARTY_PICKER.sort='verDesc'; buildPartyFilters(); renderPartyPicker(); return; }
+  if(e.target.closest('[data-pp-reset]')){ PARTY_PICKER.f=newPickerFilters(); if(PARTY_PICKER.sup) PARTY_PICKER.ft=PARTY_PICKER.f; else PARTY_PICKER.fp=PARTY_PICKER.f; PARTY_PICKER.sort='verDesc'; buildPartyFilters(); renderPartyPicker(); return; }
   const b=e.target.closest('[data-pp-wp]'); if(!b) return; const k=b.dataset.ppWp, f=PPF(); togSet(f.wps,k,WP_ORDER.length); syncP('#ppWp','data-pp-wp',f.wps); renderPartyPicker();
 });
 $('#dlgTravelerElement').addEventListener('click',e=>{
@@ -2239,7 +2287,7 @@ $('#travelerElementChoices').addEventListener('click',e=>{
 $('#partyPickerGrid').addEventListener('click',e=>{
   const b=e.target.closest('[data-pick-char]'); if(!b||b.disabled) return;
   const lu=S.lineups.find(x=>x.id===PARTY_PICKER.luId);
-  if(lu&&PARTY_PICKER.sup&&lu.type==='theater'){ if(setSupporting(lu,b.dataset.pickChar)){ const d0=$('#dlgPartyPicker'); if(d0) d0.close(); persist(); renderLineups(); } return; }
+  if(lu&&PARTY_PICKER.sup&&lu.type==='theater'){ const pc=byIdAll(b.dataset.pickChar), own=lu.list.find(e=>e.id===b.dataset.pickChar&&!e.borrowed); if(own&&!confirm(`${pc?pc.name:'This character'} is already in your Team list. Inviting replaces your own copy with the invited one. Continue?`)) return; if(setSupporting(lu,b.dataset.pickChar)){ const d0=$('#dlgPartyPicker'); if(d0) d0.close(); persist(); renderLineups(); } return; }
   if(!lu||!lu.teams) return;
   const team=lu.teams[PARTY_PICKER.team], slotIndex=PARTY_PICKER.slot, id=b.dataset.pickChar;
   if(team.slots.some((s,i)=>i!==slotIndex&&s&&s.id===id)) return toast('A character can only appear once in the same team.');
@@ -2395,7 +2443,7 @@ async function buildShareImage(lu){
     const tn=tnames[ti]; let lw=0, rw=0; ctx.textAlign='left';
     if(tn){ ctx.fillStyle=GOLD; ctx.font=`${T0.wB} 24px ${FH}`; sp('0.8px'); ctx.fillText(tn,PAD,yc+9); rw=ctx.measureText(tn).width; sp('0px'); }
     else{ ctx.fillStyle=MUTE; ctx.font=`${T0.wM} 11px ${FM}`; sp('3.3px'); ctx.fillText('TEAM',PAD,yc+4); lw=ctx.measureText('TEAM').width; sp('0px');
-      const rn=['I','II','III'][ti]||String(ti+1); ctx.fillStyle=GOLD; ctx.font=`${T0.wB} 28px ${FH}`; sp('1.1px'); ctx.fillText(rn,PAD+lw+14,yc+10); rw=ctx.measureText(rn).width; sp('0px'); }
+      const rn=['I','II','III','IV','V'][ti]||String(ti+1); ctx.fillStyle=GOLD; ctx.font=`${T0.wB} 28px ${FH}`; sp('1.1px'); ctx.fillText(rn,PAD+lw+14,yc+10); rw=ctx.measureText(rn).width; sp('0px'); }
     const els=[...new Set(t.map(s=>s.id==='traveler'?s.el:(chs.get(s.id)||{}).el).filter(Boolean))], ew=els.length*28;
     const lx=PAD+(tn?0:lw+14)+rw+12, lx2=W-PAD-ew-10; if(lx2>lx){ const g=ctx.createLinearGradient(lx,0,lx2,0); g.addColorStop(0,hexA(GOLD,.65)); g.addColorStop(1,hexA(GOLD,0)); ctx.fillStyle=g; ctx.fillRect(lx,yc,lx2-lx,1); }
     els.forEach((k,i)=>drawEl(ctx,k,W-PAD-ew+i*28+14,yc,21,elc(k),elI));
@@ -2439,7 +2487,7 @@ async function buildShareImage(lu){
 }
 async function captureShare(lu){
   toast('Building image');
-  try{ const blob=await buildShareImage(lu); const nm=lu.type==='share'?'shared-teams':lu.type==='myparty'?'my-teams':lu.type; download(blob,nm+'.jpg'); toast('Image saved'); }
+  try{ const blob=await buildShareImage(lu); const sx=setsOf(lu.type), nm=(lu.type==='share'?'shared-teams':lu.type==='myparty'?'my-teams':lu.type)+(PARTY_MODES[lu.type].maxSets?'-set-'+(sx.indexOf(lu)+1):''); download(blob,nm+'.jpg'); toast('Image saved'); }
   catch(err){ console.error(err); toast('Could not build the image'); }
 }
 
@@ -2449,7 +2497,9 @@ function sanitizeState(){
   const before=JSON.stringify(S), o=cleanOwned(S.owned,S.refine); S.owned=o.owned; S.refine=o.refine;
   S.player=typeof S.player==='string'?S.player.slice(0,40):''; S.uid=typeof S.uid==='string'?S.uid.replace(/\D/g,'').slice(0,12):'';
   if(S.tab!=='lineups') S.tab='roster';
-  S.lineups=cleanLineups(S.lineups); S.server=SERVERS.some(x=>x.id===S.server)?S.server:'';
+  S.lineups=cleanLineups(S.lineups);
+  { const lb={}; Object.keys(PARTY_MODES).forEach(t=>{ if(!PARTY_MODES[t].maxSets) return; const n=S.lineups.filter(x=>x.type===t).length, v=S.luSet&&Number.isInteger(S.luSet[t])?S.luSet[t]:0; lb[t]=Math.max(0,Math.min(v,Math.max(0,n-1))); }); S.luSet=lb; }
+  S.server=SERVERS.some(x=>x.id===S.server)?S.server:'';
   if(JSON.stringify(S)!==before) persist();
 }
 (async()=>{ sanitizeState(); db=await idbOpen(); await syncImgCache(); buildChips(); render(); queueElements(); showTab(S.tab); initShareView(); })();
