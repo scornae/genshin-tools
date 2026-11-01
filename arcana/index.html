@@ -2,6 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!--
+LUNAR ARCANA TRADE - notes for whoever edits this next (read this first)
+What: one static HTML file, no build step. Fan tool for Genshin Impact's Lunar Arcana cards (22 cards from Imaginarium Theater).
+      Live at scornae.github.io/genshin-tools/arcana/ (GitHub Pages). Developed as Lunar-Arcana-Trade.html, renamed index.html on upload.
+Folder: arcana/index.html (this file) + og-preview.jpg (static link preview, 1200x630) + cards/NN-slug.webp (22 pictures, 684x1024, e.g. 02-the-high-priestess.webp).
+Three views in one page, chosen by the URL hash (see the Router at the bottom of the script):
+  home   (no hash)  your collection: tap a card to add a copy, the minus button removes one. Header = name, server, UID, progress.
+  editor (#post)    "Make trade post": Offering and Looking for start automatic (spares / missing cards) and can be edited freely without touching the collection.
+                    Actions: Save image, Copy link, Copy post text.
+  viewer (#t=...)   read-only page opened from a share link. No buttons by design.
+Storage: localStorage key gi-arcana-v1 = {n:[22 copy counts 0-9], name, server, uid}. Export/Import use the same JSON. The editor draft (P) is never saved.
+Share link format is documented above decodeLink(). Link previews cannot differ per link (static hosting), so og-preview.jpg is the same for everyone.
+Saved image: drawn on a canvas. When opened as file:// the browser blocks exporting pictures, so card pictures are replaced by arch placeholders (layout test only).
+Look: cream paper, deep teal, gold. Fonts El Messiri (headings, card names) and Figtree (body) from Google Fonts. No black text. Typographic apostrophe in text.
+Style of work: keep it one file, plain names, small functions with a one-line comment. Roster (../roster/) is a separate tool with its own look.
+-->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Genshin Lunar Arcana Trade - Collection &amp; Trade Post Maker</title>
 <meta name="description" content="A free fan-made Genshin Impact tool: track your Lunar Arcana cards, then make a trade post with your spares and the cards you need.">
@@ -24,7 +40,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&family=Figtree:wght@400;600;700&display=swap">
 <style>
-:root{--bg:#f3e8d0;--paper:#fbf5e6;--ink:#3b2a18;--deep:#174c55;--mute:#7a6244;--line:#d9c7a0;--line2:#cdb888;--gold:#a8741a;--f-head:'El Messiri',Georgia,'Times New Roman',serif;--f-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif}
+:root{--bg:#f3e8d0;--paper:#fbf5e6;--ink:#3b2a18;--deep:#174c55;--mute:#7a6244;--line2:#cdb888;--gold:#a8741a;--f-head:'El Messiri',Georgia,'Times New Roman',serif;--f-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif}
 *{box-sizing:border-box}
 html{color-scheme:light;font-synthesis:none}
 body{margin:0;color:var(--ink);font:400 16px/1.45 var(--f-body);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);background:radial-gradient(1100px 600px at 50% -8%,rgba(255,255,255,.75),transparent 70%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56' width='56' height='56'><path d='M0 28L28 0L56 28L28 56Z' fill='none' stroke='%23b9a06a' stroke-opacity='.22'/></svg>") 0 0/56px,var(--bg)}
@@ -37,7 +53,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer}
 .orn::after{content:"";position:absolute;left:50%;top:50%;width:11px;height:11px;background:var(--gold);transform:translate(-50%,-50%) rotate(45deg);box-shadow:0 0 0 8px #f3e8d0}
 .kicker{font:600 11px var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
 .kicker::before{content:"\2726";margin-right:10px;font-size:13px}
-.namerow{display:flex;align-items:center;gap:12px;margin:4px 0}
+.namerow{display:flex;align-items:center;gap:12px;margin:26px 0 4px}
 .pname{background:none;border:0;padding:0;font:700 clamp(34px,6vw,58px)/1.05 var(--f-head);color:var(--deep);text-align:left}
 .pname.empty{color:var(--mute);opacity:.7}
 .pf-edit{width:32px;height:32px;border-radius:50%;border:1px solid var(--line2);background:var(--paper);color:var(--mute)}
@@ -58,7 +74,7 @@ button,input{font:inherit;color:inherit}button{cursor:pointer}
 .hint{margin:0 0 16px;color:var(--mute);font-size:14px}
 .tsec{margin-top:18px}
 .tsec h2{display:flex;align-items:baseline;gap:12px;margin:0 0 14px;padding-bottom:8px;font:700 30px var(--f-head);color:var(--deep);border-bottom:1px solid var(--line2)}
-.tsec h2 small{font:600 15px var(--f-body);color:var(--mute)}.tsec h2 .sp{flex:1}
+.tsec h2 small{font:600 15px var(--f-body);color:var(--mute)}.tsec h2 .sp{flex:1}.tsec h2 .btn{font:600 14px var(--f-body)}.tsec.first{margin-top:10px}.top-block{display:block;padding-bottom:20px}.lead{margin:0;font-size:14px;color:var(--mute)}.data-bar{margin-top:56px}.actions{margin-top:18px}
 .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px}
 .g.ctr{display:flex;flex-wrap:wrap;justify-content:center}.g.ctr .cell{width:calc((100% - 24px)/3)}
 .cell{position:relative}
@@ -74,23 +90,24 @@ button,input{font:inherit;color:inherit}button{cursor:pointer}
 .cap i{display:block;font:600 13px var(--f-body);font-style:normal;letter-spacing:.1em;color:var(--gold)}
 .cap b{display:block;font:600 16px var(--f-head);color:var(--deep)}
 .c:not(.on) .cap{opacity:.55}
-.c.pop img{animation:pop .55s ease-out}
-@keyframes pop{0%{transform:scale(.94)}45%{transform:scale(1.07);filter:drop-shadow(0 0 16px rgba(217,170,74,.95))}100%{transform:scale(1)}}
-@media(prefers-reduced-motion:reduce){.c.pop img{animation:none}.c img,.pbar i{transition:none}}
+.c.pop img{animation:pop .8s ease-out}
+@keyframes pop{0%{transform:scale(.92)}40%{transform:scale(1.08);filter:drop-shadow(0 0 22px rgba(217,170,74,1))}100%{transform:scale(1)}}
+@keyframes glow{from{filter:drop-shadow(0 0 22px rgba(217,170,74,1))}to{filter:drop-shadow(0 8px 10px rgba(60,40,10,.38))}}
+@media(prefers-reduced-motion:reduce){.c.pop img{animation:glow .9s ease-out}.c img,.pbar i{transition:none}}
 .bd{position:absolute;top:2px;right:0;background:var(--gold);color:#fff;font:700 12px/1 var(--f-body);border-radius:999px;padding:4px 8px;box-shadow:0 2px 5px rgba(60,40,10,.3)}.bd:empty{display:none}
 .mn{position:absolute;top:2px;left:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--line2);background:var(--paper);font-size:17px;line-height:1;padding:0}
 .post{position:relative;margin-top:14px;padding:6px 28px 30px;border:3px double var(--line2);border-radius:6px;background:rgba(251,245,230,.65)}
 .none{width:100%;margin:0;text-align:center;color:var(--mute);font-size:14px}
 .opts{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;padding:10px 0}
 .chk{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--ink)}.chk input:disabled+span{opacity:.5}
-.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px;margin:0 0 16px;padding:12px;border:1px dashed var(--line2);border-radius:10px;background:var(--paper)}
-.tile{position:relative;padding:3px;border:2px solid transparent;border-radius:8px;background:none}
+.pick{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 auto 16px;padding:12px;border:1px dashed var(--line2);border-radius:10px;background:var(--paper)}
+.tile{position:relative;width:56px;padding:3px;border:2px solid transparent;border-radius:8px;background:none}
 .tile img{display:block;width:100%;aspect-ratio:684/1024;object-fit:cover;filter:grayscale(1) opacity(.5)}
 .tile i{position:absolute;left:0;right:0;bottom:3px;font:600 11px var(--f-body);font-style:normal;color:var(--ink);text-shadow:0 0 3px #fff}
 .tile.sel{border-color:var(--gold)}.tile.sel img{filter:none}.tile:disabled{opacity:.3;cursor:not-allowed}
-.vhead{text-align:center;padding:26px 0 6px}.vhead h1{margin:6px 0 4px;font:700 clamp(30px,5vw,50px)/1.1 var(--f-head);color:var(--deep)}
+.vhead{text-align:center;padding:30px 0 22px}.vhead .kicker{text-align:left}.vid{white-space:pre-line;font-size:15px;line-height:1.5;color:var(--mute)}.vhead h1{margin:26px 0 10px;font:700 clamp(30px,5vw,50px)/1.1 var(--f-head);color:var(--deep)}
 .own{text-align:center;margin:24px 0 0;font-size:14px}.own a{color:var(--mute)}
-h1.pt{margin:6px 0 2px;font:700 clamp(30px,5vw,48px)/1.1 var(--f-head);color:var(--deep)}
+h1.pt{margin:26px 0 6px;font:700 clamp(30px,5vw,48px)/1.1 var(--f-head);color:var(--deep)}
 .legal{max-width:760px;margin:60px auto 0;padding:0 28px calc(24px + env(safe-area-inset-bottom))}
 .legal::before{content:"";display:block;width:48px;height:2px;margin:0 auto 14px;background:var(--line2)}
 .legal p{margin:0;text-align:center;font-size:10.5px;line-height:1.6;color:var(--mute);opacity:.8}
@@ -102,7 +119,7 @@ dialog::backdrop{background:rgba(43,28,16,.45)}
 .seg{display:flex;gap:8px}.seg button{flex:1;border:1px solid var(--line2);background:#fff;border-radius:999px;padding:8px 10px;font-weight:600;font-size:14px;color:var(--mute)}
 .seg button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:#fff}
 @media(max-width:900px){.sheet{padding:0 16px}.top{padding:16px 0 12px;flex-direction:column;align-items:stretch}.cap i{font-size:12px}.cap b{font-size:14px}.bar .btn{flex:1 1 30%;padding:9px 4px;font-size:13px}.bar .sp{display:none}.post{padding:4px 12px 22px}}
-@media(min-width:901px){body{font-size:18px}.g{grid-template-columns:repeat(6,1fr);gap:22px}.g.ctr{gap:22px}.g.ctr .cell{width:calc((100% - 110px)/6)}.cap i{font-size:14px}.cap b{font-size:19px}.hint{font-size:16px}.mini{font-size:15px}.ach{font-size:14px}.uidrow{font-size:16px}.btn{font-size:16px}.pct b{font-size:52px}.pct span{font-size:24px}.tsec h2 small{font-size:17px}}
+@media(min-width:901px){body{font-size:18px}.g{grid-template-columns:repeat(6,1fr);gap:22px}.g.ctr{gap:22px}.g.ctr .cell{width:calc((100% - 110px)/6)}.cap i{font-size:14px}.cap b{font-size:19px}.hint{font-size:16px}.mini{font-size:15px}.ach{font-size:14px}.uidrow{font-size:16px}.vid{font-size:18px}.btn{font-size:16px}.pick{max-width:810px}.tile{width:64px}.pct b{font-size:52px}.pct span{font-size:24px}.tsec h2 small{font-size:17px}}
 </style>
 </head>
 <body>
@@ -119,12 +136,11 @@ dialog::backdrop{background:rgba(43,28,16,.45)}
 </div>
 <button class="btn cap2 big" id="mk" type="button">Make trade post</button>
 </header>
-<div class="orn"></div>
 <p class="msg" role="status"></p>
-<section class="tsec" style="margin-top:0"><h2>Collection<small id="unl"></small></h2>
+<section class="tsec first"><h2>Arcana Collection<small id="unl"></small></h2>
 <p class="hint">Tap a card each time you get one.</p>
 <div class="g" id="gh"></div></section>
-<div class="bar" style="margin-top:28px">
+<div class="bar data-bar">
 <button class="btn" id="imp" type="button">Import data</button>
 <button class="btn" id="exp" type="button">Export data</button>
 <span class="sp"></span>
@@ -134,10 +150,10 @@ dialog::backdrop{background:rgba(43,28,16,.45)}
 </div></div>
 
 <div id="post" hidden><div class="sheet">
-<header class="top" style="display:block;padding-bottom:12px">
+<header class="top top-block">
 <div class="kicker">Genshin Impact // Lunar Arcana</div>
 <h1 class="pt">Make trade post</h1>
-<div class="uidrow" style="margin:0">Spare cards and missing cards are picked for you. Change them here without touching your collection.</div>
+<p class="lead">Spare cards and missing cards are picked for you. Change them here without touching your collection.</p>
 </header>
 <div class="orn"></div>
 <div class="bar">
@@ -145,21 +161,21 @@ dialog::backdrop{background:rgba(43,28,16,.45)}
 <span class="sp"></span>
 <button class="btn" id="auto" type="button">Reset to automatic</button>
 </div>
-<div class="opts"><label class="chk"><input type="checkbox" id="oN"><span>Show name</span></label><label class="chk"><input type="checkbox" id="oS"><span>Show server</span></label><label class="chk"><input type="checkbox" id="oU"><span>Show UID</span></label><button class="btn" id="pedit2" type="button">Edit profile</button></div>
+<div class="opts"><label class="chk"><input type="checkbox" id="oN"><span>Show name</span></label><label class="chk"><input type="checkbox" id="oS"><span>Show server</span></label><label class="chk"><input type="checkbox" id="oU"><span>Show UID</span></label></div>
 <section class="post">
 <div class="tsec"><h2>Offering<small id="cO"></small><span class="sp"></span><button class="btn" id="eO" type="button">Edit cards</button></h2><div class="pick" id="kO" hidden></div><div class="g ctr" id="gO"></div></div>
 <div class="tsec"><h2>Looking for<small id="cW"></small><span class="sp"></span><button class="btn" id="eW" type="button">Edit cards</button></h2><div class="pick" id="kW" hidden></div><div class="g ctr" id="gW"></div></div>
 </section>
-<div class="bar" style="margin-top:18px">
+<div class="bar actions">
 <button class="btn cap2" id="timg" type="button">Save image</button>
-<button class="btn" id="ttxt" type="button">Copy post text</button>
 <button class="btn" id="tlnk" type="button">Copy link</button>
+<button class="btn" id="ttxt" type="button">Copy post text</button>
 </div>
 <p class="msg" role="status"></p>
 </div></div>
 
 <div id="view" hidden><div class="sheet">
-<header class="vhead"><div class="kicker">Genshin Impact // Lunar Arcana</div><h1 id="vt">Lunar Arcana Trade</h1><div class="uidrow" id="vid"></div></header>
+<header class="vhead"><div class="kicker">Genshin Impact // Lunar Arcana</div><h1 id="vt">Lunar Arcana Trade</h1><div class="vid" id="vid"></div></header>
 <div class="orn"></div>
 <section class="post">
 <div class="tsec" id="vO"><h2></h2><div class="g ctr"></div></div>
@@ -176,141 +192,277 @@ dialog::backdrop{background:rgba(43,28,16,.45)}
 <div class="pf"><b>Server</b><div class="seg" id="srv"></div></div>
 </dialog>
 <script>
+/* ===== 1. Card data =====
+   Card number = array index + 1. Picture file: cards/NN-slug.webp (slug = lowercase name, spaces to hyphens). */
 const NAMES=['The Magician','The High Priestess','The Empress','The Emperor','The Hierophant','The Lovers','The Chariot','Strength','The Hermit','The Wheel of Fortune','Justice','The Hanged Man','Death','Temperance','The Devil','The Tower','The Star','The Moon','The Sun','Judgment','The World','The Fool'];
-const ROM=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII'];
-const src=i=>'cards/'+String(i+1).padStart(2,'0')+'-'+NAMES[i].toLowerCase().replace(/ /g,'-')+'.webp';
-const KEY='gi-arcana-v1',SRV=['Asia','Europe','America'],MAX=9,MS=[1,12,22],LOCAL=location.protocol==='file:';
-const norm=d=>({n:Array.from({length:22},(_,i)=>{const v=Array.isArray(d.n)?d.n[i]:0;return Number.isInteger(v)&&v>0?Math.min(v,MAX):0}),name:String(d.name||'').slice(0,40),server:SRV.includes(d.server)?d.server:'',uid:String(d.uid||'').replace(/\D/g,'').slice(0,10)});
-let S=norm({});
-try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&typeof d==='object')S=norm(d)}catch(e){}
-const $=id=>document.getElementById(id);
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const say=t=>document.querySelectorAll('.msg').forEach(m=>{m.textContent=t});
-const spares=()=>S.n.map((v,i)=>[i,v-1]).filter(p=>p[1]>0);
-const missing=()=>S.n.map((v,i)=>i).filter(i=>!S.n[i]);
-const LOCKSVG='<svg class="lk" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 0 1 6 0v3z"/></svg>';
-const card=i=>'<span class="art"><img alt="" loading="lazy" src="'+src(i)+'">'+LOCKSVG+'</span><span class="cap"><i>'+ROM[i]+'</i><b>'+NAMES[i]+'</b></span>';
-const idLine=(n,s,u)=>[s&&s+' server',u&&'UID '+u].filter(Boolean).join('   ');
-/* home */
-const cells=[];
-NAMES.forEach((n,i)=>{
-const w=document.createElement('div');w.className='cell';
-w.innerHTML='<button type="button" class="c">'+card(i)+'</button><span class="bd"></span><button type="button" class="mn" aria-label="Remove one '+n+'">\u2212</button>';
-w.children[0].onclick=()=>bump(i,1);w.children[2].onclick=()=>bump(i,-1);
-$('gh').appendChild(w);cells.push(w)});
-function bump(i,d){const v=S.n[i]+d;if(v<0||v>MAX)return;S.n[i]=v;paint();save();say('');
-if(d>0&&v===1){const b=cells[i].children[0];b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}}
-function paint(){
-const own=S.n.filter(v=>v>0).length,sp=spares().reduce((a,p)=>a+p[1],0);
-cells.forEach((w,i)=>{const v=S.n[i];w.children[0].classList.toggle('on',v>0);w.children[0].title=NAMES[i]+(v?' (you have '+v+')':' (not collected yet)');w.children[1].textContent=v>1?'×'+v:'';w.children[2].hidden=!v});
-$('pct').textContent=Math.round(own/22*100)+'%';$('frac').textContent=own+' / 22';$('pfill').style.width=own/22*100+'%';
-$('nsp').textContent=sp;$('nms').textContent=22-own;$('unl').textContent='Unlocked: '+own+' / 22';
-const nx=MS.find(m=>m>own);$('ach').textContent=nx?'Next achievement: '+nx+' different cards ('+(nx-own)+' to go)':'All 22 cards collected';
-$('pname').textContent=S.name||'Your name';$('pname').classList.toggle('empty',!S.name);
-const id=idLine(0,S.server,S.uid);$('uidrow').textContent=id;$('uidrow').hidden=!id;
-if(!$('post').hidden)drawPost()}
-const segPaint=()=>[...$('srv').children].forEach(b=>b.setAttribute('aria-pressed',b.textContent===S.server));
-SRV.forEach(n=>{const b=document.createElement('button');b.type='button';b.textContent=n;b.onclick=()=>{S.server=S.server===n?'':n;segPaint();save();paint()};$('srv').appendChild(b)});
-const refresh=()=>{$('pfName').value=S.name;$('pfUid').value=S.uid;segPaint();paint()};
-refresh();
-const openP=()=>$('dlg').showModal();$('pname').onclick=openP;$('pedit').onclick=openP;$('pedit2').onclick=openP;$('dclose').onclick=()=>$('dlg').close();
-$('pfName').oninput=e=>{S.name=e.target.value.slice(0,40);save();paint()};
-$('pfUid').oninput=e=>{S.uid=e.target.value.replace(/\D/g,'').slice(0,10);e.target.value=S.uid;save();paint()};
-$('clr').onclick=async()=>{if(!confirm('Reset everything? This clears your collection and profile saved in this browser.'))return;try{localStorage.removeItem(KEY)}catch(e){}try{await Promise.all(NAMES.map((n,i)=>fetch(src(i),{cache:'reload'})))}catch(e){}location.reload()};
-const dl=(blob,name)=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)};
-async function copy(t,ok){try{await navigator.clipboard.writeText(t);say(ok)}catch(e){const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();let k=false;try{k=document.execCommand('copy')}catch(x){}ta.remove();say(k?ok:'Could not copy.')}}
-$('exp').onclick=()=>{dl(new Blob([JSON.stringify({v:4,...S})],{type:'application/json'}),'lunar-arcana-trade-data.json');say('Data exported.')};
-$('imp').onclick=()=>$('file').click();
-$('file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
-try{const d=JSON.parse(await f.text());if(!d||!Array.isArray(d.n))throw 0;
-if(S.n.some(v=>v)&&!confirm('Replace your current collection with this file?'))return;
-S=norm(d);refresh();save();say('Data imported.')}catch(x){say('That file is not a Lunar Arcana Trade data file.')}};
-/* trade post */
+const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII'];
+const cardSrc=i=>'cards/'+String(i+1).padStart(2,'0')+'-'+NAMES[i].toLowerCase().replace(/ /g,'-')+'.webp';
+
+/* ===== 2. Settings ===== */
+const STORAGE_KEY='gi-arcana-v1';
+const SERVERS=['Asia','Europe','America'];
+const MAX_COPIES=9;             // most copies of one card the page counts
+const ACHIEVEMENTS=[1,12,22];   // in-game achievements: hold 1, 12 and 22 different cards
+const LOCAL=location.protocol==='file:';  // opened as a local file: the browser blocks exporting pictures
+
+/* ===== 3. State =====
+   S = saved profile and collection (browser storage). n[i] = copies of card i.
+   P = trade post draft (memory only, never saved): offer {cardIndex: copies}, want [cardIndex], show-flags.
+   V = post decoded from a share link, or null. */
+function normalize(d){
+  const n=Array.from({length:22},(_,i)=>{const v=Array.isArray(d.n)?d.n[i]:0;return Number.isInteger(v)&&v>0?Math.min(v,MAX_COPIES):0});
+  return{n,name:String(d.name||'').slice(0,40),server:SERVERS.includes(d.server)?d.server:'',uid:String(d.uid||'').replace(/\D/g,'').slice(0,10)};
+}
+let S=normalize({});
+try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(saved&&typeof saved==='object')S=normalize(saved)}catch(e){}
 let P=null,V=null;
-const initPost=()=>{P={offer:Object.fromEntries(spares()),want:missing(),name:true,server:true,uid:true}};
-const mkR=()=>({name:P.name?S.name:'',server:P.server?S.server:'',uid:P.uid?S.uid:'',offer:Object.keys(P.offer).map(Number).sort((a,b)=>a-b).map(i=>[i,P.offer[i]]),want:[...new Set(P.want)].sort((a,b)=>a-b)});
-const cell=(i,k)=>{const w=document.createElement('div');w.className='cell';w.innerHTML='<div class="c on static">'+card(i)+'</div>'+(k>1?'<span class="bd">×'+k+'</span>':'');return w};
-function fillList(grid,list,empty){grid.textContent='';list.forEach(([i,k])=>grid.appendChild(cell(i,k)));if(!list.length&&empty){const p=document.createElement('p');p.className='none';p.textContent=empty;grid.appendChild(p)}}
-const tiles={O:[],W:[]};
-[['O','kO'],['W','kW']].forEach(([k,host])=>NAMES.forEach((n,i)=>{
-const b=document.createElement('button');b.type='button';b.className='tile';b.title=n;b.innerHTML='<img alt="" loading="lazy" src="'+src(i)+'"><i>'+ROM[i]+'</i>';
-b.onclick=()=>{if(k==='O'){if(!S.n[i])return;if(P.offer[i])delete P.offer[i];else P.offer[i]=Math.max(1,S.n[i]-1)}else{const j=P.want.indexOf(i);if(j>=0)P.want.splice(j,1);else P.want.push(i)}drawPost()};
-$(host).appendChild(b);tiles[k].push(b)}));
-['O','W'].forEach(k=>{$('e'+k).onclick=()=>{$('k'+k).hidden=!$('k'+k).hidden;$('e'+k).textContent=$('k'+k).hidden?'Edit cards':'Done'}});
+const saveState=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(S))}catch(e){}};
+const spares=()=>S.n.map((v,i)=>[i,v-1]).filter(p=>p[1]>0);   // [card, spare copies]
+const missing=()=>S.n.map((v,i)=>i).filter(i=>!S.n[i]);
+
+/* ===== 4. Small helpers ===== */
+const $=id=>document.getElementById(id);
+const say=text=>document.querySelectorAll('.msg').forEach(m=>{m.textContent=text});
+const identity=(server,uid)=>[server&&server+' server',uid&&'UID '+uid].filter(Boolean);
+const LOCK='<svg class="lk" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 0 1 6 0v3z"/></svg>';
+const cardHtml=i=>'<span class="art"><img alt="" loading="lazy" src="'+cardSrc(i)+'">'+LOCK+'</span><span class="cap"><i>'+ROMAN[i]+'</i><b>'+NAMES[i]+'</b></span>';
+function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+async function copyText(text,okMessage){
+  try{await navigator.clipboard.writeText(text);say(okMessage)}
+  catch(e){const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(x){}ta.remove();say(ok?okMessage:'Could not copy.')}
+}
+
+/* ===== 5. Home: collection and header ===== */
+const cells=[];  // per card: [card button, badge, minus button] wrapped in .cell
+function buildCollection(){
+  NAMES.forEach((name,i)=>{
+    const cell=document.createElement('div');cell.className='cell';
+    cell.innerHTML='<button type="button" class="c">'+cardHtml(i)+'</button><span class="bd"></span><button type="button" class="mn" aria-label="Remove one '+name+'">\u2212</button>';
+    cell.children[0].onclick=()=>changeCopies(i,1);
+    cell.children[2].onclick=()=>changeCopies(i,-1);
+    $('gh').appendChild(cell);cells.push(cell);
+  });
+}
+function changeCopies(i,delta){
+  const v=S.n[i]+delta;if(v<0||v>MAX_COPIES)return;
+  S.n[i]=v;saveState();paintHome();say('');
+  if(delta>0&&v===1){const btn=cells[i].children[0];btn.classList.remove('pop');void btn.offsetWidth;btn.classList.add('pop')}  // unlock effect
+}
+function paintHome(){
+  const owned=S.n.filter(v=>v>0).length,spareTotal=spares().reduce((a,p)=>a+p[1],0);
+  cells.forEach((cell,i)=>{const v=S.n[i],btn=cell.children[0];
+    btn.classList.toggle('on',v>0);
+    btn.title=NAMES[i]+(v?' (you have '+v+')':' (not collected yet)');
+    cell.children[1].textContent=v>1?'×'+v:'';
+    cell.children[2].hidden=!v});
+  $('pct').textContent=Math.round(owned/22*100)+'%';$('frac').textContent=owned+' / 22';$('pfill').style.width=owned/22*100+'%';
+  $('nsp').textContent=spareTotal;$('nms').textContent=22-owned;$('unl').textContent='Unlocked: '+owned+' / 22';
+  const next=ACHIEVEMENTS.find(m=>m>owned);
+  $('ach').textContent=next?'Next achievement: '+next+' different cards ('+(next-owned)+' to go)':'All 22 cards collected';
+  $('pname').textContent=S.name||'Your name';$('pname').classList.toggle('empty',!S.name);
+  const who=identity(S.server,S.uid).join('   ');$('uidrow').textContent=who;$('uidrow').hidden=!who;
+}
+const refreshAll=()=>{paintHome();if(!$('post').hidden)drawPost()};
+
+/* ===== 6. Profile dialog and data buttons ===== */
+function buildProfile(){
+  SERVERS.forEach(name=>{
+    const b=document.createElement('button');b.type='button';b.textContent=name;
+    b.onclick=()=>{S.server=S.server===name?'':name;saveState();paintServers();refreshAll()};
+    $('srv').appendChild(b);
+  });
+  $('pfName').oninput=e=>{S.name=e.target.value.slice(0,40);saveState();refreshAll()};
+  $('pfUid').oninput=e=>{S.uid=e.target.value.replace(/\D/g,'').slice(0,10);e.target.value=S.uid;saveState();refreshAll()};
+  const open=()=>$('dlg').showModal();
+  ['pname','pedit'].forEach(id=>{$(id).onclick=open});
+  $('dclose').onclick=()=>$('dlg').close();
+}
+const paintServers=()=>[...$('srv').children].forEach(b=>b.setAttribute('aria-pressed',b.textContent===S.server));
+function fillProfileInputs(){$('pfName').value=S.name;$('pfUid').value=S.uid;paintServers()}
+
+async function resetEverything(){
+  if(!confirm('Reset everything? This clears your collection and profile saved in this browser.'))return;
+  try{localStorage.removeItem(STORAGE_KEY)}catch(e){}
+  try{await Promise.all(NAMES.map((n,i)=>fetch(cardSrc(i),{cache:'reload'})))}catch(e){}  // refresh cached card pictures too
+  location.reload();
+}
+function exportData(){downloadBlob(new Blob([JSON.stringify({v:4,...S})],{type:'application/json'}),'lunar-arcana-trade-data.json');say('Data exported.')}
+async function importData(file){
+  if(!file)return;
+  try{
+    const d=JSON.parse(await file.text());if(!d||!Array.isArray(d.n))throw 0;
+    if(S.n.some(v=>v)&&!confirm('Replace your current collection with this file?'))return;
+    S=normalize(d);saveState();fillProfileInputs();refreshAll();say('Data imported.');
+  }catch(e){say('That file is not a Lunar Arcana Trade data file.')}
+}
+
+/* ===== 7. Trade post editor (#post) ===== */
+function initDraft(){P={offer:Object.fromEntries(spares()),want:missing(),name:true,server:true,uid:true}}
+// The post as shown, shared and saved. Same shape as a decoded share link (V).
+const draftPost=()=>({
+  name:P.name?S.name:'',server:P.server?S.server:'',uid:P.uid?S.uid:'',
+  offer:Object.keys(P.offer).map(Number).sort((a,b)=>a-b).map(i=>[i,P.offer[i]]),   // [[card, copies]]
+  want:[...new Set(P.want)].sort((a,b)=>a-b)                                          // [card]
+});
+const isEmpty=R=>!R.offer.length&&!R.want.length;
+function postCell(i,copies){
+  const cell=document.createElement('div');cell.className='cell';
+  cell.innerHTML='<div class="c on static">'+cardHtml(i)+'</div>'+(copies>1?'<span class="bd">×'+copies+'</span>':'');
+  return cell;
+}
+function fillCards(grid,list,emptyText){
+  grid.textContent='';list.forEach(([i,copies])=>grid.appendChild(postCell(i,copies)));
+  if(!list.length&&emptyText){const p=document.createElement('p');p.className='none';p.textContent=emptyText;grid.appendChild(p)}
+}
+const tiles={O:[],W:[]};  // small pickers: O = offering (only cards you own), W = looking for (any card)
+function buildPickers(){
+  [['O','kO'],['W','kW']].forEach(([kind,host])=>NAMES.forEach((name,i)=>{
+    const tile=document.createElement('button');tile.type='button';tile.className='tile';
+    tile.innerHTML='<img alt="" loading="lazy" src="'+cardSrc(i)+'"><i>'+ROMAN[i]+'</i>';
+    tile.onclick=()=>{
+      if(kind==='O'){if(!S.n[i])return;if(P.offer[i])delete P.offer[i];else P.offer[i]=Math.max(1,S.n[i]-1)}
+      else{const at=P.want.indexOf(i);if(at>=0)P.want.splice(at,1);else P.want.push(i)}
+      drawPost();
+    };
+    $(host).appendChild(tile);tiles[kind].push(tile);
+  }));
+  ['O','W'].forEach(kind=>{$('e'+kind).onclick=()=>{const box=$('k'+kind);box.hidden=!box.hidden;$('e'+kind).textContent=box.hidden?'Edit cards':'Done'}});
+  [['N','name'],['S','server'],['U','uid']].forEach(([c,field])=>{$('o'+c).onchange=e=>{P[field]=e.target.checked;drawPost()}});
+}
 function drawPost(){
-const R=mkR();
-[['N','name'],['S','server'],['U','uid']].forEach(([c,f])=>{const el=$('o'+c);el.checked=P[f]&&!!S[f];el.disabled=!S[f];el.onchange=()=>{P[f]=el.checked;drawPost()}});
-fillList($('gO'),R.offer,'Nothing offered yet. Use Edit cards.');fillList($('gW'),R.want.map(i=>[i,0]),'Nothing wanted. Use Edit cards.');
-$('cO').textContent='('+R.offer.length+')';$('cW').textContent='('+R.want.length+')';
-tiles.O.forEach((b,i)=>{b.classList.toggle('sel',!!P.offer[i]);b.disabled=!S.n[i];b.title=NAMES[i]+(S.n[i]?'':' (you do not have this card)')});
-tiles.W.forEach((b,i)=>b.classList.toggle('sel',P.want.includes(i)))}
-function mkText(R){
-const L=['╭━━━━━━━ 🔮 **LUNAR ARCANA TRADE** 🔮 ━━━━━━━╮',''];
-const hd=[R.name&&['👤','NAME',R.name],R.server&&['🌐','SERVER',R.server.toUpperCase()],R.uid&&['🆔','UID',R.uid]].filter(Boolean);
-if(hd.length){hd.forEach(([e,k,v])=>L.push('　'+e+' **'+k+':** `'+v+'`'));L.push('')}
-const part=(t,e,list,f)=>{if(!list.length)return;L.push('╞═══════ '+e+' **'+t+'** ═══════╡','');list.forEach(x=>L.push(f(x)));L.push('')};
-part('FOR TRADE','🟢',R.offer,([i,k])=>'　🔮 **[ '+ROM[i]+' ] '+NAMES[i]+'**\n　　└─ `×'+k+' Available`');
-part('LOOKING FOR','🔴',R.want,i=>'　❖ **[ '+ROM[i]+' ]** ── '+NAMES[i]);
-L.push('╞══════════════════════════╡','     💬 *DM me directly or reply/ping here!* 💫');
-return L.join('\n')}
-const link=R=>location.href.split('#')[0]+'#t='+R.offer.map(([i,k])=>i.toString(36)+k).join('')+'.'+R.want.map(i=>i.toString(36)).join('')+'.'+(SRV.indexOf(R.server)+1)+(R.uid?Number(R.uid).toString(36):'')+'.'+encodeURIComponent(R.name);
-const parse=h=>{const m=/^#t=((?:[0-9a-l][1-9])*)\.([0-9a-l]*)\.([0-3])([0-9a-z]{0,7})\.(.*)$/.exec(h);if(!m)return null;let nm='';try{nm=decodeURIComponent(m[5])}catch(e){}
-const o=new Map();(m[1].match(/../g)||[]).forEach(t=>{const i=parseInt(t[0],36);if(i<22)o.set(i,+t[1])});
-const w=[...new Set([...m[2]].map(c=>parseInt(c,36)).filter(i=>i<22))].sort((a,b)=>a-b);
-return{name:nm.slice(0,40),server:SRV[m[3]-1]||'',uid:m[4]?String(parseInt(m[4],36)).slice(0,10):'',offer:[...o].sort((a,b)=>a[0]-b[0]),want:w}};
+  const R=draftPost();
+  [['N','name'],['S','server'],['U','uid']].forEach(([c,field])=>{const box=$('o'+c);box.checked=P[field]&&!!S[field];box.disabled=!S[field];box.parentNode.title=S[field]?'':'Fill this in on the collection page (tap your name)'});
+  fillCards($('gO'),R.offer,'Nothing offered yet. Use Edit cards.');
+  fillCards($('gW'),R.want.map(i=>[i,0]),'Nothing wanted. Use Edit cards.');
+  $('cO').textContent='('+R.offer.length+')';$('cW').textContent='('+R.want.length+')';
+  tiles.O.forEach((t,i)=>{t.classList.toggle('sel',!!P.offer[i]);t.disabled=!S.n[i];t.title=NAMES[i]+(S.n[i]?'':' (you do not have this card)')});
+  tiles.W.forEach((t,i)=>t.classList.toggle('sel',P.want.includes(i)));
+}
+
+/* ===== 8. Post as text, share link, read-only page (#t=...) =====
+   Link: #t=<offer>.<want>.<server><uid>.<name>
+     offer  = pairs of [card base36][copies 1-9], e.g. "11a2" = card 1 x1, card 10 x2
+     want   = card base36 characters, e.g. "468f"
+     server = 0 none, 1 Asia, 2 Europe, 3 America; uid = base36 number (may be empty)
+     name   = encodeURIComponent text (may be empty)  */
+function postText(R){
+  const L=['╭━━━━━━━ 🔮 **LUNAR ARCANA TRADE** 🔮 ━━━━━━━╮',''];
+  const head=[R.name&&['👤','NAME',R.name],R.server&&['🌐','SERVER',R.server.toUpperCase()],R.uid&&['🆔','UID',R.uid]].filter(Boolean);
+  if(head.length){head.forEach(([icon,key,val])=>L.push('　'+icon+' **'+key+':** `'+val+'`'));L.push('')}
+  const part=(title,icon,list,line)=>{if(!list.length)return;L.push('╞═══════ '+icon+' **'+title+'** ═══════╡','');list.forEach(x=>L.push(line(x)));L.push('')};
+  part('FOR TRADE','🟢',R.offer,([i,k])=>'　🔮 **[ '+ROMAN[i]+' ] '+NAMES[i]+'**\n　　└─ `×'+k+' Available`');
+  part('LOOKING FOR','🔴',R.want,i=>'　❖ **[ '+ROMAN[i]+' ]** ── '+NAMES[i]);
+  L.push('╞══════════════════════════╡','     💬 *DM me directly or reply/ping here!* 💫');
+  return L.join('\n');
+}
+const encodeLink=R=>location.href.split('#')[0]+'#t='
+  +R.offer.map(([i,k])=>i.toString(36)+k).join('')+'.'+R.want.map(i=>i.toString(36)).join('')+'.'
+  +(SERVERS.indexOf(R.server)+1)+(R.uid?Number(R.uid).toString(36):'')+'.'+encodeURIComponent(R.name);
+function decodeLink(hash){
+  const m=/^#t=((?:[0-9a-l][1-9])*)\.([0-9a-l]*)\.([0-3])([0-9a-z]{0,7})\.(.*)$/.exec(hash);if(!m)return null;
+  let name='';try{name=decodeURIComponent(m[5])}catch(e){}
+  const offer=new Map();(m[1].match(/../g)||[]).forEach(t=>{const i=parseInt(t[0],36);if(i<22)offer.set(i,+t[1])});
+  const want=[...new Set([...m[2]].map(c=>parseInt(c,36)).filter(i=>i<22))].sort((a,b)=>a-b);
+  return{name:name.slice(0,40),server:SERVERS[m[3]-1]||'',uid:m[4]?String(parseInt(m[4],36)).slice(0,10):'',offer:[...offer].sort((a,b)=>a[0]-b[0]),want};
+}
 function drawView(){
-$('vt').textContent=(V.name?V.name+'’s ':'')+'Lunar Arcana Trade';$('vid').textContent=idLine(0,V.server,V.uid);
-[['vO','Offering',V.offer],['vW','Looking for',V.want.map(i=>[i,0])]].forEach(([id,t,list])=>{const s=$(id);s.hidden=!list.length;s.firstChild.textContent=t+' ('+list.length+')';fillList(s.lastChild,list)})}
-function route(){const h=location.hash;V=parse(h);const ed=h==='#post';
-$('home').hidden=ed||!!V;$('post').hidden=!ed;$('view').hidden=!V;
-if(ed){if(!P)initPost();drawPost()}if(V)drawView();window.scrollTo(0,0)}
-const goHome=e=>{if(e)e.preventDefault();history.pushState('',document.title,location.pathname+location.search);route()};
-addEventListener('hashchange',route);route();
-$('mk').onclick=()=>{initPost();location.hash='post';route()};
-$('back').onclick=goHome;$('own').onclick=goHome;$('auto').onclick=()=>{initPost();drawPost()};
-const empty=R=>!R.offer.length&&!R.want.length;
-$('ttxt').onclick=()=>{const R=mkR();if(empty(R)){say('Pick at least one card first.');return}copy(mkText(R),'Post text copied.')};
-$('tlnk').onclick=()=>{const R=mkR();if(empty(R)){say('Pick at least one card first.');return}copy(link(R),'Link copied.')};
+  $('vt').textContent=(V.name?V.name+'’s ':'')+'Lunar Arcana Trade';
+  $('vid').textContent=identity(V.server,V.uid).join('\n');
+  [['vO','Offering',V.offer],['vW','Looking for',V.want.map(i=>[i,0])]].forEach(([id,title,list])=>{
+    const sec=$(id);sec.hidden=!list.length;sec.firstChild.textContent=title+' ('+list.length+')';fillCards(sec.lastChild,list);
+  });
+}
+
+/* ===== 9. Saved image (canvas, 6 cards per row, same look as the page) ===== */
 async function makeImage(R){
-const secs=[['Offering',R.offer,'#a8741a'],['Looking for',R.want.map(i=>[i,0]),'#174c55']].filter(x=>x[1].length);
-try{await Promise.all([document.fonts.load('700 56px "El Messiri"'),document.fonts.load('600 22px Figtree')])}catch(e){}
-const im={};
-if(!LOCAL){const need=[...new Set(secs.flatMap(x=>x[1].map(p=>p[0])))];
-await Promise.all(need.map(i=>new Promise(r=>{const m=new Image();m.onload=()=>{im[i]=m;r()};m.onerror=r;m.src=src(i)})));
-if(need.some(i=>!im[i]))throw new Error('img')}
-const HD='"El Messiri",Georgia,serif',BD='Figtree,system-ui,sans-serif';
-const cw=190,ch=285,gap=22,cap=76,pad=52,cols=6,W=pad*2+cols*cw+(cols-1)*gap;
-const ids=[R.server&&['Server',R.server],R.uid&&['UID',R.uid]].filter(Boolean);
-let H=pad+104;secs.forEach(x=>{H+=96+Math.ceil(x[1].length/cols)*(ch+cap+gap)});H+=ids.length?56+48*(ids.length-1)+70:96;
-const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
-x.fillStyle='#f3e8d0';x.fillRect(0,0,W,H);
-const g=x.createRadialGradient(W/2,0,0,W/2,0,900);g.addColorStop(0,'rgba(255,255,255,.7)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,W,H);
-x.strokeStyle='#cdb888';x.lineWidth=3;x.strokeRect(14,14,W-28,H-28);x.lineWidth=1;x.strokeRect(24,24,W-48,H-48);
-const dia=(cx,cy,r,col)=>{x.fillStyle=col;x.beginPath();x.moveTo(cx,cy-r);x.lineTo(cx+r,cy);x.lineTo(cx,cy+r);x.lineTo(cx-r,cy);x.closePath();x.fill()};
-[[24,24],[W-24,24],[24,H-24],[W-24,H-24]].forEach(p=>dia(p[0],p[1],8,'#a8741a'));
-x.textBaseline='alphabetic';x.textAlign='left';
-x.fillStyle='#174c55';x.font='700 60px '+HD;x.fillText((R.name?R.name+'’s ':'')+'Lunar Arcana Trade',pad,pad+56);
-let y=pad+104;
-secs.forEach(([t,list,col])=>{
-x.fillStyle=col;x.font='700 44px '+HD;x.textAlign='left';x.fillText(t+' ('+list.length+')',pad,y+36);
-x.fillStyle='#cdb888';x.fillRect(pad,y+60,W/2-pad-26,2);x.fillRect(W/2+26,y+60,W/2-pad-26,2);dia(W/2,y+61,9,col);y+=96;
-for(let r=0;r*cols<list.length;r++){
-const row=list.slice(r*cols,r*cols+cols),rw=row.length*cw+(row.length-1)*gap;let px=(W-rw)/2;
-row.forEach(([i,k])=>{
-if(im[i]){x.save();x.shadowColor='rgba(60,40,10,.38)';x.shadowBlur=16;x.shadowOffsetY=7;x.drawImage(im[i],px,y,cw,ch);x.restore()}
-else{x.fillStyle='rgba(122,98,68,.2)';x.beginPath();x.moveTo(px+cw/2,y);x.lineTo(px+cw,y+ch*.14);x.lineTo(px+cw,y+ch*.86);x.lineTo(px+cw/2,y+ch);x.lineTo(px,y+ch*.86);x.lineTo(px,y+ch*.14);x.closePath();x.fill();x.fillStyle='#a8741a';x.font='700 52px '+HD;x.textAlign='center';x.fillText(ROM[i],px+cw/2,y+ch/2+16)}
-if(k>1){const t='×'+k;x.font='700 26px '+BD;const w=x.measureText(t).width+24;x.fillStyle='#a8741a';x.beginPath();if(x.roundRect)x.roundRect(px+cw-w+6,y-4,w,40,20);else x.rect(px+cw-w+6,y-4,w,40);x.fill();x.fillStyle='#fff';x.textAlign='center';x.fillText(t,px+cw-w/2+6,y+25)}
-x.textAlign='center';x.fillStyle='#a8741a';x.font='600 22px '+BD;x.fillText(ROM[i],px+cw/2,y+ch+34);
-let fs=27;x.font='600 '+fs+'px '+HD;
-while(x.measureText(NAMES[i]).width>cw+gap-6&&fs>15){fs--;x.font='600 '+fs+'px '+HD}
-x.fillStyle='#174c55';x.fillText(NAMES[i],px+cw/2,y+ch+66);px+=cw+gap});
-y+=ch+cap+gap}});
-ids.forEach(([k,v],j)=>{const by=y+44+48*j;x.textAlign='left';x.fillStyle='#a8741a';x.font='700 20px '+BD;x.fillText(k.toUpperCase(),pad,by);x.fillStyle='#174c55';x.font='600 32px '+HD;x.fillText(v,pad+112,by)});
-x.textAlign='right';x.fillStyle='#7a6244';x.font='20px '+BD;x.fillText('scornae.github.io/genshin-tools/arcana',W-pad,ids.length?y+44+48*(ids.length-1):y+44);
-return new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('empty')),'image/jpeg',.92))}
-$('timg').onclick=async()=>{const R=mkR();if(empty(R)){say('Pick at least one card first.');return}say('Making image...');
-try{dl(await makeImage(R),'lunar-arcana-trade.jpg');say(LOCAL?'Image saved. Opened as a local file, so card pictures are left out here; they appear on the website.':'Image saved.')}
-catch(e){say(e.message==='img'?'Some card images did not load. Check the cards folder and try again.':'Could not save the image.')}};
+  const sections=[['Offering',R.offer,'#a8741a'],['Looking for',R.want.map(i=>[i,0]),'#174c55']].filter(s=>s[1].length);
+  try{await Promise.all([document.fonts.load('700 56px "El Messiri"'),document.fonts.load('600 22px Figtree')])}catch(e){}
+  const pics={};
+  if(!LOCAL){
+    const need=[...new Set(sections.flatMap(s=>s[1].map(p=>p[0])))];
+    await Promise.all(need.map(i=>new Promise(done=>{const img=new Image();img.onload=()=>{pics[i]=img;done()};img.onerror=done;img.src=cardSrc(i)})));
+    if(need.some(i=>!pics[i]))throw new Error('img');
+  }
+  const HEAD='"El Messiri",Georgia,serif',BODY='Figtree,system-ui,sans-serif';
+  const cw=190,ch=285,gap=22,capH=76,pad=52,cols=6,W=pad*2+cols*cw+(cols-1)*gap;
+  const info=[R.server&&['Server',R.server],R.uid&&['UID',R.uid]].filter(Boolean);
+  let H=pad+121+30*(sections.length-1);sections.forEach(s=>{H+=96+Math.ceil(s[1].length/cols)*(ch+capH+gap)});
+  H+=info.length?70+40*(info.length-1)+60:48;
+  const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;const x=canvas.getContext('2d');
+  const diamond=(cx,cy,r,color)=>{x.fillStyle=color;x.beginPath();x.moveTo(cx,cy-r);x.lineTo(cx+r,cy);x.lineTo(cx,cy+r);x.lineTo(cx-r,cy);x.closePath();x.fill()};
+  const roundRect=(px,py,w,h,r)=>{x.beginPath();if(x.roundRect)x.roundRect(px,py,w,h,r);else x.rect(px,py,w,h)};
+  // background and double frame with corner diamonds
+  x.fillStyle='#f3e8d0';x.fillRect(0,0,W,H);
+  const glow=x.createRadialGradient(W/2,0,0,W/2,0,900);glow.addColorStop(0,'rgba(255,255,255,.7)');glow.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=glow;x.fillRect(0,0,W,H);
+  x.strokeStyle='#cdb888';x.lineWidth=3;x.strokeRect(14,14,W-28,H-28);x.lineWidth=1;x.strokeRect(24,24,W-48,H-48);
+  [[24,24],[W-24,24],[24,H-24],[W-24,H-24]].forEach(p=>diamond(p[0],p[1],8,'#a8741a'));
+  // centered title, shrunk to fit long names
+  const title=(R.name?R.name+'’s ':'')+'Lunar Arcana Trade';
+  let titleSize=60;x.font='700 '+titleSize+'px '+HEAD;
+  while(x.measureText(title).width>W-pad*2&&titleSize>30){titleSize--;x.font='700 '+titleSize+'px '+HEAD}
+  x.textBaseline='alphabetic';x.textAlign='center';x.fillStyle='#174c55';x.fillText(title,W/2,pad+70);   // title sits midway between the frame line and the first heading
+  let y=pad+121;
+  sections.forEach(([label,list,color],s)=>{
+    if(s)y+=30;   // extra space between sections
+    x.textAlign='left';x.fillStyle=color;x.font='700 44px '+HEAD;x.fillText(label+' ('+list.length+')',pad,y+36);
+    x.fillStyle='#cdb888';x.fillRect(pad,y+60,W/2-pad-26,2);x.fillRect(W/2+26,y+60,W/2-pad-26,2);diamond(W/2,y+61,9,color);
+    y+=96;
+    for(let r=0;r*cols<list.length;r++){
+      const row=list.slice(r*cols,r*cols+cols);let px=(W-(row.length*cw+(row.length-1)*gap))/2;   // rows are centered
+      row.forEach(([i,copies])=>{
+        if(pics[i]){x.save();x.shadowColor='rgba(60,40,10,.38)';x.shadowBlur=16;x.shadowOffsetY=7;x.drawImage(pics[i],px,y,cw,ch);x.restore()}
+        else{  // local file: draw an arch placeholder instead of the picture
+          x.fillStyle='rgba(122,98,68,.2)';x.beginPath();x.moveTo(px+cw/2,y);x.lineTo(px+cw,y+ch*.14);x.lineTo(px+cw,y+ch*.86);x.lineTo(px+cw/2,y+ch);x.lineTo(px,y+ch*.86);x.lineTo(px,y+ch*.14);x.closePath();x.fill();
+          x.fillStyle='#a8741a';x.font='700 52px '+HEAD;x.textAlign='center';x.fillText(ROMAN[i],px+cw/2,y+ch/2+16);
+        }
+        if(copies>1){  // "×N" badge
+          const t='×'+copies;x.font='700 26px '+BODY;const w=x.measureText(t).width+24;
+          x.fillStyle='#a8741a';roundRect(px+cw-w+6,y-4,w,40,20);x.fill();x.fillStyle='#fff';x.textAlign='center';x.fillText(t,px+cw-w/2+6,y+25);
+        }
+        x.textAlign='center';x.fillStyle='#a8741a';x.font='600 22px '+BODY;x.fillText(ROMAN[i],px+cw/2,y+ch+34);
+        let size=27;x.font='600 '+size+'px '+HEAD;
+        while(x.measureText(NAMES[i]).width>cw+gap-6&&size>15){size--;x.font='600 '+size+'px '+HEAD}
+        x.fillStyle='#174c55';x.fillText(NAMES[i],px+cw/2,y+ch+66);
+        px+=cw+gap;
+      });
+      y+=ch+capH+gap;
+    }
+  });
+  // footer: server and UID, one per line
+  info.forEach(([key,val],j)=>{const by=y+70+40*j;x.textAlign='left';x.fillStyle='#a8741a';x.font='700 22px '+BODY;x.fillText(key.toUpperCase(),pad,by);x.fillStyle='#174c55';x.font='600 22px '+BODY;x.fillText(val,pad+110,by)});
+  return new Promise((ok,fail)=>canvas.toBlob(b=>b?ok(b):fail(new Error('empty')),'image/jpeg',.92));
+}
+async function saveImage(){
+  const R=draftPost();if(isEmpty(R)){say('Pick at least one card first.');return}
+  say('Making image...');
+  try{downloadBlob(await makeImage(R),'lunar-arcana-trade.jpg');say(LOCAL?'Image saved. Opened as a local file, so card pictures are left out here; they appear on the website.':'Image saved.')}
+  catch(e){say(e.message==='img'?'Some card images did not load. Check the cards folder and try again.':'Could not save the image.')}
+}
+
+/* ===== 10. Router and start-up =====
+   ''  -> home    '#post' -> editor    '#t=...' -> read-only page    (the page never reloads between them) */
+function route(){
+  const hash=location.hash;V=decodeLink(hash);const editing=hash==='#post';
+  $('home').hidden=editing||!!V;$('post').hidden=!editing;$('view').hidden=!V;
+  if(editing){if(!P)initDraft();drawPost()}
+  if(V)drawView();
+  window.scrollTo(0,0);
+}
+function goHome(e){if(e)e.preventDefault();history.pushState('',document.title,location.pathname+location.search);route()}
+function wireButtons(){
+  $('mk').onclick=()=>{initDraft();location.hash='post';route()};
+  $('back').onclick=goHome;$('own').onclick=goHome;
+  $('auto').onclick=()=>{initDraft();drawPost()};
+  $('timg').onclick=saveImage;
+  $('tlnk').onclick=()=>{const R=draftPost();if(isEmpty(R)){say('Pick at least one card first.');return}copyText(encodeLink(R),'Link copied.')};
+  $('ttxt').onclick=()=>{const R=draftPost();if(isEmpty(R)){say('Pick at least one card first.');return}copyText(postText(R),'Post text copied.')};
+  $('clr').onclick=resetEverything;$('exp').onclick=exportData;
+  $('imp').onclick=()=>$('file').click();
+  $('file').onchange=e=>{const f=e.target.files[0];e.target.value='';importData(f)};
+}
+buildCollection();buildPickers();buildProfile();wireButtons();
+fillProfileInputs();paintHome();
+addEventListener('hashchange',route);route();
 </script>
 </body>
 </html>
