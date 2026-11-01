@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Genshin Lunar Arcana Trade - Collection &amp; Trade Post Maker</title>
+<meta name="description" content="A free fan-made Genshin Impact tool: track your Lunar Arcana cards, then make a trade post with your spares and the cards you need.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Lunar Arcana Trade">
+<meta property="og:title" content="Genshin Lunar Arcana Trade - Collection &amp; Trade Post Maker">
+<meta property="og:description" content="A free fan-made Genshin Impact tool: track your Lunar Arcana cards, then make a trade post with your spares and the cards you need.">
+<meta property="og:url" content="https://scornae.github.io/genshin-tools/arcana/">
+<meta property="og:image" content="https://scornae.github.io/genshin-tools/arcana/og-preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Lunar Arcana Trade: track your Lunar Arcana cards and make a trade post">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Genshin Lunar Arcana Trade - Collection &amp; Trade Post Maker">
+<meta name="twitter:description" content="A free fan-made Genshin Impact tool: track your Lunar Arcana cards, then make a trade post with your spares and the cards you need.">
+<meta name="twitter:image" content="https://scornae.github.io/genshin-tools/arcana/og-preview.jpg">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffd75e%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f2a516%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath%20d%3D%22M32%208%20Q38.72%2025.28%2056%2032%20Q38.72%2038.72%2032%2056%20Q25.28%2038.72%208%2032%20Q25.28%2025.28%2032%208Z%22%20fill%3D%22url%28%23g%29%22/%3E%3Cpath%20d%3D%22M49%209%20Q50.68%2013.32%2055%2015%20Q50.68%2016.68%2049%2021%20Q47.32%2016.68%2043%2015%20Q47.32%2013.32%2049%209Z%22%20fill%3D%22%23ffc43d%22/%3E%3C/svg%3E">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Figtree:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#f3e8d0;--paper:#fbf5e6;--ink:#2b1c10;--mute:#7a6244;--line:#d9c7a0;--line2:#cdb888;--gold:#a8741a;--teal:#1d5b63;--plate:#22343a;--f-head:'Amiri',Georgia,'Times New Roman',serif;--f-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif}
+*{box-sizing:border-box}
+html{color-scheme:light;font-synthesis:none}
+body{margin:0;color:var(--ink);font:400 16px/1.45 var(--f-body);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);background:radial-gradient(1100px 600px at 50% -8%,rgba(255,255,255,.75),transparent 70%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56' width='56' height='56'><path d='M0 28L28 0L56 28L28 56Z' fill='none' stroke='%23b9a06a' stroke-opacity='.22'/></svg>") 0 0/56px,var(--bg)}
+button,input{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+[hidden]{display:none!important}
+.sheet{max-width:1500px;margin:0 auto;padding:0 28px}
+.top{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-end;justify-content:space-between;padding:30px 0 20px;border-bottom:3px double var(--line2)}
+.kicker{font:600 11px var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.kicker::before{content:"\2726";margin-right:10px;font-size:13px}
+.namerow{display:flex;align-items:center;gap:12px;margin:4px 0}
+.pname{background:none;border:0;padding:0;font:700 clamp(34px,6vw,58px)/1.05 var(--f-head);text-align:left}
+.pname.empty{color:var(--mute);opacity:.7}
+.pf-edit{width:32px;height:32px;border-radius:50%;border:1px solid var(--line2);background:var(--paper);color:var(--mute)}
+.uidrow{font-size:14px;color:var(--mute);margin-bottom:6px}
+.pct{display:flex;align-items:baseline;gap:14px;margin-top:6px}
+.pct b{font:700 44px/1 var(--f-head)}.pct span{font:400 20px var(--f-head);color:var(--mute)}
+.pbar{height:7px;max-width:380px;border-radius:999px;background:#e6d6b0;margin:10px 0 8px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--teal),var(--gold));transition:width .25s}
+.mini{display:flex;gap:18px;font-size:13px;color:var(--mute)}.mini b{color:var(--gold)}
+.ach{margin-top:4px;font-size:12px;color:var(--mute)}
+.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line2);background:var(--paper);padding:8px 14px;font-weight:600}
+.btn:hover{background:#f1e4c6}
+.btn.cap{background:var(--teal);border-color:var(--teal);color:#fff}.btn.cap:hover{background:#164a51}
+.btn.big{padding:12px 22px;font-size:17px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px 0 4px}.sp{flex:1}
+.msg{min-height:22px;margin:6px 0;font-size:14px;color:var(--teal)}
+.hint{margin:0 0 14px;color:var(--mute);font-size:14px}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}.g.ctr{display:flex;flex-wrap:wrap;justify-content:center}.g.ctr .cell{width:calc((100% - 20px)/3)}
+.cell{position:relative}
+.c{display:block;width:100%;padding:0;border:2px solid var(--line2);border-radius:10px 10px 4px 4px;background:var(--plate);overflow:hidden;filter:grayscale(1);opacity:.5}
+.c.on{filter:none;opacity:1;border-color:var(--gold)}
+.c img{display:block;width:100%;aspect-ratio:684/1024;object-fit:cover}
+.c span{display:block;padding:7px 4px 9px;font:600 14px/1.25 var(--f-body);text-align:center;color:#efe3c6}
+.bd{position:absolute;top:8px;right:8px;background:var(--gold);color:#fff;font:700 12px/1 var(--f-body);border-radius:999px;padding:4px 8px}.bd:empty{display:none}
+.mn{position:absolute;top:8px;left:8px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line2);background:var(--paper);font-size:17px;line-height:1;padding:0}
+.tsec{margin-top:26px}
+.tsec h2{margin:0 0 12px;padding-bottom:8px;font:700 30px var(--f-head);border-bottom:1px solid var(--line2)}
+.tsec h2 small{font:600 15px var(--f-body);color:var(--mute);margin-left:12px}.tsec.tr h2{color:var(--gold)}.tsec.lk h2{color:var(--teal)}
+h1{margin:6px 0 2px;font:700 clamp(32px,5vw,52px)/1.05 var(--f-head)}
+.legal{max-width:760px;margin:64px auto 0;padding:0 28px calc(24px + env(safe-area-inset-bottom))}
+.legal::before{content:"";display:block;width:48px;height:2px;margin:0 auto 14px;background:var(--line2)}
+.legal p{margin:0;text-align:center;font-size:10.5px;line-height:1.6;color:var(--mute);opacity:.8}
+dialog{width:min(440px,calc(100vw - 32px));border:1px solid var(--line2);border-radius:14px;background:var(--paper);color:var(--ink);padding:20px}
+dialog::backdrop{background:rgba(43,28,16,.45)}
+.dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.dh h3{margin:0;font:700 26px var(--f-head)}
+.pf{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:13px;color:var(--mute)}.pf b{color:var(--ink)}
+.pf input{background:#fff;border:1px solid var(--line2);border-radius:10px;padding:9px 12px;font-size:16px}
+.chk{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--mute)}
+.seg{display:flex;gap:8px}.seg button{flex:1;border:1px solid var(--line2);background:#fff;border-radius:999px;padding:8px 10px;font-weight:600;font-size:14px;color:var(--mute)}
+.seg button[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+@media(max-width:900px){.sheet{padding:0 16px}.top{padding:16px 0 14px;flex-direction:column;align-items:stretch}.g{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}.c span{font-size:12px}.bar .btn{flex:1 1 30%;padding:9px 4px;font-size:13px}.bar .sp{display:none}}
+@media(min-width:901px){body{font-size:18px}.g{grid-template-columns:repeat(6,1fr);gap:18px}.g.ctr{gap:18px}.g.ctr .cell{width:calc((100% - 90px)/6)}.c span{font-size:16px}.hint{font-size:16px}.mini{font-size:15px}.ach{font-size:14px}.uidrow{font-size:16px}.btn{font-size:16px}.pct b{font-size:52px}.pct span{font-size:24px}.tsec h2 small{font-size:17px}}
+</style>
+</head>
+<body>
+<div id="home">
+<div class="sheet">
+<header class="top">
+<div>
+<div class="kicker">Genshin Impact // Lunar Arcana</div>
+<div class="namerow"><button class="pname empty" id="pname" type="button" title="Edit profile">Your name</button><button class="pf-edit" id="pedit" type="button" aria-label="Edit profile" title="Edit profile">&#9998;</button></div>
+<div class="uidrow" id="uidrow" hidden></div>
+<div class="pct"><b id="pct">0%</b><span id="frac">0 / 22</span></div>
+<div class="pbar"><i id="pfill"></i></div>
+<div class="mini"><span><b id="nsp">0</b> spare to trade</span><span><b id="nms">22</b> missing</span></div>
+<div class="ach" id="ach"></div>
+</div>
+<button class="btn cap big" id="mk" type="button">Make trade post</button>
+</header>
+<div class="bar">
+<button class="btn" id="imp" type="button">Import data</button>
+<button class="btn" id="exp" type="button">Export data</button>
+<span class="sp"></span>
+<button class="btn" id="clr" type="button">Reset</button>
+<input type="file" id="file" accept="application/json,.json" hidden>
+</div>
+<p class="msg" role="status"></p>
+<section class="tsec"><h2>My Lunar Arcana Collection<small id="unl"></small></h2>
+<p class="hint">Tap a card each time you get one. Cards you hold more than once are offered for trade, and missing cards go on your wish list.</p>
+<div class="g" id="gh"></div></section>
+</div>
+</div>
+<div id="trade" hidden>
+<div class="sheet">
+<header class="top" style="display:block">
+<div class="kicker">Genshin Impact // Lunar Arcana</div>
+<h1 id="tt">Lunar Arcana Trade</h1>
+<div class="uidrow" id="tid"></div>
+</header>
+<div class="bar">
+<button class="btn cap" id="timg" type="button">Save image</button>
+<button class="btn" id="ttxt" type="button">Copy text</button>
+<button class="btn" id="tlnk" type="button">Copy link</button>
+<span class="sp"></span>
+<button class="btn" id="back" type="button">Open my collection</button>
+</div>
+<p class="msg" role="status"></p>
+<section class="tsec tr" id="str"><h2></h2><div class="g ctr" id="gtr"></div></section>
+<section class="tsec lk" id="slk"><h2></h2><div class="g ctr" id="glk"></div></section>
+</div>
+</div>
+<footer class="legal"><p>Unofficial fan-made tool, not affiliated with or endorsed by HoYoverse. Genshin Impact and its related assets belong to HoYoverse and their respective owners. Your collection is saved in this browser only; use Export data to keep a backup.</p></footer>
+<dialog id="dlg">
+<div class="dh"><h3>Profile</h3><button class="btn" id="dclose" type="button">Done</button></div>
+<label class="pf"><b>Name</b><input id="pfName" maxlength="40" placeholder="Your name" autocomplete="off"></label>
+<label class="pf"><b>UID</b><input id="pfUid" inputmode="numeric" maxlength="10" placeholder="optional" autocomplete="off"></label>
+<div class="pf"><b>Server</b><div class="seg" id="srv"></div></div>
+<label class="chk"><input type="checkbox" id="show"> Show server and UID on trade posts</label>
+</dialog>
+<script>
+const NAMES=['The Magician','The High Priestess','The Empress','The Emperor','The Hierophant','The Lovers','The Chariot','Strength','The Hermit','The Wheel of Fortune','Justice','The Hanged Man','Death','Temperance','The Devil','The Tower','The Star','The Moon','The Sun','Judgment','The World','The Fool'];
+const ROM=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII'];
+const src=i=>'cards/'+String(i+1).padStart(2,'0')+'-'+NAMES[i].toLowerCase().replace(/ /g,'-')+'.webp';
+const KEY='gi-arcana-v1',SRV=['Asia','Europe','America'],MAX=9,MS=[1,12,22],LOCAL=location.protocol==='file:';
+const norm=d=>({n:Array.from({length:22},(_,i)=>{const v=Array.isArray(d.n)?d.n[i]:0;return Number.isInteger(v)&&v>0?Math.min(v,MAX):0}),name:String(d.name||'').slice(0,40),server:SRV.includes(d.server)?d.server:'',uid:String(d.uid||'').replace(/\D/g,'').slice(0,10),show:d.show!==false});
+let S=norm({});
+try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&typeof d==='object')S=norm(d)}catch(e){}
+const $=id=>document.getElementById(id);
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const say=t=>document.querySelectorAll('.msg').forEach(m=>{m.textContent=t});
+const spares=s=>s.n.map((v,i)=>[i,v-1]).filter(p=>p[1]>0);
+const missing=s=>s.n.map((v,i)=>i).filter(i=>!s.n[i]);
+const ident=s=>s.show?[s.server&&['Server',s.server],s.uid&&['UID',s.uid]].filter(Boolean):[];
+const card=i=>'<img alt="" loading="lazy" src="'+src(i)+'"><span>'+ROM[i]+' '+NAMES[i]+'</span>';
+const idle='You have all 22 cards and no spares to trade.';
+const bump=(i,d)=>{const v=S.n[i]+d;if(v<0||v>MAX)return;S.n[i]=v;paint();save();say('')};
+const cells=[];
+NAMES.forEach((n,i)=>{
+const w=document.createElement('div');w.className='cell';
+w.innerHTML='<button type="button" class="c">'+card(i)+'</button><span class="bd"></span><button type="button" class="mn" aria-label="Remove one '+n+'">\u2212</button>';
+w.children[0].onclick=()=>bump(i,1);w.children[2].onclick=()=>bump(i,-1);
+$('gh').appendChild(w);cells.push(w)});
+function paint(){
+const own=S.n.filter(v=>v>0).length,sp=spares(S).reduce((a,p)=>a+p[1],0);
+cells.forEach((w,i)=>{const v=S.n[i];w.children[0].classList.toggle('on',v>0);w.children[0].title=NAMES[i]+(v?' (you have '+v+')':'');w.children[1].textContent=v>1?'×'+v:'';w.children[2].hidden=!v});
+$('pct').textContent=Math.round(own/22*100)+'%';$('frac').textContent=own+' / 22';$('pfill').style.width=own/22*100+'%';
+$('nsp').textContent=sp;$('nms').textContent=22-own;$('unl').textContent='Unlocked: '+own+' / 22';
+const nx=MS.find(m=>m>own);$('ach').textContent=nx?'Next achievement: '+nx+' different cards ('+(nx-own)+' to go)':'All 22 cards collected';
+$('pname').textContent=S.name||'Your name';$('pname').classList.toggle('empty',!S.name);
+const id=ident(S).map(p=>p[0]==='UID'?'UID '+p[1]:p[1]+' server').join('   ');$('uidrow').textContent=id;$('uidrow').hidden=!id}
+const segPaint=()=>[...$('srv').children].forEach(b=>b.setAttribute('aria-pressed',b.textContent===S.server));
+SRV.forEach(n=>{const b=document.createElement('button');b.type='button';b.textContent=n;b.onclick=()=>{S.server=S.server===n?'':n;segPaint();save();paint()};$('srv').appendChild(b)});
+const refresh=()=>{$('pfName').value=S.name;$('pfUid').value=S.uid;$('show').checked=S.show;segPaint();paint()};
+refresh();
+const openP=()=>$('dlg').showModal();$('pname').onclick=openP;$('pedit').onclick=openP;$('dclose').onclick=()=>$('dlg').close();
+$('pfName').oninput=e=>{S.name=e.target.value.slice(0,40);save();paint()};
+$('pfUid').oninput=e=>{S.uid=e.target.value.replace(/\D/g,'').slice(0,10);e.target.value=S.uid;save();paint()};
+$('show').onchange=e=>{S.show=e.target.checked;save();paint()};
+$('clr').onclick=async()=>{if(!confirm('Reset everything? This clears your collection and profile saved in this browser.'))return;try{localStorage.removeItem(KEY)}catch(e){}try{await Promise.all(NAMES.map((n,i)=>fetch(src(i),{cache:'reload'})))}catch(e){}location.reload()};
+const dl=(blob,name)=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)};
+async function copy(t,ok){try{await navigator.clipboard.writeText(t);say(ok)}catch(e){const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();let k=false;try{k=document.execCommand('copy')}catch(x){}ta.remove();say(k?ok:'Could not copy.')}}
+$('exp').onclick=()=>{dl(new Blob([JSON.stringify({v:3,...S})],{type:'application/json'}),'lunar-arcana-trade-data.json');say('Data exported.')};
+$('imp').onclick=()=>$('file').click();
+$('file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+try{const d=JSON.parse(await f.text());if(!d||!Array.isArray(d.n))throw 0;
+if(S.n.some(v=>v)&&!confirm('Replace your current collection with this file?'))return;
+S=norm(d);refresh();save();say('Data imported.')}catch(x){say('That file is not a Lunar Arcana Trade data file.')}};
+function mkText(s){
+const L=['╭━━━━━━━ 🔮 **LUNAR ARCANA TRADE** 🔮 ━━━━━━━╮',''];
+const hd=[s.name&&['👤','NAME',s.name]].concat(ident(s).map(([k,v])=>[k==='UID'?'🆔':'🌐',k.toUpperCase(),v.toUpperCase()])).filter(Boolean);
+if(hd.length){hd.forEach(([e,k,v])=>L.push('　'+e+' **'+k+':** `'+v+'`'));L.push('')}
+const part=(t,e,list,f)=>{if(!list.length)return;L.push('╞═══════ '+e+' **'+t+'** ═══════╡','');list.forEach(x=>L.push(f(x)));L.push('')};
+part('FOR TRADE','🟢',spares(s),([i,k])=>'　🔮 **[ '+ROM[i]+' ] '+NAMES[i]+'**\n　　└─ `×'+k+' Available`');
+part('LOOKING FOR','🔴',missing(s),i=>'　❖ **[ '+ROM[i]+' ]** ── '+NAMES[i]);
+L.push('╞══════════════════════════╡','     💬 *DM me directly or reply/ping here!* 💫');
+return L.join('\n')}
+const link=s=>location.href.split('#')[0]+'#t='+s.n.join('')+'.'+(s.show?SRV.indexOf(s.server)+1:0)+'.'+(s.show?s.uid:'')+'.'+encodeURIComponent(s.name);
+const parse=h=>{const m=/^#t=(\d{22})\.([0-3])\.(\d{0,10})\.(.*)$/.exec(h);if(!m)return null;let nm='';try{nm=decodeURIComponent(m[4])}catch(e){}return norm({n:[...m[1]].map(Number),server:SRV[m[2]-1]||'',uid:m[3],name:nm})};
+let T=null;
+function showTrade(){
+const sp=spares(T),ms=missing(T);
+$('tt').textContent=(T.name?T.name+'’s ':'')+'Lunar Arcana Trade';
+$('tid').textContent=ident(T).map(p=>p[0]+' '+p[1]).join('   ');
+const fill=(sec,el,t,list)=>{$(sec).hidden=!list.length;$(sec).firstChild.textContent=t+' ('+list.length+')';$(el).textContent='';
+list.forEach(([i,k])=>{const w=document.createElement('div');w.className='cell';w.innerHTML='<div class="c on">'+card(i)+'</div>'+(k>1?'<span class="bd">×'+k+'</span>':'');$(el).appendChild(w)})};
+fill('str','gtr','For trade',sp);fill('slk','glk','Looking for',ms.map(i=>[i,0]))}
+function route(){T=parse(location.hash);$('home').hidden=!!T;$('trade').hidden=!T;if(T)showTrade();window.scrollTo(0,0)}
+addEventListener('hashchange',route);route();
+$('mk').onclick=()=>{if(!spares(S).length&&!missing(S).length){say(idle);return}location.hash=link(S).split('#')[1]};
+$('back').onclick=()=>{history.pushState('',document.title,location.pathname+location.search);route()};
+$('ttxt').onclick=()=>copy(mkText(T),'Text copied.');
+$('tlnk').onclick=()=>copy(location.href,'Link copied.');
+async function makeImage(s){
+const secs=[['For trade',spares(s),'#a8741a'],['Looking for',missing(s).map(i=>[i,0]),'#1d5b63']].filter(x=>x[1].length);
+try{await Promise.all([document.fonts.load('700 56px Amiri'),document.fonts.load('600 22px Figtree')])}catch(e){}
+const im={};
+if(!LOCAL){const need=[...new Set(secs.flatMap(x=>x[1].map(p=>p[0])))];
+await Promise.all(need.map(i=>new Promise(r=>{const m=new Image();m.onload=()=>{im[i]=m;r()};m.onerror=r;m.src=src(i)})));
+if(need.some(i=>!im[i]))throw new Error('img')}
+const cw=190,ch=285,gap=22,cap=66,pad=48,cols=6,W=pad*2+cols*cw+(cols-1)*gap;
+const ids=ident(s);
+let H=pad+96;secs.forEach(x=>{H+=92+Math.ceil(x[1].length/cols)*(ch+cap+gap)});H+=ids.length?50+54*(ids.length-1)+60:84;
+const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+x.fillStyle='#f3e8d0';x.fillRect(0,0,W,H);
+const g=x.createRadialGradient(W/2,0,0,W/2,0,900);g.addColorStop(0,'rgba(255,255,255,.7)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,W,H);
+x.strokeStyle='#cdb888';x.lineWidth=3;x.strokeRect(14,14,W-28,H-28);x.lineWidth=1;x.strokeRect(22,22,W-44,H-44);
+x.textBaseline='alphabetic';x.textAlign='left';
+x.fillStyle='#2b1c10';x.font='700 58px Amiri,Georgia,serif';x.fillText((s.name?s.name+'’s ':'')+'Lunar Arcana Trade',pad,pad+52);
+let y=pad+96;
+secs.forEach(([t,list,col])=>{
+x.fillStyle=col;x.font='700 44px Amiri,Georgia,serif';x.textAlign='left';x.fillText(t+' ('+list.length+')',pad,y+38);
+x.fillStyle='#cdb888';x.fillRect(pad,y+58,W-pad*2,2);x.fillStyle=col;x.beginPath();x.moveTo(W-pad-22,y+59);x.lineTo(W-pad-14,y+51);x.lineTo(W-pad-6,y+59);x.lineTo(W-pad-14,y+67);x.fill();y+=92;
+for(let r=0;r*cols<list.length;r++){
+const row=list.slice(r*cols,r*cols+cols),rw=row.length*cw+(row.length-1)*gap;let px=(W-rw)/2;
+row.forEach(([i,k])=>{
+x.fillStyle='#22343a';x.beginPath();if(x.roundRect)x.roundRect(px,y,cw,ch,10);else x.rect(px,y,cw,ch);x.fill();
+if(im[i])x.drawImage(im[i],px,y,cw,ch);else{x.fillStyle='rgba(239,227,198,.8)';x.font='700 56px Amiri,Georgia,serif';x.textAlign='center';x.fillText(ROM[i],px+cw/2,y+ch/2+18)}
+if(k>1){const t='×'+k;x.font='700 26px Figtree,system-ui,sans-serif';const w=x.measureText(t).width+22;x.fillStyle='#a8741a';x.beginPath();if(x.roundRect)x.roundRect(px+cw-w-6,y+6,w,38,19);else x.rect(px+cw-w-6,y+6,w,38);x.fill();x.fillStyle='#fff';x.textAlign='center';x.fillText(t,px+cw-w/2-6,y+34)}
+x.textAlign='center';x.fillStyle='#a8741a';x.font='700 26px Amiri,Georgia,serif';x.fillText(ROM[i],px+cw/2,y+ch+28);
+let fs=27;x.font='700 '+fs+'px Amiri,Georgia,serif';
+while(x.measureText(NAMES[i]).width>cw+gap-6&&fs>15){fs--;x.font='700 '+fs+'px Amiri,Georgia,serif'}
+x.fillStyle='#2b1c10';x.fillText(NAMES[i],px+cw/2,y+ch+58);px+=cw+gap});
+y+=ch+cap+gap}});
+x.textBaseline='alphabetic';
+ids.forEach(([k,v],j)=>{const by=y+50+54*j;x.textAlign='left';x.fillStyle='#7a6244';x.font='600 22px Figtree,system-ui,sans-serif';x.fillText(k.toUpperCase(),pad,by);x.fillStyle='#2b1c10';x.font='700 42px Amiri,Georgia,serif';x.fillText(v,pad+120,by)});
+x.textAlign='right';x.fillStyle='#7a6244';x.font='20px Figtree,system-ui,sans-serif';x.fillText('scornae.github.io/genshin-tools/arcana',W-pad,ids.length?y+50+54*(ids.length-1):y+46);
+return new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('empty')),'image/jpeg',.92))}
+$('timg').onclick=async()=>{say('Making image...');
+try{dl(await makeImage(T),'lunar-arcana-trade.jpg');say(LOCAL?'Image saved. Opened as a local file, so card pictures are left out here; they appear on the website.':'Image saved.')}
+catch(e){say(e.message==='img'?'Some card images did not load. Check the cards folder and try again.':'Could not save the image.')}};
+</script>
+</body>
+</html>
