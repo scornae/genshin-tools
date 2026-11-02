@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stamina Recovery Calculator — Genshin Tools</title>
   <meta name="description" content="Know the exact hour your energy returns. A fan-made stamina recovery calculator with a live timer, stage schedule and saveable image.">
-  <meta name="theme-color" content="#070920">
+  <meta name="theme-color" content="#0c0c0e">
   <link rel="canonical" href="https://scornae.github.io/genshin-tools/stamina/">
 
   <!-- Favicon: celestial hourglass -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230a0e24' stroke='%23e9c77b' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='24' fill='none' stroke='%23e9c77b' stroke-opacity='.5' stroke-width='1.5' stroke-dasharray='1.5 4.8'/%3E%3Cpath d='M21 15h22M21 49h22' stroke='%23fff1c9' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M24 16c0 9 6 12 6 16s-6 7-6 16h16c0-9-6-12-6-16s6-7 6-16z' fill='none' stroke='%23e9c77b' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpath d='M27 22h10l-5 7z' fill='%23e9c77b'/%3E%3Cpath d='M26.5 47c1-5 3.5-7 5.5-8.5 2 1.5 4.5 3.5 5.5 8.5z' fill='%23e9c77b'/%3E%3Ccircle cx='32' cy='35' r='1.2' fill='%238fe3ff'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101012' stroke='%23e9c77b' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='24' fill='none' stroke='%23e9c77b' stroke-opacity='.5' stroke-width='1.5' stroke-dasharray='1.5 4.8'/%3E%3Cpath d='M21 15h22M21 49h22' stroke='%23fff1c9' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M24 16c0 9 6 12 6 16s-6 7-6 16h16c0-9-6-12-6-16s6-7 6-16z' fill='none' stroke='%23e9c77b' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpath d='M27 22h10l-5 7z' fill='%23e9c77b'/%3E%3Cpath d='M26.5 47c1-5 3.5-7 5.5-8.5 2 1.5 4.5 3.5 5.5 8.5z' fill='%23e9c77b'/%3E%3Ccircle cx='32' cy='35' r='1.2' fill='%238fe3ff'/%3E%3C/svg%3E">
 
   <!-- Open Graph / Social preview -->
   <meta property="og:type" content="website">
@@ -17,14 +17,14 @@
   <meta property="og:url" content="https://scornae.github.io/genshin-tools/stamina/">
   <meta property="og:title" content="Stamina Recovery Calculator">
   <meta property="og:description" content="Know the exact hour your energy returns. Live timer, stage schedule and a saveable image.">
-  <meta property="og:image" content="https://scornae.github.io/genshin-tools/stamina/og-image.png">
+  <meta property="og:image" content="https://scornae.github.io/genshin-tools/stamina/og-preview.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="A celestial clock gauge with Roman numerals beside the title Stamina Recovery Calculator">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Stamina Recovery Calculator">
   <meta name="twitter:description" content="Know the exact hour your energy returns.">
-  <meta name="twitter:image" content="https://scornae.github.io/genshin-tools/stamina/og-image.png">
+  <meta name="twitter:image" content="https://scornae.github.io/genshin-tools/stamina/og-preview.jpg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,8 +33,8 @@
   <style>
     :root{
       --gold:#e9c77b; --gold-l:#fff1c9; --gold-d:#a07a36;
-      --silver:#cdd6f2; --aqua:#8fe3ff; --violet:#9d8cff; --rose:#ff8fa3;
-      --ink:#eef0fa; --muted:#9aa3c4; --line:rgba(233,199,123,.22);
+      --silver:#cfcfd6; --aqua:#8fe3ff; --rose:#ff8fa3;
+      --ink:#f2f0ec; --muted:#a3a2a8; --line:rgba(233,199,123,.22);
       --disp:"Cinzel", Georgia, serif;
       --body:"Cormorant Garamond", Georgia, serif;
     }
@@ -44,10 +44,10 @@
       margin:0; min-height:100vh; overflow-x:hidden;
       color:var(--ink); font-family:var(--body); font-size:18px; line-height:1.55;
       background:
-        radial-gradient(ellipse 70% 50% at 50% -5%, rgba(157,140,255,.20), transparent 60%),
-        radial-gradient(ellipse 60% 45% at 10% 90%, rgba(143,227,255,.08), transparent 60%),
+        radial-gradient(ellipse 70% 50% at 50% -5%, rgba(233,199,123,.10), transparent 60%),
+        radial-gradient(ellipse 60% 45% at 10% 90%, rgba(200,205,230,.06), transparent 60%),
         radial-gradient(ellipse 55% 45% at 95% 70%, rgba(233,199,123,.08), transparent 60%),
-        linear-gradient(180deg,#0a0d2a 0%,#05060f 55%,#030409 100%);
+        linear-gradient(180deg,#101012 0%,#09090a 55%,#040405 100%);
       background-attachment:fixed;
     }
 
@@ -83,7 +83,7 @@
     /* ---------- Header ---------- */
     header{text-align:center; margin-bottom:40px; animation:rise 1s cubic-bezier(.22,1,.36,1) both}
     .kicker{display:inline-flex; align-items:center; gap:12px; margin:0 0 18px;
-      font-family:var(--disp); font-size:12px; letter-spacing:.42em; text-transform:uppercase; color:var(--aqua)}
+      font-family:var(--disp); font-size:12px; letter-spacing:.42em; text-transform:uppercase; color:var(--gold)}
     .ic{width:16px; height:16px; fill:currentColor; flex-shrink:0}
     h1{
       margin:0; font-family:var(--disp); font-weight:700; font-size:clamp(34px,6.4vw,64px);
@@ -102,12 +102,12 @@
     .rule .ic{width:24px; height:24px; filter:drop-shadow(0 0 8px rgba(233,199,123,.6));
       animation:flip 8s cubic-bezier(.7,0,.3,1) infinite}
     @keyframes flip{0%,42%{transform:rotate(0)}50%,92%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
-    .lead{max-width:600px; margin:0 auto; color:#c3c9e4; font-size:19px}
+    .lead{max-width:600px; margin:0 auto; color:#bdbcc4; font-size:19px}
 
     /* ---------- Panels ---------- */
     .panel{
       position:relative; padding:28px; border-radius:22px;
-      background:linear-gradient(160deg,rgba(24,30,72,.62),rgba(8,10,28,.74));
+      background:linear-gradient(160deg,rgba(36,36,42,.62),rgba(13,13,16,.74));
       border:1px solid var(--line);
       box-shadow:0 30px 80px -30px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,241,201,.08);
       -webkit-backdrop-filter:blur(10px) saturate(130%); backdrop-filter:blur(10px) saturate(130%);
@@ -128,7 +128,7 @@
       padding:36px 38px; margin-bottom:26px; animation-delay:.12s}
     .orb-wrap{position:relative; aspect-ratio:1; width:100%; max-width:360px; margin:0 auto}
     .orb-wrap::before{content:""; position:absolute; inset:-14%; border-radius:50%;
-      background:radial-gradient(circle,rgba(143,227,255,.18),rgba(157,140,255,.08) 45%,transparent 70%);
+      background:radial-gradient(circle,rgba(233,199,123,.20),rgba(233,199,123,.08) 45%,transparent 70%);
       filter:blur(6px); animation:breath 6s ease-in-out infinite}
     .orb-wrap::after{content:""; position:absolute; inset:-5%; border-radius:50%;
       border:1px dashed rgba(233,199,123,.28); animation:spin 70s linear infinite}
@@ -147,7 +147,7 @@
     .g-tick{font-family:var(--body); font-size:13px; font-weight:600; fill:var(--gold-l); fill-opacity:.85; font-variant-numeric:lining-nums}
     .g-rn{font-family:var(--disp); font-size:8.5px; font-weight:700; fill:var(--gold)}
 
-    .lbl{margin:0 0 6px; font-family:var(--disp); font-size:13px; letter-spacing:.3em; text-transform:uppercase; color:var(--aqua)}
+    .lbl{margin:0 0 6px; font-family:var(--disp); font-size:13px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold)}
     .time{
       margin:0; font-family:var(--body); font-weight:600; font-size:clamp(46px,7.5vw,84px); line-height:1.05;
       font-variant-numeric:lining-nums tabular-nums; letter-spacing:.02em;
@@ -156,10 +156,10 @@
       filter:drop-shadow(0 0 22px rgba(233,199,123,.35));
     }
     .time.done{font-family:var(--disp); font-size:clamp(30px,4.8vw,50px);
-      background:linear-gradient(180deg,#ffffff,#bff1ff 55%,#8fe3ff);
+      background:linear-gradient(180deg,#fff7e0,#ffe9b0 55%,#e9c77b);
       -webkit-background-clip:text; background-clip:text;
-      filter:drop-shadow(0 0 22px rgba(143,227,255,.5))}
-    .ready{margin:12px 0 0; font-size:20px; color:#d5daf0}
+      filter:drop-shadow(0 0 22px rgba(233,199,123,.5))}
+    .ready{margin:12px 0 0; font-size:20px; color:#dcdbe0}
     .ready:empty{display:none}
     .ready b{color:var(--gold-l); font-weight:700}
     .detail{margin:6px 0 0; color:var(--muted); font-size:18px}
@@ -167,11 +167,11 @@
       background:rgba(255,143,163,.08); color:#ffc7d1; font-size:16px; text-align:left}
     .legend{display:flex; flex-wrap:wrap; gap:18px; margin:20px 0 0; font-size:15px; color:var(--muted)}
     .legend i{display:inline-block; width:22px; height:6px; margin-right:8px; border-radius:6px; vertical-align:middle}
-    .l-now{background:linear-gradient(90deg,#c9973f,#ffe9b0,#bff1ff); box-shadow:0 0 8px rgba(255,236,170,.6)}
-    .l-proj{background:rgba(157,140,255,.6)}
+    .l-now{background:linear-gradient(90deg,#c9973f,#ffe9b0,#fff7e0); box-shadow:0 0 8px rgba(255,236,170,.6)}
+    .l-proj{background:rgba(207,207,214,.6)}
     .snap-row{display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line)}
     .hint{margin:0; font-size:15px; color:var(--muted)}
-    .msg{min-height:1.4em; margin:8px 0 0; color:var(--aqua); font-size:16px}
+    .msg{min-height:1.4em; margin:8px 0 0; color:var(--gold-l); font-size:16px}
 
     /* ---------- Buttons ---------- */
     button{
@@ -182,7 +182,7 @@
       transition:transform .2s, box-shadow .3s, background .3s, border-color .3s;
     }
     button:hover{background:rgba(233,199,123,.14); box-shadow:0 0 24px rgba(233,199,123,.25); transform:translateY(-1px)}
-    button:focus-visible{outline:2px solid var(--aqua); outline-offset:3px}
+    button:focus-visible{outline:2px solid var(--gold-l); outline-offset:3px}
     button.primary{color:#1a1206; border-color:transparent;
       background:linear-gradient(180deg,#fff1c9,#e9c77b 55%,#b88a3e);
       box-shadow:0 8px 24px -8px rgba(233,199,123,.6), inset 0 1px 0 rgba(255,255,255,.6)}
@@ -201,32 +201,32 @@
     h2{display:flex; align-items:center; gap:10px; margin:0 0 4px; font-family:var(--disp); font-size:19px; letter-spacing:.08em; color:var(--gold-l)}
     h2 .ic{width:18px; height:18px; color:var(--gold)}
     .sub{margin:0 0 20px; color:var(--muted); font-size:16px}
-    .group{margin-bottom:18px; padding:16px; border-radius:14px; background:rgba(5,7,20,.38); border:1px solid rgba(205,214,242,.07)}
-    .group-title{margin:0 0 12px; font-family:var(--disp); font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--aqua)}
+    .group{margin-bottom:18px; padding:16px; border-radius:14px; background:rgba(9,9,11,.38); border:1px solid rgba(207,207,214,.07)}
+    .group-title{margin:0 0 12px; font-family:var(--disp); font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold)}
     .row{display:grid; grid-template-columns:1fr 1fr; gap:14px}
-    label{display:block; margin-bottom:6px; font-size:16px; font-weight:600; color:#d5daf0}
+    label{display:block; margin-bottom:6px; font-size:16px; font-weight:600; color:#dcdbe0}
     label .hint{display:inline; font-weight:400; font-size:14px}
     input{
       width:100%; padding:11px 14px; border-radius:10px;
-      border:1px solid rgba(233,199,123,.22); background:rgba(3,4,14,.65);
+      border:1px solid rgba(233,199,123,.22); background:rgba(6,6,8,.65);
       color:#fff3d2; font-family:var(--body); font-size:20px; font-weight:600;
       font-variant-numeric:lining-nums tabular-nums;
       transition:border-color .2s, box-shadow .2s;
     }
-    input::placeholder{color:#5f6789; font-weight:500; font-size:16px}
+    input::placeholder{color:#6f6e75; font-weight:500; font-size:16px}
     input:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(233,199,123,.15), 0 0 22px rgba(233,199,123,.2)}
     .pair{display:flex; align-items:center; gap:10px}
     .pair span{color:var(--muted); font-size:16px}
     .btns{display:flex; flex-wrap:wrap; gap:12px; margin-top:6px}
     .btns .primary{flex:1}
     .dirty{margin:14px 0 0; padding:10px 14px; border-radius:10px; font-size:16px;
-      background:rgba(143,227,255,.08); border:1px solid rgba(143,227,255,.25); color:#c9f2ff;
+      background:rgba(233,199,123,.08); border:1px solid rgba(233,199,123,.28); color:#fff1c9;
       animation:breath 2.4s ease-in-out infinite}
     .scroll{overflow-x:auto}
     table{width:100%; border-collapse:collapse; font-size:17px; font-variant-numeric:lining-nums tabular-nums}
     th{padding:0 10px 12px; text-align:left; border-bottom:1px solid var(--line);
       font-family:var(--disp); font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--gold)}
-    td{padding:12px 10px; border-bottom:1px solid rgba(233,199,123,.08); color:#dfe3f5; white-space:nowrap}
+    td{padding:12px 10px; border-bottom:1px solid rgba(233,199,123,.08); color:#e8e6e4; white-space:nowrap}
     td:first-child{font-family:var(--disp); color:var(--gold-l)}
     tbody tr{transition:background .2s}
     tbody tr:hover{background:rgba(233,199,123,.05)}
@@ -285,23 +285,23 @@
             <stop offset="1" stop-color="#5a3f16"/>
           </linearGradient>
           <radialGradient id="gBand" cx=".5" cy=".5" r=".5">
-            <stop offset=".82" stop-color="#0c1236"/>
-            <stop offset="1" stop-color="#05081e"/>
+            <stop offset=".82" stop-color="#19191c"/>
+            <stop offset="1" stop-color="#0a0a0c"/>
           </radialGradient>
           <radialGradient id="gDial" cx=".5" cy=".42" r=".6">
-            <stop offset="0" stop-color="#1d2566"/>
-            <stop offset=".55" stop-color="#0d1238"/>
-            <stop offset="1" stop-color="#04061a"/>
+            <stop offset="0" stop-color="#2b2b31"/>
+            <stop offset=".55" stop-color="#131316"/>
+            <stop offset="1" stop-color="#070708"/>
           </radialGradient>
           <radialGradient id="gGlow" cx=".5" cy=".5" r=".5">
-            <stop offset="0" stop-color="#8fe3ff" stop-opacity=".22"/>
-            <stop offset=".6" stop-color="#9d8cff" stop-opacity=".08"/>
-            <stop offset="1" stop-color="#9d8cff" stop-opacity="0"/>
+            <stop offset="0" stop-color="#e9c77b" stop-opacity=".22"/>
+            <stop offset=".6" stop-color="#e9c77b" stop-opacity=".08"/>
+            <stop offset="1" stop-color="#e9c77b" stop-opacity="0"/>
           </radialGradient>
           <linearGradient id="gArc" x1="0" y1="1" x2="1" y2="0">
             <stop offset="0" stop-color="#c9973f"/>
             <stop offset=".5" stop-color="#ffe9b0"/>
-            <stop offset="1" stop-color="#bff1ff"/>
+            <stop offset="1" stop-color="#fff7e0"/>
           </linearGradient>
           <radialGradient id="gHub" cx=".35" cy=".35" r=".7">
             <stop offset="0" stop-color="#fff7e0"/>
@@ -325,10 +325,10 @@
         <g clip-path="url(#dialClip)"><g id="dialStars" class="spin"></g></g>
         <circle cx="150" cy="150" r="124" fill="url(#gGlow)"/>
         <g class="spin"><circle cx="150" cy="150" r="58" fill="none" stroke="#e9c77b" stroke-opacity=".22" stroke-width=".8" stroke-dasharray="1 4"/></g>
-        <circle cx="150" cy="150" r="50" fill="none" stroke="#8fe3ff" stroke-opacity=".12"/>
+        <circle cx="150" cy="150" r="50" fill="none" stroke="#e9c77b" stroke-opacity=".14"/>
 
         <circle cx="150" cy="150" r="96" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="75 100" transform="rotate(135 150 150)"/>
-        <circle id="arcProj" cx="150" cy="150" r="96" fill="none" stroke="#9d8cff" stroke-opacity=".55" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 150 150)"/>
+        <circle id="arcProj" cx="150" cy="150" r="96" fill="none" stroke="#cfcfd6" stroke-opacity=".6" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 150 150)"/>
         <circle id="arcCur" cx="150" cy="150" r="96" fill="none" stroke="url(#gArc)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 150 150)"/>
         <g id="ticks"></g>
         <g id="tickLabels"></g>
@@ -506,7 +506,7 @@
     for(i=0;i<70;i++){
       var rr_ = Math.sqrt(rnd())*120, aa = rnd()*Math.PI*2, sr = rnd()*.9+.25;
       el('circle', {cx:(150+Math.cos(aa)*rr_).toFixed(2), cy:(150+Math.sin(aa)*rr_).toFixed(2), r:sr.toFixed(2),
-                    fill: rnd() > .8 ? '#ffe9b0' : '#dfe8ff', 'fill-opacity':(rnd()*.6+.2).toFixed(2)}, ds);
+                    fill: rnd() > .8 ? '#ffe9b0' : '#ebe9e6', 'fill-opacity':(rnd()*.6+.2).toFixed(2)}, ds);
     }
     // gauge: ticks + labels
     var tk = $('ticks');
@@ -875,7 +875,7 @@
     ctx.strokeStyle = '#2a1c08'; ctx.lineWidth = 1.5; ring(146);
     // numeral band
     g = ctx.createRadialGradient(150,150,0,150,150,142.5);
-    g.addColorStop(.82,'#0c1236'); g.addColorStop(1,'#05081e');
+    g.addColorStop(.82,'#19191c'); g.addColorStop(1,'#0a0a0c');
     disc(142.5, g);
     ctx.save(); ctx.translate(150,150);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -893,7 +893,7 @@
     ctx.strokeStyle = bezelGrad(); ctx.lineWidth = 3; ring(127);
     // dial
     g = ctx.createRadialGradient(150,125,0,150,150,150);
-    g.addColorStop(0,'#1d2566'); g.addColorStop(.55,'#0d1238'); g.addColorStop(1,'#04061a');
+    g.addColorStop(0,'#2b2b31'); g.addColorStop(.55,'#131316'); g.addColorStop(1,'#070708');
     disc(124, g);
     ctx.save();
     ctx.beginPath(); ctx.arc(150,150,124,0,TAU); ctx.clip();
@@ -901,31 +901,31 @@
     function r2(){ sd = (sd*16807) % 2147483647; return sd/2147483647; }
     for(i=0;i<70;i++){
       var rr_ = Math.sqrt(r2())*120, aa = r2()*TAU, sr = r2()*.9+.25;
-      ctx.fillStyle = r2() > .8 ? '#ffe9b0' : '#dfe8ff';
+      ctx.fillStyle = r2() > .8 ? '#ffe9b0' : '#ebe9e6';
       ctx.globalAlpha = r2()*.6+.2;
       ctx.beginPath(); ctx.arc(150+Math.cos(aa)*rr_, 150+Math.sin(aa)*rr_, sr, 0, TAU); ctx.fill();
     }
     ctx.globalAlpha = 1;
     ctx.restore();
     g = ctx.createRadialGradient(150,150,0,150,150,124);
-    g.addColorStop(0,'rgba(143,227,255,.22)'); g.addColorStop(.6,'rgba(157,140,255,.08)'); g.addColorStop(1,'rgba(157,140,255,0)');
+    g.addColorStop(0,'rgba(233,199,123,.22)'); g.addColorStop(.6,'rgba(233,199,123,.08)'); g.addColorStop(1,'rgba(233,199,123,0)');
     disc(124, g);
     ctx.strokeStyle = 'rgba(233,199,123,.22)'; ctx.lineWidth = .8;
     if(ctx.setLineDash) ctx.setLineDash([1,4]);
     ring(58);
     if(ctx.setLineDash) ctx.setLineDash([]);
-    ctx.strokeStyle = 'rgba(143,227,255,.12)'; ctx.lineWidth = 1; ring(50);
+    ctx.strokeStyle = 'rgba(233,199,123,.14)'; ctx.lineWidth = 1; ring(50);
     // arcs
     ctx.lineCap = 'round'; ctx.lineWidth = 12;
     ctx.strokeStyle = 'rgba(255,255,255,.07)';
     ctx.beginPath(); ctx.arc(150,150,96,A0,A0+SW); ctx.stroke();
     if(proj > 0.004){
-      ctx.strokeStyle = 'rgba(157,140,255,.55)';
+      ctx.strokeStyle = 'rgba(207,207,214,.55)';
       ctx.beginPath(); ctx.arc(150,150,96,A0,A0+SW*proj); ctx.stroke();
     }
     if(pct > 0.004){
       g = ctx.createLinearGradient(40,260,260,40);
-      g.addColorStop(0,'#c9973f'); g.addColorStop(.5,'#ffe9b0'); g.addColorStop(1,'#bff1ff');
+      g.addColorStop(0,'#c9973f'); g.addColorStop(.5,'#ffe9b0'); g.addColorStop(1,'#fff7e0');
       ctx.save();
       ctx.shadowColor = 'rgba(255,236,170,.7)'; ctx.shadowBlur = 12;
       ctx.strokeStyle = g;
@@ -958,7 +958,7 @@
     var txt = String(Math.floor(raw));
     ctx.fillStyle = '#fff3d2'; ctx.font = '600 ' + (txt.length >= 4 ? 30 : (txt.length === 3 ? 38 : 44)) + 'px ' + TYPE;
     ctx.fillText(txt, 150, 214);
-    ctx.fillStyle = '#9aa3c4'; ctx.font = '15px ' + TYPE;
+    ctx.fillStyle = '#a3a2a8'; ctx.font = '15px ' + TYPE;
     ctx.fillText('/ ' + S.max, 150, 234);
     // needle
     ctx.save();
@@ -1007,20 +1007,20 @@
     var H = tableEnd + 120;
     var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     var ctx = cv.getContext('2d');
-    var GOLD='#e9c77b', GOLD_L='#fff1c9', AQUA='#8fe3ff', MUTED='#9aa3c4', INK='#eef0fa';
+    var GOLD='#e9c77b', GOLD_L='#fff1c9', AQUA='#8fe3ff', MUTED='#a3a2a8', INK='#f2f0ec';
     var i;
 
     // background
     var bg = ctx.createLinearGradient(0,0,0,H);
-    bg.addColorStop(0,'#0a0d2a'); bg.addColorStop(.5,'#070920'); bg.addColorStop(1,'#03040b');
+    bg.addColorStop(0,'#101012'); bg.addColorStop(.5,'#0c0c0e'); bg.addColorStop(1,'#050506');
     ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
     function glow(x,y,r,col){
       var g = ctx.createRadialGradient(x,y,0,x,y,r);
       g.addColorStop(0,col); g.addColorStop(1,'rgba(0,0,0,0)');
       ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
     }
-    glow(W/2,-80,900,'rgba(157,140,255,.24)');
-    glow(0,H*.7,700,'rgba(143,227,255,.10)');
+    glow(W/2,-80,900,'rgba(233,199,123,.14)');
+    glow(0,H*.7,700,'rgba(200,205,230,.07)');
     glow(W,H,760,'rgba(233,199,123,.12)');
 
     // stars + sand (deterministic)
@@ -1029,7 +1029,7 @@
     for(i=0;i<240;i++){
       var sx = rnd()*W, sy = rnd()*H, sr = rnd()*1.3+.2;
       ctx.globalAlpha = .2 + rnd()*.7;
-      ctx.fillStyle = rnd() < .15 ? '#ffe9b0' : '#dfe8ff';
+      ctx.fillStyle = rnd() < .15 ? '#ffe9b0' : '#ebe9e6';
       ctx.beginPath(); ctx.arc(sx,sy,sr,0,TAU); ctx.fill();
     }
     ctx.save();
@@ -1118,16 +1118,16 @@
       big = fmtLong(reach);
       sub = 'About ' + fmtShort((reach-now)/1000) + ' left when captured (' + Math.ceil(S.target-raw) + ' energy to go)';
     }
-    ctx.fillStyle = AQUA; ctx.font = '700 26px '+DISP; spaced(ctx,4);
+    ctx.fillStyle = GOLD; ctx.font = '700 26px '+DISP; spaced(ctx,4);
     ctx.fillText(label.toUpperCase(), W/2, 726); spaced(ctx,0);
     var bigFont = done ? DISP : TYPE, bigW = done ? '700' : '600';
     var size = fitSize(ctx, big, bigW, 84, IW, bigFont);
     ctx.font = bigW + ' ' + size + 'px ' + bigFont;
     var tg = ctx.createLinearGradient(0,812-size,0,812);
-    if(done){ tg.addColorStop(0,'#ffffff'); tg.addColorStop(.55,'#bff1ff'); tg.addColorStop(1,AQUA); }
+    if(done){ tg.addColorStop(0,'#fff7e0'); tg.addColorStop(.55,'#ffe9b0'); tg.addColorStop(1,GOLD); }
     else { tg.addColorStop(0,'#ffffff'); tg.addColorStop(.35,GOLD_L); tg.addColorStop(.75,GOLD); tg.addColorStop(1,'#c9973f'); }
     ctx.save();
-    ctx.shadowColor = done ? 'rgba(143,227,255,.5)' : 'rgba(233,199,123,.45)'; ctx.shadowBlur = 24;
+    ctx.shadowColor = done ? 'rgba(233,199,123,.55)' : 'rgba(233,199,123,.45)'; ctx.shadowBlur = 24;
     ctx.fillStyle = tg;
     ctx.fillText(big, W/2, 812);
     ctx.restore();
@@ -1146,12 +1146,12 @@
     stats.forEach(function(s,i){
       var x = P + i*(boxW+gap);
       var pg = ctx.createLinearGradient(0,boxY,0,boxY+boxH);
-      pg.addColorStop(0,'rgba(28,34,86,.9)'); pg.addColorStop(1,'rgba(10,13,38,.92)');
+      pg.addColorStop(0,'rgba(42,42,50,.9)'); pg.addColorStop(1,'rgba(18,18,22,.92)');
       ctx.fillStyle = pg; rr(ctx,x,boxY,boxW,boxH,16); ctx.fill();
       ctx.strokeStyle = 'rgba(233,199,123,.42)'; ctx.lineWidth = 1.5; rr(ctx,x,boxY,boxW,boxH,16); ctx.stroke();
       diamond(ctx, x+boxW/2, boxY, 6, GOLD);
       ctx.textAlign = 'center';
-      ctx.fillStyle = AQUA; ctx.font = '700 20px '+DISP; spaced(ctx,3);
+      ctx.fillStyle = GOLD; ctx.font = '700 20px '+DISP; spaced(ctx,3);
       ctx.fillText(s[0].toUpperCase(), x+boxW/2, boxY+50); spaced(ctx,0);
       var vs = fitSize(ctx, s[1], '600', 40, boxW-40, TYPE);
       ctx.fillStyle = '#fff3d2'; ctx.font = '600 '+vs+'px '+TYPE;
