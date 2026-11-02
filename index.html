@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genshin Tools — Draconic Toolkit for Travelers</title>
+  <meta name="description" content="Free fan-made tools for Genshin Impact: Roster, Arcana tracker, Stamina calculator and more.">
+  <meta name="theme-color" content="#07090d">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #0b0f15;
+      --gold: #e8b85a;
+      --gold-soft: #e8b85a33;
+      --ember: #ff7a3d;
+      --cyan: #4fd1c5;
+      --cyan-soft: #4fd1c522;
+      --text: #ece6d8;
+      --muted: #8d96a3;
+      --cut: 16px;
+      --font-display: "Cinzel", Georgia, serif;
+      --font-ui: "Rajdhani", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-ui);
+      font-size: 17px;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, #e8b85a26, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, #4fd1c514, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 0% 80%, #ff7a3d10, transparent 60%),
+        var(--bg);
+      overflow-x: hidden;
+    }
+
+    /* ---------- Background layers ---------- */
+    .bg-hex {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      opacity: .35;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98' viewBox='0 0 56 98'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0 32L0 82V66l28 16 28-16v16L28 98z' fill='none' stroke='%23e8b85a' stroke-opacity='.12' stroke-width='1'/%3E%3C/svg%3E");
+      mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 30%, transparent 85%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 30%, transparent 85%);
+    }
+
+    .bg-scan {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: linear-gradient(to bottom, transparent 0%, #4fd1c50d 50%, transparent 100%);
+      background-size: 100% 300px;
+      background-repeat: no-repeat;
+      animation: scan 9s linear infinite;
+    }
+
+    @keyframes scan {
+      from { background-position: 0 -300px; }
+      to   { background-position: 0 calc(100vh + 300px); }
+    }
+
+    /* ---------- Top status bar ---------- */
+    .statusbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .statusbar .live { color: var(--cyan); }
+    .statusbar .live::before {
+      content: "";
+      display: inline-block;
+      width: 7px; height: 7px;
+      margin-right: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse { 50% { opacity: .35; } }
+
+    /* ---------- Hero ---------- */
+    header {
+      text-align: center;
+      padding: 36px 20px 40px;
+    }
+
+    .emblem {
+      width: 112px;
+      height: 112px;
+      margin: 0 auto 22px;
+      filter: drop-shadow(0 0 18px #e8b85a55);
+    }
+
+    .emblem .ring { animation: spin 40s linear infinite; transform-origin: 60px 60px; }
+    .emblem .pupil { animation: blink 6s ease-in-out infinite; transform-origin: 60px 60px; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes blink {
+      0%, 92%, 100% { transform: scaleX(1); }
+      95% { transform: scaleX(2.4); }
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 4px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin: 0 0 10px;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 7vw, 64px);
+      font-weight: 700;
+      letter-spacing: 4px;
+      margin: 0 0 14px;
+      background: linear-gradient(180deg, #fff3d6 0%, var(--gold) 55%, #a8772a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 40px #e8b85a22;
+    }
+
+    .tagline {
+      max-width: 560px;
+      margin: 0 auto;
+      color: #c3c9d2;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin: 30px auto 0;
+      max-width: 420px;
+      color: var(--gold);
+    }
+
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+    .divider::after { background: linear-gradient(270deg, transparent, var(--gold)); }
+
+    /* ---------- Modules ---------- */
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 10px 24px 70px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .section-head strong { color: var(--gold); font-weight: 600; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      --clip: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+      position: relative;
+      display: block;
+      padding: 1px;
+      color: inherit;
+      text-decoration: none;
+      clip-path: var(--clip);
+      background: linear-gradient(135deg, #e8b85a80, #4fd1c526 45%, #e8b85a40);
+      transition: transform .25s ease, background .25s ease;
+      opacity: 0;
+      animation: rise .6s ease forwards;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-inner {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 22px 22px 18px;
+      clip-path: var(--clip);
+      background:
+        linear-gradient(160deg, #121822f2, #0a0d13f7),
+        var(--panel);
+      overflow: hidden;
+    }
+
+    /* scan sweep on hover */
+    .card-inner::after {
+      content: "";
+      position: absolute;
+      top: 0; left: -60%;
+      width: 40%; height: 100%;
+      background: linear-gradient(90deg, transparent, #e8b85a1f, transparent);
+      transform: skewX(-20deg);
+      transition: left .6s ease;
+      pointer-events: none;
+    }
+
+    a.card:hover, a.card:focus-visible {
+      transform: translateY(-4px);
+      background: linear-gradient(135deg, var(--gold), var(--cyan) 50%, var(--ember));
+      outline: none;
+    }
+
+    a.card:hover .card-inner::after,
+    a.card:focus-visible .card-inner::after { left: 120%; }
+
+    a.card:hover .launch .arrow { transform: translateX(5px); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .badge {
+      padding: 3px 9px;
+      border: 1px solid currentColor;
+      color: var(--cyan);
+      background: var(--cyan-soft);
+    }
+
+    .badge.primary { color: var(--gold); background: var(--gold-soft); }
+    .badge.soon { color: var(--muted); background: transparent; }
+
+    .card-body {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .icon {
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      color: var(--gold);
+      background: radial-gradient(circle, #e8b85a22, transparent 70%);
+      clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+      border: none;
+      position: relative;
+    }
+
+    .icon::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      opacity: .18;
+    }
+
+    .icon svg { width: 28px; height: 28px; position: relative; }
+
+    .card h2 {
+      margin: 2px 0 6px;
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: 1.5px;
+      color: #fff6e2;
+    }
+
+    .card p {
+      margin: 0;
+      color: #aab2bd;
+      line-height: 1.55;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .chips li {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .5px;
+      padding: 4px 8px;
+      color: #cfd5dc;
+      background: #ffffff0a;
+      border: 1px solid #ffffff14;
+    }
+
+    .launch {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px dashed #ffffff1a;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 13px;
+      color: var(--gold);
+    }
+
+    .launch .arrow { transition: transform .25s ease; font-size: 18px; }
+
+    /* Featured (primary) card */
+    .card.featured { grid-column: 1 / -1; }
+    .card.featured .card-inner {
+      padding: 28px 30px 22px;
+      background:
+        radial-gradient(ellipse 60% 120% at 100% 0%, #e8b85a1c, transparent 60%),
+        linear-gradient(160deg, #141b26f5, #0a0d13f7);
+    }
+    .card.featured .icon { width: 72px; height: 72px; }
+    .card.featured .icon svg { width: 36px; height: 36px; }
+    .card.featured h2 { font-size: 30px; }
+    .card.featured p { font-size: 17px; max-width: 640px; }
+
+    /* Placeholder slot */
+    .card.slot {
+      background: linear-gradient(135deg, #ffffff1f, #ffffff08);
+      cursor: default;
+    }
+    .card.slot .card-inner {
+      background: repeating-linear-gradient(-45deg, #0b0f15, #0b0f15 10px, #0d1219 10px, #0d1219 20px);
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 200px;
+    }
+    .card.slot .icon { color: var(--muted); }
+    .card.slot .icon::before { background: var(--muted); }
+    .card.slot h2 { color: var(--muted); font-size: 18px; }
+    .card.slot p { font-size: 14px; color: #6b7480; }
+
+    /* ---------- Footer ---------- */
+    footer {
+      text-align: center;
+      padding: 30px 20px 40px;
+      border-top: 1px solid #ffffff0f;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    footer .mono {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #5d6672;
+    }
+
+    footer a { color: var(--gold); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 560px) {
+      .statusbar .hide-sm { display: none; }
+      header { padding-top: 20px; }
+      .emblem { width: 88px; height: 88px; }
+      .card.featured .card-inner { padding: 22px; }
+      .card.featured h2 { font-size: 24px; }
+      .card-body { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .card { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-hex" aria-hidden="true"></div>
+  <div class="bg-scan" aria-hidden="true"></div>
+
+  <div class="statusbar">
+    <span class="live">System Online</span>
+    <span class="hide-sm" id="moduleCount">— Modules</span>
+    <span>v2.0</span>
+  </div>
+
+  <header>
+    <!-- Dragon eye emblem -->
+    <svg class="emblem" viewBox="0 0 120 120" aria-hidden="true">
+      <defs>
+        <linearGradient id="g-gold" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fff0c8"/>
+          <stop offset=".55" stop-color="#e8b85a"/>
+          <stop offset="1" stop-color="#9c6b22"/>
+        </linearGradient>
+        <radialGradient id="g-iris" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#ffe7a0"/>
+          <stop offset=".6" stop-color="#ff9a3d"/>
+          <stop offset="1" stop-color="#8a2d0a"/>
+        </radialGradient>
+      </defs>
+      <g class="ring" fill="none" stroke="#4fd1c5" stroke-opacity=".55" stroke-width="1">
+        <circle cx="60" cy="60" r="56" stroke-dasharray="2 6"/>
+        <path d="M60 2v8M60 110v8M2 60h8M110 60h8"/>
+      </g>
+      <polygon points="60,10 103,35 103,85 60,110 17,85 17,35" fill="#0b0f15" stroke="url(#g-gold)" stroke-width="2.5"/>
+      <polygon points="60,20 94,40 94,80 60,100 26,80 26,40" fill="none" stroke="#e8b85a" stroke-opacity=".3" stroke-width="1"/>
+      <path d="M26 60 Q60 28 94 60 Q60 92 26 60 Z" fill="url(#g-iris)" stroke="url(#g-gold)" stroke-width="2"/>
+      <ellipse class="pupil" cx="60" cy="60" rx="3.2" ry="19" fill="#0a0604"/>
+      <circle cx="68" cy="52" r="2.2" fill="#fff" opacity=".8"/>
+      <path d="M17 35 L8 30 M103 35 L112 30 M17 85 L8 90 M103 85 L112 90" stroke="#e8b85a" stroke-width="1.5" stroke-opacity=".6"/>
+    </svg>
+
+    <p class="eyebrow">Fan-made Toolkit · Genshin Impact</p>
+    <h1>GENSHIN TOOLS</h1>
+    <p class="tagline">Forged tools for Travelers. Track your roster, collect your Arcana, and run the numbers before you go.</p>
+    <div class="divider" aria-hidden="true">◆</div>
+  </header>
+
+  <main>
+    <div class="section-head">
+      <span>// <strong>Modules</strong></span>
+      <span id="sectionCount"></span>
+    </div>
+
+    <div class="grid" id="tools">
+      <noscript>
+        <p><a href="./roster/">Genshin Roster</a> · <a href="./arcana/">Arcana</a> · <a href="./stamina/">Stamina Calculator</a></p>
+      </noscript>
+    </div>
+  </main>
+
+  <footer>
+    <div>Fan-made tools for Genshin Impact. Not affiliated with HoYoverse.</div>
+    <div>Genshin Impact and all related assets are trademarks of HoYoverse.</div>
+    <div class="mono">© <span id="year"></span> SCORNAE · <a href="[github](https://github.com/scornae/genshin-tools)" target="_blank" rel="noopener">GITHUB</a></div>
+  </footer>
+
+  <script>
+    /* =========================================================
+       TOOL REGISTRY — to add a new tool, just add an object here
+       featured: true  -> large card spanning the full width
+       status: "live" | "beta" | "soon"
+       ========================================================= */
+    const ICONS = {
+      roster: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><circle cx="17" cy="7" r="2.4"/><path d="M16 12.6c2.9.2 5 2.2 5 5.4"/></svg>',
+      arcana: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="1.5"/><path d="M14.5 8.5a3.5 3.5 0 1 0 0 5 3 3 0 1 1 0-5z"/><path d="M8 5h1M15 19h1"/></svg>',
+      stamina: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>',
+      soon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+    };
+
+    const TOOLS = [
+      {
+        id: "roster",
+        name: "Genshin Roster",
+        href: "./roster/",
+        status: "live",
+        featured: true,
+        desc: "Record the characters you own and their constellations, build teams for Spiral Abyss, Stygian Onslaught and Imaginarium Theater, then share them as a link or an image.",
+        tags: ["Character Tracker", "Team Builder", "Share Link / Image"]
+      },
+      {
+        id: "arcana",
+        name: "Arcana",
+        href: "./arcana/",
+        status: "live",
+        desc: "Track your Lunar Arcana collection from Imaginarium Theater's Lunar Mode.",
+        tags: ["Collection", "Imaginarium Theater"]
+      },
+      {
+        id: "stamina",
+        name: "Stamina Calculator",
+        href: "./stamina/",
+        status: "live",
+        desc: "Run the numbers on stamina usage and recovery before you head out.",
+        tags: ["Calculator"]
+      }
+      // ,{ id: "new-tool", name: "New Tool", href: "./new-tool/", status: "beta", desc: "…", tags: ["…"] }
+    ];
+
+    // Number of "Coming soon" slots to show (set to 0 to hide them)
+    const PLACEHOLDER_SLOTS = 1;
+
+    const pad = n => String(n).padStart(2, "0");
+    const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    function badgeFor(tool) {
+      if (tool.featured) return '<span class="badge primary">Primary</span>';
+      if (tool.status === "beta") return '<span class="badge">Beta</span>';
+      if (tool.status === "soon") return '<span class="badge soon">Soon</span>';
+      return '<span class="badge">Online</span>';
+    }
+
+    function renderTool(tool, i) {
+      const tags = (tool.tags || []).map(t => `<li>${escapeHTML(t)}</li>`).join("");
+      return `
+        <a class="card${tool.featured ? " featured" : ""}" href="${tool.href}" style="animation-delay:${i * 90}ms">
+          <div class="card-inner">
+            <div class="card-top">
+              <span>MOD-${pad(i + 1)}</span>
+              ${badgeFor(tool)}
+            </div>
+            <div class="card-body">
+              <div class="icon">${ICONS[tool.id] || ICONS.soon}</div>
+              <div>
+                <h2>${escapeHTML(tool.name)}</h2>
+                <p>${escapeHTML(tool.desc)}</p>
+              </div>
+            </div>
+            ${tags ? `<ul class="chips">${tags}</ul>` : ""}
+            <div class="launch"><span>Launch</span><span class="arrow">→</span></div>
+          </div>
+        </a>`;
+    }
+
+    function renderSlot(i) {
+      return `
+        <div class="card slot" style="animation-delay:${i * 90}ms" aria-hidden="true">
+          <div class="card-inner">
+            <div class="icon">${ICONS.soon}</div>
+            <h2>MOD-${pad(i + 1)} · Reserved</h2>
+            <p>A new module is being forged.</p>
+          </div>
+        </div>`;
+    }
+
+    const grid = document.getElementById("tools");
+    let html = TOOLS.map(renderTool).join("");
+    for (let s = 0; s < PLACEHOLDER_SLOTS; s++) html += renderSlot(TOOLS.length + s);
+    grid.innerHTML = html;
+
+    const live = TOOLS.filter(t => t.status !== "soon").length;
+    document.getElementById("moduleCount").textContent = `${pad(live)} Modules Active`;
+    document.getElementById("sectionCount").textContent = `${pad(live)} / ${pad(TOOLS.length + PLACEHOLDER_SLOTS)}`;
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
