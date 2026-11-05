@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wish Ledger — Genshin Impact Wish History</title>
+<meta name="description" content="Read your paimon.moe wish export and see every 4★ and 5★ counted: pity per pull, 50/50 and Capturing Radiance record, most pulled characters and weapons. Private, runs in your browser. Desktop only.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://scornae.github.io/genshin-tools/wish/">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cg%20transform='translate%2821%2044%29%20rotate%28135%29'%20stroke-linecap='round'%3E%3Cpath%20d='M-4%20-7.5H-40'%20stroke='%23ff7a93'%20stroke-width='3.4'/%3E%3Cpath%20d='M-4%20-4.5H-44'%20stroke='%23ffa45c'%20stroke-width='3.4'/%3E%3Cpath%20d='M-4%20-1.5H-46'%20stroke='%23ffe071'%20stroke-width='3.4'/%3E%3Cpath%20d='M-4%201.5H-46'%20stroke='%236fe3a6'%20stroke-width='3.4'/%3E%3Cpath%20d='M-4%204.5H-44'%20stroke='%2367c6ff'%20stroke-width='3.4'/%3E%3Cpath%20d='M-4%207.5H-40'%20stroke='%23a98bff'%20stroke-width='3.4'/%3E%3C/g%3E%3Cg%20transform='translate%28-22%2025.5%29'%3E%3Cpath%20d='M43%204.5l4.1%208.6%209.4%201.2-6.9%206.5%201.8%209.3-8.4-4.6-8.4%204.6%201.8-9.3-6.9-6.5%209.4-1.2z'%20fill='%23ffd45e'%20stroke='%23c98a12'%20stroke-width='1.6'%20stroke-linejoin='round'/%3E%3Cpath%20d='M43%2012.5l1.7%203.6%203.9.5-2.9%202.7.8%203.9-3.5-1.9-3.5%201.9.8-3.9-2.9-2.7%203.9-.5z'%20fill='%23fff4c4'/%3E%3C/g%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Genshin Tools">
+<meta property="og:url" content="https://scornae.github.io/genshin-tools/wish/">
+<meta property="og:title" content="Wish Ledger — Genshin Impact Wish History">
+<meta property="og:description" content="Every wish you've made, counted to the pull. Pity per pull, 50/50 and Radiance record, most pulled 4★. Private — your data never leaves your browser.">
+<meta property="og:image" content="https://scornae.github.io/genshin-tools/wish/og-preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Wish Ledger — a rainbow shooting star over the words Wish Ledger">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Wish Ledger — Genshin Impact Wish History">
+<meta name="twitter:description" content="Every wish you've made, counted to the pull. Private, runs in your browser.">
+<meta name="twitter:image" content="https://scornae.github.io/genshin-tools/wish/og-preview.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Chakra+Petch:wght@500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<style>
+:root{--bg:#000;--bg2:#060606;--sf:#0b0b0b;--sf2:#121212;--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.16);--acc:#2cf56b;--acc2:#a6ffc4;--dig:'Share Tech Mono',ui-monospace,Consolas,monospace;
+--tx:#ededed;--mu:#9b9b9b;--fa:#666;--gold:#e9c46a;--gold2:#f7e2a8;--win:#7fd1a8;--lose:#ef8b8b;--guar:#8fb4ff;--r4:#b48cf2;--r5:#f2b350;
+--rainbow:linear-gradient(90deg,#ffd27a,#ff9fb2,#c9a4ff,#8fd3ff,#9ff0c8,#ffd27a);
+--pyro:#ff8550;--hydro:#22a6ff;--anemo:#82eabe;--electro:#cb7efe;--dendro:#aee629;--cryo:#8cedf1;--geo:#f6d55c}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html{color-scheme:dark}
+body{margin:0;background:#000;color:var(--tx);font:15px/1.5 Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-3;pointer-events:none;background:radial-gradient(900px 420px at 50% -16%,rgba(255,255,255,.045),transparent 62%),linear-gradient(180deg,#050505 0%,#000 60%)}
+body::after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);background-size:46px 46px;-webkit-mask-image:radial-gradient(ellipse 85% 65% at 50% 0%,#000 15%,transparent 78%);mask-image:radial-gradient(ellipse 85% 65% at 50% 0%,#000 15%,transparent 78%)}
+.sky{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.sky i{position:absolute;top:0;left:var(--x);width:3px;height:var(--len);border-radius:3px;transform-origin:top center;opacity:0;background:linear-gradient(180deg,transparent,rgba(169,139,255,.7) 22%,rgba(103,198,255,.8) 40%,rgba(111,227,166,.85) 56%,rgba(255,224,113,.95) 74%,rgba(255,164,92,1) 90%,#fff4c4);filter:drop-shadow(0 0 8px rgba(255,205,110,.8));animation:fall var(--d) linear var(--dl) infinite}
+.sky i::after{content:"";position:absolute;left:-9px;bottom:-11px;width:21px;height:21px;background:#ffe27a;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+@keyframes fall{0%{transform:rotate(35deg) translateY(-40vh);opacity:0}3%{opacity:var(--o,.8)}15%{opacity:var(--o,.8)}22%{transform:rotate(35deg) translateY(135vh);opacity:0}100%{transform:rotate(35deg) translateY(135vh);opacity:0}}
+.sky b{position:absolute;top:-900px;left:var(--x);font:12px/1.55 var(--dig);color:rgba(44,245,107,.12);white-space:pre;text-align:center;-webkit-mask-image:linear-gradient(transparent,#000 25%,#000 75%,transparent);mask-image:linear-gradient(transparent,#000 25%,#000 75%,transparent);animation:rain var(--d) linear var(--dl) infinite}
+@keyframes rain{to{transform:translateY(calc(100vh + 950px))}}
+@media(max-width:1480px){.sky b{display:none}}
+@media(prefers-reduced-motion:reduce){.sky b{display:none}}
+@media(prefers-reduced-motion:reduce){.sky i{animation:none;opacity:.22;transform:rotate(35deg) translateY(30vh)}}
+h1,h2,h3{font-family:'Chakra Petch',sans-serif;font-weight:500;margin:0}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+.n{font-variant-numeric:tabular-nums}
+.n,.stat .v,.rw b,.pt,.ord,.tlcount b,.big,.pity b,.ff b,.crbox b,.lr .meta.n,.k5{font-family:var(--dig)!important;letter-spacing:.02em}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.meta{font-size:13px;color:var(--mu)}.rl{font-weight:600}
+.ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* header */
+.top{position:sticky;top:0;z-index:30;background:rgba(0,0,0,.75);backdrop-filter:blur(16px) saturate(150%);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:28px;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font:20px 'Chakra Petch',sans-serif;white-space:nowrap;background:none;border:0;padding:0}
+.brand i{width:20px;height:20px;border-radius:50%;background:conic-gradient(#ffd27a,#ff9fb2,#c9a4ff,#8fd3ff,#9ff0c8,#ffd27a);-webkit-mask:radial-gradient(circle,transparent 5px,#000 6px);mask:radial-gradient(circle,transparent 5px,#000 6px);filter:drop-shadow(0 0 8px rgba(255,210,122,.6))}
+.bstar{flex:none;filter:drop-shadow(0 0 8px rgba(255,205,110,.5))}
+.tabs{display:flex;gap:2px}
+.tabs button{background:none;border:0;padding:7px 14px;border-radius:999px;color:var(--mu);font-weight:500;transition:color .15s,background .15s}
+.tabs button:hover{color:var(--tx);background:rgba(255,255,255,.04)}
+.tabs button[aria-selected=true]{color:var(--tx);background:rgba(44,245,107,.1);box-shadow:inset 0 0 0 1px rgba(44,245,107,.4)}
+.search{margin-left:auto;position:relative}
+.search input{width:240px;height:36px;padding:0 12px 0 34px;border-radius:10px;border:1px solid var(--line2);background:var(--sf) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23a09eab' stroke-width='2'%3E%3Ccircle cx='6' cy='6' r='4.5'/%3E%3Cpath d='m9.5 9.5 3.5 3.5'/%3E%3C/svg%3E") 12px center no-repeat}
+.sugg{position:absolute;right:0;top:44px;width:310px;background:var(--sf2);border:1px solid var(--line2);border-radius:14px;padding:6px;box-shadow:0 20px 50px rgba(0,0,0,.5);display:none}
+.sugg.on{display:block}
+.sugg button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:6px 8px;border-radius:8px;text-align:left}
+.sugg button:hover,.sugg button.k{background:rgba(255,255,255,.06)}
+.sugg .c{margin-left:auto;color:var(--mu)}.sugg .pf{width:28px;height:28px;border-radius:7px}
+@media(max-width:900px){.tabs{overflow-x:auto}.search input{width:150px}.brand span{display:none}}
+
+/* footer + desktop-only notice */
+.foot{padding-top:24px;padding-bottom:36px;font-size:12.5px;line-height:1.7;color:var(--fa);text-align:center;border-top:1px solid var(--line)}
+.foot a{color:var(--mu);text-decoration:none}.foot a:hover{color:var(--acc2)}
+#nomobile{display:none;position:fixed;inset:0;z-index:1000;place-items:center;padding:28px;text-align:center;background:rgba(9,11,28,.55)}
+.nmc{max-width:420px}.nmc h1{font-size:32px;margin:6px 0 14px;color:var(--acc2)}.nmc p{color:var(--mu);margin:0 0 26px}.nmc .btn{display:inline-grid;place-items:center;text-decoration:none}
+@media (pointer:coarse) and (hover:none),(max-width:760px){#nomobile{display:grid}.top,main,.foot,dialog,.toast,.dropveil{display:none!important}}
+/* empty state */
+.empty{min-height:calc(100vh - 62px);display:grid;place-items:center;text-align:center;padding-top:40px;padding-bottom:60px}
+.herostar{display:block;margin:0 auto 18px;filter:drop-shadow(0 0 26px rgba(255,205,110,.45));animation:bob 6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+@media(prefers-reduced-motion:reduce){.herostar{animation:none}}
+.eyebrow{font-family:var(--dig);color:var(--acc);letter-spacing:.18em;text-transform:uppercase;font-size:12px;font-weight:600;margin:0 0 18px}
+.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.08}
+.gold{background:linear-gradient(180deg,#eafff0,var(--acc) 62%,#13b84c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{color:var(--mu);font-size:17px;max-width:540px;margin:18px auto 36px}
+.drop{position:relative;display:flex;flex-direction:column;gap:6px;align-items:center;width:min(520px,100%);margin:0 auto;padding:44px 24px;border-radius:20px;background:var(--sf);cursor:pointer;isolation:isolate;transition:background .2s}
+.drop::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(44,245,107,.7),rgba(255,255,255,.07) 40%,rgba(255,255,255,.07) 60%,rgba(44,245,107,.7));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;z-index:-1}
+.drop:hover{background:var(--sf2)}.drop strong{font:22px 'Chakra Petch',sans-serif}.drop span{color:var(--mu);font-size:14px}
+.fine{color:var(--fa);font-size:13px;margin-top:18px}
+.dropveil{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:rgba(0,0,0,.82);backdrop-filter:blur(6px)}
+.dropveil.on{display:grid}
+.dropveil div{font:28px 'Chakra Petch',sans-serif;padding:48px 72px;border-radius:24px;border:1.5px dashed var(--acc);color:var(--acc2)}
+
+/* controls */
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-top:20px;padding-bottom:20px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--mu);font-size:13px;font-weight:500;cursor:pointer}
+.chip:hover{color:var(--tx)}
+.chip[aria-pressed=true]{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4);box-shadow:inset 0 -2px 0 var(--acc)}
+.chip small{color:var(--fa);font-weight:400}.chip input{accent-color:var(--acc);margin:0}
+.sep{width:1px;height:20px;background:var(--line2);margin:0 4px}
+.field{height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--sf);padding:0 10px;font-size:13px}
+.lbl{font-size:11px;color:var(--fa);text-transform:uppercase;letter-spacing:.1em}
+.el{width:8px;height:8px;border-radius:50%;background:var(--c);display:inline-block}
+.btn{height:40px;padding:0 18px;border-radius:10px;border:0;font-weight:600;background:linear-gradient(180deg,var(--acc2),var(--acc));color:#03140a}
+.btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--tx)}
+.btn.danger{color:var(--lose);border-color:rgba(239,139,139,.4)}
+.ttl{font-size:26px;margin-right:8px}
+.ovhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+
+/* cards */
+.ov{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;padding-bottom:64px}
+.card{grid-column:span 12;position:relative;background:radial-gradient(130% 90% at 0% 0%,rgba(255,255,255,.035),transparent 55%),linear-gradient(180deg,#0e0e0e,#080808);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 14px 34px rgba(0,0,0,.5)}
+.card::before{content:"";position:absolute;left:22px;right:22px;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(44,245,107,.55),transparent);opacity:.7;pointer-events:none}
+.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s8{grid-column:span 8}
+@media(max-width:900px){.s4,.s5,.s6,.s7,.s8{grid-column:span 12}}
+.card h2{font-size:18px;margin-bottom:16px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card h2 small{font:13px Figtree,sans-serif;color:var(--fa)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:4px}
+.stat{padding:6px 8px}
+.stat .k,.fact .k{font-size:11px;color:var(--fa);text-transform:uppercase;letter-spacing:.12em}
+.stat .v{font:40px/1.1 'Chakra Petch',sans-serif;margin:6px 0 2px}.stat .s{font-size:13px;color:var(--mu)}
+
+/* pity rings */
+.rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px}
+.ring .rl{font-size:16px;margin-bottom:2px}
+.ring{display:flex;align-items:center;gap:14px}
+.rw{position:relative;width:96px;height:96px;flex:none}
+.rw svg{width:96px;height:96px;transform:rotate(-90deg)}
+.rw b{position:absolute;inset:0;display:grid;place-items:center;font:30px 'Chakra Petch',sans-serif}
+.trk{fill:none;stroke:rgba(255,255,255,.08);stroke-width:6}.val{fill:none;stroke-width:6;stroke-linecap:round}
+
+/* badges */
+.bd{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:600;color:var(--mu);background:rgba(255,255,255,.06);margin-top:4px}
+.bd.win{color:#9be8c0;background:rgba(80,200,140,.2);box-shadow:inset 0 0 0 1px rgba(127,209,168,.5)}
+.bd.lose{color:#ffb0b0;background:rgba(235,90,90,.24);box-shadow:inset 0 0 0 1px rgba(239,139,139,.6)}
+.bd.guar{color:#b3ccff;background:rgba(90,140,255,.22);box-shadow:inset 0 0 0 1px rgba(143,180,255,.55)}
+.bd.feat{color:var(--gold2);background:rgba(233,196,106,.2);box-shadow:inset 0 0 0 1px rgba(233,196,106,.5)}
+.bd.cr{color:#1d1426;background:var(--rainbow);background-size:200% 100%;animation:sh 5s linear infinite}
+@keyframes sh{to{background-position:200% 0}}
+
+/* 50/50 */
+.ff{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.ff b{display:block;font:34px/1 'Chakra Petch',sans-serif}
+.ff span{font-size:11px;color:var(--fa);text-transform:uppercase;letter-spacing:.1em}
+.cr-t{background:var(--rainbow);-webkit-background-clip:text;background-clip:text;color:transparent}
+.seg{display:flex;height:8px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.06);margin-bottom:10px}
+.crbox{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:18px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.pips{display:flex;gap:6px;align-items:center}
+.pips i{width:26px;height:8px;border-radius:4px;background:rgba(255,255,255,.1)}
+.pips i.on{background:var(--rainbow)}.pips b{font:22px 'Chakra Petch',sans-serif;margin-left:6px}
+
+/* loyal list */
+.loyal{display:flex;flex-direction:column;gap:6px}
+.ly{display:grid;grid-template-columns:22px 44px 1fr 48px;gap:12px;align-items:center;background:none;border:0;padding:6px;border-radius:10px;text-align:left}
+.ly:hover{background:rgba(255,255,255,.04)}
+.ly .rk{color:var(--fa);font:16px 'Chakra Petch',sans-serif;text-align:center}
+.ly{min-height:56px}.ly.nof{grid-template-columns:22px 1fr 48px}
+.ly .pf{width:44px;height:44px}
+.lyn{display:block;font-weight:600;margin-bottom:6px}
+.ly .c{font:22px 'Chakra Petch',sans-serif;text-align:right}
+.bar{display:block;flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#7a62c9,var(--r4))}
+
+/* charts */
+.chart{width:100%;height:auto;display:block}
+.chart rect.b{fill:rgba(205,205,205,.36)}.chart rect.b0{fill:rgba(205,205,205,.18)}.chart circle.d5{fill:var(--gold);stroke:rgba(0,0,0,.35);stroke-width:.6}
+.chart rect.hb{fill:var(--r4)}.chart rect.hi{fill:var(--lose)}
+.chart text{fill:var(--fa);font:11px Figtree,sans-serif}.chart .tv{fill:var(--mu)}
+
+/* portraits */
+.pf{position:relative;flex:none;display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;overflow:hidden;background:#2a2f44}
+.pf.r5{background:linear-gradient(160deg,#8a5a2b,#d9a45a)}
+.pf.r4{background:linear-gradient(160deg,#4f417f,#9479cf)}
+.pf.r3{background:linear-gradient(160deg,#33475f,#5d7896)}
+.pf img{width:100%;height:100%;object-fit:cover;position:relative}
+.pf.avatarside{overflow:visible;background:none}
+.pf.r5.avatarside::before{background:radial-gradient(circle,rgba(242,179,80,.6),transparent 70%)!important}
+.pf.avatarside::before{content:"";position:absolute;inset:8% 6% 0;border-radius:50%;background:radial-gradient(circle,rgba(180,140,242,.5),transparent 70%)}
+.pf.avatarside img{object-fit:contain;transform:scale(1.3) translateY(-10%)}
+.pf b{font-size:12px;color:rgba(255,255,255,.88);letter-spacing:.04em}
+
+/* collection */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:12px;padding-bottom:64px}
+.it{position:relative;background:var(--sf);border:1px solid var(--line);border-radius:14px;padding:0 0 10px;text-align:center;overflow:hidden;transition:transform .15s,border-color .15s}
+.it:hover{transform:translateY(-2px);border-color:var(--line2)}
+.it .pf{width:100%;height:auto;aspect-ratio:1;border-radius:0}.it .pf b{font:28px 'Chakra Petch',sans-serif}
+.it .cnt{position:absolute;top:8px;right:8px;font-weight:700;font-size:13px;padding:2px 9px;border-radius:999px;background:rgba(0,0,0,.75);backdrop-filter:blur(6px)}
+.it .nm2{font-weight:600;font-size:13.5px;margin:8px 8px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it .cons{font-size:12px;color:var(--mu)}
+.it.r5{box-shadow:inset 0 -2px 0 var(--r5)}.it.r4{box-shadow:inset 0 -2px 0 var(--r4)}
+
+/* 5-star timeline */
+.fives{display:flex;flex-direction:column;gap:8px;padding-bottom:64px}
+.five{position:relative;display:grid;grid-template-columns:56px minmax(0,1.6fr) 110px minmax(140px,1fr) 200px;align-items:center;gap:18px;padding:10px 18px 10px 12px;border-radius:14px;background:var(--sf);border:1px solid var(--line);overflow:hidden;cursor:pointer}
+.five .nc{position:absolute;inset:0;pointer-events:none}
+.five .nc img{position:absolute;right:0;top:0;height:100%;width:72%;object-fit:cover;opacity:.55;-webkit-mask:linear-gradient(90deg,transparent,#000 45%);mask:linear-gradient(90deg,transparent,#000 45%)}
+.five::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--sf) 25%,rgba(8,8,8,.55) 60%,rgba(8,8,8,.15))}
+.five>:not(.nc){position:relative;z-index:1}
+.five.is-cr{border:1px solid transparent;background:linear-gradient(var(--sf),var(--sf)) padding-box,var(--rainbow) border-box}
+.five .pf{width:52px;height:52px;border-radius:12px}
+.nm{font:19px 'Chakra Petch',sans-serif}
+.pity{display:flex;align-items:center;gap:10px}.pity b{font:20px 'Chakra Petch',sans-serif;width:28px;text-align:right}
+.ctr{font-size:12px;color:var(--mu)}.ctr b{color:var(--gold)}
+.crbtn{border:1px solid var(--line2);background:rgba(0,0,0,.5);border-radius:8px;height:28px;padding:0 10px;font-size:12px;color:var(--mu)}
+.crbtn:hover{color:var(--tx);border-color:var(--acc)}
+.show-m{display:none}
+@media(max-width:760px){.five{grid-template-columns:48px 1fr auto}.hide-m{display:none}.show-m{display:inline}}
+
+/* log */
+.log{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.lr{display:grid;grid-template-columns:56px 112px 44px minmax(0,1fr) 56px minmax(0,380px) 140px;gap:14px;align-items:center;padding:8px 16px;border-top:1px solid var(--line);font-size:15.5px}
+.lr.hd{border-top:0;background:linear-gradient(180deg,#151515,#0c0c0c);font-size:12.5px;font-weight:700;color:#c9c9c9;text-transform:uppercase;letter-spacing:.12em;padding-top:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.16)}
+.lr.r3{color:var(--mu)}.lr.r4 .nmx{color:#cdb6ff;font-weight:600}
+.lr.r5{background:linear-gradient(90deg,rgba(233,196,106,.14),transparent 60%)}.lr.r5 .nmx{color:var(--gold2);font-weight:700}
+.lr .pf{width:38px;height:38px;border-radius:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--fa);justify-self:center}.dot.r4{width:9px;height:9px;background:var(--r4)}.dot.r5{width:11px;height:11px;background:var(--r5);box-shadow:0 0 10px rgba(242,179,80,.7)}
+.pt{font:17px 'Chakra Petch',sans-serif}.pt.r3{color:var(--fa);font-size:15px}.pt.r4{color:#b48cf2}.pt.r5{font-size:20px;color:var(--gold)}
+.linky{background:none;border:0;padding:0;text-align:left;color:inherit}.linky:hover{text-decoration:underline}
+.more{display:block;margin:20px auto 8px}
+@media(max-width:760px){.lr{grid-template-columns:32px 1fr 44px}.lr .hm{display:none}}
+
+/* dialog */
+dialog{border:0;padding:0;background:transparent;color:inherit;max-width:min(780px,94vw);width:100%}
+dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
+.dlg{position:relative;background:var(--bg2);border:1px solid var(--line2);border-radius:22px;overflow:hidden;max-height:88vh;display:flex;flex-direction:column}
+.dh{position:relative;display:flex;gap:20px;align-items:center;padding:28px 72px 28px 26px;overflow:hidden;flex:none}
+.dh .bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35;-webkit-mask:linear-gradient(90deg,transparent 15%,#000);mask:linear-gradient(90deg,transparent 15%,#000)}
+.dh>*{position:relative}
+.dh .pf{width:96px;height:96px;border-radius:20px}
+.dh h3{font-size:30px;line-height:1.15}
+.big{font:60px/1 'Chakra Petch',sans-serif;margin-left:auto;text-align:right}
+.big small{display:block;font:13px Figtree,sans-serif;color:var(--mu);margin-top:6px}
+.db{padding:4px 26px 26px;overflow:auto}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:6px 0 18px}
+.fact{background:var(--sf);border-radius:12px;padding:12px 14px}.fact .v{font:18px 'Chakra Petch',sans-serif;margin-top:4px}
+.years{display:flex;gap:10px;align-items:flex-end;margin:4px 0 18px}
+.yr{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.yb{width:100%;max-width:36px;height:56px;display:flex;align-items:flex-end;background:rgba(255,255,255,.04);border-radius:6px;overflow:hidden}
+.yb i{width:100%;background:linear-gradient(180deg,var(--acc2),var(--acc))}
+.yr small{color:var(--fa);font-size:11px}
+.brag{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;background:rgba(233,196,106,.07);border:1px solid rgba(233,196,106,.25);margin-bottom:18px;font-size:14px}
+.occ{width:100%;border-collapse:collapse;font-size:13.5px}
+.occ td,.occ th{padding:8px;border-top:1px solid var(--line);text-align:left}
+.occ th{color:var(--fa);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.x{position:absolute;top:12px;right:12px;z-index:3;width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.45)}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;background:var(--sf2);border:1px solid var(--line2);padding:10px 18px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);transition:.25s;z-index:200;font-size:14px;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.stat.clk{background:none;border:0;text-align:left;border-radius:12px;color:inherit;font:inherit}.stat.clk:hover{background:rgba(255,255,255,.05)}
+.mix{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}.mix .seg{margin-bottom:8px}
+.mixl{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--mu)}.mixl i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:var(--fa)}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.lock{padding:18px;border-radius:14px;background:rgba(255,255,255,.04);border:1px dashed var(--line2);margin-bottom:14px}.lock b{font:17px 'Chakra Petch',sans-serif}.lock p{margin:8px 0 12px}
+.sub{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}.sub .rl{margin-bottom:10px}
+.chart g.hit{cursor:pointer}.chart g.hit:hover .hb{filter:brightness(1.3)}
+.eli{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex:none}.eli img{width:20px;height:20px;object-fit:contain}.edot{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.hint{margin:-6px 0 14px}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:40px}.cols2.one{grid-template-columns:1fr}.cols2>div+div{border-left:1px solid var(--line);padding-left:40px}
+@media(max-width:900px){.cols2{grid-template-columns:1fr;gap:24px}.cols2>div+div{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px}}
+.chip.idle{opacity:.45}
+.tlcount{font-size:15px;color:var(--mu)}.tlcount b{font:34px/1 'Chakra Petch',sans-serif;color:var(--gold);margin-right:4px}
+.ord{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;font:20px 'Chakra Petch',sans-serif;color:var(--acc2);background:rgba(44,245,107,.1);box-shadow:inset 0 0 0 1px rgba(44,245,107,.35)}
+.bcell{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.five.has-el .nm{color:var(--ec)}.ly.has-el .lyn{color:var(--ec)}
+.five.wp::after{display:none}.five.wp{background:linear-gradient(100deg,rgba(150,120,235,.34),rgba(233,196,106,.2) 58%,rgba(233,196,106,.05)),var(--sf);border-color:rgba(233,196,106,.28)}
+.wm{display:inline-flex;gap:6px}.wm button{border:1px solid var(--line2);background:rgba(0,0,0,.5);border-radius:8px;height:28px;padding:0 12px;font-size:12px;color:var(--mu)}
+.wm button:hover{color:var(--tx);border-color:var(--gold)}.wm button.on.w{color:#9be8c0;border-color:var(--win);background:rgba(80,200,140,.18)}.wm button.on.l{color:#ffb0b0;border-color:var(--lose);background:rgba(235,90,90,.2)}
+.lr.has-el .nmx{color:var(--ec)}
+.occ .linky{font:inherit;color:var(--tx)}
+.rng{display:inline-flex;align-items:center;gap:8px;flex-wrap:nowrap}.rng .field{width:132px}.rng select.field{width:150px}
+.segc{display:inline-flex;align-items:center;gap:6px}
+.hchips{display:flex;gap:6px;margin:-4px 0 12px}.chip.sm{height:28px;padding:0 12px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true"><b style="--x:1.4%;--d:52s;--dl:-10s">2
+0
+ 
+5
+8
+1
+1
+8
+9
+3
+9
+9
+0
+0
+2
+2
+9
+2
+ 
+3
+8
+9
+ 
+8
+5
+7
+3
+3
+ 
+7
+7
+1
+ 
+5
+7
+1
+9
+5
+5
+9
+1
+4
+1
+ 
+9
+7</b><b style="--x:3.6%;--d:64s;--dl:-38s">6
+5
+ 
+2
+7
+ 
+2
+6
+7
+ 
+8
+2
+8
+6
+6
+2
+ 
+3
+ 
+2
+0
+8
+9
+2
+8
+0
+8
+6
+7
+0
+3
+1
+0
+ 
+8
+ 
+0
+ 
+6
+4
+9
+1
+ 
+7
+4
+ </b><b style="--x:96.2%;--d:58s;--dl:-22s"> 
+4
+2
+3
+8
+8
+8
+1
+4
+2
+3
+8
+3
+3
+6
+3
+7
+0
+4
+3
+5
+5
+5
+ 
+ 
+5
+9
+9
+7
+5
+1
+1
+3
+2
+5
+ 
+6
+1
+2
+0
+7
+2
+9
+5
+8
+0</b><b style="--x:98.4%;--d:48s;--dl:-4s">1
+2
+3
+3
+ 
+8
+9
+8
+2
+ 
+7
+8
+8
+2
+0
+2
+2
+7
+1
+5
+8
+1
+0
+4
+ 
+ 
+0
+1
+9
+9
+4
+8
+8
+8
+4
+3
+2
+6
+1
+6
+ 
+1
+2
+5
+2
+3</b><i style="--x:62%;--len:170px;--d:17s;--dl:2s;--o:.85"></i><i style="--x:88%;--len:120px;--d:23s;--dl:9s;--o:.6"></i><i style="--x:40%;--len:210px;--d:29s;--dl:15s;--o:.7"></i><i style="--x:104%;--len:150px;--d:19s;--dl:6s;--o:.65"></i><i style="--x:78%;--len:100px;--d:31s;--dl:22s;--o:.5"></i></div>
+<div id="nomobile"><div class="nmc"><svg class="herostar" viewBox="0 0 64 64" width="84" height="84" aria-hidden="true"><g transform="translate(21 44) rotate(135)" stroke-linecap="round"><path d="M-4 -7.5H-40" stroke="#ff7a93" stroke-width="3.4"/><path d="M-4 -4.5H-44" stroke="#ffa45c" stroke-width="3.4"/><path d="M-4 -1.5H-46" stroke="#ffe071" stroke-width="3.4"/><path d="M-4 1.5H-46" stroke="#6fe3a6" stroke-width="3.4"/><path d="M-4 4.5H-44" stroke="#67c6ff" stroke-width="3.4"/><path d="M-4 7.5H-40" stroke="#a98bff" stroke-width="3.4"/></g><g transform="translate(-22 25.5)"><path d="M43 4.5l4.1 8.6 9.4 1.2-6.9 6.5 1.8 9.3-8.4-4.6-8.4 4.6 1.8-9.3-6.9-6.5 9.4-1.2z" fill="#ffd45e" stroke="#c98a12" stroke-width="1.6" stroke-linejoin="round"/><path d="M43 12.5l1.7 3.6 3.9.5-2.9 2.7.8 3.9-3.5-1.9-3.5 1.9.8-3.9-2.9-2.7 3.9-.5z" fill="#fff4c4"/></g></svg><h1>Made for the desktop</h1><p>Wish Ledger works with wide tables and charts, so it isn't supported on phones or tablets. Please open it on a computer.</p><a class="btn" href="../">Back to Genshin Tools</a></div></div>
+<header class="top"><div class="wrap">
+  <button class="brand" data-act="view" data-v="overview"><svg class="bstar" viewBox="0 0 64 64" width="28" height="28" aria-hidden="true"><g transform="translate(21 44) rotate(135)" stroke-linecap="round"><path d="M-4 -7.5H-40" stroke="#ff7a93" stroke-width="3.4"/><path d="M-4 -4.5H-44" stroke="#ffa45c" stroke-width="3.4"/><path d="M-4 -1.5H-46" stroke="#ffe071" stroke-width="3.4"/><path d="M-4 1.5H-46" stroke="#6fe3a6" stroke-width="3.4"/><path d="M-4 4.5H-44" stroke="#67c6ff" stroke-width="3.4"/><path d="M-4 7.5H-40" stroke="#a98bff" stroke-width="3.4"/></g><g transform="translate(-22 25.5)"><path d="M43 4.5l4.1 8.6 9.4 1.2-6.9 6.5 1.8 9.3-8.4-4.6-8.4 4.6 1.8-9.3-6.9-6.5 9.4-1.2z" fill="#ffd45e" stroke="#c98a12" stroke-width="1.6" stroke-linejoin="round"/><path d="M43 12.5l1.7 3.6 3.9.5-2.9 2.7.8 3.9-3.5-1.9-3.5 1.9.8-3.9-2.9-2.7 3.9-.5z" fill="#fff4c4"/></g></svg><span>Wish Ledger</span></button>
+  <nav class="tabs" id="tabs" hidden>
+    <button data-act="view" data-v="overview">Overview</button>
+    <button data-act="view" data-v="timeline">5★ Timeline</button>
+    <button data-act="view" data-v="log">All Wishes</button>
+    <button data-act="view" data-v="export">Import &amp; Export</button>
+  </nav>
+  <div class="search" id="searchBox" hidden><input id="q" placeholder="Search anyone…   /" autocomplete="off" aria-label="Search"><div class="sugg" id="sugg"></div></div>
+</div></header>
+
+<main>
+  <section id="empty" class="empty wrap">
+    <div class="hero">
+      <svg class="herostar" viewBox="0 0 64 64" width="92" height="92" aria-hidden="true"><g transform="translate(21 44) rotate(135)" stroke-linecap="round"><path d="M-4 -7.5H-40" stroke="#ff7a93" stroke-width="3.4"/><path d="M-4 -4.5H-44" stroke="#ffa45c" stroke-width="3.4"/><path d="M-4 -1.5H-46" stroke="#ffe071" stroke-width="3.4"/><path d="M-4 1.5H-46" stroke="#6fe3a6" stroke-width="3.4"/><path d="M-4 4.5H-44" stroke="#67c6ff" stroke-width="3.4"/><path d="M-4 7.5H-40" stroke="#a98bff" stroke-width="3.4"/></g><g transform="translate(-22 25.5)"><path d="M43 4.5l4.1 8.6 9.4 1.2-6.9 6.5 1.8 9.3-8.4-4.6-8.4 4.6 1.8-9.3-6.9-6.5 9.4-1.2z" fill="#ffd45e" stroke="#c98a12" stroke-width="1.6" stroke-linejoin="round"/><path d="M43 12.5l1.7 3.6 3.9.5-2.9 2.7.8 3.9-3.5-1.9-3.5 1.9.8-3.9-2.9-2.7 3.9-.5z" fill="#fff4c4"/></g></svg>
+      <p class="eyebrow">Genshin Impact · Wish history</p>
+      <h1>Every wish you've made,<br><span class="gold">beautifully counted.</span></h1>
+      <p class="lede">Drop your paimon.moe export to see your 5★ story, your 50/50 record, and exactly how many times each character showed up for you.</p>
+      <label class="drop"><input type="file" id="file" accept=".xlsx,.json,.docx" multiple hidden>
+        <strong>Drop your file here</strong><span>or click to choose · paimon.moe Excel export</span>
+      </label>
+      <p class="fine">Everything stays in your browser. Nothing is uploaded anywhere. Made for desktop browsers.</p>
+    </div>
+  </section>
+  <section id="app" hidden>
+    <div class="filters wrap" id="filters"></div>
+    <div class="wrap" id="view"></div>
+  </section>
+</main>
+<footer class="foot wrap"><div>Fan-made tool for Genshin Impact. Not affiliated with HoYoverse. Genshin Impact and all related assets are trademarks of HoYoverse.</div><div>Your wishes stay in this browser — nothing is uploaded. · <a href="../">Genshin Tools</a> · <a href="https://github.com/scornae/genshin-tools" target="_blank" rel="noopener">GitHub</a> · © <span id="yr"></span> SCORNAE</div></footer>
+<dialog id="dlg"><div id="dlgBody"></div></dialog>
+<div class="toast" id="toast" role="status"></div>
+<div class="dropveil" id="veil"><div>Drop to import</div></div>
+
+<script>
+const SEED=[["jean","Jean","anemo","sword",5],["diluc","Diluc","pyro","claymore",5],["qiqi","Qiqi","cryo","sword",5],["mona","Mona","hydro","catalyst",5],["keqing","Keqing","electro","sword",5],["venti","Venti","anemo","bow",5],["klee","Klee","pyro","catalyst",5],["tartaglia","Tartaglia","hydro","bow",5],["zhongli","Zhongli","geo","polearm",5],["albedo","Albedo","geo","sword",5],["ganyu","Ganyu","cryo","bow",5],["xiao","Xiao","anemo","polearm",5],["hu-tao","Hu Tao","pyro","polearm",5],["eula","Eula","cryo","claymore",5],["kaedehara-kazuha","Kaedehara Kazuha","anemo","sword",5],["kamisato-ayaka","Kamisato Ayaka","cryo","sword",5],["yoimiya","Yoimiya","pyro","bow",5],["aloy","Aloy","cryo","bow",5],["raiden-shogun","Raiden Shogun","electro","polearm",5],["sangonomiya-kokomi","Sangonomiya Kokomi","hydro","catalyst",5],["arataki-itto","Arataki Itto","geo","claymore",5],["shenhe","Shenhe","cryo","polearm",5],["yae-miko","Yae Miko","electro","catalyst",5],["kamisato-ayato","Kamisato Ayato","hydro","sword",5],["yelan","Yelan","hydro","bow",5],["tighnari","Tighnari","dendro","bow",5],["cyno","Cyno","electro","polearm",5],["nilou","Nilou","hydro","sword",5],["nahida","Nahida","dendro","catalyst",5],["the-wanderer","The Wanderer","anemo","catalyst",5],["alhaitham","Alhaitham","dendro","sword",5],["dehya","Dehya","pyro","claymore",5],["baizhu","Baizhu","dendro","catalyst",5],["lyney","Lyney","pyro","bow",5],["neuvillette","Neuvillette","hydro","catalyst",5],["wriothesley","Wriothesley","cryo","catalyst",5],["furina","Furina","hydro","sword",5],["navia","Navia","geo","claymore",5],["xianyun","Xianyun","anemo","catalyst",5],["chiori","Chiori","geo","sword",5],["arlecchino","Arlecchino","pyro","polearm",5],["clorinde","Clorinde","electro","sword",5],["sigewinne","Sigewinne","hydro","bow",5],["emilie","Emilie","dendro","polearm",5],["mualani","Mualani","hydro","catalyst",5],["kinich","Kinich","dendro","claymore",5],["xilonen","Xilonen","geo","sword",5],["chasca","Chasca","anemo","bow",5],["citlali","Citlali","cryo","catalyst",5],["mavuika","Mavuika","pyro","claymore",5],["yumemizuki-mizuki","Yumemizuki Mizuki","anemo","catalyst",5],["varesa","Varesa","electro","catalyst",5],["escoffier","Escoffier","cryo","polearm",5],["skirk","Skirk","cryo","sword",5],["ineffa","Ineffa","electro","polearm",5],["lauma","Lauma","dendro","catalyst",5],["flins","Flins","electro","polearm",5],["nefer","Nefer","dendro","catalyst",5],["durin","Durin","pyro","sword",5],["columbina","Columbina","hydro","catalyst",5],["zibai","Zibai","geo","sword",5],["varka","Varka","anemo","claymore",5],["linnea","Linnea","geo","bow",5],["nicole","Nicole","pyro","catalyst",5],["lohen","Lohen","cryo","polearm",5],["sandrone","Sandrone","cryo","claymore",5],["odette","Odette","cryo","sword",5],["vesna","Vesna","anemo","sword",5],["vodyanitsa","Vodyanitsa","hydro","catalyst",5],["mitya","Mitya","electro","catalyst",5],["lisa","Lisa","electro","catalyst",4],["barbara","Barbara","hydro","catalyst",4],["kaeya","Kaeya","cryo","sword",4],["razor","Razor","electro","claymore",4],["amber","Amber","pyro","bow",4],["xiangling","Xiangling","pyro","polearm",4],["beidou","Beidou","electro","claymore",4],["xingqiu","Xingqiu","hydro","sword",4],["ningguang","Ningguang","geo","catalyst",4],["fischl","Fischl","electro","bow",4],["bennett","Bennett","pyro","sword",4],["noelle","Noelle","geo","claymore",4],["chongyun","Chongyun","cryo","claymore",4],["sucrose","Sucrose","anemo","catalyst",4],["diona","Diona","cryo","bow",4],["xinyan","Xinyan","pyro","claymore",4],["rosaria","Rosaria","cryo","polearm",4],["yanfei","Yanfei","pyro","catalyst",4],["sayu","Sayu","anemo","claymore",4],["kujou-sara","Kujou Sara","electro","bow",4],["thoma","Thoma","pyro","polearm",4],["gorou","Gorou","geo","bow",4],["yun-jin","Yun Jin","geo","polearm",4],["kuki-shinobu","Kuki Shinobu","electro","sword",4],["shikanoin-heizou","Shikanoin Heizou","anemo","catalyst",4],["collei","Collei","dendro","bow",4],["dori","Dori","electro","claymore",4],["candace","Candace","hydro","polearm",4],["layla","Layla","cryo","sword",4],["faruzan","Faruzan","anemo","bow",4],["yaoyao","Yaoyao","dendro","polearm",4],["mika","Mika","cryo","polearm",4],["kaveh","Kaveh","dendro","claymore",4],["kirara","Kirara","dendro","sword",4],["lynette","Lynette","anemo","sword",4],["freminet","Freminet","cryo","claymore",4],["charlotte","Charlotte","cryo","catalyst",4],["chevreuse","Chevreuse","pyro","polearm",4],["gaming","Gaming","pyro","claymore",4],["sethos","Sethos","electro","bow",4],["kachina","Kachina","geo","polearm",4],["ororon","Ororon","electro","bow",4],["lan-yan","Lan Yan","anemo","catalyst",4],["iansan","Iansan","electro","polearm",4],["ifa","Ifa","anemo","catalyst",4],["dahlia","Dahlia","hydro","sword",4],["aino","Aino","hydro","claymore",4],["jahoda","Jahoda","anemo","bow",4],["illuga","Illuga","geo","polearm",4],["prune","Prune","anemo","catalyst",4],["alyosha","Alyosha","electro","polearm",4],["valeriy","Valeriy","electro","sword",4]];
+const BN=`1.0|200928|201018|Venti
+1.0|201020|201110|Klee
+1.1|201111|201201|Tartaglia
+1.1|201201|201222|Zhongli
+1.2|201223|210112|Albedo
+1.2|210112|210202|Ganyu
+1.3|210203|210217|Xiao
+1.3|210217|210302|Keqing
+1.3|210302|210316|Hu Tao
+1.4|210317|210406|Venti
+1.4|210406|210427|Tartaglia
+1.5|210428|210518|Zhongli
+1.5|210518|210608|Eula
+1.6|210609|210629|Klee
+1.6|210629|210720|Kazuha
+2.0|210721|210810|Ayaka
+2.0|210810|210831|Yoimiya
+2.1|210901|210921|Raiden Shogun
+2.1|210921|211012|Kokomi
+2.2|211013|211102|Tartaglia
+2.2|211102|211123|Hu Tao
+2.3|211124|211214|Albedo,Eula
+2.3|211214|220104|Itto
+2.4|220105|220125|Shenhe,Xiao
+2.4|220125|220215|Zhongli,Ganyu
+2.5|220216|220308|Yae Miko
+2.5|220308|220329|Raiden Shogun,Kokomi
+2.6|220330|220419|Ayato,Venti
+2.6|220419|220531|Ayaka
+2.7|220531|220621|Yelan,Xiao
+2.7|220621|220712|Itto
+2.8|220713|220802|Kazuha,Klee
+2.8|220802|220823|Yoimiya
+3.0|220824|220909|Tighnari,Zhongli
+3.0|220909|220927|Ganyu,Kokomi
+3.1|220928|221014|Cyno,Venti
+3.1|221014|221101|Nilou,Albedo
+3.2|221102|221118|Nahida,Yoimiya
+3.2|221118|221206|Yae Miko,Tartaglia
+3.3|221207|221227|Wanderer,Itto
+3.3|221227|230117|Raiden Shogun,Ayato
+3.4|230118|230207|Alhaitham,Xiao
+3.4|230207|230228|Hu Tao,Yelan
+3.5|230301|230321|Dehya,Cyno
+3.5|230321|230411|Shenhe,Ayaka
+3.6|230412|230502|Nahida,Nilou
+3.6|230502|230523|Baizhu,Ganyu
+3.7|230524|230613|Yoimiya,Yae Miko
+3.7|230613|230704|Alhaitham,Kazuha
+3.8|230705|230725|Eula,Klee
+3.8|230725|230815|Kokomi,Wanderer
+4.0|230816|230905|Lyney,Yelan
+4.0|230905|230926|Zhongli,Tartaglia
+4.1|230927|231017|Neuvillette,Hu Tao
+4.1|231017|231107|Wriothesley,Venti
+4.2|231108|231128|Furina,Baizhu
+4.2|231128|231219|Cyno,Ayato
+4.3|231220|240109|Navia,Ayaka
+4.3|240109|240130|Raiden Shogun,Yoimiya
+4.4|240131|240220|Xianyun,Nahida
+4.4|240220|240312|Xiao,Yae Miko
+4.5|240313|240402|Chiori,Itto
+4.5|240402|240423|Neuvillette,Kazuha
+4.6|240424|240514|Arlecchino,Lyney
+4.6|240514|240604|Wanderer,Baizhu
+4.7|240605|240625|Clorinde,Alhaitham
+4.7|240625|240716|Sigewinne,Furina
+4.8|240717|240806|Navia,Nilou
+4.8|240806|240827|Emilie,Yelan
+5.0|240828|240917|Mualani,Kazuha
+5.0|240917|241008|Kinich,Raiden Shogun
+5.1|241009|241029|Xilonen,Chiori
+5.1|241029|241119|Nahida,Hu Tao
+5.2|241120|241210|Chasca,Lyney
+5.2|241210|241231|Neuvillette,Zhongli
+5.3|250101|250121|Mavuika,Citlali
+5.3|250121|250211|Arlecchino,Clorinde
+5.4|250212|250304|Mizuki,Sigewinne
+5.4|250304|250325|Furina,Wriothesley
+5.5|250326|250415|Varesa,Xianyun
+5.5|250415|250506|Xilonen,Venti
+5.6|250507|250527|Escoffier,Navia
+5.6|250527|250617|Kinich,Raiden Shogun
+5.7|250618|250708|Skirk,Shenhe
+5.7|250708|250729|Mavuika,Emilie
+5.8|250730|250819|Ineffa,Citlali
+5.8|250819|250909|Mualani,Chasca
+Luna I|250910|250930|Lauma,Nahida
+Luna I|250930|251021|Flins,Yelan
+Luna II|251022|251111|Nefer,Furina
+Luna II|251111|251202|Arlecchino,Zhongli
+Luna III|251203|251223|Durin,Venti
+Luna III|251223|260113|Varesa,Xilonen
+Luna IV|260114|260203|Columbina,Ineffa
+Luna IV|260203|260224|Zibai,Neuvillette
+Luna V|260225|260317|Varka,Flins
+Luna V|260317|260407|Skirk,Escoffier
+Luna VI|260408|260428|Linnea,Chasca
+Luna VI|260428|260519|Lauma,Nefer
+Luna VII|260520|260609|Nicole,Durin
+Luna VII|260609|260630|Lohen,Mavuika
+Luna VIII|260701|260721|Sandrone,Citlali
+Luna VIII|260721|260811|Columbina,Raiden Shogun
+7.0|260812|260901|Odette,Arlecchino
+7.0|260901|260922|Flins,Ineffa
+7.1|260923|261013|Vesna,Vodyanitsa
+7.1|261013|261103|Skirk,Escoffier
+7.2|261104|261124|Mitya,Furina`;
+const WN=`1.0|200928|201018|Aquila Favonia,Amos' Bow
+1.0|201020|201110|Lost Prayer to the Sacred Winds,Wolf's Gravestone
+1.1|201111|201201|Memory of Dust,Skyward Harp
+1.1|201201|201222|Vortex Vanquisher,The Unforged
+1.2|201223|210112|Summit Shaper,Skyward Atlas
+1.2|210112|210202|Skyward Pride,Amos' Bow
+1.3|210203|210223|Primordial Jade Cutter,Primordial Jade Winged-Spear
+1.3|210223|210316|Staff of Homa,Wolf's Gravestone
+1.4|210317|210406|Elegy for the End,Skyward Blade
+1.4|210406|210427|Skyward Harp,Lost Prayer to the Sacred Winds
+1.5|210428|210518|Summit Shaper,Memory of Dust
+1.5|210518|210608|Song of Broken Pines,Aquila Favonia
+1.6|210609|210629|Skyward Pride,Lost Prayer to the Sacred Winds
+1.6|210629|210720|Freedom-Sworn,Skyward Atlas
+2.0|210721|210810|Mistsplitter Reforged,Skyward Spine
+2.0|210810|210831|Thundering Pulse,Skyward Blade
+2.1|210901|210921|Engulfing Lightning,The Unforged
+2.1|210921|211012|Everlasting Moonglow,Primordial Jade Cutter
+2.2|211013|211102|Polar Star,Memory of Dust
+2.2|211102|211123|Staff of Homa,Elegy for the End
+2.3|211124|211214|Freedom-Sworn,Song of Broken Pines
+2.3|211214|220104|Redhorn Stonethresher,Skyward Harp
+2.4|220105|220125|Calamity Queller,Primordial Jade Winged-Spear
+2.4|220125|220215|Vortex Vanquisher,Amos' Bow
+2.5|220216|220308|Kagura's Verity,Primordial Jade Cutter
+2.5|220308|220329|Engulfing Lightning,Everlasting Moonglow
+2.6|220330|220419|Haran Geppaku Futsu,Elegy for the End
+2.6|220419|220531|Mistsplitter Reforged,The Unforged
+2.7|220531|220621|Aqua Simulacra,Primordial Jade Winged-Spear
+2.7|220621|220712|Redhorn Stonethresher,Memory of Dust
+2.8|220713|220802|Freedom-Sworn,Lost Prayer to the Sacred Winds
+2.8|220802|220823|Thundering Pulse,Summit Shaper
+3.0|220824|220909|Hunter's Path,Vortex Vanquisher
+3.0|220909|220927|Everlasting Moonglow,Amos' Bow
+3.1|220928|221014|Staff of the Scarlet Sands,Elegy for the End
+3.1|221014|221101|Key of Khaj-Nisut,Primordial Jade Cutter
+3.2|221102|221118|A Thousand Floating Dreams,Thundering Pulse
+3.2|221118|221206|Kagura's Verity,Polar Star
+3.3|221207|221227|Tulaytullah's Remembrance,Redhorn Stonethresher
+3.3|221227|230117|Engulfing Lightning,Haran Geppaku Futsu
+3.4|230118|230207|Light of Foliar Incision,Primordial Jade Winged-Spear
+3.4|230207|230228|Staff of Homa,Aqua Simulacra
+3.5|230301|230321|Beacon of the Reed Sea,Staff of the Scarlet Sands
+3.5|230321|230411|Calamity Queller,Mistsplitter Reforged
+3.6|230412|230502|A Thousand Floating Dreams,Key of Khaj-Nisut
+3.6|230502|230523|Jadefall's Splendor,Amos' Bow
+3.7|230524|230613|Thundering Pulse,Kagura's Verity
+3.7|230613|230704|Light of Foliar Incision,Freedom-Sworn
+3.8|230705|230725|Song of Broken Pines,Lost Prayer to the Sacred Winds
+3.8|230725|230815|Everlasting Moonglow,Tulaytullah's Remembrance
+4.0|230816|230905|The First Great Magic,Aqua Simulacra
+4.0|230905|230926|Vortex Vanquisher,Polar Star
+4.1|230927|231017|Tome of the Eternal Flow,Staff of Homa
+4.1|231017|231107|Cashflow Supervision,Elegy for the End
+4.2|231108|231128|Splendor of Tranquil Waters,Jadefall's Splendor
+4.2|231128|231219|Staff of the Scarlet Sands,Haran Geppaku Futsu
+4.3|231220|240109|Verdict,Mistsplitter Reforged
+4.3|240109|240130|Engulfing Lightning,Thundering Pulse
+4.4|240131|240220|Crane's Echoing Call,A Thousand Floating Dreams
+4.4|240220|240312|Kagura's Verity,Primordial Jade Winged-Spear
+4.5|240313|240402|Uraku Misugiri,Redhorn Stonethresher
+4.5|240402|240423|Tome of the Eternal Flow,Freedom-Sworn
+4.6|240424|240514|Crimson Moon's Semblance,The First Great Magic
+4.6|240514|240604|Tulaytullah's Remembrance,Jadefall's Splendor
+4.7|240605|240625|Absolution,Light of Foliar Incision
+4.7|240625|240716|Silvershower Heartstrings,Splendor of Tranquil Waters
+4.8|240717|240806|Verdict,Key of Khaj-Nisut
+4.8|240806|240827|Lumidouce Elegy,Aqua Simulacra
+5.0|240828|240917|Surf's Up,Freedom-Sworn
+5.0|240917|241008|Fang of the Mountain King,Engulfing Lightning
+5.1|241009|241029|Peak Patrol Song,Uraku Misugiri
+5.1|241029|241119|A Thousand Floating Dreams,Staff of Homa
+5.2|241120|241210|Astral Vulture's Crimson Plumage,The First Great Magic
+5.2|241210|241231|Tome of the Eternal Flow,Vortex Vanquisher
+5.3|250101|250121|A Thousand Blazing Suns,Starcaller's Watch
+5.3|250121|250211|Crimson Moon's Semblance,Absolution
+5.4|250212|250304|Sunny Morning Sleep-In,Silvershower Heartstrings
+5.4|250304|250325|Splendor of Tranquil Waters,Cashflow Supervision
+5.5|250326|250415|Vivid Notions,Crane's Echoing Call
+5.5|250415|250506|Peak Patrol Song,Elegy for the End
+5.6|250507|250527|Symphonist of Scents,Verdict
+5.6|250527|250617|Fang of the Mountain King,Engulfing Lightning
+5.7|250618|250708|Azurelight,Calamity Queller
+5.7|250708|250729|A Thousand Blazing Suns,Lumidouce Elegy
+5.8|250730|250819|Fractured Halo,Starcaller's Watch
+5.8|250819|250909|Surf's Up,Astral Vulture's Crimson Plumage
+Luna I|250910|250930|Nightweaver's Looking Glass,A Thousand Floating Dreams
+Luna I|250930|251021|Bloodsoaked Ruins,Aqua Simulacra
+Luna II|251022|251111|Reliquary of Truth,Splendor of Tranquil Waters
+Luna II|251111|251202|Crimson Moon's Semblance,Vortex Vanquisher
+Luna III|251203|251223|Athame Artis,The Daybreak Chronicles
+Luna III|251223|260113|Vivid Notions,Peak Patrol Song
+Luna IV|260114|260203|Nocturne's Curtain Call,Fractured Halo
+Luna IV|260203|260224|Lightbearing Moonshard,Tome of the Eternal Flow
+Luna V|260225|260317|Gest of the Mighty Wolf,Bloodsoaked Ruins
+Luna V|260317|260407|Azurelight,Symphonist of Scents
+Luna VI|260408|260428|Golden Frostbound Oath,Astral Vulture's Crimson Plumage
+Luna VI|260428|260519|Nightweaver's Looking Glass,Reliquary of Truth
+Luna VII|260520|260609|Angelos' Heptades,Athame Artis
+Luna VII|260609|260630|Disaster and Remorse,A Thousand Blazing Suns
+Luna VIII|260701|260721|A Teaspoon of Transcendence,Starcaller's Watch
+Luna VIII|260721|260811|Nocturne's Curtain Call,Engulfing Lightning
+7.0|260812|260901|Whitelake Frostfeather,Crimson Moon's Semblance
+7.0|260901|260922|Bloodsoaked Ruins,Fractured Halo
+7.1|260923|261013|Beyond the Chrysalis,Hymn of the Maelstrom
+7.1|261013|261103|Azurelight,Symphonist of Scents
+7.2|261104|261124|Starsealed Edict,Splendor of Tranquil Waters`;
+
+const ASSET='../roster/assets-optimized/';
+const CR_START='2024-08-28';
+const MAXP={char:90,weapon:80,standard:90,novice:90};
+const POOL={char:'Character Event',weapon:'Weapon Event',standard:'Standard',novice:"Beginners'"};
+const EL=['pyro','hydro','anemo','electro','dendro','cryo','geo'];
+const LUNA={'Luna I':'6.0','Luna II':'6.1','Luna III':'6.2','Luna IV':'6.3','Luna V':'6.4','Luna VI':'6.5','Luna VII':'6.6','Luna VIII':'6.7'};
+const verLabel=v=>v?`v${v}${LUNA[v]?` (${LUNA[v]})`:''}`:'';
+const PT={char:[50,75],weapon:[40,65],standard:[50,75],novice:[50,75]};
+const TITLE={'Venti':'Ballad in Goblets','Klee':'Sparkling Steps','Tartaglia':'Farewell of Snezhnaya','Zhongli':'Gentry of Hermitage','Albedo':'Secretum Secretorum','Ganyu':'Adrift in the Harbor','Xiao':'Invitation to Mundane Life','Keqing':'Dance of Lanterns','Hu Tao':'Moment of Bloom','Eula':'Born of Ocean Swell','Kaedehara Kazuha':'Leaves in the Wind','Kamisato Ayaka':"The Heron's Court",'Yoimiya':'Tapestry of Golden Flames','Raiden Shogun':'Reign of Serenity','Sangonomiya Kokomi':'Drifting Luminescence','Arataki Itto':"Oni's Royale",'Shenhe':'The Transcendent One Returns','Yae Miko':'Everbloom Violet','Kamisato Ayato':'Azure Excursion','Yelan':'Discerner of Enigmas','Tighnari':'Viridescent Vigil','Cyno':'Twilight Arbiter','Nilou':'Twirling Lotus','Nahida':"The Moongrass' Enlightenment",'The Wanderer':'From Ashes Reborn','Alhaitham':'Caution in Confidence','Dehya':'Auric Blaze','Baizhu':'Immaculate Pulse','Lyney':'Conjuring Chiaroscuro','Neuvillette':'Decree of the Deeps','Wriothesley':'Tempestuous Destiny','Furina':'Chanson of Many Waters','Navia':'In the Name of the Rosula','Xianyun':'The Crane Soars Skyward','Chiori':'Of Silken Clouds Woven','Arlecchino':"The Hearth's Ashen Shadow",'Clorinde':'Illuminating Lightning','Sigewinne':'Romaritime Meluserenity','Emilie':'Ambrosial Essence','Mualani':'Sharktacular Surfari','Kinich':'Seeker of Flame-Wrought Secrets','Xilonen':"Forgefire's Blessing",'Chasca':"Piercing Shot's Crimson Wake",'Mavuika':'Ancient Flame Ablaze','Citlali':"Starry Night's Whispers",'Yumemizuki Mizuki':"Dawn's Drifting Reverie",'Varesa':'Cornucopia of Contention','Escoffier':'La Chanson Cerise','Skirk':"Void Star's Advent",'Ineffa':'Astral Actuation','Lauma':'Moonsong of the Groves','Flins':'The Lone Light Knocks at Night','Nefer':'Temptation of the Crimson Sands','Durin':'Rubedo, of White Stone Born','Columbina':'Somnias a Luna','Zibai':'Harmonious Abundance','Varka':"The Northerly Wind's Song of Triumph",'Linnea':'Ya-hoho! Compendium','Nicole':"Angel's Reverie",'Lohen':'Frostedge Nocturne','Sandrone':'To the Looking-Glass the Mademoiselle Said','Odette':"Swan's Shadow in Silken Ice",'Vesna':'When Warm Winds Cavort','Vodyanitsa':'Surging Ballad'};
+const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const cap=s=>s?s[0].toUpperCase()+s.slice(1):'';
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmtD=d=>d?`${+d.slice(8,10)} ${MON[+d.slice(5,7)-1]} ${d.slice(0,4)}`:'';
+const dmy=d=>`${d.slice(8,10)}/${d.slice(5,7)}/${d.slice(2,4)}`;
+const initials=n=>String(n).replace(/[^A-Za-z ]/g,'').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+function norm(s){return String(s??'').toLowerCase().replace(/[’‘`]/g,"'").replace(/[^a-z0-9']+/g,' ').trim()}
+function addDays(d,n){const t=new Date(d+'T00:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10)}
+function days(a,b){return Math.round((Date.parse(b)-Date.parse(a))/864e5)}
+const toggleIn=(a,v)=>{const i=a.indexOf(v);i<0?a.push(v):a.splice(i,1)};
+const LS={get(k,d){try{return JSON.parse(localStorage.getItem('gwl:'+k))??d}catch{return d}},
+  set(k,v){try{localStorage.setItem('gwl:'+k,JSON.stringify(v))}catch{toast('Browser storage is full — data kept for this session only')}}};
+let tT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2600)}
+
+/* ---------- reference data ---------- */
+const lst=x=>Array.isArray(x)?x:String(x||'').split(/\r?\n|;/);
+const d6=s=>{s=String(s).trim();return s.includes('-')?s:`20${s.slice(0,2)}-${s.slice(2,4)}-${s.slice(4,6)}`};
+const banners=x=>lst(x).map(e=>Array.isArray(e)?e:String(e).trim().split('|')).filter(a=>a.length>=4)
+  .map(([v,s,e,f])=>({v:String(v).trim(),s:d6(s),e:d6(e),f:(Array.isArray(f)?f:String(f).split(',')).map(t=>String(t).trim()).filter(Boolean)}))
+  .sort((a,b)=>a.s<b.s?-1:1);
+const CB=banners(BN), WB=banners(WN);
+const CH=new Map();SEED.forEach(([id,name,el,wt,r])=>CH.set(norm(name),{id,name,el:String(el).toLowerCase(),wt,r:+r}));
+const VERS=[];{const m=new Map();CB.forEach(b=>{const o=m.get(b.v);if(!o)m.set(b.v,{v:b.v,s:b.s,e:b.e});else{if(b.s<o.s)o.s=b.s;if(b.e>o.e)o.e=b.e}});VERS.push(...m.values())}
+const _fc=new Map();
+function findChar(n){const k=norm(n);if(_fc.has(k))return _fc.get(k);let c=CH.get(k)||null;
+  if(!c&&k)for(const [kk,v] of CH){if(kk.endsWith(' '+k)||k.endsWith(' '+kk)||kk.startsWith(k+' ')){c=v;break}}
+  _fc.set(k,c);return c}
+const PERM=new Set(["Amos' Bow",'Aquila Favonia','Lost Prayer to the Sacred Winds','Primordial Jade Winged-Spear','Skyward Atlas','Skyward Blade','Skyward Harp','Skyward Pride','Skyward Spine',"Wolf's Gravestone"].map(norm));
+function wbIdx(d){let id=-1;WB.forEach((b,i)=>{if(b.s<=d)id=i});return id}
+function verOf(d){let v='';for(const b of CB){if(b.s<=d)v=b.v;else break}return v}
+function isFeat(p){const L=p.pool==='char'?CB:WB,k=norm(p.name);
+  for(const b of L){if(b.s<=addDays(p.date,1)&&addDays(b.e,1)>=p.date)for(const f of b.f){const nf=norm(f);if(nf===k||k.endsWith(' '+nf)||nf.endsWith(' '+k))return true}}
+  if(p.banner){const b=norm(p.banner);if(b&&(b.includes(k)||k.includes(b)))return true}
+  return false}
+
+/* ---------- state ---------- */
+const S={docx:LS.get('docx',[]),paimon:LS.get('paimon',[]),crMarks:LS.get('crMarks',[]),crUser:LS.get('crUser',{}),wUser:LS.get('wUser',{}),tlPool:'all',
+  view:'overview',tlNewest:true,
+  f:{pools:['char','weapon','standard','novice'],from:'',to:''},
+  col:{r:[5,4],type:'all',el:'all',sort:'count',q:''},
+  log:{r:[],q:'',types:[],els:[],newest:true,limit:300},histPool:'char'};
+let D={pools:{},all:[]};
+
+/* ---------- import: paimon.moe xlsx ---------- */
+async function readXlsx(file){
+  const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true});
+  const map={'Character Event':'char','Weapon Event':'weapon','Standard':'standard',"Beginners' Wish":'novice'};
+  const rows=[];
+  for(const [sh,pool] of Object.entries(map)){const ws=wb.Sheets[sh];if(!ws)continue;
+    XLSX.utils.sheet_to_json(ws,{defval:''}).forEach((x,i)=>{
+      const name=String(x.Name||'').trim();let t=x.Time;if(!name||!t)return;
+      if(t instanceof Date)t=`${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())} ${pad(t.getHours())}:${pad(t.getMinutes())}:${pad(t.getSeconds())}`;
+      t=String(t).trim();const isC=x.Type==='Character',c=isC?findChar(name):null;
+      rows.push({src:'paimon',pool,name:c?c.name:name,type:isC?'Character':'Weapon',r:+x['⭐']||3,date:t.slice(0,10),time:t,banner:String(x.Banner||''),ord:i});
+    })}
+  if(!rows.length)throw new Error('No wish sheets found — is this a paimon.moe export?');
+  return rows}
+
+/* ---------- import: personal .docx (not advertised in the UI) ---------- */
+async function readDocx(file){
+  const zip=await JSZip.loadAsync(await file.arrayBuffer());
+  const doc=new DOMParser().parseFromString(await zip.file('word/document.xml').async('string'),'application/xml');
+  const lines=[];
+  for(const p of doc.getElementsByTagNameNS(W,'p')){
+    let cur={text:'',segs:[]};const push=()=>{lines.push(cur);cur={text:'',segs:[]}};
+    for(const r of p.getElementsByTagNameNS(W,'r')){
+      const rp=r.getElementsByTagNameNS(W,'rPr')[0],bEl=rp?.getElementsByTagNameNS(W,'b')[0],bv=bEl?.getAttributeNS(W,'val');
+      const b=!!bEl&&bv!=='0'&&bv!=='false';
+      for(const ch of r.childNodes){if(ch.localName==='t'){cur.text+=ch.textContent;cur.segs.push({t:ch.textContent,b})}else if(ch.localName==='tab')cur.text+='\t';else if(ch.localName==='br')push()}
+    }
+    push()}
+  return lines}
+const ROW=/^\*?\s*(\d{1,3})\s+(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})\s+(.+)$/;
+function interpretDocx(lines,fname){
+  if(lines.some(l=>l.text.includes('✨')))return{kind:'summary',marks:crMarksFrom(lines)};
+  const fn=fname.toLowerCase(),file=fn.includes('weapon')?'weapon':/standard|novice|beginner/.test(fn)?'standard':'char';
+  let pool=file,banner='',ord=0;const rows=[];
+  for(const l of lines){
+    const t=l.text.replace(/\u00a0/g,' ').replace(/\t/g,' ').trim();
+    if(!t||t==='q'||/^[-–—_=]{5,}$/.test(t))continue;
+    const m=t.match(ROW);
+    if(!m){if(file==='standard'){if(/novice|beginner/i.test(t))pool='novice';else if(/standard|wanderlust/i.test(t))pool='standard'}
+      const h=t.match(/^[“"](.+?)[”"]$/);if(h)banner=h[1].trim();continue}
+    let [,,dd,mm,yy,raw]=m;yy=yy.length===2?'20'+yy:yy;raw=raw.trim();
+    let r=/^[*“"|].+[*”"|]$/.test(raw)?5:3;
+    const name=raw.replace(/[*“”"|]/g,'').replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();if(!name)continue;
+    if(r<5&&l.segs.some(s=>s.b&&/[A-Za-z]/.test(s.t)))r=4;
+    const c=findChar(name);
+    rows.push({src:'docx',file,pool,banner:pool==='char'||pool==='weapon'?banner:'',name:c?c.name:name,type:c?'Character':'Weapon',r,date:`${yy}-${pad(mm)}-${pad(dd)}`,ord:ord++});
+  }
+  return{kind:'log',file,rows}}
+function crMarksFrom(lines){const marks=[],fives=[...CH.values()].filter(c=>c.r===5);
+  lines.forEach((l,i)=>{if(!l.text.includes('✨'))return;let name=null,date=null;
+    for(let j=i;j>=Math.max(0,i-8)&&!(name&&date);j--){const t=lines[j].text,nt=norm(t);
+      if(!name){let best=null;for(const c of fives)if(nt.includes(norm(c.name))&&(!best||c.name.length>best.name.length))best=c;if(best)name=best.name}
+      if(!date){const dm=t.match(/(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})/);if(dm){let[,d,mo,y]=dm;y=y.length===2?'20'+y:y;date=`${y}-${pad(mo)}-${pad(d)}`}}}
+    if(name&&date)marks.push({name,date})});
+  return marks}
+
+/* ---------- build derived data ---------- */
+function crFor(p,marks){if(p.key in S.crUser)return S.crUser[p.key];let best=null,bd=99;
+  for(const m of marks){if(m.used||m.name!==p.name)continue;const d=Math.abs(days(m.date,p.date));if(d<bd&&d<=40){bd=d;best=m}}
+  if(best){best.used=true;return true}return false}
+function build(){
+  const pools={};
+  for(const k of Object.keys(POOL)){
+    const px=S.paimon.filter(p=>p.pool===k).sort((a,b)=>a.time<b.time?-1:a.time>b.time?1:a.ord-b.ord);
+    const cut=px[0]?.date;
+    pools[k]=[...S.docx.filter(p=>p.pool===k&&(!cut||p.date<cut)),...px].map(p=>({...p}))}
+  const marks=S.crMarks.map(m=>({...m,used:false}));
+  const seen={};
+  for(const [pool,L] of Object.entries(pools)){let c5=0,c4=0,guar=false,ctr=1,wprev=null,k5=0;
+    L.forEach((p,i)=>{c5++;c4++;p.n=i+1;p.p5=c5;p.p4=c4;p.ver=verOf(p.date);{const b=`${p.name}|${p.date}`,o=seen[b]=(seen[b]??-1)+1;p.key=o?`${b}#${o}`:b}
+      if(p.r===4)c4=0;if(p.r!==5)return;c5=0;c4=0;p.k5=++k5;
+      if(pool==='weapon'){p.feat=isFeat(p);const off=!p.feat&&PERM.has(norm(p.name)),bid=wbIdx(p.date),m=S.wUser[p.key];
+        p.out=off?'off':(p.feat&&wprev&&wprev.lost&&wprev.bid===bid&&bid>=0)?'guar':!p.feat?'feat':m==='win'?'win':m==='lose'?'lose':'feat';
+        wprev={lost:p.out==='off'||p.out==='lose',bid};return}
+      if(pool!=='char')return;
+      p.feat=isFeat(p);const era=p.date>=CR_START;p.c0=era?ctr:null;
+      if(guar){p.out='guar';guar=false}
+      else if(!p.feat){p.out='lose';guar=true;if(era)ctr=Math.min(3,ctr+1)}
+      else if(era&&crFor(p,marks)){p.out='cr';ctr=1}
+      else{p.out='win';if(era)ctr=Math.max(0,ctr-1);p.maybeCR=era&&p.c0>=2&&!(p.key in S.crUser)}
+      p.c1=era?ctr:null})}
+  D={pools,all:Object.values(pools).flat().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0)}}
+function pending(){return{c:D.pools.char.filter(p=>p.r===5&&p.maybeCR).length,w:D.pools.weapon.filter(p=>p.r===5&&p.out==='feat').length}}
+function filtered(){const{pools,from,to}=S.f;return D.all.filter(p=>pools.includes(p.pool)&&(!from||p.date>=from)&&(!to||p.date<=to))}
+function groups(arr){const m=new Map();arr.forEach(p=>{let g=m.get(p.name);if(!g){g={name:p.name,type:p.type,r:p.r,pulls:[]};m.set(p.name,g)}g.pulls.push(p)});
+  return[...m.values()].map(g=>({...g,n:g.pulls.length,first:g.pulls[0].date,last:g.pulls.at(-1).date}))}
+const consLabel=x=>x.type==='Character'?`C${Math.min(6,x.n-1)}${x.n>7?` +${x.n-7}`:''}`:`R${Math.min(5,x.n)}${x.n>5?` +${x.n-5}`:''}`;
+
+/* ---------- UI atoms ---------- */
+function face(p,mode){if(p.type!=='Character')return'';const c=findChar(p.name),ini=esc(initials(p.name));
+  if(!c)return`<span class="pf r${p.r}"><b>${ini}</b></span>`;
+  const dir=(mode==='row'&&p.r<5)||mode==='log'?'avatarside':'avataricon';
+  return`<span class="pf r${p.r} ${dir}"><img loading="lazy" decoding="async" alt="" src="${ASSET}${dir}/${encodeURIComponent(c.id)}.webp" onerror="this.outerHTML='<b>${ini}</b>'"></span>`}
+const statb=(k,v,s,a)=>`<button class="stat clk" data-act="pityBin" data-v="${a}"><div class="k">${k}</div><div class="v n">${v}</div><div class="s">${s}</div></button>`;
+const stat=(k,v,s)=>`<div class="stat"><div class="k">${k}</div><div class="v n">${v}</div><div class="s">${s}</div></div>`;
+const fact=(k,v)=>`<div class="fact"><div class="k">${k}</div><div class="v n">${v}</div></div>`;
+const OUT={win:['win','Won 50/50'],lose:['lose','Lost 50/50'],guar:['guar','Guaranteed'],cr:['cr','✨ Radiance'],feat:['feat','Limited weapon'],off:['lose','Lost']};
+const outBadge=p=>OUT[p.out]?`<span class="bd ${OUT[p.out][0]}">${OUT[p.out][1]}</span>`:'';
+const pityCol=(n,pool)=>{const[a,b]=PT[pool]||PT.char;return n<=a?'var(--win)':n<=b?'var(--gold)':'var(--lose)'};
+const ELO=['anemo','geo','electro','dendro','hydro','pyro','cryo'];
+const eli=e=>`<span class="eli" style="--c:var(--${e})"><img alt="" src="${ASSET}icons_yatta/${e}.webp" onerror="this.replaceWith(Object.assign(document.createElement('i'),{className:'edot'}))"></span>`;
+const tog=(a,v,n)=>{const i=a.indexOf(v);i>=0?a.splice(i,1):a.push(v);if(a.length>=n)a.length=0};
+function phaseOf(d){const v=verOf(d),st=[...new Set(CB.filter(b=>b.v===v).map(b=>b.s))].sort();return st.length>1&&d>=st[1]?2:1}
+function looseChar(n){const c=findChar(n);if(c)return c;const t=norm(n).replace(/ /g,'');if(!t)return null;
+  for(const x of CH.values()){const k=norm(x.name).replace(/ /g,'');if(k===t||k.endsWith(t)||k.startsWith(t)||t.endsWith(k))return x}return null}
+const TITLEV=new Set(Object.values(TITLE).map(norm));
+function bannerName(p){
+  if(p.pool==='weapon')return'Epitome Invocation';
+  if(p.pool==='standard')return'Wanderlust Invocation';
+  if(p.pool==='novice')return"Beginners' Wish";
+  const b=p.banner||'';if(!b)return'Character Event';
+  if(TITLEV.has(norm(b)))return b;
+  const c=looseChar(b);return c&&TITLE[c.name]?TITLE[c.name]:b}
+function verTxt(p){if(!p.ver||p.pool==='standard'||p.pool==='novice')return'';
+  return verLabel(p.ver)+(p.pool==='char'||p.pool==='weapon'?` · Phase ${phaseOf(p.date)}`:'')}
+const bannerLine=p=>[bannerName(p),verTxt(p)].filter(Boolean).join(' · ');
+
+/* ---------- views ---------- */
+function filterBar(){const cnt=k=>D.pools[k].length;
+  return Object.keys(POOL).filter(cnt).map(k=>`<button class="chip" data-act="pool" data-v="${k}" aria-pressed="${S.f.pools.includes(k)}">${POOL[k]} <small class="n">${cnt(k).toLocaleString()}</small></button>`).join('')
+  +`<span class="rng"><span class="lbl">Range</span>`
+  +(VERS.length?`<select class="field" data-in="vfrom"><option value="">From version</option>${VERS.map(v=>`<option value="${esc(v.v)}" ${S.f.from===v.s?'selected':''}>${esc(verLabel(v.v))}</option>`).join('')}</select><select class="field" data-in="vto"><option value="">To version</option>${VERS.map(v=>`<option value="${esc(v.v)}" ${S.f.to===v.e?'selected':''}>${esc(verLabel(v.v))}</option>`).join('')}</select>`:'')
+  +`<input type="date" class="field" data-in="from" value="${S.f.from}"><span class="meta">–</span><input type="date" class="field" data-in="to" value="${S.f.to}">`
+  +(S.f.from||S.f.to||S.f.pools.length<Object.keys(POOL).length?`<button class="chip" data-act="resetRange">Reset</button>`:'')+`</span>`}
+
+function overview(){
+  const F=filtered(),f5=F.filter(p=>p.r===5),f4=F.filter(p=>p.r===4);
+  const avg=f5.length?(f5.reduce((s,p)=>s+p.p5,0)/f5.length).toFixed(1):'–';
+  const avg4=f4.length?(f4.reduce((s,p)=>s+p.p4,0)/f4.length).toFixed(1):'–';
+  const ext=fn=>{if(!f5.length)return null;const t=fn(...f5.map(p=>p.p5)),L=f5.filter(p=>p.p5===t);return{t,last:L.at(-1),more:L.length-1}};
+  const lo=ext(Math.min),hi=ext(Math.max),tie=x=>x.more?` · +${x.more} more`:'';
+  const n3=F.length-f5.length-f4.length,pc=x=>(x/Math.max(1,F.length)*100).toFixed(1)+'%';
+  const mix=F.length?`<div class="mix"><div class="seg"><i style="width:${f5.length/F.length*100}%;background:var(--r5)"></i><i style="width:${f4.length/F.length*100}%;background:var(--r4)"></i><i style="flex:1;background:rgba(255,255,255,.2)"></i></div><div class="mixl"><span><i style="background:var(--r5)"></i>5★ ${pc(f5.length)} of wishes</span><span><i style="background:var(--r4)"></i>4★ ${pc(f4.length)}</span><span><i style="background:rgba(255,255,255,.35)"></i>3★ ${pc(n3)}</span></div></div>`:'';
+  let h=`<div class="ovhead"><h2 class="ttl">Overview</h2></div>`;
+  h+='<div class="ov">';
+  h+=`<section class="card"><div class="stats">${stat('Wishes',F.length.toLocaleString(),`≈ ${(F.length*160).toLocaleString()} Primogems`)}${stat('5★',f5.length,`Average pity ${avg}`)}${stat('4★',f4.length,`Average pity ${avg4}`)}${lo?statb('Luckiest 5★',lo.t,`${esc(lo.last.name)} · ${fmtD(lo.last.date)}${tie(lo)}`,'lo'):''}${hi?statb('Highest pity',hi.t,`${esc(hi.last.name)} · ${fmtD(hi.last.date)}${tie(hi)}`,'hi'):''}</div>${mix}</section>`;
+  h+=pityPanel();
+  h+=fiftyPanel(F);
+  h+=`<section class="card s7"><h2>Wishes per month <small>gold dot = a 5★ that month</small></h2>${monthly(F)}</section>`;
+  {const hp=['char','weapon','standard'],cur=hp.includes(S.histPool)?S.histPool:hp[0];S.histPool=cur;const SH={char:'Character',weapon:'Weapon',standard:'Standard'};
+    h+=`<section class="card s5"><h2>5★ pity spread <small>tap a bar</small></h2><div class="hchips">${hp.map(k=>`<button class="chip sm" data-act="histPool" data-v="${k}" aria-pressed="${k===cur}">${SH[k]}</button>`).join('')}</div>${hist(D.pools[cur].filter(p=>p.r===5),cur)}</section>`}
+  h+=loyalPanel(F);
+  return h+'</div>'}
+function pityPanel(){const C=2*Math.PI*32;
+  const items=['char','weapon','standard'].map(k=>{const L=D.pools[k]||[];let n=0;for(let i=L.length-1;i>=0&&L[i].r!==5;i--)n++;
+    const last=[...L].reverse().find(p=>p.r===5),max=MAXP[k],fr=Math.min(1,n/max),col=pityCol(n,k);
+    const tag=k==='char'?(last?.out==='lose'?'<span class="bd guar">Guaranteed next</span>':'<span class="bd">50/50 next</span>'):'';
+    return`<div class="ring"><div class="rw"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" class="trk"/><circle cx="38" cy="38" r="32" class="val" stroke="${col}" stroke-dasharray="${(C*fr).toFixed(1)} ${C.toFixed(1)}"/></svg><b class="n" style="color:${col}">${n}</b></div><div><div class="rl">${POOL[k]}</div><div class="meta">of ${max} · last 5★ ${last?esc(last.name):'—'}</div>${tag}</div></div>`}).join('');
+  return`<section class="card"><h2>Current pity</h2><div class="rings">${items}</div></section>`}
+function fiftyPanel(F){
+  const pd=pending();
+  if(pd.c||pd.w){const parts=[pd.c?`${pd.c} character win${pd.c>1?'s':''} to mark as Radiance or not`:'',pd.w?`${pd.w} limited weapon${pd.w>1?'s':''} to mark Won or Lost`:''].filter(Boolean).join(' · ');
+    return`<section class="card"><h2>50/50 record <small>limited banners</small></h2><div class="lock" style="margin:0"><b>Almost there</b><p class="meta">The record appears once every Radiance candidate and every limited weapon is marked in the 5★ Timeline. Still to go: ${parts}.</p><button class="btn ghost" data-act="view" data-v="timeline">Open 5★ Timeline</button></div></section>`}
+  const c=F.filter(p=>p.pool==='char'&&p.r===5),n=o=>c.filter(p=>p.out===o).length;
+  const w=n('win'),l=n('lose'),cr=n('cr'),g=n('guar'),t=w+l+cr,pct=x=>t?Math.round(x/t*100)+'%':'–';
+  const last=[...(D.pools.char||[])].reverse().find(p=>p.r===5&&p.c1!=null),ctr=last?last.c1:1;
+  const tile=(v,lab,col)=>`<div><b class="n"${col?` style="color:${col}"`:''}>${v}</b><span>${lab}</span></div>`;
+  const chr=c.length?`<div><div class="rl" style="margin-bottom:12px">Character Event</div>
+  <div class="ff">${tile(w,'Won','var(--win)')}${tile(l,'Lost','var(--lose)')}<div><b class="n cr-t">${cr}</b><span>✨ Radiance</span></div>${tile(g,'Guaranteed','var(--guar)')}</div>
+  <div class="seg">${t?`<i style="width:${w/t*100}%;background:var(--win)"></i><i style="width:${cr/t*100}%;background:var(--rainbow)"></i><i style="width:${l/t*100}%;background:var(--lose)"></i>`:''}</div>
+  <div class="meta">Got the featured 5★ on a 50/50: <b>${pct(w+cr)}</b> · clean wins: <b>${pct(w)}</b></div>
+  ${last?`<div class="crbox"><div><div class="rl">Capturing Radiance counter</div><div class="meta">Win −1 · Lose +1 · counted from your marks</div></div><div class="pips">${[1,2,3].map(i=>`<i class="${i<=ctr?'on':''}"></i>`).join('')}<b class="n">${ctr}</b></div></div>`:''}</div>`:'';
+  const wk=F.filter(p=>p.pool==='weapon'&&p.r===5),wn=o=>wk.filter(p=>p.out===o).length;
+  const ww=wn('win'),wl=wn('lose')+wn('off'),wg=wn('guar'),wf=wn('feat'),wt=ww+wl;
+  const wblk=wk.length?`<div><div class="rl" style="margin-bottom:12px">Weapon Event</div>
+  <div class="ff">${tile(ww,'Won','var(--win)')}${tile(wl,'Lost','var(--lose)')}${tile(wg,'Guaranteed','var(--guar)')}${tile(wf,'Not marked','var(--mu)')}</div>
+  <div class="seg">${wt?`<i style="width:${ww/wt*100}%;background:var(--win)"></i><i style="width:${wl/wt*100}%;background:var(--lose)"></i>`:''}</div>
+  <div class="meta">Won <b>${wt?Math.round(ww/wt*100)+'%':'–'}</b> of the ${wt} you counted${wf?` · ${wf} still to mark in the 5★ Timeline`:''}</div></div>`:'';
+  if(!chr&&!wblk)return'';
+  return`<section class="card"><h2>50/50 record <small>limited banners</small></h2><div class="cols2${chr&&wblk?'':' one'}">${chr}${wblk}</div></section>`}
+function loyalPanel(F){
+  const g=groups(F.filter(p=>p.r===4&&p.type==='Character')).sort((a,b)=>b.n-a.n).slice(0,10),mx=g[0]?.n||1;
+  const w=groups(F.filter(p=>p.r===4&&p.type==='Weapon')).sort((a,b)=>b.n-a.n).slice(0,10),mw=w[0]?.n||1;
+  const row=(x,i,m,ch)=>{const c=ch?findChar(x.name):null;return`<button class="ly${c?' has-el':''}${ch?'':' nof'}"${c?` style="--ec:var(--${c.el})"`:''} data-act="item" data-v="${esc(x.name)}"><span class="rk">${i+1}</span>${face(x,'row')}<span><span class="lyn">${esc(x.name)}</span><span class="bar"><i style="width:${x.n/m*100}%"></i></span></span><span class="c n">${x.n}</span></button>`};
+  return`<section class="card s7"><h2>Most pulled 4★ <small>characters</small></h2><div class="loyal">${g.map((x,i)=>row(x,i,mx,true)).join('')||'<p class="meta">No 4★ characters in this range.</p>'}</div></section>
+  <section class="card s5"><h2>Most pulled 4★ <small>weapons</small></h2><div class="loyal">${w.map((x,i)=>row(x,i,mw)).join('')||'<p class="meta">None in this range.</p>'}</div></section>`}
+function monthly(F){if(!F.length)return'<p class="meta">No wishes in this range.</p>';
+  const m=new Map();F.forEach(p=>{const k=p.date.slice(0,7),o=m.get(k)||{n:0,f:0};o.n++;if(p.r===5)o.f++;m.set(k,o)});
+  const keys=[...m.keys()].sort(),end=keys.at(-1),all=[];let[y,mo]=keys[0].split('-').map(Number);
+  for(;;){const k=`${y}-${pad(mo)}`;all.push(k);if(k>=end)break;if(++mo>12){mo=1;y++}}
+  const few=all.length<=14,max=Math.max(1,...all.map(k=>m.get(k)?.n||0)),step=few?38:640/all.length,gap=few?14:Math.max(1,step*.3),bw=step-gap,H=few?150:230,top=40,Wd=Math.max(60,all.length*step),dr=Math.min(3.4,bw/2+.6);return`<svg class="chart" viewBox="0 0 ${Wd} ${H+(few?31:18)}" preserveAspectRatio="xMinYMax meet" style="${few?'height:180px;':''}overflow:visible">${all.map((k,i)=>{const o=m.get(k)||{n:0,f:0},h=o.n?Math.max(3,o.n/max*(H-top)):0,x=i*step;
+    const dots=Array.from({length:Math.min(o.f,4)},(_,j)=>`<circle cx="${x+bw/2}" cy="${H-h-7-j*8}" r="${dr}" class="d5"/>`).join('');
+    return`<g><title>${MON[+k.slice(5)-1]} ${k.slice(0,4)}: ${o.n} wishes${o.f?` · ${o.f}× 5★`:''}</title>${o.n?`<rect x="${x}" y="${H-h}" width="${bw}" height="${h}" rx="2" class="b"/>`:`<rect x="${x}" y="${H-2}" width="${bw}" height="2" rx="1" class="b0"/>`}${dots}</g>${few?`<text x="${x+bw/2}" y="${H+14}" text-anchor="middle" style="font-size:9px">${MON[+k.slice(5)-1]}</text>${k.endsWith('-01')||i===0?`<text x="${x}" y="${H+27}">${k.slice(0,4)}</text>`:''}`:(k.endsWith('-01')||i===0?`<text x="${x}" y="${H+15}">${k.slice(0,4)}</text>`:'')}`}).join('')}</svg>`}
+function hist(f5,pool){if(!f5.length)return'<p class="meta">No 5★ in this range.</p>';
+  const b=Array(9).fill(0);f5.forEach(p=>b[Math.min(8,Math.floor((p.p5-1)/10))]++);const mx=Math.max(...b),H=100;
+  return`<svg class="chart" viewBox="0 0 270 ${H+18}">${b.map((v,i)=>{const h=v/mx*(H-16),col=pityCol(i*10+5,pool);
+    return`<g class="hit" data-act="pityBin" data-v="${i}"><title>Pity ${i*10+1}–${i*10+10}: ${v}</title><rect x="${i*30}" y="0" width="30" height="${H+18}" fill="transparent"/><rect x="${i*30+3}" y="${H-h}" width="24" height="${Math.max(h,v?2:0)}" rx="3" class="hb" style="fill:${col}"/>${v?`<text x="${i*30+15}" y="${H-h-4}" text-anchor="middle" class="tv">${v}</text>`:''}<text x="${i*30+15}" y="${H+15}" text-anchor="middle">${i*10+10}</text></g>`}).join('')}</svg>`}
+
+function timeline(){const F=filtered().filter(p=>p.r===5&&p.pool!=='novice'&&(S.tlPool==='all'||p.pool===S.tlPool)),L=S.tlNewest?[...F].reverse():F;
+  const chips=[['all','All'],['char','Character'],['weapon','Weapon'],['standard','Standard']].map(([v,t])=>`<button class="chip" data-act="tlPool" data-v="${v}" aria-pressed="${S.tlPool===v}">${t}</button>`).join('');
+  return`<div class="toolbar"><h2 class="ttl">5★ Timeline</h2><span class="tlcount"><b class="n">${F.length}</b> five-star${F.length===1?'':'s'}</span><span class="sep"></span>${chips}<span style="margin-left:auto"></span>${(pd=>pd.c+pd.w?`<span class="meta"><b style="color:var(--gold)">${pd.c+pd.w}</b> left to mark</span>`:'')(pending())}<button class="chip" data-act="tlOrder">${S.tlNewest?'Newest first':'Oldest first'}</button></div>
+  <p class="meta hint">Radiance (characters) and Won / Lost on limited weapons are marked by you. The site only points out where it could apply.</p>
+  <div class="fives">${L.map(fiveRow).join('')||'<p class="meta">No 5★ in this range.</p>'}</div>`}
+function fiveRow(p){const c=p.type==='Character'?findChar(p.name):null,col=pityCol(p.p5,p.pool);
+  const ctr=p.c0!=null&&p.out!=='guar'?`<div class="ctr n">CR ${p.c0} → ${p.c1}${p.maybeCR?' <b title="Counter was 2–3, so this win could have been Radiance">?</b>':''}</div>`:'';
+  const cu=S.crUser[p.key],btn=p.pool==='char'&&(p.out==='cr'||(p.out==='win'&&p.c0>=2))?`<span class="wm"><button class="${p.out==='cr'?'on w':''}" data-act="crm" data-v="${esc(p.key)}|1">✨ Radiance</button><button class="${p.out==='win'&&cu===false?'on l':''}" data-act="crm" data-v="${esc(p.key)}|0">Not Radiance</button></span>`:'';
+  const m=S.wUser[p.key],wbtn=p.pool==='weapon'&&p.feat&&p.out!=='guar'?`<span class="wm"><button class="${m==='win'?'on w':''}" title="Got the weapon you picked on the Epitomized Path" data-act="wm" data-v="${esc(p.key)}|win">Won</button><button class="${m==='lose'?'on l':''}" title="Got the other limited weapon" data-act="wm" data-v="${esc(p.key)}|lose">Lost</button></span>`:'';
+  return`<div class="five${p.out==='cr'?' is-cr':''}${c?' has-el':''}${p.pool==='weapon'?' wp':''}"${c?` style="--ec:var(--${c.el})"`:''} data-act="item" data-v="${esc(p.name)}">${c?`<span class="nc"><img loading="lazy" alt="" src="${ASSET}namecardalpha/${encodeURIComponent(c.id)}.webp" onerror="this.remove()"></span>`:''}${face(p,'row')||`<span class="ord n">${p.k5}</span>`}
+  <div><div class="nm">${esc(p.name)}</div><div class="meta ell">${esc(bannerLine(p))}<span class="show-m"> · pity ${p.p5}</span></div></div>
+  <div class="meta hide-m n">${fmtD(p.date)}</div>
+  <div class="pity hide-m"><b class="n" style="color:${col}">${p.p5}</b><span class="bar"><i style="width:${Math.min(100,p.p5/MAXP[p.pool]*100)}%;background:${col}"></i></span></div>
+  <div class="bcell">${outBadge(p)}${ctr}${btn}${wbtn}</div></div>`}
+
+function logView(){const l=S.log,dirty=l.r.length||l.types.length||l.els.length||l.q.trim();
+  const ch=(act,v,on,inner)=>`<button class="chip" data-act="${act}" data-v="${v}" aria-pressed="${on}">${inner}</button>`;
+  return`<div class="toolbar"><h2 class="ttl">All wishes</h2>${[5,4,3].map(r=>ch('logR',r,l.r.includes(r),r+'★')).join('')}<span class="sep"></span>${[['Character','Characters'],['Weapon','Weapons']].map(([v,t])=>ch('logType',v,l.types.includes(v),t)).join('')}<span class="sep"></span>${ELO.map(e=>ch('logEl',e,l.els.includes(e),eli(e)+cap(e))).join('')}
+  <input class="field" data-in="logQ" placeholder="Name, year (2024) or patch (6.3)" style="width:250px" value="${esc(l.q)}"><button class="chip${dirty?'':' idle'}" data-act="logReset">Reset filter</button><button class="chip" data-act="order" style="margin-left:auto">${l.newest?'Newest first':'Oldest first'}</button></div><div id="logBody">${logBody()}</div>`}
+function logBody(){const l=S.log;let F=filtered().filter(p=>!l.r.length||l.r.includes(p.r));
+  if(l.types.length)F=F.filter(p=>l.types.includes(p.type));
+  if(l.els.length)F=F.filter(p=>p.type==='Character'&&l.els.includes(findChar(p.name)?.el));
+  if(l.q.trim()){const raw=l.q.trim(),q=norm(raw);
+    if(/^\d{1,4}$/.test(raw))F=F.filter(p=>p.date.startsWith(raw));
+    else if(/^\d+\.\d*$/.test(raw))F=F.filter(p=>{const v=verOf(p.date),pt=LUNA[v]||v;return pt.startsWith(raw)});
+    else F=F.filter(p=>norm(p.name).includes(q))}
+  const dyn=!!(l.r.length||l.types.length||l.els.length||l.q.trim());if(l.newest)F=[...F].reverse();const tot=F.length;F=F.slice(0,l.limit);
+  return`<div class="log"><div class="lr hd"><span class="hm">#</span><span class="hm">Date</span><span></span><span>Item</span><span title="Filter on: each item's own pity. No filter: pull number in the current 5★ cycle.">Pity</span><span class="hm">Banner</span><span class="hm">Type</span></div>
+  ${F.map(p=>{const c=p.type==='Character'&&p.r>=4?findChar(p.name):null,pt=dyn?(p.r===5?p.p5:p.r===4?p.p4:'–'):p.p5;
+    return`<div class="lr r${p.r}${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''}><span class="hm n meta">${p.n}</span><span class="hm n">${fmtD(p.date)}</span>${p.r>=4?(c||p.type==='Character'?face(p,'log'):`<span class="dot r${p.r}"></span>`):'<span class="dot"></span>'}<button class="nmx linky ell" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button><span class="n pt r${p.r}">${pt}</span><span class="hm meta ell">${esc(bannerLine(p))}</span><span class="hm meta">${POOL[p.pool]}</span></div>`}).join('')}</div>
+  ${tot>l.limit?`<button class="btn ghost more" data-act="more">Show more · ${(tot-l.limit).toLocaleString()} left</button>`:''}<p class="meta" style="text-align:center;margin:12px 0 64px">${tot.toLocaleString()} wishes</p>`}
+
+function openPity(kind){
+  const f5=filtered().filter(p=>p.r===5);if(!f5.length&&(kind==='hi'||kind==='lo'))return;let list,title;
+  if(kind==='hi'||kind==='lo'){const t=Math[kind==='hi'?'max':'min'](...f5.map(p=>p.p5));list=f5.filter(p=>p.p5===t);title=`${kind==='hi'?'Highest':'Lowest'} pity · ${t}`}
+  else{const i=+kind,a=i*10+1,b=i===8?999:i*10+10;list=D.pools[S.histPool].filter(p=>p.r===5&&p.p5>=a&&p.p5<=b);title=`${POOL[S.histPool]} · 5★ at pity ${a}${i===8?'+':'–'+b}`}
+  list=[...list].sort((x,y)=>y.p5-x.p5||(x.date<y.date?1:-1));
+  $('#dlgBody').innerHTML=`<div class="dlg"><button class="x" data-act="close" aria-label="Close">✕</button>
+  <div class="dh"><div><div class="meta">Your 5★ wishes</div><h3>${esc(title)}</h3></div><div class="big n">${list.length}<small>${list.length===1?'five-star':'five-stars'}</small></div></div>
+  <div class="db">${list.length?`<table class="occ"><thead><tr><th>Pity</th><th></th><th>Item</th><th>Date</th><th>Banner</th><th>Result</th></tr></thead><tbody>${list.map(p=>`<tr><td class="n">${p.p5}</td><td>${face(p,'log')}</td><td><button class="linky" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button></td><td class="n">${fmtD(p.date)}</td><td>${esc(bannerLine(p))}</td><td>${outBadge(p)}</td></tr>`).join('')}</tbody></table>`:'<p class="meta">Nothing at this pity.</p>'}</div></div>`;
+  const d=$('#dlg');if(!d.open)d.showModal()}
+
+function exportView(){const has=k=>D.pools[k]?.length;
+  return`<div class="ov"><section class="card s6"><h2>Import</h2><p class="meta">Add a newer paimon.moe Excel export to bring your history up to date. It replaces the previous paimon.moe import; your marks are kept. You can also drop a file anywhere on the page.</p>
+  <div class="toolbar"><button class="btn" data-act="pick">Choose a file</button></div>
+  <p class="meta">${D.all.length.toLocaleString()} wishes stored in this browser.</p></section>
+  <section class="card s6"><h2>Backup</h2><p class="meta">Save everything, including your marks, as one file. Import it again to restore.</p>
+  <div class="toolbar"><button class="btn" data-act="backup">Download backup</button><button class="btn ghost danger" data-act="clear">Clear data</button></div></section>
+  <section class="card"><h2>Google Docs export</h2><p class="meta">A clean .docx: a 5★ summary with 50/50 and Radiance results, then every wish grouped by banner and coloured by rarity and element. Upload to Google Drive, then Open with → Google Docs.</p>
+  <div class="toolbar">${Object.keys(POOL).filter(has).map(k=>`<label class="chip"><input type="checkbox" name="xp" value="${k}" checked> ${POOL[k]}</label>`).join('')}<label class="chip"><input type="checkbox" id="x3" checked> Include 3★</label></div>
+  <button class="btn" data-act="docx">Download .docx</button></section></div>`}
+
+/* ---------- item detail ---------- */
+function openItem(name){let F=filtered();if(!F.some(p=>p.name===name))F=D.all;
+  const ps=F.filter(p=>p.name===name);if(!ps.length)return;
+  const p0=ps[0],c=p0.type==='Character'?findChar(name):null,n=ps.length;
+  const same=groups(F.filter(p=>p.r===p0.r&&p.type===p0.type)).sort((a,b)=>b.n-a.n),rank=same.findIndex(x=>x.name===name)+1;
+  const tot=F.filter(p=>p.r===p0.r).length,yrs={};ps.forEach(p=>{const y=p.date.slice(0,4);yrs[y]=(yrs[y]||0)+1});
+  const years=[...new Set(F.map(p=>p.date.slice(0,4)))].sort(),ym=Math.max(...Object.values(yrs));
+  const kind=`${p0.r}★ ${p0.type==='Character'?'character':'weapon'}`;
+  const pity=p=>p.r===5?p.p5:p.p4;
+  $('#dlgBody').innerHTML=`<div class="dlg"><button class="x" data-act="close" aria-label="Close">✕</button>
+  <div class="dh">${c?`<img class="bgimg" alt="" src="${ASSET}namecardalpha/${encodeURIComponent(c.id)}.webp" onerror="this.remove()">`:''}${face(p0,'big')}
+  <div><div class="meta">${'★'.repeat(p0.r)} · ${c?cap(c.el)+' · ':''}${p0.type}</div><h3${c?` style="color:var(--${c.el})"`:''}>${esc(name)}</h3><div class="meta">#${rank} most-pulled ${kind} · ${(n/Math.max(1,tot)*100).toFixed(1)}% of your ${p0.r}★ wishes</div></div>
+  <div class="big n">${n}<small>times</small></div></div>
+  <div class="db"><div class="facts">${fact('First',fmtD(ps[0].date))}${fact('Latest',fmtD(ps.at(-1).date))}${p0.r>=4?fact('Avg pity',(ps.reduce((s,p)=>s+pity(p),0)/n).toFixed(1)):''}</div>
+  <div class="years">${years.map(y=>`<div class="yr"><span class="yb"><i style="height:${(yrs[y]||0)/ym*100}%"></i></span><b class="n">${yrs[y]||0}</b><small>${y}</small></div>`).join('')}</div>
+  <table class="occ"><thead><tr><th>#</th><th>Date</th><th>Banner</th>${p0.r>=4?'<th>Pity</th>':''}${p0.r===5?'<th>Result</th>':''}</tr></thead><tbody>
+  ${ps.map((p,i)=>`<tr><td class="n">${i+1}</td><td class="n">${fmtD(p.date)}</td><td>${esc(bannerName(p))} <span class="meta">${esc(verTxt(p))}</span></td>${p0.r>=4?`<td class="n">${pity(p)}</td>`:''}${p0.r===5?`<td>${outBadge(p)}</td>`:''}</tr>`).join('')}</tbody></table></div></div>`;
+  {const d=$('#dlg');if(!d.open)d.showModal()}}
+
+/* ---------- search ---------- */
+function suggest(q){const box=$('#sugg');if(!q){box.classList.remove('on');return}const k=norm(q);
+  const g=groups(D.all).filter(x=>norm(x.name).includes(k)).sort((a,b)=>b.r-a.r||b.n-a.n).slice(0,8);
+  box.innerHTML=g.map((x,i)=>`<button class="${i?'':'k'}" data-act="pickItem" data-v="${esc(x.name)}">${face(x,'card')}<span>${esc(x.name)}</span><span class="c n">×${x.n}</span></button>`).join('')||'<div class="meta" style="padding:8px">No match</div>';
+  box.classList.add('on')}
+
+/* ---------- .docx export ---------- */
+const XE=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const DOCEL={pyro:'CC3E00',hydro:'007ACC',anemo:'1DAF71',electro:'7A02CA',dendro:'79A413',cryo:'16B0B6',geo:'AE8B0A'};
+function docColor(p){if(p.r===3)return'555555';const c=p.type==='Character'?findChar(p.name):null;if(c&&DOCEL[c.el])return DOCEL[c.el];return p.r===5?'B8860B':'7B4FB5'}
+const wr=(t,o={})=>`<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>${o.b?'<w:b/>':''}${o.c?`<w:color w:val="${o.c}"/>`:''}<w:sz w:val="${o.sz||20}"/></w:rPr><w:t xml:space="preserve">${XE(t)}</w:t></w:r>`;
+const wp=(runs,o={})=>`<w:p><w:pPr>${o.keep?'<w:keepNext/>':''}<w:spacing w:before="${o.b||0}" w:after="${o.a||0}"/></w:pPr>${runs}</w:p>`;
+const wc=(runs,w,fill)=>`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${fill?`<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>`:''}</w:tcPr>${wp(runs,{b:30,a:30})}</w:tc>`;
+const wtr=(cells,hdr)=>`<w:tr>${hdr?'<w:trPr><w:tblHeader/></w:trPr>':''}${cells.join('')}</w:tr>`;
+const wt=(ws,rows)=>`<w:tbl><w:tblPr><w:tblW w:w="${ws.reduce((a,b)=>a+b)}" w:type="dxa"/><w:tblBorders>${['top','left','bottom','right','insideH','insideV'].map(s=>`<w:${s} w:val="single" w:sz="4" w:space="0" w:color="E3DED3"/>`).join('')}</w:tblBorders><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid>${ws.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${rows.join('')}</w:tbl>`;
+const hdrRow=(labels,ws)=>wtr(labels.map((h,i)=>wc(wr(h,{b:true,c:'FFFFFF',sz:18}),ws[i],'2B2F45')),true);
+async function exportDocx(){
+  const pools=$$('input[name=xp]:checked').map(i=>i.value),three=$('#x3').checked;if(!pools.length)return toast('Pick at least one banner type');
+  const TXT={win:'Won 50/50',lose:'Lost 50/50',guar:'Guaranteed',cr:'✨ Capturing Radiance',feat:'Limited weapon (not marked)',off:'Standard weapon · lost'};
+  let b=wp(wr('Genshin Wish History',{sz:44,b:true,c:'1F1A10'}),{a:60})+wp(wr(`Exported ${fmtD(new Date().toISOString().slice(0,10))}`,{c:'888888'}),{a:240});
+  const W5=[600,2700,1700,1200,800,2600],WL=[800,1300,5000,2400];
+  const RC={win:'1E8449',lose:'C0392B',guar:'2E5EAA',cr:'7B3FB5',feat:'B8860B',off:'C0392B'};
+  for(const k of pools){const L=D.pools[k];if(!L.length)continue;const f5=L.filter(p=>p.r===5);
+    b+=wp(wr(POOL[k]+' — 5★ summary',{sz:30,b:true,c:'B8860B'}),{b:240,a:120,keep:true});
+    if(f5.length)b+=wt(W5,[hdrRow(['#','Item','Version','Date','Pity','Result'],W5),...f5.map((p,i)=>wtr([wc(wr(String(i+1)),W5[0]),wc(wr(p.name,{b:true,c:docColor(p)}),W5[1]),wc(wr(verLabel(p.ver)),W5[2]),wc(wr(dmy(p.date)),W5[3]),wc(wr(String(p.p5),p.p5>=75?{b:true,c:'C0392B'}:{}),W5[4]),wc(wr(TXT[p.out]||'',{b:true,c:RC[p.out]}),W5[5],p.out==='cr'?'F1E6FF':p.out==='win'?'EAF7F0':p.out==='guar'?'EAF0FF':p.out==='feat'?'FFF8E1':'FDECEC')]))]);
+    const pending=L.length-(L.findLastIndex(p=>p.r===5)+1);
+    b+=wp(wr(`${L.length.toLocaleString()} wishes · ${f5.length} × 5★ · ${pending} wishes since the last 5★`,{c:'888888',sz:18}),{b:80,a:200})}
+  for(const k of pools){const L=D.pools[k];if(!L.length)continue;
+    b+=`<w:p><w:r><w:br w:type="page"/></w:r></w:p>`+wp(wr(POOL[k]+' — full log',{sz:30,b:true}),{a:120});
+    for(let i=0;i<L.length;){const lab=L[i].banner||'';let j=i;while(j<L.length&&(L[j].banner||'')===lab)j++;
+      const grp=L.slice(i,j),rows=grp.filter(p=>three||p.r>=4),d0=grp[0].date;
+      const feats=k==='char'||k==='weapon'?[...new Set((k==='char'?CB:WB).filter(x=>x.s<=d0&&x.e>=d0).flatMap(x=>x.f))].join(' / '):'';
+      b+=wp(wr(bannerName(grp[0]),{b:true,sz:24,c:k==='char'?'B8860B':k==='weapon'?'7B4FB5':'2E5EAA'})+wr(`   ${verTxt(grp[0])?verTxt(grp[0])+' · ':''}${dmy(d0)} – ${dmy(grp.at(-1).date)} · ${grp.length} wishes`,{c:'888888',sz:18}),{b:200,a:60,keep:true});
+      if(feats)b+=wp(wr('Featured: '+feats,{c:'888888',sz:18}),{a:60,keep:true});
+      if(rows.length)b+=wt(WL,[hdrRow(['Pity','Date','Item','Note'],WL),...rows.map(p=>{const f=p.out==='cr'?'F1E6FF':p.r===5?'FFF4D6':p.r===4?'F7F3FF':'';
+        return wtr([wc(wr(String(p.p5),{c:'888888'}),WL[0],f),wc(wr(dmy(p.date)),WL[1],f),wc(wr(p.r===5?'★ '+p.name:p.name,{b:p.r>=4,c:docColor(p)}),WL[2],f),wc(wr(p.r===5?(TXT[p.out]||'5★'):p.r===4?'4★':'',p.r===5?{b:true,c:RC[p.out]}:{c:'7B4FB5'}),WL[3],f)])})]);
+      i=j}}
+  const zip=new JSZip();
+  zip.file('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+  zip.file('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+  zip.file('word/document.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="${W}"><w:body>${b}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`);
+  dl(await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6},mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}),`wish-history-${new Date().toISOString().slice(0,10)}.docx`);
+  toast('Export ready')}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
+
+/* ---------- ingest ---------- */
+async function ingest(files){
+  for(const f of files){const ext=f.name.split('.').pop().toLowerCase();
+    try{
+      if(ext==='xlsx'){S.paimon=await readXlsx(f);LS.set('paimon',S.paimon);toast(`Imported ${S.paimon.length.toLocaleString()} wishes`)}
+      else if(ext==='docx'){const r=interpretDocx(await readDocx(f),f.name);
+        if(r.kind==='summary'){S.crMarks=r.marks;LS.set('crMarks',r.marks);toast(`Found ${r.marks.length} ✨ marks`)}
+        else{S.docx=S.docx.filter(p=>p.file!==r.file).concat(r.rows);LS.set('docx',S.docx);toast(`Read ${r.rows.length.toLocaleString()} wishes`)}}
+      else if(ext==='json'){const o=JSON.parse(await f.text());if(o.app!=='wish-ledger')throw new Error('This JSON file is not a Wish Ledger backup');
+        ['docx','paimon','crMarks'].forEach(k=>{S[k]=o[k]||[];LS.set(k,S[k])});S.crUser=o.crUser||{};LS.set('crUser',S.crUser);S.wUser=o.wUser||{};LS.set('wUser',S.wUser);toast('Backup restored')}
+      else throw new Error(`Can't read .${ext} files`);
+    }catch(e){console.error(e);toast(e.message||'Could not read '+f.name)}}
+  if(!CB.length)toast('Banner data missing — paste SEED, BN and WN into the file');
+  build();render()}
+
+/* ---------- render + events ---------- */
+const VIEWS={overview,timeline,log:logView,export:exportView};
+function render(){const has=D.all.length>0;
+  $('#empty').hidden=has;$('#app').hidden=!has;$('#tabs').hidden=!has;$('#searchBox').hidden=!has;if(!has)return;
+  $$('#tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.v===S.view)));
+  $('#filters').innerHTML=S.view==='export'?'':filterBar();
+  $('#view').innerHTML=VIEWS[S.view]()}
+const ACT={
+  view:v=>{S.view=v;render();scrollTo(0,0)},
+  pool:v=>{toggleIn(S.f.pools,v);if(!S.f.pools.length)S.f.pools.push(v);render()},
+  resetRange:()=>{S.f.from=S.f.to='';S.f.pools=Object.keys(POOL);render()},
+  colR:v=>{toggleIn(S.col.r,+v);render()},colType:v=>{S.col.type=v;render()},colEl:v=>{S.col.el=S.col.el===v?'all':v;render()},
+  item:v=>openItem(v),
+  pityBin:v=>openPity(v),
+  histPool:v=>{S.histPool=v;render()},
+  logReset:()=>{Object.assign(S.log,{r:[],q:'',types:[],els:[],limit:300});render()},
+  wm:v=>{const i=v.lastIndexOf('|'),k=v.slice(0,i),st=v.slice(i+1);if(S.wUser[k]===st)delete S.wUser[k];else S.wUser[k]=st;LS.set('wUser',S.wUser);build();render()},
+  tlPool:v=>{S.tlPool=v;render()},
+  logType:v=>{tog(S.log.types,v,2);S.log.limit=300;render()},
+  logEl:v=>{tog(S.log.els,v,7);S.log.limit=300;render()},
+  pickItem:v=>{$('#sugg').classList.remove('on');$('#q').value='';openItem(v)},
+  crm:v=>{const i=v.lastIndexOf('|'),k=v.slice(0,i),val=v.slice(i+1)==='1';if(S.crUser[k]===val)delete S.crUser[k];else S.crUser[k]=val;LS.set('crUser',S.crUser);build();render()},
+  cr:v=>{const p=D.all.find(x=>x.key===v);S.crUser[v]=p?.out!=='cr';LS.set('crUser',S.crUser);build();render();toast(S.crUser[v]?'Marked as Capturing Radiance':'Unmarked')},
+  logR:v=>{toggleIn(S.log.r,+v);if(S.log.r.length>=3)S.log.r=[];S.log.limit=300;render()},
+  more:()=>{S.log.limit+=500;$('#logBody').innerHTML=logBody()},
+  order:()=>{S.log.newest=!S.log.newest;render()},
+  tlOrder:()=>{S.tlNewest=!S.tlNewest;render()},
+  docx:()=>exportDocx().catch(e=>{console.error(e);toast('Export failed')}),
+  backup:()=>dl(new Blob([JSON.stringify({app:'wish-ledger',v:1,exported:new Date().toISOString(),docx:S.docx,paimon:S.paimon,crMarks:S.crMarks,crUser:S.crUser,wUser:S.wUser})],{type:'application/json'}),'wish-ledger-backup.json'),
+  pick:()=>$('#file').click(),
+  clear:()=>{if(!confirm('Erase everything this site stored in your browser (wishes, marks, settings)? You will start from zero.'))return;
+    try{Object.keys(localStorage).filter(k=>k.startsWith('gwl:')).forEach(k=>localStorage.removeItem(k))}catch(_){}
+    location.reload()},
+  close:()=>$('#dlg').close()};
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t)return;ACT[t.dataset.act]?.(t.dataset.v,t,e)});
+document.addEventListener('input',e=>{const t=e.target,k=t.dataset.in;if(!k)return;
+  if(k==='colQ'){S.col.q=t.value;$('#colGrid').innerHTML=colGrid()}
+  else if(k==='colSort'){S.col.sort=t.value;$('#colGrid').innerHTML=colGrid()}
+  else if(k==='logQ'){S.log.q=t.value;S.log.limit=300;$('#logBody').innerHTML=logBody();const L=S.log,rb=document.querySelector('[data-act=logReset]');if(rb)rb.classList.toggle('idle',!(L.r.length||L.types.length||L.els.length||L.q.trim()))}
+  else if(k==='from'||k==='to'){S.f[k]=t.value;render()}
+  else if(k==='vfrom'){S.f.from=VERS.find(x=>x.v===t.value)?.s||'';render()}
+  else if(k==='vto'){S.f.to=VERS.find(x=>x.v===t.value)?.e||'';render()}});
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const dlg=$('#dlg');dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});
+  const q=$('#q');
+  q.addEventListener('input',()=>suggest(q.value));
+  q.addEventListener('keydown',e=>{if(e.key==='Enter'){const b=$('#sugg button');if(b)ACT.pickItem(b.dataset.v)}if(e.key==='Escape'){q.value='';suggest('');q.blur()}});
+  q.addEventListener('blur',()=>setTimeout(()=>$('#sugg').classList.remove('on'),150));
+  addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)&&!$('#searchBox').hidden){e.preventDefault();q.focus()}});
+  $('#file').addEventListener('change',e=>{ingest([...e.target.files]);e.target.value=''});
+  let dn=0;const veil=$('#veil');
+  addEventListener('dragenter',e=>{if(e.dataTransfer?.types?.includes('Files')){dn++;veil.classList.add('on')}});
+  addEventListener('dragleave',()=>{if(--dn<=0){dn=0;veil.classList.remove('on')}});
+  addEventListener('dragover',e=>e.preventDefault());
+  addEventListener('drop',e=>{e.preventDefault();dn=0;veil.classList.remove('on');ingest([...e.dataTransfer.files])});
+  build();render()});
+document.getElementById('yr').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
