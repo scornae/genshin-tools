@@ -287,6 +287,23 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .xact{margin-top:auto;padding-top:22px}.xact .btn{display:flex;width:100%;justify-content:center;align-items:center;height:46px;font-size:15px}.xact.l .btn{display:inline-flex;width:auto;padding:0 32px}
 .xsteps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0 0;padding:0;list-style:none;counter-reset:st}.xsteps li{counter-increment:st;padding:14px 16px;border-radius:14px;background:var(--sf2);border:1px solid var(--line);display:flex;flex-direction:column;gap:6px;font-size:16px;font-weight:600}.xsteps li::before{content:counter(st);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:14px var(--dig);background:var(--rainbow);color:#111}.xsteps small{color:var(--mu);font-size:13px;font-weight:400}
 .xdanger{border-color:rgba(239,139,139,.5)!important;background:radial-gradient(120% 90% at 0% 0%,rgba(239,139,139,.14),transparent 60%),linear-gradient(180deg,#140808,#0a0505)!important}.xdanger .xi{background:rgba(239,139,139,.14);border-color:rgba(239,139,139,.5);color:var(--lose)}.xdanger h2{color:var(--lose)}.xclr{background:var(--lose)!important;color:#1a0505!important;border-color:var(--lose)!important;font-weight:700}
+.pf.wimg img{width:auto;height:auto;max-width:92%;max-height:92%;object-fit:contain}
+.pf.nobg{background:none}
+.cats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;width:100%;margin-bottom:18px}.filters .cats{margin-bottom:6px}.filters .rng{margin-left:auto}
+.cat{--cc:var(--gold);position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:16px 16px 12px;border-radius:14px;border:1px solid var(--line2);background:var(--sf2);color:var(--mu);cursor:pointer;text-align:left;overflow:hidden;transition:border-color .15s}
+.cat::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--cc);opacity:.55}.cat .cn{font:600 15px 'Chakra Petch',sans-serif;color:var(--tx);white-space:nowrap}.cat b{font-size:28px;color:var(--cc);line-height:1.1}.cat small{font-size:12px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase}
+.cat:hover{border-color:var(--cc)}.cat[aria-pressed=true]{border-color:var(--cc);background:linear-gradient(180deg,color-mix(in srgb,var(--cc) 22%,transparent),var(--sf2) 85%);box-shadow:0 0 0 1px var(--cc) inset}.cat[aria-pressed=true]::before{opacity:1;height:4px}
+.cat:disabled{opacity:.38;cursor:not-allowed;border-style:dashed;background:transparent}.cat:disabled:hover{border-color:var(--line2)}.cat:disabled::before{opacity:.2}
+.cat[data-k=weapon]{--cc:#a98bff}.cat[data-k=standard]{--cc:var(--guar)}.cat[data-k=chron]{--cc:var(--anemo)}.cat[data-k=novice]{--cc:#9b9b9b}
+.hintrow{display:flex;align-items:center;gap:14px;margin:0 0 14px}.hintrow .hint{margin:0;flex:1}.rings{grid-template-columns:repeat(4,minmax(0,1fr))}.rings .meta{overflow-wrap:anywhere}
+.ovhead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.sbar{gap:10px;margin-bottom:14px}.sbar div{padding:8px 14px}.sbar b{font-size:22px}.sbar span{font-size:11px}
+.sbar b.w{color:var(--win)}.sbar b.l{color:var(--lose)}.sbar b.cr{background:var(--rainbow);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.cat[data-k=chron]{--cc:#35d0e6}
+.kn{display:inline-block;min-width:34px;margin-right:10px;padding:1px 8px;border-radius:8px;background:rgba(233,196,106,.14);color:var(--gold);font-size:14px;text-align:center;vertical-align:1px}
+.cr-t,.sbar b.cr{background:linear-gradient(135deg,#ff4d6d,#ffa63d,#ffe14d,#3fe08a,#3db9ff,#a56bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;display:inline-block;width:fit-content;align-self:flex-start}
+.xh{display:block;margin-bottom:16px}.xh h2{position:relative;margin:0;padding-bottom:14px;font:700 36px/1.1 'Chakra Petch',sans-serif;letter-spacing:.01em;color:#fff}.xh h2::after{content:"";position:absolute;left:0;bottom:0;width:48px;height:4px;border-radius:2px;background:var(--rainbow)}.xdanger .xh h2{color:var(--lose)}.xdanger .xh h2::after{background:var(--lose)}
+.xc .meta{font-size:15.5px;line-height:1.65}.xdrop{padding:44px 24px;gap:10px}.xdrop b{font:600 26px 'Chakra Petch',sans-serif}.xdrop span{font-size:15px}.xact .btn{height:48px;font-size:15.5px}
 </style>
 </head>
 <body>
@@ -732,7 +749,7 @@ const POOL={char:'Character Event',weapon:'Weapon Event',standard:'Standard',chr
 const EL=['pyro','hydro','anemo','electro','dendro','cryo','geo'];
 const LUNA={'Luna I':'6.0','Luna II':'6.1','Luna III':'6.2','Luna IV':'6.3','Luna V':'6.4','Luna VI':'6.5','Luna VII':'6.6','Luna VIII':'6.7'};
 const verLabel=v=>v?`v${v}${LUNA[v]?` (${LUNA[v]})`:''}`:'';
-const PT={char:[50,75],weapon:[40,65],standard:[50,75],novice:[50,75]};
+const PT={char:[50,75],weapon:[40,65],standard:[50,75],chron:[50,75],novice:[50,75]};
 const TITLE={'Venti':'Ballad in Goblets','Klee':'Sparkling Steps','Tartaglia':'Farewell of Snezhnaya','Zhongli':'Gentry of Hermitage','Albedo':'Secretum Secretorum','Ganyu':'Adrift in the Harbor','Xiao':'Invitation to Mundane Life','Keqing':'Dance of Lanterns','Hu Tao':'Moment of Bloom','Eula':'Born of Ocean Swell','Kaedehara Kazuha':'Leaves in the Wind','Kamisato Ayaka':"The Heron's Court",'Yoimiya':'Tapestry of Golden Flames','Raiden Shogun':'Reign of Serenity','Sangonomiya Kokomi':'Drifting Luminescence','Arataki Itto':"Oni's Royale",'Shenhe':'The Transcendent One Returns','Yae Miko':'Everbloom Violet','Kamisato Ayato':'Azure Excursion','Yelan':'Discerner of Enigmas','Tighnari':'Viridescent Vigil','Cyno':'Twilight Arbiter','Nilou':'Twirling Lotus','Nahida':"The Moongrass' Enlightenment",'The Wanderer':'From Ashes Reborn','Alhaitham':'Caution in Confidence','Dehya':'Auric Blaze','Baizhu':'Immaculate Pulse','Lyney':'Conjuring Chiaroscuro','Neuvillette':'Decree of the Deeps','Wriothesley':'Tempestuous Destiny','Furina':'Chanson of Many Waters','Navia':'In the Name of the Rosula','Xianyun':'The Crane Soars Skyward','Chiori':'Of Silken Clouds Woven','Arlecchino':"The Hearth's Ashen Shadow",'Clorinde':'Illuminating Lightning','Sigewinne':'Romaritime Meluserenity','Emilie':'Ambrosial Essence','Mualani':'Sharktacular Surfari','Kinich':'Seeker of Flame-Wrought Secrets','Xilonen':"Forgefire's Blessing",'Chasca':"Piercing Shot's Crimson Wake",'Mavuika':'Ancient Flame Ablaze','Citlali':"Starry Night's Whispers",'Yumemizuki Mizuki':"Dawn's Drifting Reverie",'Varesa':'Cornucopia of Contention','Escoffier':'La Chanson Cerise','Skirk':"Void Star's Advent",'Ineffa':'Astral Actuation','Lauma':'Moonsong of the Groves','Flins':'The Lone Light Knocks at Night','Nefer':'Temptation of the Crimson Sands','Durin':'Rubedo, of White Stone Born','Columbina':'Somnias a Luna','Zibai':'Harmonious Abundance','Varka':"The Northerly Wind's Song of Triumph",'Linnea':'Ya-hoho! Compendium','Nicole':"Angel's Reverie",'Lohen':'Frostedge Nocturne','Sandrone':'To the Looking-Glass the Mademoiselle Said','Odette':"Swan's Shadow in Silken Ice",'Vesna':'When Warm Winds Cavort','Vodyanitsa':'Surging Ballad'};
 const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 
@@ -796,6 +813,9 @@ async function readXlsx(file){
     })}
   if(!rows.length)throw new Error('No wish sheets found — is this a paimon.moe export?');
   return rows}
+
+function mergePaimon(a,b){const g=r=>{const m=new Map();r.forEach(p=>{const k=`${p.pool}|${p.time}|${p.name}`;if(!m.has(k))m.set(k,[]);m.get(k).push(p)});return m},A=g(a),B=g(b),out=[];
+  new Set([...A.keys(),...B.keys()]).forEach(k=>{const x=A.get(k)||[],y=B.get(k)||[];out.push(...(y.length>=x.length?y:x))});return out}
 
 /* ---------- import: personal .docx (not advertised in the UI) ---------- */
 async function readDocx(file){
@@ -865,13 +885,14 @@ function build(){
       p.c1=era?ctr:null})}
   D={pools,all:Object.values(pools).flat().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0)}}
 function pending(){return{c:D.pools.char.filter(p=>p.r===5&&p.maybeCR).length,w:D.pools.weapon.filter(p=>p.r===5&&p.out==='feat').length}}
-function filtered(){if(S.view!=='overview')return D.all;const{pools,from,to}=S.f;return D.all.filter(p=>pools.includes(p.pool)&&(!from||p.date>=from)&&(!to||p.date<=to))}
+function filtered(){if(S.view!=='overview')return D.all;const{pools,from,to}=S.f;const all=['char','weapon','standard','chron'].every(k=>pools.includes(k));return D.all.filter(p=>pools.includes(p.pool)&&(p.pool!=='novice'||all)&&(!from||p.date>=from)&&(!to||p.date<=to))}
 function groups(arr){const m=new Map();arr.forEach(p=>{let g=m.get(p.name);if(!g){g={name:p.name,type:p.type,r:p.r,pulls:[]};m.set(p.name,g)}g.pulls.push(p)});
   return[...m.values()].map(g=>({...g,n:g.pulls.length,first:g.pulls[0].date,last:g.pulls.at(-1).date}))}
 const consLabel=x=>x.type==='Character'?`C${Math.min(6,x.n-1)}${x.n>7?` +${x.n-7}`:''}`:`R${Math.min(5,x.n)}${x.n>5?` +${x.n-5}`:''}`;
 
 /* ---------- UI atoms ---------- */
-function face(p,mode){if(p.type!=='Character')return'';const c=findChar(p.name),ini=esc(initials(p.name));
+const wslug=n=>String(n).toLowerCase().replace(/'/g,'').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'_');
+function face(p,mode){if(p.type==='Weapon')return`<span class="pf r${p.r} wimg${mode==='log'||(mode==='row'&&p.r<5)?' nobg':''}"><img loading="lazy" decoding="async" alt="" src="weapons/${encodeURIComponent(wslug(p.name))}.png" onerror="this.remove()"></span>`;if(p.type!=='Character')return'';const c=findChar(p.name),ini=esc(initials(p.name));
   if(!c)return`<span class="pf r${p.r}"><b>${ini}</b></span>`;
   const dir=(mode==='row'&&p.r<5)||mode==='log'?'avatarside':'avataricon';
   return`<span class="pf r${p.r} ${dir}"><img loading="lazy" decoding="async" alt="" src="${ASSET}${dir}/${encodeURIComponent(c.id)}.webp" onerror="this.outerHTML='<b>${ini}</b>'"></span>`}
@@ -901,7 +922,8 @@ const bannerLine=p=>[bannerName(p),verTxt(p)].filter(Boolean).join(' · ');
 
 /* ---------- views ---------- */
 function filterBar(){const cnt=k=>D.pools[k].length;
-  return`<div class="segg">`+Object.keys(POOL).filter(cnt).map(k=>`<button class="chip" data-act="pool" data-v="${k}" aria-pressed="${S.f.pools.includes(k)}">${POOL[k]} <small class="n">${cnt(k).toLocaleString()}</small></button>`).join('')+`</div><span class="rng"><span class="lbl">Range</span>`
+  return ovBar()}
+function rangeBar(){return`<span class="rng"><span class="lbl">Range</span>`
   +(VERS.length?`<select class="field" data-in="vfrom"><option value="">From version</option>${VERS.map(v=>`<option value="${esc(v.v)}" ${S.f.from===v.s?'selected':''}>${esc(verLabel(v.v))}</option>`).join('')}</select><select class="field" data-in="vto"><option value="">To version</option>${VERS.map(v=>`<option value="${esc(v.v)}" ${S.f.to===v.e?'selected':''}>${esc(verLabel(v.v))}</option>`).join('')}</select>`:'')
   +`<input type="date" class="field" data-in="from" value="${S.f.from}"><span class="meta">–</span><input type="date" class="field" data-in="to" value="${S.f.to}">`
   +(S.f.from||S.f.to||S.f.pools.length<Object.keys(POOL).length?`<button class="chip" data-act="resetRange">Reset</button>`:'')+`</span>`}
@@ -914,18 +936,18 @@ function overview(){
   const lo=ext(Math.min),hi=ext(Math.max),tie=x=>x.more?` · +${x.more} more`:'';
   const n3=F.length-f5.length-f4.length,pc=x=>(x/Math.max(1,F.length)*100).toFixed(1)+'%';
   const mix=F.length?`<div class="mix"><div class="seg"><i style="width:${f5.length/F.length*100}%;background:var(--r5)"></i><i style="width:${f4.length/F.length*100}%;background:var(--r4)"></i><i style="flex:1;background:rgba(255,255,255,.2)"></i></div><div class="mixl"><span><i style="background:var(--r5)"></i>5★ ${pc(f5.length)} of wishes</span><span><i style="background:var(--r4)"></i>4★ ${pc(f4.length)}</span><span><i style="background:rgba(255,255,255,.35)"></i>3★ ${pc(n3)}</span></div></div>`:'';
-  let h=`<div class="ovhead"><h2 class="ttl">Overview</h2></div>`;
+  let h=`<div class="ovhead"><h2 class="ttl">Overview</h2>${rangeBar()}</div>`;
   h+='<div class="ov">';
   h+=`<section class="card"><div class="stats">${stat('Wishes',F.length.toLocaleString(),`≈ ${(F.length*160).toLocaleString()} Primogems`)}${stat('5★',f5.length,`Average pity ${avg}`)}${stat('4★',f4.length,`Average pity ${avg4}`)}${lo?statb('Luckiest 5★',lo.t,`${esc(lo.last.name)} · ${fmtD(lo.last.date)}${tie(lo)}`,'lo'):''}${hi?statb('Highest pity',hi.t,`${esc(hi.last.name)} · ${fmtD(hi.last.date)}${tie(hi)}`,'hi'):''}</div>${mix}</section>`;
   h+=pityPanel();
   h+=fiftyPanel(F);
   h+=`<section class="card s7"><h2>Wishes per month <small>gold dot = a 5★ that month</small></h2>${monthly(F)}</section>`;
-  {const hp=['char','weapon','standard'],cur=hp.includes(S.histPool)?S.histPool:hp[0];S.histPool=cur;const SH={char:'Character',weapon:'Weapon',standard:'Standard'};
+  {const hp=['char','weapon','standard','chron'],cur=hp.includes(S.histPool)?S.histPool:hp[0];S.histPool=cur;const SH={char:'Character',weapon:'Weapon',standard:'Standard',chron:'Chronicled'};
     h+=`<section class="card s5"><h2>5★ pity spread <small>tap a bar</small></h2><div class="hchips">${hp.map(k=>`<button class="chip sm" data-act="histPool" data-v="${k}" aria-pressed="${k===cur}">${SH[k]}</button>`).join('')}</div>${hist(D.pools[cur].filter(p=>p.r===5),cur)}</section>`}
   h+=loyalPanel(F);
   return h+'</div>'}
 function pityPanel(){const C=2*Math.PI*32;
-  const items=['char','weapon','standard'].map(k=>{const L=D.pools[k]||[];let n=0;for(let i=L.length-1;i>=0&&L[i].r!==5;i--)n++;
+  const items=['char','weapon','standard','chron'].map(k=>{const L=D.pools[k]||[];let n=0;for(let i=L.length-1;i>=0&&L[i].r!==5;i--)n++;
     const last=[...L].reverse().find(p=>p.r===5),max=MAXP[k],fr=Math.min(1,n/max),col=pityCol(n,k);
     const tag=k==='char'?(last?.out==='lose'?'<span class="bd guar">Guaranteed next</span>':'<span class="bd">50/50 next</span>'):'';
     return`<div class="ring"><div class="rw"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" class="trk"/><circle cx="38" cy="38" r="32" class="val" stroke="${col}" stroke-dasharray="${(C*fr).toFixed(1)} ${C.toFixed(1)}"/></svg><b class="n" style="color:${col}">${n}</b></div><div><div class="rl">${POOL[k]}</div><div class="meta">of ${max} · last 5★ ${last?esc(last.name):'—'}</div>${tag}</div></div>`}).join('');
@@ -954,7 +976,7 @@ function fiftyPanel(F){
 function loyalPanel(F){
   const g=groups(F.filter(p=>p.r===4&&p.type==='Character')).sort((a,b)=>b.n-a.n).slice(0,10),mx=g[0]?.n||1;
   const w=groups(F.filter(p=>p.r===4&&p.type==='Weapon')).sort((a,b)=>b.n-a.n).slice(0,10),mw=w[0]?.n||1;
-  const row=(x,i,m,ch)=>{const c=ch?findChar(x.name):null;return`<button class="ly${c?' has-el':''}${ch?'':' nof'}"${c?` style="--ec:var(--${c.el})"`:''} data-act="item" data-v="${esc(x.name)}"><span class="rk">${i+1}</span>${face(x,'row')}<span><span class="lyn">${esc(x.name)}</span><span class="bar"><i style="width:${x.n/m*100}%"></i></span></span><span class="c n">${x.n}</span></button>`};
+  const row=(x,i,m,ch)=>{const c=ch?findChar(x.name):null;return`<button class="ly${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''} data-act="item" data-v="${esc(x.name)}"><span class="rk">${i+1}</span>${face(x,'row')}<span><span class="lyn">${esc(x.name)}</span><span class="bar"><i style="width:${x.n/m*100}%"></i></span></span><span class="c n">${x.n}</span></button>`};
   return`<section class="card s7"><h2>Most pulled 4★ <small>characters</small></h2><div class="loyal">${g.map((x,i)=>row(x,i,mx,true)).join('')||'<p class="meta">No 4★ characters in this range.</p>'}</div></section>
   <section class="card s5"><h2>Most pulled 4★ <small>weapons</small></h2><div class="loyal">${w.map((x,i)=>row(x,i,mw)).join('')||'<p class="meta">None in this range.</p>'}</div></section>`}
 function monthly(F){if(!F.length)return'<p class="meta">No wishes in this range.</p>';
@@ -969,27 +991,27 @@ function hist(f5,pool){if(!f5.length)return'<p class="meta">No 5★ in this rang
   return`<svg class="chart" viewBox="0 0 270 ${H+18}">${b.map((v,i)=>{const h=v/mx*(H-16),col=pityCol(i*10+5,pool);
     return`<g class="hit" data-act="pityBin" data-v="${i}"><title>Pity ${i*10+1}–${i*10+10}: ${v}</title><rect x="${i*30}" y="0" width="30" height="${H+18}" fill="transparent"/><rect x="${i*30+3}" y="${H-h}" width="24" height="${Math.max(h,v?2:0)}" rx="3" class="hb" style="fill:${col}"/>${v?`<text x="${i*30+15}" y="${H-h-4}" text-anchor="middle" class="tv">${v}</text>`:''}<text x="${i*30+15}" y="${H+15}" text-anchor="middle">${i*10+10}</text></g>`}).join('')}</svg>`}
 
-function catBar(nov){return`<div class="segg">${Object.keys(POOL).filter(k=>nov||k!=='novice').map(k=>`<button class="chip" data-act="cat" data-v="${k}" aria-pressed="${S.cat===k}">${POOL[k]} <small class="n">${D.pools[k].length.toLocaleString()}</small></button>`).join('')}</div>`}
+function catBar(mode){return`<div class="cats">${Object.keys(POOL).map(k=>{const dis=k==='novice'&&mode==='tl';return`<button class="cat" data-k="${k}" data-act="cat" data-v="${k}" aria-pressed="${S.cat===k}"${dis?' disabled title="No 5★ here, nothing to show"':''}><span class="cn">${POOL[k]}</span><b class="n">${D.pools[k].length.toLocaleString()}</b><small>${dis?'no 5★':'wishes'}</small></button>`}).join('')}</div>`}
+function ovBar(){return`<div class="cats">${Object.keys(POOL).map(k=>{const dis=k==='novice';return`<button class="cat" data-k="${k}" data-act="pool" data-v="${k}" aria-pressed="${!dis&&S.f.pools.includes(k)}"${dis?' disabled title="Always counted in the totals"':''}><span class="cn">${POOL[k]}</span><b class="n">${D.pools[k].length.toLocaleString()}</b><small>${dis?'in totals':'wishes'}</small></button>`}).join('')}</div>`}
 function statsBar(rows,cat){const f5=rows.filter(p=>p.r===5),c=o=>f5.filter(p=>p.out===o).length,cells=[['Total pulls',rows.length.toLocaleString()],['5★',f5.length],['Avg pity',f5.length?(f5.reduce((a,p)=>a+p.p5,0)/f5.length).toFixed(2):'–']];
-  if(cat==='char')cells.push(['Won',c('win')],['Lost',c('lose')],['CR',c('cr')]);if(cat==='weapon')cells.push(['Won',c('win')],['Lost',c('lose')+c('off')]);
-  return`<div class="sbar">${cells.map(([k,v])=>`<div><span>${k}</span><b class="n">${v}</b></div>`).join('')}</div>`}
+  if(cat==='char')cells.push(['Won',c('win'),'w'],['Lost',c('lose'),'l'],['CR',c('cr'),'cr']);if(cat==='weapon')cells.push(['Won',c('win'),'w'],['Lost',c('lose')+c('off'),'l']);
+  return`<div class="sbar">${cells.map(([k,v,x])=>`<div><span>${k}</span><b class="n ${x||''}">${v}</b></div>`).join('')}</div>`}
 function timeline(){if(S.cat==='novice')S.cat='char';const all=D.pools[S.cat],L=all.filter(p=>p.r===5);if(S.tlNewest)L.reverse();
-  return`<div class="toolbar">${catBar(false)}<span style="margin-left:auto"></span>${(pd=>pd.c+pd.w?`<span class="meta"><b style="color:var(--gold)">${pd.c+pd.w}</b> left to mark</span>`:'')(pending())}<button class="chip" data-act="tlOrder">${S.tlNewest?'Newest first':'Oldest first'}</button></div>${statsBar(all,S.cat)}
-  <p class="meta hint">Radiance (characters) and Won / Lost on limited weapons are marked by you. The site only points out where it could apply.</p>
+  return`${catBar('tl')}${statsBar(all,S.cat)}<div class="hintrow"><p class="meta hint">Radiance (characters) and Won / Lost on limited weapons are marked by you. The site only points out where it could apply.</p>${(pd=>pd.c+pd.w?`<span class="meta"><b style="color:var(--gold)">${pd.c+pd.w}</b> left to mark</span>`:'')(pending())}<button class="chip" data-act="tlOrder">${S.tlNewest?'Newest first':'Oldest first'}</button></div>
   <div class="fives">${L.map(fiveRow).join('')||'<p class="meta">No 5★ here yet.</p>'}</div>`}
 function fiveRow(p){const c=p.type==='Character'?findChar(p.name):null,col=pityCol(p.p5,p.pool);
   const ctr=p.c0!=null&&p.out!=='guar'?`<div class="ctr n">CR ${p.c0} → ${p.c1}${p.maybeCR?' <b title="Counter was 2–3, so this win could have been Radiance">?</b>':''}</div>`:'';
   const cu=S.crUser[p.key],btn=p.pool==='char'&&(p.out==='cr'||(p.out==='win'&&p.c0>=2))?`<span class="wm"><button class="${p.out==='cr'?'on w':''}" data-act="crm" data-v="${esc(p.key)}|1">✨ Radiance</button><button class="${p.out==='win'&&cu===false?'on l':''}" data-act="crm" data-v="${esc(p.key)}|0">Not Radiance</button></span>`:'';
   const m=S.wUser[p.key],wbtn=p.pool==='weapon'&&p.feat&&p.out!=='guar'?`<span class="wm"><button class="${m==='win'?'on w':''}" title="Got the weapon you picked on the Epitomized Path" data-act="wm" data-v="${esc(p.key)}|win">Won</button><button class="${m==='lose'?'on l':''}" title="Got the other limited weapon" data-act="wm" data-v="${esc(p.key)}|lose">Lost</button></span>`:'';
   return`<div class="five${p.out==='cr'?' is-cr':''}${c?' has-el':''}${p.pool==='weapon'?' wp':''}"${c?` style="--ec:var(--${c.el})"`:''} data-act="item" data-v="${esc(p.name)}">${c?`<span class="nc"><img loading="lazy" alt="" src="${ASSET}namecardalpha/${encodeURIComponent(c.id)}.webp" onerror="this.remove()"></span>`:''}${face(p,'row')||`<span class="ord n">${p.k5}</span>`}
-  <div><div class="nm">${esc(p.name)}</div><div class="meta ell">${esc(bannerLine(p))}<span class="show-m"> · pity ${p.p5}</span></div></div>
+  <div><div class="nm"><span class="kn n">#${p.k5}</span>${esc(p.name)}</div><div class="meta ell">${esc(bannerLine(p))}<span class="show-m"> · pity ${p.p5}</span></div></div>
   <div class="meta hide-m n">${fmtD(p.date)}</div>
   <div class="pity hide-m"><b class="n" style="color:${col}">${p.p5}</b><span class="bar"><i style="width:${Math.min(100,p.p5/MAXP[p.pool]*100)}%;background:${col}"></i></span></div>
   <div class="bcell">${outBadge(p)}${ctr}${btn}${wbtn}</div></div>`}
 
 function logView(){const l=S.log,dirty=l.r.length||l.types.length||l.els.length||l.q.trim();
   const ch=(act,v,on,inner)=>`<button class="chip" data-act="${act}" data-v="${v}" aria-pressed="${on}">${inner}</button>`;
-  return`<div class="toolbar">${catBar(true)}</div><div class="toolbar"><h2 class="ttl">All wishes</h2>${[5,4,3].map(r=>ch('logR',r,l.r.includes(r),r+'★')).join('')}<span class="sep"></span>${[['Character','Characters'],['Weapon','Weapons']].map(([v,t])=>ch('logType',v,l.types.includes(v),t)).join('')}<span class="sep"></span>${ELO.map(e=>ch('logEl',e,l.els.includes(e),eli(e)+cap(e))).join('')}
+  return`<div class="toolbar">${catBar('log')}</div><div class="toolbar"><h2 class="ttl">All wishes</h2>${[5,4,3].map(r=>ch('logR',r,l.r.includes(r),r+'★')).join('')}<span class="sep"></span>${[['Character','Characters'],['Weapon','Weapons']].map(([v,t])=>ch('logType',v,l.types.includes(v),t)).join('')}<span class="sep"></span>${ELO.map(e=>ch('logEl',e,l.els.includes(e),eli(e)+cap(e))).join('')}
   <input class="field" data-in="logQ" placeholder="Name, year (2024) or patch (6.3)" style="width:250px" value="${esc(l.q)}"><button class="chip${dirty?'':' idle'}" data-act="logReset">Reset filter</button></div><div id="logBody">${logBody()}</div>`}
 function logBody(){const l=S.log;let F=D.pools[S.cat].filter(p=>!l.r.length||l.r.includes(p.r));
   if(l.types.length)F=F.filter(p=>l.types.includes(p.type));
@@ -1003,7 +1025,7 @@ function logBody(){const l=S.log;let F=D.pools[S.cat].filter(p=>!l.r.length||l.r
   const tot=F.length,stats=statsBar(F,S.cat);F=F.slice(0,l.limit);
   return`${stats}<div class="log"><div class="lr hd"><span class="hm">#</span><span class="hm">${sb('date','Date')}</span><span></span><span>${sb('item','Item')}</span><span title="Filter on: each item's own pity. No filter: pull number in the current 5★ cycle.">${sb('pity','Pity')}</span><span class="hm">Banner</span><span class="hm">Type</span></div>
   ${F.map((p,i)=>{const c=p.type==='Character'&&p.r>=4?findChar(p.name):null,pt=dyn?(p.r===5?p.p5:p.r===4?p.p4:'–'):p.p5;
-    return`<div class="lr r${p.r}${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''}><span class="hm n meta">${i+1}</span><span class="hm n">${fmtD(p.date)}</span>${p.r>=4?(c||p.type==='Character'?face(p,'log'):`<span class="dot r${p.r}"></span>`):'<span class="dot"></span>'}<button class="nmx linky ell" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button><span class="n pt r${p.r}">${pt}</span><span class="hm meta ell">${esc(bannerLine(p))}</span><span class="hm meta">${POOL[p.pool]}</span></div>`}).join('')}</div>
+    return`<div class="lr r${p.r}${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''}><span class="hm n meta">${i+1}</span><span class="hm n">${fmtD(p.date)}</span>${p.r>=4||p.type==='Weapon'?(c||p.type==='Character'||p.type==='Weapon'?face(p,'log'):`<span class="dot r${p.r}"></span>`):'<span class="dot"></span>'}<button class="nmx linky ell" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button><span class="n pt r${p.r}">${pt}</span><span class="hm meta ell">${esc(bannerLine(p))}</span><span class="hm meta">${POOL[p.pool]}</span></div>`}).join('')}</div>
   ${tot>l.limit?`<button class="btn ghost more" data-act="more">Show more · ${(tot-l.limit).toLocaleString()} left</button>`:''}<p class="meta" style="text-align:center;margin:12px 0 64px">${tot.toLocaleString()} wishes</p>`}
 
 function openPity(kind){
@@ -1017,13 +1039,13 @@ function openPity(kind){
   const d=$('#dlg');if(!d.open)d.showModal()}
 
 function exportView(){const A=D.all,n=k=>A.filter(p=>p.r===k).length,fa=(a,b)=>`<div><b class="n">${a}</b><span>${b}</span></div>`,rng=A.length?`${A[0].date.slice(0,4)}–${A.at(-1).date.slice(0,4)}`:'–';
-  return`<div class="ov"><section class="card s8 xc"><div class="xh"><span class="xi">↑</span><h2>Import</h2></div><p class="meta">Add a newer paimon.moe export to bring your history up to date. It replaces the previous paimon.moe import and keeps all your marks. Dropping a file anywhere on the page works too.</p>
-  <div class="xdrop" data-act="pick" role="button" tabindex="0"><span class="ring">↑</span><b>Drop your paimon.moe export here</b><span>Excel .xlsx · or click to choose a file</span></div>
+  return`<div class="ov"><section class="card s8 xc"><div class="xh"><h2>Import</h2></div><p class="meta">Add any paimon.moe export. New wishes are added to what is already stored, older history stays, and nothing is counted twice. Your marks are kept too. Dropping a file anywhere on the page works too.</p>
+  <div class="xdrop" data-act="pick" role="button" tabindex="0"><b>Drop your paimon.moe export here</b><span>Excel .xlsx · or click to choose a file</span></div>
   <div class="xstats">${fa(A.length.toLocaleString(),'Wishes')}${fa(n(5),'5★')}${fa(n(4).toLocaleString(),'4★')}${fa(rng,'Covers')}</div></section>
-  <section class="card s4 xc"><div class="xh"><span class="xi">↓</span><h2>Backup</h2></div><p class="meta">One file with your whole history and every mark you made. Keep it somewhere safe, and drop it into the Import box to restore.</p><div class="xtags"><i>All wishes</i><i>Radiance marks</i><i>Won / Lost marks</i></div><div class="xact"><button class="btn" data-act="backup">Download backup</button></div></section>
-  <section class="card s8 xc"><div class="xh"><span class="xi">≡</span><h2>Google Docs export</h2></div><p class="meta">One tidy .docx with everything in it, ready to keep in your own Google Doc.</p><div class="xtags"><i>5★ summary</i><i>50/50 and Radiance</i><i>Every wish by banner</i><i>Rarity and element colours</i></div>
+  <section class="card s4 xc"><div class="xh"><h2>Backup</h2></div><p class="meta">One file with your whole history and every mark you made. Keep it somewhere safe, and drop it into the Import box to restore.</p><div class="xtags"><i>All wishes</i><i>Radiance marks</i><i>Won / Lost marks</i></div><div class="xact"><button class="btn" data-act="backup">Download backup</button></div></section>
+  <section class="card s8 xc"><div class="xh"><h2>Google Docs export</h2></div><p class="meta">One tidy .docx with everything in it, ready to keep in your own Google Doc.</p><div class="xtags"><i>5★ summary</i><i>50/50 and Radiance</i><i>Every wish by banner</i><i>Rarity and element colours</i></div>
   <ol class="xsteps"><li>Download<small>Get the .docx file</small></li><li>Upload<small>Put it in Google Drive</small></li><li>Open<small>Choose Open with Google Docs</small></li></ol><div class="xact l"><button class="btn" data-act="docx">Download .docx</button></div></section>
-  <section class="card s4 xc xdanger"><div class="xh"><span class="xi">!</span><h2>Clear data</h2></div><p class="meta">Wipes every wish, mark and import stored in this browser. This can't be undone, so download a backup first.</p><div class="xact"><button class="btn xclr" data-act="clear">Clear all data</button></div></section></div>`}
+  <section class="card s4 xc xdanger"><div class="xh"><h2>Clear data</h2></div><p class="meta">Wipes every wish, mark and import stored in this browser. This can't be undone, so download a backup first.</p><div class="xact"><button class="btn xclr" data-act="clear">Clear all data</button></div></section></div>`}
 
 /* ---------- item detail ---------- */
 function openItem(name){let F=filtered();if(!F.some(p=>p.name===name))F=D.all;
@@ -1093,7 +1115,7 @@ function dl(blob,name){const a=document.createElement('a');a.href=URL.createObje
 async function ingest(files){
   for(const f of files){const ext=f.name.split('.').pop().toLowerCase();
     try{
-      if(ext==='xlsx'){S.paimon=await readXlsx(f);LS.set('paimon',S.paimon);toast(`Imported ${S.paimon.length.toLocaleString()} wishes`)}
+      if(ext==='xlsx'){const nw=await readXlsx(f);S.paimon=mergePaimon(S.paimon,nw);LS.set('paimon',S.paimon);toast(`Read ${nw.length.toLocaleString()} wishes · ${S.paimon.length.toLocaleString()} stored`)}
       else if(ext==='docx'){const r=interpretDocx(await readDocx(f),f.name);
         if(r.kind==='summary'){S.crMarks=r.marks;LS.set('crMarks',r.marks);toast(`Found ${r.marks.length} ✨ marks`)}
         else{S.docx=S.docx.filter(p=>p.file!==r.file).concat(r.rows);LS.set('docx',S.docx);toast(`Read ${r.rows.length.toLocaleString()} wishes`)}}
@@ -1117,7 +1139,7 @@ const ACT={
   logSort:v=>{const o=S.log.sort;if(o.k===v)o.d*=-1;else{o.k=v;o.d=v==='item'?1:-1}S.log.limit=300;render()},
   goMark:()=>{S.cat=pending().c?'char':'weapon';S.view='timeline';render();scrollTo(0,0)},
   view:v=>{S.view=v;render();scrollTo(0,0)},
-  pool:v=>{toggleIn(S.f.pools,v);if(!S.f.pools.length)S.f.pools.push(v);render()},
+  pool:v=>{toggleIn(S.f.pools,v);if(!['char','weapon','standard','chron'].some(k=>S.f.pools.includes(k)))S.f.pools.push(v);render()},
   resetRange:()=>{S.f.from=S.f.to='';S.f.pools=Object.keys(POOL);render()},
   colR:v=>{toggleIn(S.col.r,+v);render()},colType:v=>{S.col.type=v;render()},colEl:v=>{S.col.el=S.col.el===v?'all':v;render()},
   item:v=>openItem(v),
