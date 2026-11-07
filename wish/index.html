@@ -29,7 +29,7 @@
 :root{--bg:#000;--bg2:#060606;--sf:#0b0b0b;--sf2:#121212;--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.16);--acc:#2cf56b;--acc2:#a6ffc4;--dig:'Share Tech Mono',ui-monospace,Consolas,monospace;
 --tx:#ededed;--mu:#9b9b9b;--fa:#666;--gold:#e9c46a;--gold2:#f7e2a8;--win:#7fd1a8;--lose:#ef8b8b;--guar:#8fb4ff;--r4:#b48cf2;--r5:#f2b350;
 --rainbow:linear-gradient(90deg,#ffd27a,#ff9fb2,#c9a4ff,#8fd3ff,#9ff0c8,#ffd27a);
---pyro:#ff8550;--hydro:#22a6ff;--anemo:#82eabe;--electro:#cb7efe;--dendro:#aee629;--cryo:#8cedf1;--geo:#f6d55c}
+--pyro:#ff663e;--hydro:#00bfff;--anemo:#32d7a0;--electro:#cc7fff;--dendro:#9ae538;--cryo:#77f3f3;--geo:#feb00b}
 *{box-sizing:border-box}[hidden]{display:none!important}
 html{color-scheme:dark}
 body{margin:0;background:#000;color:var(--tx);font:15px/1.5 Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
@@ -276,6 +276,17 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .rng{display:inline-flex;align-items:center;gap:8px;flex-wrap:nowrap}.rng .field{width:132px}.rng select.field{width:150px}
 .segc{display:inline-flex;align-items:center;gap:6px}
 .hchips{display:flex;gap:6px;margin:-4px 0 12px}.chip.sm{height:28px;padding:0 12px;font-size:12px}
+.filters{justify-content:space-between}.segg{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--sf)}.segg .chip{border-color:transparent}.sbar{display:flex;gap:12px;margin:0 0 18px}.sbar div{flex:1;display:flex;flex-direction:column;gap:2px;padding:14px 18px;border-radius:14px;background:var(--sf);border:1px solid var(--line)}.sbar span{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.12em}.sbar b{font-size:30px}.sbar div:nth-child(2) b{color:var(--gold)}.hs{background:none;border:0;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;padding:0}.hs.on{color:var(--gold)}.totop{position:fixed;right:28px;bottom:28px;z-index:40;display:none}.totop.on{display:block}
+#dlg .dlg{font-size:16px}dialog{max-width:min(940px,94vw)}#dlg .meta{font-size:15px;color:#c8c8c8}#dlg .dh{padding:32px 76px 32px 32px}#dlg .dh .pf{width:116px;height:116px}#dlg .dh h3{font-size:38px}#dlg .big{font-size:76px}#dlg .big small{font-size:16px;color:#c8c8c8}#dlg .db{padding:6px 32px 32px}#dlg .fact{padding:16px 18px;font-size:14px;color:#c8c8c8}#dlg .fact .v{font-size:26px;color:#fff}#dlg .yb{height:76px;max-width:46px}#dlg .yr b{font-size:17px}#dlg .yr small{font-size:13px;color:#c0c0c0}#dlg .occ{font-size:16px}#dlg .occ td,#dlg .occ th{padding:12px 10px}#dlg .occ td{color:#f5f5f5}#dlg .occ th{font-size:13px;color:#c0c0c0}
+
+
+.xc{display:flex;flex-direction:column}.xh{display:flex;align-items:center;gap:14px;margin-bottom:12px}.xh h2{margin:0;font-size:24px}.xi{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:rgba(233,196,106,.12);border:1px solid rgba(233,196,106,.32);color:var(--gold);font-size:22px;flex:none}.xc .meta{font-size:15px;line-height:1.6}.xc .btn{white-space:nowrap}
+.xdrop{margin-top:18px;border:2px dashed var(--line2);border-radius:18px;padding:34px 20px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;cursor:pointer;background:radial-gradient(90% 120% at 50% 0%,rgba(233,196,106,.08),transparent 70%);transition:border-color .2s}.xdrop:hover{border-color:var(--gold)}.xdrop .ring{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:30px;color:#111;background:var(--rainbow)}.xdrop b{font-size:20px}.xdrop span:last-child{color:var(--mu);font-size:14px}
+.xstats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.xstats div{padding:12px 14px;border-radius:12px;background:var(--sf2);border:1px solid var(--line);display:flex;flex-direction:column;gap:2px;min-width:0}.xstats b{font-size:24px;color:var(--gold);white-space:nowrap}.xstats span{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.1em}
+.xtags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.xtags i{font-style:normal;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line2);color:#d6d6d6}
+.xact{margin-top:auto;padding-top:22px}.xact .btn{display:flex;width:100%;justify-content:center;align-items:center;height:46px;font-size:15px}.xact.l .btn{display:inline-flex;width:auto;padding:0 32px}
+.xsteps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0 0;padding:0;list-style:none;counter-reset:st}.xsteps li{counter-increment:st;padding:14px 16px;border-radius:14px;background:var(--sf2);border:1px solid var(--line);display:flex;flex-direction:column;gap:6px;font-size:16px;font-weight:600}.xsteps li::before{content:counter(st);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:14px var(--dig);background:var(--rainbow);color:#111}.xsteps small{color:var(--mu);font-size:13px;font-weight:400}
+.xdanger{border-color:rgba(239,139,139,.5)!important;background:radial-gradient(120% 90% at 0% 0%,rgba(239,139,139,.14),transparent 60%),linear-gradient(180deg,#140808,#0a0505)!important}.xdanger .xi{background:rgba(239,139,139,.14);border-color:rgba(239,139,139,.5);color:var(--lose)}.xdanger h2{color:var(--lose)}.xclr{background:var(--lose)!important;color:#1a0505!important;border-color:var(--lose)!important;font-weight:700}
 </style>
 </head>
 <body>
@@ -491,6 +502,7 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
   </section>
 </main>
 <footer class="foot wrap"><div>Fan-made tool for Genshin Impact. Not affiliated with HoYoverse. Genshin Impact and all related assets are trademarks of HoYoverse.</div><div>Your wishes stay in this browser — nothing is uploaded. · <a href="../">Genshin Tools</a> · <a href="https://github.com/scornae/genshin-tools" target="_blank" rel="noopener">GitHub</a> · © <span id="yr"></span> SCORNAE</div></footer>
+<button class="btn totop" id="toTop" data-act="toTop">↑ Top</button>
 <dialog id="dlg"><div id="dlgBody"></div></dialog>
 <div class="toast" id="toast" role="status"></div>
 <div class="dropveil" id="veil"><div>Drop to import</div></div>
@@ -715,8 +727,8 @@ Luna VIII|260721|260811|Nocturne's Curtain Call,Engulfing Lightning
 
 const ASSET='../roster/assets-optimized/';
 const CR_START='2024-08-28';
-const MAXP={char:90,weapon:80,standard:90,novice:90};
-const POOL={char:'Character Event',weapon:'Weapon Event',standard:'Standard',novice:"Beginners'"};
+const MAXP={char:90,weapon:80,standard:90,chron:90,novice:90};
+const POOL={char:'Character Event',weapon:'Weapon Event',standard:'Standard',chron:'Chronicled Wish',novice:"Beginners'"};
 const EL=['pyro','hydro','anemo','electro','dendro','cryo','geo'];
 const LUNA={'Luna I':'6.0','Luna II':'6.1','Luna III':'6.2','Luna IV':'6.3','Luna V':'6.4','Luna VI':'6.5','Luna VII':'6.6','Luna VIII':'6.7'};
 const verLabel=v=>v?`v${v}${LUNA[v]?` (${LUNA[v]})`:''}`:'';
@@ -765,15 +777,15 @@ function isFeat(p){const L=p.pool==='char'?CB:WB,k=norm(p.name);
 /* ---------- state ---------- */
 const S={docx:LS.get('docx',[]),paimon:LS.get('paimon',[]),crMarks:LS.get('crMarks',[]),crUser:LS.get('crUser',{}),wUser:LS.get('wUser',{}),tlPool:'all',
   view:'overview',tlNewest:true,
-  f:{pools:['char','weapon','standard','novice'],from:'',to:''},
+  f:{pools:Object.keys(POOL),from:'',to:''},
   col:{r:[5,4],type:'all',el:'all',sort:'count',q:''},
-  log:{r:[],q:'',types:[],els:[],newest:true,limit:300},histPool:'char'};
+  cat:'char',log:{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},limit:300},histPool:'char'};
 let D={pools:{},all:[]};
 
 /* ---------- import: paimon.moe xlsx ---------- */
 async function readXlsx(file){
   const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true});
-  const map={'Character Event':'char','Weapon Event':'weapon','Standard':'standard',"Beginners' Wish":'novice'};
+  const map={'Character Event':'char','Weapon Event':'weapon','Standard':'standard','Chronicled Wish':'chron',"Beginners' Wish":'novice'};
   const rows=[];
   for(const [sh,pool] of Object.entries(map)){const ws=wb.Sheets[sh];if(!ws)continue;
     XLSX.utils.sheet_to_json(ws,{defval:''}).forEach((x,i)=>{
@@ -853,7 +865,7 @@ function build(){
       p.c1=era?ctr:null})}
   D={pools,all:Object.values(pools).flat().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0)}}
 function pending(){return{c:D.pools.char.filter(p=>p.r===5&&p.maybeCR).length,w:D.pools.weapon.filter(p=>p.r===5&&p.out==='feat').length}}
-function filtered(){const{pools,from,to}=S.f;return D.all.filter(p=>pools.includes(p.pool)&&(!from||p.date>=from)&&(!to||p.date<=to))}
+function filtered(){if(S.view!=='overview')return D.all;const{pools,from,to}=S.f;return D.all.filter(p=>pools.includes(p.pool)&&(!from||p.date>=from)&&(!to||p.date<=to))}
 function groups(arr){const m=new Map();arr.forEach(p=>{let g=m.get(p.name);if(!g){g={name:p.name,type:p.type,r:p.r,pulls:[]};m.set(p.name,g)}g.pulls.push(p)});
   return[...m.values()].map(g=>({...g,n:g.pulls.length,first:g.pulls[0].date,last:g.pulls.at(-1).date}))}
 const consLabel=x=>x.type==='Character'?`C${Math.min(6,x.n-1)}${x.n>7?` +${x.n-7}`:''}`:`R${Math.min(5,x.n)}${x.n>5?` +${x.n-5}`:''}`;
@@ -889,8 +901,7 @@ const bannerLine=p=>[bannerName(p),verTxt(p)].filter(Boolean).join(' · ');
 
 /* ---------- views ---------- */
 function filterBar(){const cnt=k=>D.pools[k].length;
-  return Object.keys(POOL).filter(cnt).map(k=>`<button class="chip" data-act="pool" data-v="${k}" aria-pressed="${S.f.pools.includes(k)}">${POOL[k]} <small class="n">${cnt(k).toLocaleString()}</small></button>`).join('')
-  +`<span class="rng"><span class="lbl">Range</span>`
+  return`<div class="segg">`+Object.keys(POOL).filter(cnt).map(k=>`<button class="chip" data-act="pool" data-v="${k}" aria-pressed="${S.f.pools.includes(k)}">${POOL[k]} <small class="n">${cnt(k).toLocaleString()}</small></button>`).join('')+`</div><span class="rng"><span class="lbl">Range</span>`
   +(VERS.length?`<select class="field" data-in="vfrom"><option value="">From version</option>${VERS.map(v=>`<option value="${esc(v.v)}" ${S.f.from===v.s?'selected':''}>${esc(verLabel(v.v))}</option>`).join('')}</select><select class="field" data-in="vto"><option value="">To version</option>${VERS.map(v=>`<option value="${esc(v.v)}" ${S.f.to===v.e?'selected':''}>${esc(verLabel(v.v))}</option>`).join('')}</select>`:'')
   +`<input type="date" class="field" data-in="from" value="${S.f.from}"><span class="meta">–</span><input type="date" class="field" data-in="to" value="${S.f.to}">`
   +(S.f.from||S.f.to||S.f.pools.length<Object.keys(POOL).length?`<button class="chip" data-act="resetRange">Reset</button>`:'')+`</span>`}
@@ -922,7 +933,7 @@ function pityPanel(){const C=2*Math.PI*32;
 function fiftyPanel(F){
   const pd=pending();
   if(pd.c||pd.w){const parts=[pd.c?`${pd.c} character win${pd.c>1?'s':''} to mark as Radiance or not`:'',pd.w?`${pd.w} limited weapon${pd.w>1?'s':''} to mark Won or Lost`:''].filter(Boolean).join(' · ');
-    return`<section class="card"><h2>50/50 record <small>limited banners</small></h2><div class="lock" style="margin:0"><b>Almost there</b><p class="meta">The record appears once every Radiance candidate and every limited weapon is marked in the 5★ Timeline. Still to go: ${parts}.</p><button class="btn ghost" data-act="view" data-v="timeline">Open 5★ Timeline</button></div></section>`}
+    return`<section class="card"><h2>50/50 record <small>limited banners</small></h2><div class="lock" style="margin:0"><b>Almost there</b><p class="meta">The record appears once every Radiance candidate and every limited weapon is marked in the 5★ Timeline. Still to go: ${parts}.</p><button class="btn ghost" data-act="goMark">Go mark them</button></div></section>`}
   const c=F.filter(p=>p.pool==='char'&&p.r===5),n=o=>c.filter(p=>p.out===o).length;
   const w=n('win'),l=n('lose'),cr=n('cr'),g=n('guar'),t=w+l+cr,pct=x=>t?Math.round(x/t*100)+'%':'–';
   const last=[...(D.pools.char||[])].reverse().find(p=>p.r===5&&p.c1!=null),ctr=last?last.c1:1;
@@ -958,11 +969,14 @@ function hist(f5,pool){if(!f5.length)return'<p class="meta">No 5★ in this rang
   return`<svg class="chart" viewBox="0 0 270 ${H+18}">${b.map((v,i)=>{const h=v/mx*(H-16),col=pityCol(i*10+5,pool);
     return`<g class="hit" data-act="pityBin" data-v="${i}"><title>Pity ${i*10+1}–${i*10+10}: ${v}</title><rect x="${i*30}" y="0" width="30" height="${H+18}" fill="transparent"/><rect x="${i*30+3}" y="${H-h}" width="24" height="${Math.max(h,v?2:0)}" rx="3" class="hb" style="fill:${col}"/>${v?`<text x="${i*30+15}" y="${H-h-4}" text-anchor="middle" class="tv">${v}</text>`:''}<text x="${i*30+15}" y="${H+15}" text-anchor="middle">${i*10+10}</text></g>`}).join('')}</svg>`}
 
-function timeline(){const F=filtered().filter(p=>p.r===5&&p.pool!=='novice'&&(S.tlPool==='all'||p.pool===S.tlPool)),L=S.tlNewest?[...F].reverse():F;
-  const chips=[['all','All'],['char','Character'],['weapon','Weapon'],['standard','Standard']].map(([v,t])=>`<button class="chip" data-act="tlPool" data-v="${v}" aria-pressed="${S.tlPool===v}">${t}</button>`).join('');
-  return`<div class="toolbar"><h2 class="ttl">5★ Timeline</h2><span class="tlcount"><b class="n">${F.length}</b> five-star${F.length===1?'':'s'}</span><span class="sep"></span>${chips}<span style="margin-left:auto"></span>${(pd=>pd.c+pd.w?`<span class="meta"><b style="color:var(--gold)">${pd.c+pd.w}</b> left to mark</span>`:'')(pending())}<button class="chip" data-act="tlOrder">${S.tlNewest?'Newest first':'Oldest first'}</button></div>
+function catBar(nov){return`<div class="segg">${Object.keys(POOL).filter(k=>nov||k!=='novice').map(k=>`<button class="chip" data-act="cat" data-v="${k}" aria-pressed="${S.cat===k}">${POOL[k]} <small class="n">${D.pools[k].length.toLocaleString()}</small></button>`).join('')}</div>`}
+function statsBar(rows,cat){const f5=rows.filter(p=>p.r===5),c=o=>f5.filter(p=>p.out===o).length,cells=[['Total pulls',rows.length.toLocaleString()],['5★',f5.length],['Avg pity',f5.length?(f5.reduce((a,p)=>a+p.p5,0)/f5.length).toFixed(2):'–']];
+  if(cat==='char')cells.push(['Won',c('win')],['Lost',c('lose')],['CR',c('cr')]);if(cat==='weapon')cells.push(['Won',c('win')],['Lost',c('lose')+c('off')]);
+  return`<div class="sbar">${cells.map(([k,v])=>`<div><span>${k}</span><b class="n">${v}</b></div>`).join('')}</div>`}
+function timeline(){if(S.cat==='novice')S.cat='char';const all=D.pools[S.cat],L=all.filter(p=>p.r===5);if(S.tlNewest)L.reverse();
+  return`<div class="toolbar">${catBar(false)}<span style="margin-left:auto"></span>${(pd=>pd.c+pd.w?`<span class="meta"><b style="color:var(--gold)">${pd.c+pd.w}</b> left to mark</span>`:'')(pending())}<button class="chip" data-act="tlOrder">${S.tlNewest?'Newest first':'Oldest first'}</button></div>${statsBar(all,S.cat)}
   <p class="meta hint">Radiance (characters) and Won / Lost on limited weapons are marked by you. The site only points out where it could apply.</p>
-  <div class="fives">${L.map(fiveRow).join('')||'<p class="meta">No 5★ in this range.</p>'}</div>`}
+  <div class="fives">${L.map(fiveRow).join('')||'<p class="meta">No 5★ here yet.</p>'}</div>`}
 function fiveRow(p){const c=p.type==='Character'?findChar(p.name):null,col=pityCol(p.p5,p.pool);
   const ctr=p.c0!=null&&p.out!=='guar'?`<div class="ctr n">CR ${p.c0} → ${p.c1}${p.maybeCR?' <b title="Counter was 2–3, so this win could have been Radiance">?</b>':''}</div>`:'';
   const cu=S.crUser[p.key],btn=p.pool==='char'&&(p.out==='cr'||(p.out==='win'&&p.c0>=2))?`<span class="wm"><button class="${p.out==='cr'?'on w':''}" data-act="crm" data-v="${esc(p.key)}|1">✨ Radiance</button><button class="${p.out==='win'&&cu===false?'on l':''}" data-act="crm" data-v="${esc(p.key)}|0">Not Radiance</button></span>`:'';
@@ -975,19 +989,21 @@ function fiveRow(p){const c=p.type==='Character'?findChar(p.name):null,col=pityC
 
 function logView(){const l=S.log,dirty=l.r.length||l.types.length||l.els.length||l.q.trim();
   const ch=(act,v,on,inner)=>`<button class="chip" data-act="${act}" data-v="${v}" aria-pressed="${on}">${inner}</button>`;
-  return`<div class="toolbar"><h2 class="ttl">All wishes</h2>${[5,4,3].map(r=>ch('logR',r,l.r.includes(r),r+'★')).join('')}<span class="sep"></span>${[['Character','Characters'],['Weapon','Weapons']].map(([v,t])=>ch('logType',v,l.types.includes(v),t)).join('')}<span class="sep"></span>${ELO.map(e=>ch('logEl',e,l.els.includes(e),eli(e)+cap(e))).join('')}
-  <input class="field" data-in="logQ" placeholder="Name, year (2024) or patch (6.3)" style="width:250px" value="${esc(l.q)}"><button class="chip${dirty?'':' idle'}" data-act="logReset">Reset filter</button><button class="chip" data-act="order" style="margin-left:auto">${l.newest?'Newest first':'Oldest first'}</button></div><div id="logBody">${logBody()}</div>`}
-function logBody(){const l=S.log;let F=filtered().filter(p=>!l.r.length||l.r.includes(p.r));
+  return`<div class="toolbar">${catBar(true)}</div><div class="toolbar"><h2 class="ttl">All wishes</h2>${[5,4,3].map(r=>ch('logR',r,l.r.includes(r),r+'★')).join('')}<span class="sep"></span>${[['Character','Characters'],['Weapon','Weapons']].map(([v,t])=>ch('logType',v,l.types.includes(v),t)).join('')}<span class="sep"></span>${ELO.map(e=>ch('logEl',e,l.els.includes(e),eli(e)+cap(e))).join('')}
+  <input class="field" data-in="logQ" placeholder="Name, year (2024) or patch (6.3)" style="width:250px" value="${esc(l.q)}"><button class="chip${dirty?'':' idle'}" data-act="logReset">Reset filter</button></div><div id="logBody">${logBody()}</div>`}
+function logBody(){const l=S.log;let F=D.pools[S.cat].filter(p=>!l.r.length||l.r.includes(p.r));
   if(l.types.length)F=F.filter(p=>l.types.includes(p.type));
   if(l.els.length)F=F.filter(p=>p.type==='Character'&&l.els.includes(findChar(p.name)?.el));
   if(l.q.trim()){const raw=l.q.trim(),q=norm(raw);
     if(/^\d{1,4}$/.test(raw))F=F.filter(p=>p.date.startsWith(raw));
     else if(/^\d+\.\d*$/.test(raw))F=F.filter(p=>{const v=verOf(p.date),pt=LUNA[v]||v;return pt.startsWith(raw)});
     else F=F.filter(p=>norm(p.name).includes(q))}
-  const dyn=!!(l.r.length||l.types.length||l.els.length||l.q.trim());if(l.newest)F=[...F].reverse();const tot=F.length;F=F.slice(0,l.limit);
-  return`<div class="log"><div class="lr hd"><span class="hm">#</span><span class="hm">Date</span><span></span><span>Item</span><span title="Filter on: each item's own pity. No filter: pull number in the current 5★ cycle.">Pity</span><span class="hm">Banner</span><span class="hm">Type</span></div>
-  ${F.map(p=>{const c=p.type==='Character'&&p.r>=4?findChar(p.name):null,pt=dyn?(p.r===5?p.p5:p.r===4?p.p4:'–'):p.p5;
-    return`<div class="lr r${p.r}${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''}><span class="hm n meta">${p.n}</span><span class="hm n">${fmtD(p.date)}</span>${p.r>=4?(c||p.type==='Character'?face(p,'log'):`<span class="dot r${p.r}"></span>`):'<span class="dot"></span>'}<button class="nmx linky ell" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button><span class="n pt r${p.r}">${pt}</span><span class="hm meta ell">${esc(bannerLine(p))}</span><span class="hm meta">${POOL[p.pool]}</span></div>`}).join('')}</div>
+  const so=l.sort,dyn=!!(l.r.length||l.types.length||l.els.length||l.q.trim())||so.k==='pity',sb=(k,t)=>`<button class="hs${so.k===k?' on':''}" data-act="logSort" data-v="${k}">${t}${so.k===k?(so.d<0?' ↓':' ↑'):''}</button>`;F=[...F];
+  if(so.k==='date'){if(so.d<0)F.reverse()}else if(so.k==='item')F.sort((a,b)=>so.d*a.name.localeCompare(b.name));else{const kp=p=>p.r===5?p.p5:p.r===4?p.p4:0;F.sort((a,b)=>b.r-a.r||so.d*(kp(a)-kp(b)))}
+  const tot=F.length,stats=statsBar(F,S.cat);F=F.slice(0,l.limit);
+  return`${stats}<div class="log"><div class="lr hd"><span class="hm">#</span><span class="hm">${sb('date','Date')}</span><span></span><span>${sb('item','Item')}</span><span title="Filter on: each item's own pity. No filter: pull number in the current 5★ cycle.">${sb('pity','Pity')}</span><span class="hm">Banner</span><span class="hm">Type</span></div>
+  ${F.map((p,i)=>{const c=p.type==='Character'&&p.r>=4?findChar(p.name):null,pt=dyn?(p.r===5?p.p5:p.r===4?p.p4:'–'):p.p5;
+    return`<div class="lr r${p.r}${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''}><span class="hm n meta">${i+1}</span><span class="hm n">${fmtD(p.date)}</span>${p.r>=4?(c||p.type==='Character'?face(p,'log'):`<span class="dot r${p.r}"></span>`):'<span class="dot"></span>'}<button class="nmx linky ell" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button><span class="n pt r${p.r}">${pt}</span><span class="hm meta ell">${esc(bannerLine(p))}</span><span class="hm meta">${POOL[p.pool]}</span></div>`}).join('')}</div>
   ${tot>l.limit?`<button class="btn ghost more" data-act="more">Show more · ${(tot-l.limit).toLocaleString()} left</button>`:''}<p class="meta" style="text-align:center;margin:12px 0 64px">${tot.toLocaleString()} wishes</p>`}
 
 function openPity(kind){
@@ -1000,15 +1016,14 @@ function openPity(kind){
   <div class="db">${list.length?`<table class="occ"><thead><tr><th>Pity</th><th></th><th>Item</th><th>Date</th><th>Banner</th><th>Result</th></tr></thead><tbody>${list.map(p=>`<tr><td class="n">${p.p5}</td><td>${face(p,'log')}</td><td><button class="linky" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button></td><td class="n">${fmtD(p.date)}</td><td>${esc(bannerLine(p))}</td><td>${outBadge(p)}</td></tr>`).join('')}</tbody></table>`:'<p class="meta">Nothing at this pity.</p>'}</div></div>`;
   const d=$('#dlg');if(!d.open)d.showModal()}
 
-function exportView(){const has=k=>D.pools[k]?.length;
-  return`<div class="ov"><section class="card s6"><h2>Import</h2><p class="meta">Add a newer paimon.moe Excel export to bring your history up to date. It replaces the previous paimon.moe import; your marks are kept. You can also drop a file anywhere on the page.</p>
-  <div class="toolbar"><button class="btn" data-act="pick">Choose a file</button></div>
-  <p class="meta">${D.all.length.toLocaleString()} wishes stored in this browser.</p></section>
-  <section class="card s6"><h2>Backup</h2><p class="meta">Save everything, including your marks, as one file. Import it again to restore.</p>
-  <div class="toolbar"><button class="btn" data-act="backup">Download backup</button><button class="btn ghost danger" data-act="clear">Clear data</button></div></section>
-  <section class="card"><h2>Google Docs export</h2><p class="meta">A clean .docx: a 5★ summary with 50/50 and Radiance results, then every wish grouped by banner and coloured by rarity and element. Upload to Google Drive, then Open with → Google Docs.</p>
-  <div class="toolbar">${Object.keys(POOL).filter(has).map(k=>`<label class="chip"><input type="checkbox" name="xp" value="${k}" checked> ${POOL[k]}</label>`).join('')}<label class="chip"><input type="checkbox" id="x3" checked> Include 3★</label></div>
-  <button class="btn" data-act="docx">Download .docx</button></section></div>`}
+function exportView(){const A=D.all,n=k=>A.filter(p=>p.r===k).length,fa=(a,b)=>`<div><b class="n">${a}</b><span>${b}</span></div>`,rng=A.length?`${A[0].date.slice(0,4)}–${A.at(-1).date.slice(0,4)}`:'–';
+  return`<div class="ov"><section class="card s8 xc"><div class="xh"><span class="xi">↑</span><h2>Import</h2></div><p class="meta">Add a newer paimon.moe export to bring your history up to date. It replaces the previous paimon.moe import and keeps all your marks. Dropping a file anywhere on the page works too.</p>
+  <div class="xdrop" data-act="pick" role="button" tabindex="0"><span class="ring">↑</span><b>Drop your paimon.moe export here</b><span>Excel .xlsx · or click to choose a file</span></div>
+  <div class="xstats">${fa(A.length.toLocaleString(),'Wishes')}${fa(n(5),'5★')}${fa(n(4).toLocaleString(),'4★')}${fa(rng,'Covers')}</div></section>
+  <section class="card s4 xc"><div class="xh"><span class="xi">↓</span><h2>Backup</h2></div><p class="meta">One file with your whole history and every mark you made. Keep it somewhere safe, and drop it into the Import box to restore.</p><div class="xtags"><i>All wishes</i><i>Radiance marks</i><i>Won / Lost marks</i></div><div class="xact"><button class="btn" data-act="backup">Download backup</button></div></section>
+  <section class="card s8 xc"><div class="xh"><span class="xi">≡</span><h2>Google Docs export</h2></div><p class="meta">One tidy .docx with everything in it, ready to keep in your own Google Doc.</p><div class="xtags"><i>5★ summary</i><i>50/50 and Radiance</i><i>Every wish by banner</i><i>Rarity and element colours</i></div>
+  <ol class="xsteps"><li>Download<small>Get the .docx file</small></li><li>Upload<small>Put it in Google Drive</small></li><li>Open<small>Choose Open with Google Docs</small></li></ol><div class="xact l"><button class="btn" data-act="docx">Download .docx</button></div></section>
+  <section class="card s4 xc xdanger"><div class="xh"><span class="xi">!</span><h2>Clear data</h2></div><p class="meta">Wipes every wish, mark and import stored in this browser. This can't be undone, so download a backup first.</p><div class="xact"><button class="btn xclr" data-act="clear">Clear all data</button></div></section></div>`}
 
 /* ---------- item detail ---------- */
 function openItem(name){let F=filtered();if(!F.some(p=>p.name===name))F=D.all;
@@ -1037,7 +1052,7 @@ function suggest(q){const box=$('#sugg');if(!q){box.classList.remove('on');retur
 
 /* ---------- .docx export ---------- */
 const XE=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const DOCEL={pyro:'CC3E00',hydro:'007ACC',anemo:'1DAF71',electro:'7A02CA',dendro:'79A413',cryo:'16B0B6',geo:'AE8B0A'};
+const DOCEL={pyro:'B2472B',hydro:'0085B2',anemo:'239670',electro:'8E58B2',dendro:'6BA027',cryo:'53AAAA',geo:'B17B07'};
 function docColor(p){if(p.r===3)return'555555';const c=p.type==='Character'?findChar(p.name):null;if(c&&DOCEL[c.el])return DOCEL[c.el];return p.r===5?'B8860B':'7B4FB5'}
 const wr=(t,o={})=>`<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>${o.b?'<w:b/>':''}${o.c?`<w:color w:val="${o.c}"/>`:''}<w:sz w:val="${o.sz||20}"/></w:rPr><w:t xml:space="preserve">${XE(t)}</w:t></w:r>`;
 const wp=(runs,o={})=>`<w:p><w:pPr>${o.keep?'<w:keepNext/>':''}<w:spacing w:before="${o.b||0}" w:after="${o.a||0}"/></w:pPr>${runs}</w:p>`;
@@ -1046,7 +1061,7 @@ const wtr=(cells,hdr)=>`<w:tr>${hdr?'<w:trPr><w:tblHeader/></w:trPr>':''}${cells
 const wt=(ws,rows)=>`<w:tbl><w:tblPr><w:tblW w:w="${ws.reduce((a,b)=>a+b)}" w:type="dxa"/><w:tblBorders>${['top','left','bottom','right','insideH','insideV'].map(s=>`<w:${s} w:val="single" w:sz="4" w:space="0" w:color="E3DED3"/>`).join('')}</w:tblBorders><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid>${ws.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${rows.join('')}</w:tbl>`;
 const hdrRow=(labels,ws)=>wtr(labels.map((h,i)=>wc(wr(h,{b:true,c:'FFFFFF',sz:18}),ws[i],'2B2F45')),true);
 async function exportDocx(){
-  const pools=$$('input[name=xp]:checked').map(i=>i.value),three=$('#x3').checked;if(!pools.length)return toast('Pick at least one banner type');
+  const pools=Object.keys(POOL),three=true;
   const TXT={win:'Won 50/50',lose:'Lost 50/50',guar:'Guaranteed',cr:'✨ Capturing Radiance',feat:'Limited weapon (not marked)',off:'Standard weapon · lost'};
   let b=wp(wr('Genshin Wish History',{sz:44,b:true,c:'1F1A10'}),{a:60})+wp(wr(`Exported ${fmtD(new Date().toISOString().slice(0,10))}`,{c:'888888'}),{a:240});
   const W5=[600,2700,1700,1200,800,2600],WL=[800,1300,5000,2400];
@@ -1094,9 +1109,13 @@ const VIEWS={overview,timeline,log:logView,export:exportView};
 function render(){const has=D.all.length>0;
   $('#empty').hidden=has;$('#app').hidden=!has;$('#tabs').hidden=!has;$('#searchBox').hidden=!has;if(!has)return;
   $$('#tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.v===S.view)));
-  $('#filters').innerHTML=S.view==='export'?'':filterBar();
+  const fb=$('#filters'),ov=S.view==='overview';fb.innerHTML=ov?filterBar():'';fb.style.paddingBottom=ov?'':'0';
   $('#view').innerHTML=VIEWS[S.view]()}
+addEventListener('scroll',()=>$('#toTop').classList.toggle('on',scrollY>700),{passive:true});
 const ACT={
+  cat:v=>{S.cat=v;S.log.limit=300;render()},toTop:()=>scrollTo({top:0,behavior:'smooth'}),
+  logSort:v=>{const o=S.log.sort;if(o.k===v)o.d*=-1;else{o.k=v;o.d=v==='item'?1:-1}S.log.limit=300;render()},
+  goMark:()=>{S.cat=pending().c?'char':'weapon';S.view='timeline';render();scrollTo(0,0)},
   view:v=>{S.view=v;render();scrollTo(0,0)},
   pool:v=>{toggleIn(S.f.pools,v);if(!S.f.pools.length)S.f.pools.push(v);render()},
   resetRange:()=>{S.f.from=S.f.to='';S.f.pools=Object.keys(POOL);render()},
@@ -1104,7 +1123,7 @@ const ACT={
   item:v=>openItem(v),
   pityBin:v=>openPity(v),
   histPool:v=>{S.histPool=v;render()},
-  logReset:()=>{Object.assign(S.log,{r:[],q:'',types:[],els:[],limit:300});render()},
+  logReset:()=>{Object.assign(S.log,{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},limit:300});render()},
   wm:v=>{const i=v.lastIndexOf('|'),k=v.slice(0,i),st=v.slice(i+1);if(S.wUser[k]===st)delete S.wUser[k];else S.wUser[k]=st;LS.set('wUser',S.wUser);build();render()},
   tlPool:v=>{S.tlPool=v;render()},
   logType:v=>{tog(S.log.types,v,2);S.log.limit=300;render()},
