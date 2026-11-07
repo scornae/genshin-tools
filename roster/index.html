@@ -286,6 +286,10 @@ dialog::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
 .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 #toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--pri-bg);color:var(--pri-fg);padding:9px 16px;border-radius:var(--r);font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:100;max-width:90vw;text-align:center}
 #toast.show{opacity:1}
+.gsug{position:fixed;z-index:60;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line2);border-radius:var(--r);box-shadow:0 6px 18px rgba(0,0,0,.35);padding:3px}
+.gsug[hidden]{display:none}
+.gsug button{background:none;border:0;color:var(--text);text-align:left;padding:7px 10px;border-radius:calc(var(--r) - 2px);font:inherit;font-size:13px;cursor:pointer}
+.gsug button:hover,.gsug button:focus-visible{background:var(--line2)}
 @media(max-width:700px){.bar{position:static}.wrap{padding:0 14px}.elstat-wrap{width:100%}.elstat{grid-template-columns:repeat(7,1fr)}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
@@ -808,8 +812,8 @@ main{padding:14px 0 60px}
 .lu-tab[aria-selected=true]{background:color-mix(in srgb,var(--mc) 26%,var(--panel));border-color:var(--mc);color:var(--text)}
 .lu-tab[data-lu-tab=share],.lu[data-type=share]{--mc:#2fd3c9}
 .lu-tab[data-lu-tab=myparty],.lu[data-type=myparty]{--mc:#f6b92b}
-.lu-tab[data-lu-tab=abyss],.lu[data-type=abyss]{--mc:#6a86ea}
-.lu-tab[data-lu-tab=stygian],.lu[data-type=stygian]{--mc:#b8243a}
+.lu-tab[data-lu-tab=abyss],.lu[data-type=abyss]{--mc:#2e74bb}
+.lu-tab[data-lu-tab=stygian],.lu[data-type=stygian]{--mc:#b94652}
 .lu-tab[data-lu-tab=theater],.lu[data-type=theater]{--mc:#bb93ff}
 .lu .lu-h{box-shadow:inset 3px 0 0 var(--mc,var(--gold))}
 .tname-sel,.tname-in{font:600 14px var(--f-body);color:var(--text);background:var(--panel);border:1px solid var(--line2);border-radius:var(--r);padding:6px 10px;min-width:0}
@@ -828,8 +832,8 @@ main{padding:14px 0 60px}
 @media(max-width:760px){.lu-tab .l-long{display:none}.lu-tab .l-short{display:inline}}
 html[data-lumode=share]{--mc:#2fd3c9}
 html[data-lumode=myparty]{--mc:#f6b92b}
-html[data-lumode=abyss]{--mc:#6a86ea}
-html[data-lumode=stygian]{--mc:#b8243a}
+html[data-lumode=abyss]{--mc:#2e74bb}
+html[data-lumode=stygian]{--mc:#b94652}
 html[data-lumode=theater]{--mc:#bb93ff}
 .lu .lu-title{color:var(--mc,var(--text))}
 .lu .party-team-head h3{border-left-color:var(--mc,var(--gold))}
@@ -1076,6 +1080,20 @@ function toast(msg){ const t=$('#toast'), dlg=document.querySelector('dialog[ope
 // A new character that is not listed yet is treated as newer than all listed ones until it is added at the top.
 const REL_ORDER = ["mitya", "valeriy", "vodyanitsa", "vesna", "alyosha", "odette", "sandrone", "lohen", "nicole", "prune", "linnea", "varka", "zibai", "illuga", "columbina", "durin", "jahoda", "nefer", "flins", "lauma", "aino", "ineffa", "skirk", "dahlia", "escoffier", "ifa", "iansan", "varesa", "yumemizuki-mizuki", "lan-yan", "mavuika", "citlali", "chasca", "ororon", "xilonen", "kinich", "kachina", "mualani", "emilie", "sigewinne", "sethos", "clorinde", "arlecchino", "chiori", "gaming", "xianyun", "chevreuse", "navia", "charlotte", "furina", "wriothesley", "neuvillette", "freminet", "lynette", "lyney", "kirara", "kaveh", "baizhu", "mika", "dehya", "yaoyao", "alhaitham", "the-wanderer", "faruzan", "layla", "nahida", "nilou", "cyno", "candace", "dori", "collei", "tighnari", "shikanoin-heizou", "kuki-shinobu", "yelan", "kamisato-ayato", "yae-miko", "shenhe", "yun-jin", "gorou", "arataki-itto", "thoma", "sangonomiya-kokomi", "raiden-shogun", "kujou-sara", "aloy", "yoimiya", "sayu", "kamisato-ayaka", "kaedehara-kazuha", "eula", "yanfei", "rosaria", "hu-tao", "xiao", "ganyu", "albedo", "zhongli", "xinyan", "tartaglia", "diona", "klee", "venti", "keqing", "qiqi", "mona", "diluc", "jean", "xiangling", "xingqiu", "ningguang", "chongyun", "beidou", "sucrose", "razor", "noelle", "fischl", "bennett", "barbara", "lisa", "kaeya", "amber"];
 const relIdx = new Map(REL_ORDER.map((id,i)=>[id,i]));
+// Hidden search words (never shown on the page). Typing 3+ letters of a word matches its members. Add new members at the end of a list.
+const GROUPS = {
+  hexerei:["albedo","durin","fischl","klee","lohen","mona","nicole","prune","razor","sucrose","varka","venti"],
+  lunar:["aino","columbina","flins","illuga","ineffa","jahoda","lauma","linnea","nefer","zibai"],
+  stellar:["mitya","sandrone","odette","vesna","cyno","yumemizuki-mizuki","qiqi","vodyanitsa","wriothesley","yae-miko","alyosha","beidou","diona","valeriy"]
+};
+const GROUP_SETS = Object.fromEntries(Object.entries(GROUPS).map(([k,v])=>[k,new Set(v)]));
+// Search box: several terms separated by commas, a character matches if it fits ANY term (name, version, or a hidden group word).
+function searchTerms(q){ return String(q||'').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean); }
+function termMatches(c,term){
+  if(c.name.toLowerCase().includes(term) || String(c.ver).startsWith(term)) return true;
+  if(term.length>=3) for(const k in GROUP_SETS){ if(k.startsWith(term) && GROUP_SETS[k].has(c.id)) return true; }
+  return false;
+}
 const verNum = v => { const [a,b]=String(v).split('.'); return (+a||0)*100+(+b||0); };
 const ordMap = (() => {
   const idx=SEED.map((_,i)=>i);
@@ -1201,7 +1219,7 @@ const SORTS = {
   el:(a,b)=>(EL_ORDER.indexOf(a.el)-EL_ORDER.indexOf(b.el))||(b.ord-a.ord)
 };
 function filterSort(all, f=F, sortKey=S.sort){
-  const q=f.q.trim().toLowerCase();
+  const terms=searchTerms(f.q);
   return all.filter(c=>{
     if(f.rars.size && !f.rars.has(c.rar)) return false;
     if(f.els.size && !f.els.has(c.el)) return false;
@@ -1212,7 +1230,7 @@ function filterSort(all, f=F, sortKey=S.sort){
     if(f.c!=='all'){
       if(!own || c.lvl!==+f.c) return false;
     }
-    if(q && !(c.name.toLowerCase().includes(q) || String(c.ver).startsWith(q))) return false;
+    if(terms.length && !terms.some(tm=>termMatches(c,tm))) return false;
     return true;
   }).sort(SORTS[sortKey]||SORTS.verDesc);
 }
@@ -1451,7 +1469,7 @@ let capProg=null;
 $('#btnImage').onclick=async()=>{
   const btn=$('#btnImage'); if(btn.disabled) return;
   if(!Object.keys(S.owned).length){ toast('Mark the characters you own first'); return; }
-  if(!filterSort(chars(),{...F,q:''}).length){ toast('No characters match the current filters'); return; }
+  if(!filterSort(chars(),F).length){ toast('No characters match the current filters'); return; }
   const label=btn.textContent; btn.disabled=true;
   try{
     btn.textContent='Preparing\u2026';
@@ -1510,11 +1528,11 @@ async function buildExport(){
   const T0=T(), FH=T0.head, FB=T0.body, FM=T0.mono;
   try{ await Promise.all(T0.fonts.map(f=>document.fonts.load(f))); }catch(e){}
   const all=chars(), st=stats(all);
-  const items=filterSort(all,{...F,q:''},S.sort);   // same list as the Roster screen, except the name search
+  const items=filterSort(all,F,S.sort);   // same list as the Roster screen, including the search box
   const tallArt=S.view==='tall', tall=false, G=10, PAD=40, SEC=56;
   const cols=10, CW=128;
   const ps=CW-8, PH=tallArt?Math.round(ps*1024/320):ps, CH=4+PH+38;
-  const secs=[5,4].map(r=>{ const tot=all.filter(c=>c.rar===r&&(!F.els.size||F.els.has(c.el))&&(!F.wps.size||F.wps.has(c.w))); return {r,list:items.filter(c=>c.rar===r),tot:tot.length,own:tot.filter(c=>c.lvl!==undefined&&(F.c==='all'||c.lvl===+F.c)).length}; }).filter(s=>s.list.length);
+  const secs=[5,4].map(r=>{ const tot=filterSort(all,{...F,status:'all',c:'all'},S.sort).filter(c=>c.rar===r); return {r,list:items.filter(c=>c.rar===r),tot:tot.length,own:tot.filter(c=>c.lvl!==undefined&&(F.c==='all'||c.lvl===+F.c)).length}; }).filter(s=>s.list.length);
   const W=PAD*2+cols*CW+(cols-1)*G, pfItems=profileData(all), pfLay=layoutProfile(pfItems,T0,W-PAD*2), HH=(tall?246:150)+(pfLay.h?pfLay.h+34:0);
   let H=PAD+HH; secs.forEach(s=>{ H+=SEC+Math.ceil(s.list.length/cols)*(CH+G); }); H+=PAD+24;
   const scale=Math.min(1.5,Math.sqrt(13e6/(W*H)));
@@ -1535,7 +1553,8 @@ async function buildExport(){
     let sd=7; const rnd=()=>{ sd=(sd+0x6D2B79F5)|0; let q=Math.imul(sd^(sd>>>15),1|sd); q=(q+Math.imul(q^(q>>>7),61|q))^q; return ((q^(q>>>14))>>>0)/4294967296; };
     const n=Math.round(W*H/7000);
     for(let i=0;i<n;i++){ const x=rnd()*W, y=rnd()*H, r=.5+rnd()*1.1, a=.25+rnd()*.6; ctx.fillStyle=`rgba(${rnd()<.2?'255,224,160':'235,230,255'},${a})`; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill(); }
-    for(let i=0,m=Math.round(W*H/90000);i<m;i++) star4(rnd()*W,rnd()*H,3+rnd()*3,'rgba(255,240,200,.75)');
+    const lblZ=[]; { let zy=PAD+HH; secs.forEach(s=>{ lblZ.push([PAD-12,zy-6,PAD+420,zy+SEC-6]); zy+=SEC+Math.ceil(s.list.length/cols)*(CH+G); }); }   // section heading bands: no sparkle on top of the text
+    for(let i=0,m=Math.round(W*H/90000);i<m;i++){ const sx=rnd()*W, sy=rnd()*H, sr=3+rnd()*3; if(!lblZ.some(z=>sx+sr>z[0]&&sx-sr<z[2]&&sy+sr>z[1]&&sy-sr<z[3])) star4(sx,sy,sr,'rgba(255,240,200,.75)'); }
     ctx.strokeStyle='rgba(190,180,255,.22)'; ctx.lineWidth=1; strokeR(16.5,16.5,W-33,H-33,22);
     [[16,16],[W-16,16],[16,H-16],[W-16,H-16]].forEach(([x,y])=>star4(x,y,8,GOLD));
   }
@@ -2350,6 +2369,36 @@ $('#luTabs').addEventListener('click',e=>{
   S.luTab=t.dataset.luTab; persist(); renderLineups();
 });
 const PPF=()=>PARTY_PICKER.f;
+/* hidden-word suggestions under a search box (shows after 3 typed letters of the last term) */
+function attachGroupSuggest(inp){
+  const box=document.createElement('div'); box.className='gsug'; box.hidden=true; let cur=[];
+  const host=()=>inp.closest('dialog')||document.body;
+  const hide=()=>{ box.hidden=true; cur=[]; };
+  function pickAt(w){
+    const parts=inp.value.split(','); parts[parts.length-1]=(parts.length>1?' ':'')+w;
+    inp.value=parts.join(',')+', '; hide(); inp.dispatchEvent(new Event('input',{bubbles:true})); inp.focus();
+  }
+  function show(){
+    const last=inp.value.split(',').pop().trim().toLowerCase();
+    cur=[];
+    if(last.length>=3){
+      const gs=Object.keys(GROUPS).filter(k=>k.startsWith(last)&&k!==last).map(k=>k.charAt(0).toUpperCase()+k.slice(1));
+      const nm=SEED.map(c=>c.name).filter(n=>{ const l=n.toLowerCase(); return l.includes(last)&&l!==last; })
+        .sort((a,b)=>(+!a.toLowerCase().startsWith(last))-(+!b.toLowerCase().startsWith(last)));
+      cur=[...gs,...nm].slice(0,6);
+    }
+    if(!cur.length){ hide(); return; }
+    box.innerHTML=cur.map(k=>`<button type="button" data-w="${esc(k)}">${esc(k)}</button>`).join('');
+    if(box.parentElement!==host()) host().appendChild(box);
+    const r=inp.getBoundingClientRect(); box.style.left=r.left+'px'; box.style.top=(r.bottom+4)+'px'; box.style.minWidth=Math.min(r.width,200)+'px'; box.hidden=false;
+  }
+  inp.addEventListener('input',show);
+  inp.addEventListener('blur',()=>setTimeout(hide,120));
+  inp.addEventListener('keydown',e=>{ if(box.hidden) return; if(e.key==='Enter'||e.key==='Tab'){ e.preventDefault(); pickAt(cur[0]); } else if(e.key==='Escape'){ hide(); } });
+  box.addEventListener('mousedown',e=>e.preventDefault());
+  box.addEventListener('click',e=>{ const b=e.target.closest('[data-w]'); if(b) pickAt(b.dataset.w); });
+}
+attachGroupSuggest($('#q')); attachGroupSuggest($('#partySearch'));
 $('#partySearch').addEventListener('input',e=>{PPF().q=e.target.value;renderPartyPicker();});
 $('#ppSort').addEventListener('click',()=>{PARTY_PICKER.sort=PARTY_PICKER.sort==='verAsc'?'verDesc':'verAsc'; syncPartyPickerFilters(); renderPartyPicker(); const g=$('#partyPickerGrid'); if(g) g.scrollTop=0;});
 $('#ppRar').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; togSet(PPF().rars,+b.dataset.v,2); syncPartyPickerFilters(); renderPartyPicker(); });
