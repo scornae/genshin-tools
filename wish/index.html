@@ -304,6 +304,7 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .cr-t,.sbar b.cr{background:linear-gradient(135deg,#ff4d6d,#ffa63d,#ffe14d,#3fe08a,#3db9ff,#a56bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;display:inline-block;width:fit-content;align-self:flex-start}
 .xh{display:block;margin-bottom:16px}.xh h2{position:relative;margin:0;padding-bottom:14px;font:700 36px/1.1 'Chakra Petch',sans-serif;letter-spacing:.01em;color:#fff}.xh h2::after{content:"";position:absolute;left:0;bottom:0;width:48px;height:4px;border-radius:2px;background:var(--rainbow)}.xdanger .xh h2{color:var(--lose)}.xdanger .xh h2::after{background:var(--lose)}
 .xc .meta{font-size:15.5px;line-height:1.65}.xdrop{padding:44px 24px;gap:10px}.xdrop b{font:600 26px 'Chakra Petch',sans-serif}.xdrop span{font-size:15px}.xact .btn{height:48px;font-size:15.5px}
+.getfile{margin:-14px auto 30px;max-width:540px;display:flex;flex-direction:column;align-items:center;gap:12px}.gf-link{padding:11px 26px;border-radius:999px;border:1px solid var(--gold);color:var(--gold);font-weight:600;font-size:15px;text-decoration:none;transition:background .15s}.gf-link:hover{background:rgba(233,196,106,.12)}.getfile p{margin:0;color:var(--mu);font-size:14.5px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -507,6 +508,7 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
       <p class="eyebrow">Genshin Impact · Wish history</p>
       <h1>Every wish you've made,<br><span class="gold">beautifully counted.</span></h1>
       <p class="lede">Drop your paimon.moe export to see your 5★ story, your 50/50 record, and exactly how many times each character showed up for you.</p>
+      <div class="getfile"><a class="gf-link" href="https://paimon.moe/wish" target="_blank" rel="noopener">Open the paimon.moe Wish Counter</a><p>No file yet? Import your wishes on paimon.moe first, then export them as an Excel file from its Settings and drop that file below.</p></div>
       <label class="drop"><input type="file" id="file" accept=".xlsx,.json,.docx" multiple hidden>
         <strong>Drop your file here</strong><span>or click to choose · paimon.moe Excel export</span>
       </label>
