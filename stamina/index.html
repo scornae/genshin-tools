@@ -1,4 +1,35 @@
 <!DOCTYPE html>
+<!--
+HANDOFF NOTES. File-level facts only. Update this block in the same change whenever a rule or structure changes.
+WHAT IT IS
+Single-file stamina/energy recovery calculator for gacha games. Visitors enter max energy, minutes per point, current
+energy, an optional target and an optional cost per stage, press Calculate, and get a live countdown, a gauge, a
+stage schedule (up to 10 runs) and a saveable JPG. English only. No build step, no external data, no routine updates.
+Hosting: the canonical URL in the head is the stamina/ folder of the genshin-tools site, so the deployed file must be
+named index.html with og-preview.jpg beside it (static 1200x630 card made outside this file; redo it if the look changes).
+Only outside request: Google Fonts (Cinzel, Cormorant Garamond). The favicon is an inline SVG data URI.
+WHERE THINGS LIVE (search these names)
+STORE, MAX_RUNS, inputIds   storage key, cap on schedule rows, the five input ids (max, per, cur, target, cost)
+calculate()                 the only place results are computed; it sets the anchor time S.at
+rawEnergy(), reachTs()      energy now, and when a given energy is reached, both derived from S.at
+update(), renderRuns()      repaint once a second; the stage table is rebuilt only when its text changes
+setGauge(), drawGauge()     page gauge (SVG) and saved-image gauge (canvas); keep the two looks in sync
+drawSnapshot(), saveImage() draw the JPG and download it at once as stamina-timer.jpg, with no preview dialog
+STORAGE (localStorage only; no URL parameters or hash)
+Key stamina-calc-v3 holds inputs (the five field values) and calc (at, max, perMin, cur, target, cost, warn, sig).
+Do not rename it or change that shape without a migration: running timers are stored there. The Clear data handler
+also removes the old key stamina-calc-v2; keep both removals.
+RULES ALREADY DECIDED
+1. Results change only on Calculate or Enter. Editing a field saves it and shows a hint; it never recalculates.
+2. The timer is anchored to the Calculate moment, so reopening the page continues the countdown. Never re-anchor on load.
+3. Clear data confirms, wipes every stored key and reloads. There is no Reset button. A blank target means max energy.
+4. Ready at uses full weekday and month words (fmtLong); the stage table uses the short form (fmtClock).
+5. The saved image heading reads STAMINA TIMER (avoid the word Snapshot on screen). Header line: Genshin Impact // Stamina Recovery.
+6. Palette: near-neutral black, gold, soft white, cyan only as a tiny jewel accent. Keep it clearly different from Roster and Arcana.
+REMOVED, DO NOT ADD BACK
+Game preset dropdown, the time-until-next-point field, the If I come back in panel, the Reset button,
+the preview dialog for the saved image.
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">

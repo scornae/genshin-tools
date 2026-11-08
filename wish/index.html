@@ -1,4 +1,31 @@
 <!doctype html>
+<!--
+HANDOFF NOTES (update this block whenever rules or structure change)
+OVERVIEW: Wish Ledger, a single-file, client-side Genshin wish history reader. Live at scornae.github.io/genshin-tools/wish/
+(repo genshin-tools, folder wish; this file must stay named index.html). Desktop only: phones see "Made for the desktop".
+Page width is 1240px, do not widen. No ads, nothing leaves the browser. CDN libraries: JSZip, SheetJS, Google Fonts.
+INPUT: paimon.moe .xlsx via readXlsx (sheet names are in its map; the Chronicled Wish sheet name is unverified against a real
+export). A legacy doc importer (readDocx) exists but is not advertised in the UI.
+ASSETS: character art from ../roster/assets-optimized/ (avataricon, avatarside, namecardalpha, icons_yatta/<element>.webp).
+Weapon art from weapons/<wslug(name)>.png (lowercase, apostrophes dropped, spaces to underscores, hyphens kept).
+A missing image must stay blank, never throw.
+ROUTINE DATA (search these names): BN = character banners, WN = weapon banners, one line each: version|start yymmdd|end yymmdd|
+featured,featured. Append new patches at the end. TITLE maps a featured 5-star to its banner title (Mitya still missing).
+SEED = character list (id, name, element, weapon type, rarity), add new characters there. PERM = standard-pool 5-star weapons.
+LUNA = Luna version to patch number. CR_START = first banner with Capturing Radiance (2024-08-28).
+USER DATA lives in localStorage, every key starts with "gwl:": docx, paimon, crMarks, crUser, wUser. Backup JSON is
+{app:"wish-ledger", v:1} plus those five fields. Do not rename keys or change that shape: saved data and old backups break.
+Mark keys are "name|YYYY-MM-DD", with "#n" added for repeats on one day. Changing that format loses every mark.
+mergePaimon merges an import into stored rows (same pool, time and name counts once). Never go back to replacing.
+RULES DECIDED: Capturing Radiance (CR) counter starts at 1 on CR_START, a won 50/50 gives -1 (min 0), a lost one +1 (max 3).
+The site never counts CR by itself: it suggests with "?" and the user presses the button. Radiance is always shown apart from
+Lost (Won / Lost / CR are three separate numbers). Weapon Won/Lost is also user-marked; a PERM weapon is an automatic Lost, and the
+next limited 5-star in the same banner is Guaranteed. Avg pity is the mean pity at each 5-star, so it is not total pulls / 5-stars.
+The 50/50 record stays hidden until all marks are done, and hides again after an import adds unmarked data. Wording: "Standard" and
+"standard weapon", never "permanent". Beginners' has no 5-star: excluded from Timeline and from totals unless all pools are selected.
+REMOVED, DO NOT ADD BACK: one global banner filter over every tab (only Overview has it), Collection, Checks, Copy button, Avg gap,
+Customize panel, "50/50 next" and "Guaranteed next" tags, Oldest/Newest button in All Wishes, any mobile layout.
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -305,6 +332,12 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .xh{display:block;margin-bottom:16px}.xh h2{position:relative;margin:0;padding-bottom:14px;font:700 36px/1.1 'Chakra Petch',sans-serif;letter-spacing:.01em;color:#fff}.xh h2::after{content:"";position:absolute;left:0;bottom:0;width:48px;height:4px;border-radius:2px;background:var(--rainbow)}.xdanger .xh h2{color:var(--lose)}.xdanger .xh h2::after{background:var(--lose)}
 .xc .meta{font-size:15.5px;line-height:1.65}.xdrop{padding:44px 24px;gap:10px}.xdrop b{font:600 26px 'Chakra Petch',sans-serif}.xdrop span{font-size:15px}.xact .btn{height:48px;font-size:15.5px}
 .getfile{margin:-14px auto 30px;max-width:540px;display:flex;flex-direction:column;align-items:center;gap:12px}.gf-link{padding:11px 26px;border-radius:999px;border:1px solid var(--gold);color:var(--gold);font-weight:600;font-size:15px;text-decoration:none;transition:background .15s}.gf-link:hover{background:rgba(233,196,106,.12)}.getfile p{margin:0;color:var(--mu);font-size:14.5px;line-height:1.6}
+.ring>div:last-child{min-width:0}.lastl{margin-top:10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mu)}.lastn{font-size:15px;line-height:1.3;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.seg2{margin-top:16px}.seg2 .sh{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.1em}.seg2 .sh b{font-size:24px;color:#fff;letter-spacing:0}
+.seg2 .trw{position:relative;margin-top:22px}.seg2 .bar{display:flex;height:32px;border-radius:9px;overflow:hidden;background:var(--sf2)}.seg2 .bar i{display:flex;align-items:center;justify-content:center;min-width:0}.seg2 .bar em{font:600 13px var(--dig);font-style:normal;color:#111}
+.seg2 .mid{position:absolute;left:50%;top:-6px;bottom:-6px;width:2px;background:#fff;opacity:.85;text-decoration:none}.seg2 .mid small{position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--mu)}
+.seg2 .lg{display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 0 12px;font-size:13px;color:var(--mu)}.seg2 .lg s{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.seg2 .bar{height:18px;border-radius:6px}.seg2 .sh b{font-size:18px}.seg2 .trw{margin-top:20px}.seg2 .bar em{font-size:11px}.seg2 .mid{top:-4px;bottom:-4px}.seg2 .lg{margin:8px 0 10px}
 </style>
 </head>
 <body>
@@ -798,7 +831,7 @@ const S={docx:LS.get('docx',[]),paimon:LS.get('paimon',[]),crMarks:LS.get('crMar
   view:'overview',tlNewest:true,
   f:{pools:Object.keys(POOL),from:'',to:''},
   col:{r:[5,4],type:'all',el:'all',sort:'count',q:''},
-  cat:'char',log:{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},limit:300},histPool:'char'};
+  cat:'char',log:{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},bn:'',num:1,limit:300},histPool:'char'};
 let D={pools:{},all:[]};
 
 /* ---------- import: paimon.moe xlsx ---------- */
@@ -951,9 +984,10 @@ function overview(){
 function pityPanel(){const C=2*Math.PI*32;
   const items=['char','weapon','standard','chron'].map(k=>{const L=D.pools[k]||[];let n=0;for(let i=L.length-1;i>=0&&L[i].r!==5;i--)n++;
     const last=[...L].reverse().find(p=>p.r===5),max=MAXP[k],fr=Math.min(1,n/max),col=pityCol(n,k);
-    const tag=k==='char'?(last?.out==='lose'?'<span class="bd guar">Guaranteed next</span>':'<span class="bd">50/50 next</span>'):'';
-    return`<div class="ring"><div class="rw"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" class="trk"/><circle cx="38" cy="38" r="32" class="val" stroke="${col}" stroke-dasharray="${(C*fr).toFixed(1)} ${C.toFixed(1)}"/></svg><b class="n" style="color:${col}">${n}</b></div><div><div class="rl">${POOL[k]}</div><div class="meta">of ${max} · last 5★ ${last?esc(last.name):'—'}</div>${tag}</div></div>`}).join('');
+    return`<div class="ring"><div class="rw"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" class="trk"/><circle cx="38" cy="38" r="32" class="val" stroke="${col}" stroke-dasharray="${(C*fr).toFixed(1)} ${C.toFixed(1)}"/></svg><b class="n" style="color:${col}">${n}</b></div><div><div class="rl">${POOL[k]}</div><div class="meta">of ${max}</div><div class="lastl">Last 5★</div><div class="lastn">${last?esc(last.name):'—'}</div></div></div>`}).join('');
   return`<section class="card"><h2>Current pity</h2><div class="rings">${items}</div></section>`}
+function segBar(title,parts,t,feat){const lab=x=>t&&x/t>=.08?`<em>${Math.round(x/t*100)}%</em>`:'';
+  return`<div class="seg2"><div class="sh"><span>${title}</span><b class="n">${feat}</b></div><div class="trw"><div class="bar">${t?parts.map(([x,c])=>`<i style="width:${x/t*100}%;background:${c}">${lab(x)}</i>`).join(''):''}</div><u class="mid"><small>50%</small></u></div><div class="lg">${parts.map(([,c,n])=>`<span><s style="background:${c}"></s>${n}</span>`).join('')}</div></div>`}
 function fiftyPanel(F){
   const pd=pending();
   if(pd.c||pd.w){const parts=[pd.c?`${pd.c} character win${pd.c>1?'s':''} to mark as Radiance or not`:'',pd.w?`${pd.w} limited weapon${pd.w>1?'s':''} to mark Won or Lost`:''].filter(Boolean).join(' · ');
@@ -964,14 +998,14 @@ function fiftyPanel(F){
   const tile=(v,lab,col)=>`<div><b class="n"${col?` style="color:${col}"`:''}>${v}</b><span>${lab}</span></div>`;
   const chr=c.length?`<div><div class="rl" style="margin-bottom:12px">Character Event</div>
   <div class="ff">${tile(w,'Won','var(--win)')}${tile(l,'Lost','var(--lose)')}<div><b class="n cr-t">${cr}</b><span>✨ Radiance</span></div>${tile(g,'Guaranteed','var(--guar)')}</div>
-  <div class="seg">${t?`<i style="width:${w/t*100}%;background:var(--win)"></i><i style="width:${cr/t*100}%;background:var(--rainbow)"></i><i style="width:${l/t*100}%;background:var(--lose)"></i>`:''}</div>
-  <div class="meta">Got the featured 5★ on a 50/50: <b>${pct(w+cr)}</b> · clean wins: <b>${pct(w)}</b></div>
+  ${segBar('How your 50/50s went',[[w,'var(--win)','Won'],[l,'var(--lose)','Lost'],[cr,'var(--rainbow)','✨ Radiance']],t,pct(w)+' won')}
+  <div class="meta">Won <b>${pct(w)}</b> of the ${t} you counted</div>
   ${last?`<div class="crbox"><div><div class="rl">Capturing Radiance counter</div><div class="meta">Win −1 · Lose +1 · counted from your marks</div></div><div class="pips">${[1,2,3].map(i=>`<i class="${i<=ctr?'on':''}"></i>`).join('')}<b class="n">${ctr}</b></div></div>`:''}</div>`:'';
   const wk=F.filter(p=>p.pool==='weapon'&&p.r===5),wn=o=>wk.filter(p=>p.out===o).length;
   const ww=wn('win'),wl=wn('lose')+wn('off'),wg=wn('guar'),wf=wn('feat'),wt=ww+wl;
   const wblk=wk.length?`<div><div class="rl" style="margin-bottom:12px">Weapon Event</div>
   <div class="ff">${tile(ww,'Won','var(--win)')}${tile(wl,'Lost','var(--lose)')}${tile(wg,'Guaranteed','var(--guar)')}${tile(wf,'Not marked','var(--mu)')}</div>
-  <div class="seg">${wt?`<i style="width:${ww/wt*100}%;background:var(--win)"></i><i style="width:${wl/wt*100}%;background:var(--lose)"></i>`:''}</div>
+  ${segBar('How your weapon 50/50s went',[[ww,'var(--win)','Won'],[wl,'var(--lose)','Lost']],wt,(wt?Math.round(ww/wt*100)+'%':'–')+' won')}
   <div class="meta">Won <b>${wt?Math.round(ww/wt*100)+'%':'–'}</b> of the ${wt} you counted${wf?` · ${wf} still to mark in the 5★ Timeline`:''}</div></div>`:'';
   if(!chr&&!wblk)return'';
   return`<section class="card"><h2>50/50 record <small>limited banners</small></h2><div class="cols2${chr&&wblk?'':' one'}">${chr}${wblk}</div></section>`}
@@ -1011,11 +1045,17 @@ function fiveRow(p){const c=p.type==='Character'?findChar(p.name):null,col=pityC
   <div class="pity hide-m"><b class="n" style="color:${col}">${p.p5}</b><span class="bar"><i style="width:${Math.min(100,p.p5/MAXP[p.pool]*100)}%;background:${col}"></i></span></div>
   <div class="bcell">${outBadge(p)}${ctr}${btn}${wbtn}</div></div>`}
 
-function logView(){const l=S.log,dirty=l.r.length||l.types.length||l.els.length||l.q.trim();
+const bkey=p=>p.pool==='standard'||p.pool==='novice'?bannerLine(p):`${bannerLine(p)}|${p.banner||''}`;
+const featName=p=>{const b=p.banner||'';if(!b)return'';const n=norm(b);return Object.keys(TITLE).find(k=>norm(TITLE[k])===n)||looseChar(b)?.name||b};
+const wFeat=p=>(WB.find(b=>b.s<=addDays(p.date,1)&&addDays(b.e,1)>=p.date)?.f||[]).join(' / ');
+const bLabel=p=>[verTxt(p),p.pool==='char'?featName(p)||bannerName(p):p.pool==='weapon'?wFeat(p)||bannerName(p):bannerName(p)].filter(Boolean).join(' ');
+function logView(){const l=S.log,dirty=l.r.length||l.types.length||l.els.length||l.q.trim()||l.bn;
+  const bm=new Map();D.pools[S.cat].forEach(p=>{const k=bkey(p),e=bm.get(k);if(e)e.n++;else bm.set(k,{n:1,t:bLabel(p)})});
+  const bsel=`<select class="field" id="logBn" style="width:300px"><option value="">All banners</option>${[...bm].reverse().map(([k,e])=>`<option value="${esc(k)}"${l.bn===k?' selected':''}>${esc(e.t)} (${e.n})</option>`).join('')}</select>`;
   const ch=(act,v,on,inner)=>`<button class="chip" data-act="${act}" data-v="${v}" aria-pressed="${on}">${inner}</button>`;
   return`<div class="toolbar">${catBar('log')}</div><div class="toolbar"><h2 class="ttl">All wishes</h2>${[5,4,3].map(r=>ch('logR',r,l.r.includes(r),r+'★')).join('')}<span class="sep"></span>${[['Character','Characters'],['Weapon','Weapons']].map(([v,t])=>ch('logType',v,l.types.includes(v),t)).join('')}<span class="sep"></span>${ELO.map(e=>ch('logEl',e,l.els.includes(e),eli(e)+cap(e))).join('')}
-  <input class="field" data-in="logQ" placeholder="Name, year (2024) or patch (6.3)" style="width:250px" value="${esc(l.q)}"><button class="chip${dirty?'':' idle'}" data-act="logReset">Reset filter</button></div><div id="logBody">${logBody()}</div>`}
-function logBody(){const l=S.log;let F=D.pools[S.cat].filter(p=>!l.r.length||l.r.includes(p.r));
+  ${bsel}<input class="field" data-in="logQ" placeholder="Name, year (2020) or patch (1.0)" style="width:250px" value="${esc(l.q)}"><button class="chip${dirty?'':' idle'}" data-act="logReset">Reset filter</button></div><div id="logBody">${logBody()}</div>`}
+function logBody(){const l=S.log;let F=D.pools[S.cat].filter(p=>(!l.bn||bkey(p)===l.bn)&&(!l.r.length||l.r.includes(p.r)));
   if(l.types.length)F=F.filter(p=>l.types.includes(p.type));
   if(l.els.length)F=F.filter(p=>p.type==='Character'&&l.els.includes(findChar(p.name)?.el));
   if(l.q.trim()){const raw=l.q.trim(),q=norm(raw);
@@ -1025,9 +1065,9 @@ function logBody(){const l=S.log;let F=D.pools[S.cat].filter(p=>!l.r.length||l.r
   const so=l.sort,dyn=!!(l.r.length||l.types.length||l.els.length||l.q.trim())||so.k==='pity',sb=(k,t)=>`<button class="hs${so.k===k?' on':''}" data-act="logSort" data-v="${k}">${t}${so.k===k?(so.d<0?' ↓':' ↑'):''}</button>`;F=[...F];
   if(so.k==='date'){if(so.d<0)F.reverse()}else if(so.k==='item')F.sort((a,b)=>so.d*a.name.localeCompare(b.name));else{const kp=p=>p.r===5?p.p5:p.r===4?p.p4:0;F.sort((a,b)=>b.r-a.r||so.d*(kp(a)-kp(b)))}
   const tot=F.length,stats=statsBar(F,S.cat);F=F.slice(0,l.limit);
-  return`${stats}<div class="log"><div class="lr hd"><span class="hm">#</span><span class="hm">${sb('date','Date')}</span><span></span><span>${sb('item','Item')}</span><span title="Filter on: each item's own pity. No filter: pull number in the current 5★ cycle.">${sb('pity','Pity')}</span><span class="hm">Banner</span><span class="hm">Type</span></div>
+  return`${stats}<div class="log"><div class="lr hd"><span class="hm"><button class="hs" data-act="logNum" title="Flip the numbering">#${l.num>0?' ↓':' ↑'}</button></span><span class="hm">${sb('date','Date')}</span><span></span><span>${sb('item','Item')}</span><span title="Filter on: each item's own pity. No filter: pull number in the current 5★ cycle.">${sb('pity','Pity')}</span><span class="hm">Banner</span><span class="hm">Type</span></div>
   ${F.map((p,i)=>{const c=p.type==='Character'&&p.r>=4?findChar(p.name):null,pt=dyn?(p.r===5?p.p5:p.r===4?p.p4:'–'):p.p5;
-    return`<div class="lr r${p.r}${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''}><span class="hm n meta">${i+1}</span><span class="hm n">${fmtD(p.date)}</span>${p.r>=4||p.type==='Weapon'?(c||p.type==='Character'||p.type==='Weapon'?face(p,'log'):`<span class="dot r${p.r}"></span>`):'<span class="dot"></span>'}<button class="nmx linky ell" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button><span class="n pt r${p.r}">${pt}</span><span class="hm meta ell">${esc(bannerLine(p))}</span><span class="hm meta">${POOL[p.pool]}</span></div>`}).join('')}</div>
+    return`<div class="lr r${p.r}${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''}><span class="hm n meta">${l.num>0?i+1:tot-i}</span><span class="hm n">${fmtD(p.date)}</span>${p.r>=4||p.type==='Weapon'?(c||p.type==='Character'||p.type==='Weapon'?face(p,'log'):`<span class="dot r${p.r}"></span>`):'<span class="dot"></span>'}<button class="nmx linky ell" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button><span class="n pt r${p.r}">${pt}</span><span class="hm meta ell">${esc(bannerLine(p))}</span><span class="hm meta">${POOL[p.pool]}</span></div>`}).join('')}</div>
   ${tot>l.limit?`<button class="btn ghost more" data-act="more">Show more · ${(tot-l.limit).toLocaleString()} left</button>`:''}<p class="meta" style="text-align:center;margin:12px 0 64px">${tot.toLocaleString()} wishes</p>`}
 
 function openPity(kind){
@@ -1090,6 +1130,8 @@ async function exportDocx(){
   let b=wp(wr('Genshin Wish History',{sz:44,b:true,c:'1F1A10'}),{a:60})+wp(wr(`Exported ${fmtD(new Date().toISOString().slice(0,10))}`,{c:'888888'}),{a:240});
   const W5=[600,2700,1700,1200,800,2600],WL=[800,1300,5000,2400];
   const RC={win:'1E8449',lose:'C0392B',guar:'2E5EAA',cr:'7B3FB5',feat:'B8860B',off:'C0392B'};
+  const wm=(a,o={})=>`<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>${o.b?'<w:b/>':''}${o.c?`<w:color w:val="${o.c}"/>`:''}<w:sz w:val="${o.sz||20}"/></w:rPr>${a.map(x=>x===0?'<w:tab/>':`<w:t xml:space="preserve">${XE(x)}</w:t>`).join('')}</w:r>`;
+  const tp=(f,x)=>`<w:p><w:pPr><w:tabs><w:tab w:val="left" w:pos="900"/><w:tab w:val="left" w:pos="2300"/><w:tab w:val="left" w:pos="7000"/></w:tabs>${f?`<w:shd w:val="clear" w:color="auto" w:fill="${f}"/>`:''}<w:spacing w:before="0" w:after="0"/></w:pPr>${x}</w:p>`;
   for(const k of pools){const L=D.pools[k];if(!L.length)continue;const f5=L.filter(p=>p.r===5);
     b+=wp(wr(POOL[k]+' — 5★ summary',{sz:30,b:true,c:'B8860B'}),{b:240,a:120,keep:true});
     if(f5.length)b+=wt(W5,[hdrRow(['#','Item','Version','Date','Pity','Result'],W5),...f5.map((p,i)=>wtr([wc(wr(String(i+1)),W5[0]),wc(wr(p.name,{b:true,c:docColor(p)}),W5[1]),wc(wr(verLabel(p.ver)),W5[2]),wc(wr(dmy(p.date)),W5[3]),wc(wr(String(p.p5),p.p5>=75?{b:true,c:'C0392B'}:{}),W5[4]),wc(wr(TXT[p.out]||'',{b:true,c:RC[p.out]}),W5[5],p.out==='cr'?'F1E6FF':p.out==='win'?'EAF7F0':p.out==='guar'?'EAF0FF':p.out==='feat'?'FFF8E1':'FDECEC')]))]);
@@ -1097,13 +1139,14 @@ async function exportDocx(){
     b+=wp(wr(`${L.length.toLocaleString()} wishes · ${f5.length} × 5★ · ${pending} wishes since the last 5★`,{c:'888888',sz:18}),{b:80,a:200})}
   for(const k of pools){const L=D.pools[k];if(!L.length)continue;
     b+=`<w:p><w:r><w:br w:type="page"/></w:r></w:p>`+wp(wr(POOL[k]+' — full log',{sz:30,b:true}),{a:120});
-    for(let i=0;i<L.length;){const lab=L[i].banner||'';let j=i;while(j<L.length&&(L[j].banner||'')===lab)j++;
+    for(let i=0;i<L.length;){const bl=x=>k==='standard'||k==='novice'?'':(x.banner||''),lab=bl(L[i]);let j=i;while(j<L.length&&bl(L[j])===lab)j++;
       const grp=L.slice(i,j),rows=grp.filter(p=>three||p.r>=4),d0=grp[0].date;
       const feats=k==='char'||k==='weapon'?[...new Set((k==='char'?CB:WB).filter(x=>x.s<=d0&&x.e>=d0).flatMap(x=>x.f))].join(' / '):'';
       b+=wp(wr(bannerName(grp[0]),{b:true,sz:24,c:k==='char'?'B8860B':k==='weapon'?'7B4FB5':'2E5EAA'})+wr(`   ${verTxt(grp[0])?verTxt(grp[0])+' · ':''}${dmy(d0)} – ${dmy(grp.at(-1).date)} · ${grp.length} wishes`,{c:'888888',sz:18}),{b:200,a:60,keep:true});
       if(feats)b+=wp(wr('Featured: '+feats,{c:'888888',sz:18}),{a:60,keep:true});
-      if(rows.length)b+=wt(WL,[hdrRow(['Pity','Date','Item','Note'],WL),...rows.map(p=>{const f=p.out==='cr'?'F1E6FF':p.r===5?'FFF4D6':p.r===4?'F7F3FF':'';
-        return wtr([wc(wr(String(p.p5),{c:'888888'}),WL[0],f),wc(wr(dmy(p.date)),WL[1],f),wc(wr(p.r===5?'★ '+p.name:p.name,{b:p.r>=4,c:docColor(p)}),WL[2],f),wc(wr(p.r===5?(TXT[p.out]||'5★'):p.r===4?'4★':'',p.r===5?{b:true,c:RC[p.out]}:{c:'7B4FB5'}),WL[3],f)])})]);
+      if(rows.length){b+=tp('',wm(['Pity',0,'Date',0,'Item',0,'Note'],{c:'888888',sz:16}));
+        rows.forEach(p=>{const f=p.out==='cr'?'F1E6FF':p.r===5?'FFF4D6':p.r===4?'F7F3FF':'';
+          b+=tp(f,wm([String(p.p5),0,dmy(p.date),0],{c:'777777'})+wm([p.r===5?'★ '+p.name:p.name],{b:p.r>=4,c:docColor(p)})+(p.r===5?wm([0,TXT[p.out]||'5★'],{b:true,c:RC[p.out]}):p.r===4?wm([0,'4★'],{c:'7B4FB5'}):''))});b+=wp('',{a:120})}
       i=j}}
   const zip=new JSZip();
   zip.file('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
@@ -1137,7 +1180,7 @@ function render(){const has=D.all.length>0;
   $('#view').innerHTML=VIEWS[S.view]()}
 addEventListener('scroll',()=>$('#toTop').classList.toggle('on',scrollY>700),{passive:true});
 const ACT={
-  cat:v=>{S.cat=v;S.log.limit=300;render()},toTop:()=>scrollTo({top:0,behavior:'smooth'}),
+  cat:v=>{S.cat=v;S.log.bn='';S.log.limit=300;render()},logNum:()=>{S.log.num*=-1;$('#logBody').innerHTML=logBody()},toTop:()=>scrollTo({top:0,behavior:'smooth'}),
   logSort:v=>{const o=S.log.sort;if(o.k===v)o.d*=-1;else{o.k=v;o.d=v==='item'?1:-1}S.log.limit=300;render()},
   goMark:()=>{S.cat=pending().c?'char':'weapon';S.view='timeline';render();scrollTo(0,0)},
   view:v=>{S.view=v;render();scrollTo(0,0)},
@@ -1147,7 +1190,7 @@ const ACT={
   item:v=>openItem(v),
   pityBin:v=>openPity(v),
   histPool:v=>{S.histPool=v;render()},
-  logReset:()=>{Object.assign(S.log,{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},limit:300});render()},
+  logReset:()=>{Object.assign(S.log,{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},bn:'',num:1,limit:300});render()},
   wm:v=>{const i=v.lastIndexOf('|'),k=v.slice(0,i),st=v.slice(i+1);if(S.wUser[k]===st)delete S.wUser[k];else S.wUser[k]=st;LS.set('wUser',S.wUser);build();render()},
   tlPool:v=>{S.tlPool=v;render()},
   logType:v=>{tog(S.log.types,v,2);S.log.limit=300;render()},
@@ -1167,10 +1210,11 @@ const ACT={
     location.reload()},
   close:()=>$('#dlg').close()};
 document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t)return;ACT[t.dataset.act]?.(t.dataset.v,t,e)});
+document.addEventListener('change',e=>{if(e.target.id==='logBn'){S.log.bn=e.target.value;S.log.limit=300;$('#logBody').innerHTML=logBody();const rb=document.querySelector('[data-act=logReset]');if(rb)rb.classList.remove('idle')}});
 document.addEventListener('input',e=>{const t=e.target,k=t.dataset.in;if(!k)return;
   if(k==='colQ'){S.col.q=t.value;$('#colGrid').innerHTML=colGrid()}
   else if(k==='colSort'){S.col.sort=t.value;$('#colGrid').innerHTML=colGrid()}
-  else if(k==='logQ'){S.log.q=t.value;S.log.limit=300;$('#logBody').innerHTML=logBody();const L=S.log,rb=document.querySelector('[data-act=logReset]');if(rb)rb.classList.toggle('idle',!(L.r.length||L.types.length||L.els.length||L.q.trim()))}
+  else if(k==='logQ'){S.log.q=t.value;S.log.limit=300;$('#logBody').innerHTML=logBody();const L=S.log,rb=document.querySelector('[data-act=logReset]');if(rb)rb.classList.toggle('idle',!(L.r.length||L.types.length||L.els.length||L.q.trim()||L.bn))}
   else if(k==='from'||k==='to'){S.f[k]=t.value;render()}
   else if(k==='vfrom'){S.f.from=VERS.find(x=>x.v===t.value)?.s||'';render()}
   else if(k==='vto'){S.f.to=VERS.find(x=>x.v===t.value)?.e||'';render()}});

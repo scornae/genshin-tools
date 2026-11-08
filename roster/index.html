@@ -1,4 +1,27 @@
 <!DOCTYPE html>
+<!--
+HANDOFF NOTES: read this first. Keep this block up to date whenever a rule below changes.
+
+What this is: one self-contained HTML file, no build step. Hosted on GitHub Pages (repo genshin-tools, folder roster/) and uploaded by hand as index.html. Images come from assets-optimized/ next to it (.webp only, named by character id). Nothing is sent anywhere; user data stays in the visitor's browser.
+
+Where things live (search for these names):
+- SEED: every character. APPEND-ONLY, never reorder or insert: share links store list positions.
+- REL_ORDER: display order, newest first (edit freely, links are not affected). A new character goes on top.
+- PERM5 / NOSIG: permanent 5-star list and no-signature-weapon list (Profile stats). Ask whether a new 5-star is permanent.
+- GROUPS: hidden search words (Hexerei, Lunar, Stellar) used by the search box. Add new members at the end of a list. Never shown on the page.
+- SEASONS: Theater seasons (keep 3 at most; add the new one at the end, drop the oldest). A season ends on the day the next one starts (reset 04:00 server time).
+- ABYSS_CYCLES: Abyss buff text per 16th-to-16th cycle. Add new cycles at the end; the page hides the note when no cycle matches today.
+- PARTY_MODES, NAME_PRESETS: the Team Builder modes and preset team names. Preset ids are stored in links: never change an id's meaning, add new ones at the end.
+- SHARE_ALPHA / shareTok: share-link format #s2 (team = 4 slots x 3 chars, optional names after ~). Do not change it; old links must keep opening.
+- STORE ('gi-roster-v2'): localStorage and IndexedDB key for user data. It is tied to the page address, so changing it or moving the site loses everyone's saved data. Bump IMG_CACHE_V only when image files are replaced under the same names.
+- filterSort: one filter used by the Roster list, the Roster image and the team picker.
+
+Rules that were decided on purpose:
+- Element colours are fixed: Pyro #ff663e, Hydro #00bfff, Anemo #32d7a0, Electro #cc7fff, Dendro #9ae538, Cryo #77f3f3, Geo #feb00b.
+- Keep it light: no extra fonts or images, no third-party image hosts, no personal contact info, no tracking.
+- Removed on purpose, do not add back: multiple themes, per-mode page backgrounds, capped or centred character slots, add/delete Set buttons, Reset teams button, filter note inside images.
+- When data is sent for a new season, new cycle or new character, confirm it with the owner before applying.
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
