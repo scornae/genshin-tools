@@ -5,14 +5,17 @@ OVERVIEW: Wish Ledger, a single-file, client-side Genshin wish history reader. L
 (repo genshin-tools, folder wish; this file must stay named index.html). Desktop only: phones see "Made for the desktop".
 Page width is 1240px, do not widen. No ads, nothing leaves the browser. CDN libraries: JSZip, SheetJS, Google Fonts.
 INPUT: paimon.moe .xlsx via readXlsx (sheet names are in its map; the Chronicled Wish sheet name is unverified against a real
-export). A legacy doc importer (readDocx) exists but is not advertised in the UI.
+export). A legacy doc importer (readDocx) exists but is not advertised in the UI. The exported .docx is a read-only backup copy for people
+and cannot be imported back; the JSON Backup is the real restore path.
 ASSETS: character art from ../roster/assets-optimized/ (avataricon, avatarside, namecardalpha, icons_yatta/<element>.webp).
-Weapon art from weapons/<wslug(name)>.png (lowercase, apostrophes dropped, spaces to underscores, hyphens kept).
-A missing image must stay blank, never throw.
+Weapon art from weapons/<wslug(name)>.png (lowercase, no apostrophes, spaces to underscores). A missing image must stay blank.
 ROUTINE DATA (search these names): BN = character banners, WN = weapon banners, one line each: version|start yymmdd|end yymmdd|
-featured,featured. Append new patches at the end. TITLE maps a featured 5-star to its banner title (Mitya still missing).
-SEED = character list (id, name, element, weapon type, rarity), add new characters there. PERM = standard-pool 5-star weapons.
-LUNA = Luna version to patch number. CR_START = first banner with Capturing Radiance (2024-08-28).
+featured,featured. Append new patches at the end. Always use the full Roster name (Kaedehara Kazuha, not Kazuha): it must match SEED
+and TITLE exactly. TITLE = featured 5-star to banner title, one entry per character, add one for every new character.
+CRN = Chronicled Wish banners (start|end|title), add each new one, and leave an unannounced end blank (open-ended) until it is known. SEED = character list (id, name,
+element, weapon type, rarity), add new characters there. PERM = standard-pool 5-star weapons. LUNA = Luna version to patch number.
+CR_START = first banner with Capturing Radiance (2024-08-28).
+DATA STATUS: banner data is verified through 7.2 Phase 1 (2026-11-09); the full record is in the comment just above SEED.
 USER DATA lives in localStorage, every key starts with "gwl:": docx, paimon, crMarks, crUser, wUser. Backup JSON is
 {app:"wish-ledger", v:1} plus those five fields. Do not rename keys or change that shape: saved data and old backups break.
 Mark keys are "name|YYYY-MM-DD", with "#n" added for repeats on one day. Changing that format loses every mark.
@@ -23,6 +26,8 @@ Lost (Won / Lost / CR are three separate numbers). Weapon Won/Lost is also user-
 next limited 5-star in the same banner is Guaranteed. Avg pity is the mean pity at each 5-star, so it is not total pulls / 5-stars.
 The 50/50 record stays hidden until all marks are done, and hides again after an import adds unmarked data. Wording: "Standard" and
 "standard weapon", never "permanent". Beginners' has no 5-star: excluded from Timeline and from totals unless all pools are selected.
+LANDING (no data yet): the drop box comes first, the paimon.moe link below it, then the safety line (no HoYoverse login, never ask for
+password or verification code, nothing uploaded, unofficial). Keep that wording: it matches HoYoLAB community rules.
 REMOVED, DO NOT ADD BACK: one global banner filter over every tab (only Overview has it), Collection, Checks, Copy button, Avg gap,
 Customize panel, "50/50 next" and "Guaranteed next" tags, Oldest/Newest button in All Wishes, any mobile layout.
 -->
@@ -117,7 +122,7 @@ button,input,select{font:inherit;color:inherit}button{cursor:pointer}
 .drop{position:relative;display:flex;flex-direction:column;gap:6px;align-items:center;width:min(520px,100%);margin:0 auto;padding:44px 24px;border-radius:20px;background:var(--sf);cursor:pointer;isolation:isolate;transition:background .2s}
 .drop::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(44,245,107,.7),rgba(255,255,255,.07) 40%,rgba(255,255,255,.07) 60%,rgba(44,245,107,.7));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;z-index:-1}
 .drop:hover{background:var(--sf2)}.drop strong{font:22px 'Chakra Petch',sans-serif}.drop span{color:var(--mu);font-size:14px}
-.fine{color:var(--fa);font-size:13px;margin-top:18px}
+.fine{color:var(--fa);font-size:13px;margin:18px auto 0;max-width:560px;line-height:1.5}
 .dropveil{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:rgba(0,0,0,.82);backdrop-filter:blur(6px)}
 .dropveil.on{display:grid}
 .dropveil div{font:28px 'Chakra Petch',sans-serif;padding:48px 72px;border-radius:24px;border:1.5px dashed var(--acc);color:var(--acc2)}
@@ -153,7 +158,7 @@ button,input,select{font:inherit;color:inherit}button{cursor:pointer}
 
 /* pity rings */
 .rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px}
-.ring .rl{font-size:16px;margin-bottom:2px}
+.ring .rl{font-size:16px;margin-bottom:2px;display:block;font-family:inherit;font-weight:600;cursor:pointer}.ring .rl:hover{color:var(--gold)}
 .ring{display:flex;align-items:center;gap:14px}
 .rw{position:relative;width:96px;height:96px;flex:none}
 .rw svg{width:96px;height:96px;transform:rotate(-90deg)}
@@ -232,10 +237,10 @@ button,input,select{font:inherit;color:inherit}button{cursor:pointer}
 
 /* log */
 .log{border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.lr{display:grid;grid-template-columns:56px 112px 44px minmax(0,1fr) 56px minmax(0,380px) 140px;gap:14px;align-items:center;padding:8px 16px;border-top:1px solid var(--line);font-size:15.5px}
+.lr{display:grid;grid-template-columns:56px 112px 44px minmax(0,1fr) 64px minmax(0,1.5fr);gap:14px;align-items:center;padding:8px 16px;border-top:1px solid var(--line);font-size:15.5px}
 .lr.hd{border-top:0;background:linear-gradient(180deg,#151515,#0c0c0c);font-size:12.5px;font-weight:700;color:#c9c9c9;text-transform:uppercase;letter-spacing:.12em;padding-top:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.16)}
 .lr.r3{color:var(--mu)}.lr.r4 .nmx{color:#cdb6ff;font-weight:600}
-.lr.r5{background:linear-gradient(90deg,rgba(233,196,106,.14),transparent 60%)}.lr.r5 .nmx{color:var(--gold2);font-weight:700}
+.lr.r4{background:linear-gradient(90deg,rgba(180,140,242,.14),transparent 75%)}.lr.r5{background:linear-gradient(90deg,rgba(233,196,106,.27),transparent 75%)}.lr.r5 .nmx{color:var(--gold2);font-weight:700}
 .lr .pf{width:38px;height:38px;border-radius:8px}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--fa);justify-self:center}.dot.r4{width:9px;height:9px;background:var(--r4)}.dot.r5{width:11px;height:11px;background:var(--r5);box-shadow:0 0 10px rgba(242,179,80,.7)}
 .pt{font:17px 'Chakra Petch',sans-serif}.pt.r3{color:var(--fa);font-size:15px}.pt.r4{color:#b48cf2}.pt.r5{font-size:20px;color:var(--gold)}
@@ -318,7 +323,7 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .cr-t,.sbar b.cr{background:linear-gradient(135deg,#ff4d6d,#ffa63d,#ffe14d,#3fe08a,#3db9ff,#a56bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;display:inline-block;width:fit-content;align-self:flex-start}
 .xh{display:block;margin-bottom:16px}.xh h2{position:relative;margin:0;padding-bottom:14px;font:700 36px/1.1 'Chakra Petch',sans-serif;letter-spacing:.01em;color:#fff}.xh h2::after{content:"";position:absolute;left:0;bottom:0;width:48px;height:4px;border-radius:2px;background:var(--rainbow)}.xdanger .xh h2{color:var(--lose)}.xdanger .xh h2::after{background:var(--lose)}
 .xc .meta{font-size:15.5px;line-height:1.65}.xdrop{padding:44px 24px;gap:10px}.xdrop b{font:600 26px 'Chakra Petch',sans-serif}.xdrop span{font-size:15px}.xact .btn{height:48px;font-size:15.5px}
-.getfile{margin:-14px auto 30px;max-width:540px;display:flex;flex-direction:column;align-items:center;gap:12px}.gf-link{padding:11px 26px;border-radius:999px;border:1px solid var(--gold);color:var(--gold);font-weight:600;font-size:15px;text-decoration:none;transition:background .15s}.gf-link:hover{background:rgba(233,196,106,.12)}.getfile p{margin:0;color:var(--mu);font-size:14.5px;line-height:1.6}
+.getfile{margin:30px auto 0;max-width:540px;display:flex;flex-direction:column;align-items:center;gap:12px}.gf-link{padding:11px 26px;border-radius:999px;border:1px solid var(--gold);color:var(--gold);font-weight:600;font-size:15px;text-decoration:none;transition:background .15s}.gf-link:hover{background:rgba(233,196,106,.12)}.getfile p{margin:0;color:var(--mu);font-size:14.5px;line-height:1.6}
 .ring>div:last-child{min-width:0}.lastl{margin-top:10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mu)}.lastn{font-size:15px;line-height:1.3;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .seg2{margin-top:16px}.seg2 .sh{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.1em}.seg2 .sh b{font-size:24px;color:#fff;letter-spacing:0}
 .seg2 .trw{position:relative;margin-top:22px}.seg2 .bar{display:flex;height:32px;border-radius:9px;overflow:hidden;background:var(--sf2)}.seg2 .bar i{display:flex;align-items:center;justify-content:center;min-width:0}.seg2 .bar em{font:600 13px var(--dig);font-style:normal;color:#111}
@@ -528,11 +533,11 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
       <p class="eyebrow">Genshin Impact · Wish history</p>
       <h1>Every wish you've made,<br><span class="gold">beautifully counted.</span></h1>
       <p class="lede">Drop your paimon.moe export to see your 5★ story, your 50/50 record, and exactly how many times each character showed up for you.</p>
-      <div class="getfile"><a class="gf-link" href="https://paimon.moe/wish" target="_blank" rel="noopener">Open the paimon.moe Wish Counter</a><p>No file yet? Import your wishes on paimon.moe first, then export them as an Excel file from its Settings and drop that file below.</p></div>
       <label class="drop"><input type="file" id="file" accept=".xlsx,.json,.docx" multiple hidden>
         <strong>Drop your file here</strong><span>or click to choose · paimon.moe Excel export</span>
       </label>
-      <p class="fine">Everything stays in your browser. Nothing is uploaded anywhere. Made for desktop browsers.</p>
+      <div class="getfile"><a class="gf-link" href="https://paimon.moe/wish" target="_blank" rel="noopener">Open the paimon.moe Wish Counter</a><p>No file yet? Import your wishes on paimon.moe first, then export them as an Excel file from its Settings and drop that file in the box above.</p></div>
+      <p class="fine">No HoYoverse account needed. This site never asks for your password or a verification code, so never type one here. Your file is read inside your browser and is not uploaded anywhere. Unofficial fan-made tool, not affiliated with HoYoverse. Made for desktop browsers.</p>
     </div>
   </section>
   <section id="app" hidden>
@@ -547,6 +552,15 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 <div class="dropveil" id="veil"><div>Drop to import</div></div>
 
 <script>
+/* ========== DATA BASELINE: COMPLETE AND VERIFIED ==========
+   Verified on 2026-11-09 against the Fandom wiki and Game8. Covers 1.0 through 7.2 Phase 1 (starts 2026-11-04):
+   every character banner (108) and weapon banner (107) with version name, dates, featured characters and the two featured
+   5-star weapons; banner titles of all 65 featured characters (TITLE); all 7 Chronicled Wish banners with dates and titles (CRN).
+   Known game quirk, correct as is: version 1.3 has three character banners but two weapon banners, with different dates.
+   Names follow the Roster spelling. Not stored and not checked: 4-star rate-ups.
+   Next additions: 7.2 Phase 2 (Zibai, Linnea) and the Chronicled 7.2 end date, only once the dates are announced.
+   After adding any patch, compare it against the wiki Version page before treating the data as verified again.
+   ============================================================ */
 const SEED=[["jean","Jean","anemo","sword",5],["diluc","Diluc","pyro","claymore",5],["qiqi","Qiqi","cryo","sword",5],["mona","Mona","hydro","catalyst",5],["keqing","Keqing","electro","sword",5],["venti","Venti","anemo","bow",5],["klee","Klee","pyro","catalyst",5],["tartaglia","Tartaglia","hydro","bow",5],["zhongli","Zhongli","geo","polearm",5],["albedo","Albedo","geo","sword",5],["ganyu","Ganyu","cryo","bow",5],["xiao","Xiao","anemo","polearm",5],["hu-tao","Hu Tao","pyro","polearm",5],["eula","Eula","cryo","claymore",5],["kaedehara-kazuha","Kaedehara Kazuha","anemo","sword",5],["kamisato-ayaka","Kamisato Ayaka","cryo","sword",5],["yoimiya","Yoimiya","pyro","bow",5],["aloy","Aloy","cryo","bow",5],["raiden-shogun","Raiden Shogun","electro","polearm",5],["sangonomiya-kokomi","Sangonomiya Kokomi","hydro","catalyst",5],["arataki-itto","Arataki Itto","geo","claymore",5],["shenhe","Shenhe","cryo","polearm",5],["yae-miko","Yae Miko","electro","catalyst",5],["kamisato-ayato","Kamisato Ayato","hydro","sword",5],["yelan","Yelan","hydro","bow",5],["tighnari","Tighnari","dendro","bow",5],["cyno","Cyno","electro","polearm",5],["nilou","Nilou","hydro","sword",5],["nahida","Nahida","dendro","catalyst",5],["the-wanderer","The Wanderer","anemo","catalyst",5],["alhaitham","Alhaitham","dendro","sword",5],["dehya","Dehya","pyro","claymore",5],["baizhu","Baizhu","dendro","catalyst",5],["lyney","Lyney","pyro","bow",5],["neuvillette","Neuvillette","hydro","catalyst",5],["wriothesley","Wriothesley","cryo","catalyst",5],["furina","Furina","hydro","sword",5],["navia","Navia","geo","claymore",5],["xianyun","Xianyun","anemo","catalyst",5],["chiori","Chiori","geo","sword",5],["arlecchino","Arlecchino","pyro","polearm",5],["clorinde","Clorinde","electro","sword",5],["sigewinne","Sigewinne","hydro","bow",5],["emilie","Emilie","dendro","polearm",5],["mualani","Mualani","hydro","catalyst",5],["kinich","Kinich","dendro","claymore",5],["xilonen","Xilonen","geo","sword",5],["chasca","Chasca","anemo","bow",5],["citlali","Citlali","cryo","catalyst",5],["mavuika","Mavuika","pyro","claymore",5],["yumemizuki-mizuki","Yumemizuki Mizuki","anemo","catalyst",5],["varesa","Varesa","electro","catalyst",5],["escoffier","Escoffier","cryo","polearm",5],["skirk","Skirk","cryo","sword",5],["ineffa","Ineffa","electro","polearm",5],["lauma","Lauma","dendro","catalyst",5],["flins","Flins","electro","polearm",5],["nefer","Nefer","dendro","catalyst",5],["durin","Durin","pyro","sword",5],["columbina","Columbina","hydro","catalyst",5],["zibai","Zibai","geo","sword",5],["varka","Varka","anemo","claymore",5],["linnea","Linnea","geo","bow",5],["nicole","Nicole","pyro","catalyst",5],["lohen","Lohen","cryo","polearm",5],["sandrone","Sandrone","cryo","claymore",5],["odette","Odette","cryo","sword",5],["vesna","Vesna","anemo","sword",5],["vodyanitsa","Vodyanitsa","hydro","catalyst",5],["mitya","Mitya","electro","catalyst",5],["lisa","Lisa","electro","catalyst",4],["barbara","Barbara","hydro","catalyst",4],["kaeya","Kaeya","cryo","sword",4],["razor","Razor","electro","claymore",4],["amber","Amber","pyro","bow",4],["xiangling","Xiangling","pyro","polearm",4],["beidou","Beidou","electro","claymore",4],["xingqiu","Xingqiu","hydro","sword",4],["ningguang","Ningguang","geo","catalyst",4],["fischl","Fischl","electro","bow",4],["bennett","Bennett","pyro","sword",4],["noelle","Noelle","geo","claymore",4],["chongyun","Chongyun","cryo","claymore",4],["sucrose","Sucrose","anemo","catalyst",4],["diona","Diona","cryo","bow",4],["xinyan","Xinyan","pyro","claymore",4],["rosaria","Rosaria","cryo","polearm",4],["yanfei","Yanfei","pyro","catalyst",4],["sayu","Sayu","anemo","claymore",4],["kujou-sara","Kujou Sara","electro","bow",4],["thoma","Thoma","pyro","polearm",4],["gorou","Gorou","geo","bow",4],["yun-jin","Yun Jin","geo","polearm",4],["kuki-shinobu","Kuki Shinobu","electro","sword",4],["shikanoin-heizou","Shikanoin Heizou","anemo","catalyst",4],["collei","Collei","dendro","bow",4],["dori","Dori","electro","claymore",4],["candace","Candace","hydro","polearm",4],["layla","Layla","cryo","sword",4],["faruzan","Faruzan","anemo","bow",4],["yaoyao","Yaoyao","dendro","polearm",4],["mika","Mika","cryo","polearm",4],["kaveh","Kaveh","dendro","claymore",4],["kirara","Kirara","dendro","sword",4],["lynette","Lynette","anemo","sword",4],["freminet","Freminet","cryo","claymore",4],["charlotte","Charlotte","cryo","catalyst",4],["chevreuse","Chevreuse","pyro","polearm",4],["gaming","Gaming","pyro","claymore",4],["sethos","Sethos","electro","bow",4],["kachina","Kachina","geo","polearm",4],["ororon","Ororon","electro","bow",4],["lan-yan","Lan Yan","anemo","catalyst",4],["iansan","Iansan","electro","polearm",4],["ifa","Ifa","anemo","catalyst",4],["dahlia","Dahlia","hydro","sword",4],["aino","Aino","hydro","claymore",4],["jahoda","Jahoda","anemo","bow",4],["illuga","Illuga","geo","polearm",4],["prune","Prune","anemo","catalyst",4],["alyosha","Alyosha","electro","polearm",4],["valeriy","Valeriy","electro","sword",4]];
 const BN=`1.0|200928|201018|Venti
 1.0|201020|201110|Klee
@@ -562,62 +576,62 @@ const BN=`1.0|200928|201018|Venti
 1.5|210428|210518|Zhongli
 1.5|210518|210608|Eula
 1.6|210609|210629|Klee
-1.6|210629|210720|Kazuha
-2.0|210721|210810|Ayaka
+1.6|210629|210720|Kaedehara Kazuha
+2.0|210721|210810|Kamisato Ayaka
 2.0|210810|210831|Yoimiya
 2.1|210901|210921|Raiden Shogun
-2.1|210921|211012|Kokomi
+2.1|210921|211012|Sangonomiya Kokomi
 2.2|211013|211102|Tartaglia
 2.2|211102|211123|Hu Tao
 2.3|211124|211214|Albedo,Eula
-2.3|211214|220104|Itto
+2.3|211214|220104|Arataki Itto
 2.4|220105|220125|Shenhe,Xiao
 2.4|220125|220215|Zhongli,Ganyu
 2.5|220216|220308|Yae Miko
-2.5|220308|220329|Raiden Shogun,Kokomi
-2.6|220330|220419|Ayato,Venti
-2.6|220419|220531|Ayaka
+2.5|220308|220329|Raiden Shogun,Sangonomiya Kokomi
+2.6|220330|220419|Kamisato Ayato,Venti
+2.6|220419|220531|Kamisato Ayaka
 2.7|220531|220621|Yelan,Xiao
-2.7|220621|220712|Itto
-2.8|220713|220802|Kazuha,Klee
+2.7|220621|220712|Arataki Itto
+2.8|220713|220802|Kaedehara Kazuha,Klee
 2.8|220802|220823|Yoimiya
 3.0|220824|220909|Tighnari,Zhongli
-3.0|220909|220927|Ganyu,Kokomi
+3.0|220909|220927|Ganyu,Sangonomiya Kokomi
 3.1|220928|221014|Cyno,Venti
 3.1|221014|221101|Nilou,Albedo
 3.2|221102|221118|Nahida,Yoimiya
 3.2|221118|221206|Yae Miko,Tartaglia
-3.3|221207|221227|Wanderer,Itto
-3.3|221227|230117|Raiden Shogun,Ayato
+3.3|221207|221227|The Wanderer,Arataki Itto
+3.3|221227|230117|Raiden Shogun,Kamisato Ayato
 3.4|230118|230207|Alhaitham,Xiao
 3.4|230207|230228|Hu Tao,Yelan
 3.5|230301|230321|Dehya,Cyno
-3.5|230321|230411|Shenhe,Ayaka
+3.5|230321|230411|Shenhe,Kamisato Ayaka
 3.6|230412|230502|Nahida,Nilou
 3.6|230502|230523|Baizhu,Ganyu
 3.7|230524|230613|Yoimiya,Yae Miko
-3.7|230613|230704|Alhaitham,Kazuha
+3.7|230613|230704|Alhaitham,Kaedehara Kazuha
 3.8|230705|230725|Eula,Klee
-3.8|230725|230815|Kokomi,Wanderer
+3.8|230725|230815|Sangonomiya Kokomi,The Wanderer
 4.0|230816|230905|Lyney,Yelan
 4.0|230905|230926|Zhongli,Tartaglia
 4.1|230927|231017|Neuvillette,Hu Tao
 4.1|231017|231107|Wriothesley,Venti
 4.2|231108|231128|Furina,Baizhu
-4.2|231128|231219|Cyno,Ayato
-4.3|231220|240109|Navia,Ayaka
+4.2|231128|231219|Cyno,Kamisato Ayato
+4.3|231220|240109|Navia,Kamisato Ayaka
 4.3|240109|240130|Raiden Shogun,Yoimiya
 4.4|240131|240220|Xianyun,Nahida
 4.4|240220|240312|Xiao,Yae Miko
-4.5|240313|240402|Chiori,Itto
-4.5|240402|240423|Neuvillette,Kazuha
+4.5|240313|240402|Chiori,Arataki Itto
+4.5|240402|240423|Neuvillette,Kaedehara Kazuha
 4.6|240424|240514|Arlecchino,Lyney
-4.6|240514|240604|Wanderer,Baizhu
+4.6|240514|240604|The Wanderer,Baizhu
 4.7|240605|240625|Clorinde,Alhaitham
 4.7|240625|240716|Sigewinne,Furina
 4.8|240717|240806|Navia,Nilou
 4.8|240806|240827|Emilie,Yelan
-5.0|240828|240917|Mualani,Kazuha
+5.0|240828|240917|Mualani,Kaedehara Kazuha
 5.0|240917|241008|Kinich,Raiden Shogun
 5.1|241009|241029|Xilonen,Chiori
 5.1|241029|241119|Nahida,Hu Tao
@@ -625,7 +639,7 @@ const BN=`1.0|200928|201018|Venti
 5.2|241210|241231|Neuvillette,Zhongli
 5.3|250101|250121|Mavuika,Citlali
 5.3|250121|250211|Arlecchino,Clorinde
-5.4|250212|250304|Mizuki,Sigewinne
+5.4|250212|250304|Yumemizuki Mizuki,Sigewinne
 5.4|250304|250325|Furina,Wriothesley
 5.5|250326|250415|Varesa,Xianyun
 5.5|250415|250506|Xilonen,Venti
@@ -771,7 +785,7 @@ const POOL={char:'Character Event',weapon:'Weapon Event',standard:'Standard',chr
 const LUNA={'Luna I':'6.0','Luna II':'6.1','Luna III':'6.2','Luna IV':'6.3','Luna V':'6.4','Luna VI':'6.5','Luna VII':'6.6','Luna VIII':'6.7'};
 const verLabel=v=>v?`v${v}${LUNA[v]?` (${LUNA[v]})`:''}`:'';
 const PT={char:[50,75],weapon:[40,65],standard:[50,75],chron:[50,75],novice:[50,75]};
-const TITLE={'Venti':'Ballad in Goblets','Klee':'Sparkling Steps','Tartaglia':'Farewell of Snezhnaya','Zhongli':'Gentry of Hermitage','Albedo':'Secretum Secretorum','Ganyu':'Adrift in the Harbor','Xiao':'Invitation to Mundane Life','Keqing':'Dance of Lanterns','Hu Tao':'Moment of Bloom','Eula':'Born of Ocean Swell','Kaedehara Kazuha':'Leaves in the Wind','Kamisato Ayaka':"The Heron's Court",'Yoimiya':'Tapestry of Golden Flames','Raiden Shogun':'Reign of Serenity','Sangonomiya Kokomi':'Drifting Luminescence','Arataki Itto':"Oni's Royale",'Shenhe':'The Transcendent One Returns','Yae Miko':'Everbloom Violet','Kamisato Ayato':'Azure Excursion','Yelan':'Discerner of Enigmas','Tighnari':'Viridescent Vigil','Cyno':'Twilight Arbiter','Nilou':'Twirling Lotus','Nahida':"The Moongrass' Enlightenment",'The Wanderer':'From Ashes Reborn','Alhaitham':'Caution in Confidence','Dehya':'Auric Blaze','Baizhu':'Immaculate Pulse','Lyney':'Conjuring Chiaroscuro','Neuvillette':'Decree of the Deeps','Wriothesley':'Tempestuous Destiny','Furina':'Chanson of Many Waters','Navia':'In the Name of the Rosula','Xianyun':'The Crane Soars Skyward','Chiori':'Of Silken Clouds Woven','Arlecchino':"The Hearth's Ashen Shadow",'Clorinde':'Illuminating Lightning','Sigewinne':'Romaritime Meluserenity','Emilie':'Ambrosial Essence','Mualani':'Sharktacular Surfari','Kinich':'Seeker of Flame-Wrought Secrets','Xilonen':"Forgefire's Blessing",'Chasca':"Piercing Shot's Crimson Wake",'Mavuika':'Ancient Flame Ablaze','Citlali':"Starry Night's Whispers",'Yumemizuki Mizuki':"Dawn's Drifting Reverie",'Varesa':'Cornucopia of Contention','Escoffier':'La Chanson Cerise','Skirk':"Void Star's Advent",'Ineffa':'Astral Actuation','Lauma':'Moonsong of the Groves','Flins':'The Lone Light Knocks at Night','Nefer':'Temptation of the Crimson Sands','Durin':'Rubedo, of White Stone Born','Columbina':'Somnias a Luna','Zibai':'Harmonious Abundance','Varka':"The Northerly Wind's Song of Triumph",'Linnea':'Ya-hoho! Compendium','Nicole':"Angel's Reverie",'Lohen':'Frostedge Nocturne','Sandrone':'To the Looking-Glass the Mademoiselle Said','Odette':"Swan's Shadow in Silken Ice",'Vesna':'When Warm Winds Cavort','Vodyanitsa':'Surging Ballad'};
+const TITLE={'Venti':'Ballad in Goblets','Klee':'Sparkling Steps','Tartaglia':'Farewell of Snezhnaya','Zhongli':'Gentry of Hermitage','Albedo':'Secretum Secretorum','Ganyu':'Adrift in the Harbor','Xiao':'Invitation to Mundane Life','Keqing':'Dance of Lanterns','Hu Tao':'Moment of Bloom','Eula':'Born of Ocean Swell','Kaedehara Kazuha':'Leaves in the Wind','Kamisato Ayaka':"The Heron's Court",'Yoimiya':'Tapestry of Golden Flames','Raiden Shogun':'Reign of Serenity','Sangonomiya Kokomi':'Drifting Luminescence','Arataki Itto':"Oni's Royale",'Shenhe':'The Transcendent One Returns','Yae Miko':'Everbloom Violet','Kamisato Ayato':'Azure Excursion','Yelan':'Discerner of Enigmas','Tighnari':'Viridescent Vigil','Cyno':'Twilight Arbiter','Nilou':'Twirling Lotus','Nahida':"The Moongrass' Enlightenment",'The Wanderer':'From Ashes Reborn','Alhaitham':'Caution in Confidence','Dehya':'Auric Blaze','Baizhu':'Immaculate Pulse','Lyney':'Conjuring Chiaroscuro','Neuvillette':'Decree of the Deeps','Wriothesley':'Tempestuous Destiny','Furina':'Chanson of Many Waters','Navia':'In the Name of the Rosula','Xianyun':'The Crane Soars Skyward','Chiori':'Of Silken Clouds Woven','Arlecchino':"The Hearth's Ashen Shadow",'Clorinde':'Illuminating Lightning','Sigewinne':'Romaritime Meluserenity','Emilie':'Ambrosial Essence','Mualani':'Sharktacular Surfari','Kinich':'Seeker of Flame-Wrought Secrets','Xilonen':"Forgefire's Blessing",'Chasca':"Piercing Shot's Crimson Wake",'Mavuika':'Ancient Flame Ablaze','Citlali':"Starry Night's Whispers",'Yumemizuki Mizuki':"Dawn's Drifting Reverie",'Varesa':'Cornucopia of Contention','Escoffier':'La Chanson Cerise','Skirk':"Void Star's Advent",'Ineffa':'Astral Actuation','Lauma':'Moonsong of the Groves','Flins':'The Lone Light Knocks at Night','Nefer':'Temptation of the Crimson Sands','Durin':'Rubedo, of White Stone Born','Columbina':'Somnias a Luna','Zibai':'Harmonious Abundance','Varka':"The Northerly Wind's Song of Triumph",'Linnea':'Ya-hoho! Compendium','Nicole':"Angel's Reverie",'Lohen':'Frostedge Nocturne','Sandrone':'To the Looking-Glass the Mademoiselle Said','Odette':"Swan's Shadow in Silken Ice",'Vesna':'When Warm Winds Cavort','Vodyanitsa':'Surging Ballad','Mitya':'Myriad Patterns Unfold'};
 const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 
 /* ---------- helpers ---------- */
@@ -798,6 +812,14 @@ const banners=x=>lst(x).map(e=>Array.isArray(e)?e:String(e).trim().split('|')).f
   .map(([v,s,e,f])=>({v:String(v).trim(),s:d6(s),e:d6(e),f:(Array.isArray(f)?f:String(f).split(',')).map(t=>String(t).trim()).filter(Boolean)}))
   .sort((a,b)=>a.s<b.s?-1:1);
 const CB=banners(BN), WB=banners(WN);
+// Chronicled Wish banners: start|end|title (version comes from the date). Leave the end blank until it is announced, then fill it in. Lightrace Wish is a separate banner and is not listed.
+const CRN=`240313|240402|Ode to the Dawn Breeze
+250121|250211|Remembrance of Jade and Stone
+250527|250617|Thunder Rends the Plains on High
+250910|250930|Roving Chalice of Dewgrass
+260225|260317|Ode to the Dawn Breeze
+260428|260519|Dewlit Tranquility
+261124||Names Forged Beneath Blazing Skies`.split('\n').map(l=>{const[x,y,t]=l.split('|');return{s:d6(x),e:y?d6(y):'2999-12-31',t}});
 const CH=new Map();SEED.forEach(([id,name,el,wt,r])=>CH.set(norm(name),{id,name,el:String(el).toLowerCase(),wt,r:+r}));
 const VERS=[];{const m=new Map();CB.forEach(b=>{const o=m.get(b.v);if(!o)m.set(b.v,{v:b.v,s:b.s,e:b.e});else{if(b.s<o.s)o.s=b.s;if(b.e>o.e)o.e=b.e}});VERS.push(...m.values())}
 const _fc=new Map();
@@ -932,6 +954,7 @@ function bannerName(p){
   if(p.pool==='weapon')return'Epitome Invocation';
   if(p.pool==='standard')return'Wanderlust Invocation';
   if(p.pool==='novice')return"Beginners' Wish";
+  if(p.pool==='chron'){const c=CRN.find(b=>b.s<=addDays(p.date,1)&&addDays(b.e,1)>=p.date);return c?c.t:p.banner||'Chronicled Wish'}
   const b=p.banner||'';if(!b)return'Character Event';
   if(TITLEV.has(norm(b)))return b;
   const c=looseChar(b);return c&&TITLE[c.name]?TITLE[c.name]:b}
@@ -968,7 +991,7 @@ function overview(){
 function pityPanel(){const C=2*Math.PI*32;
   const items=['char','weapon','standard','chron'].map(k=>{const L=D.pools[k]||[];let n=0;for(let i=L.length-1;i>=0&&L[i].r!==5;i--)n++;
     const last=[...L].reverse().find(p=>p.r===5),max=MAXP[k],fr=Math.min(1,n/max),col=pityCol(n,k);
-    return`<div class="ring"><div class="rw"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" class="trk"/><circle cx="38" cy="38" r="32" class="val" stroke="${col}" stroke-dasharray="${(C*fr).toFixed(1)} ${C.toFixed(1)}"/></svg><b class="n" style="color:${col}">${n}</b></div><div><div class="rl">${POOL[k]}</div><div class="meta">of ${max}</div><div class="lastl">Last 5★</div><div class="lastn">${last?esc(last.name):'—'}</div></div></div>`}).join('');
+    return`<div class="ring"><div class="rw"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" class="trk"/><circle cx="38" cy="38" r="32" class="val" stroke="${col}" stroke-dasharray="${(C*fr).toFixed(1)} ${C.toFixed(1)}"/></svg><b class="n" style="color:${col}">${n}</b></div><div><button class="rl linky" data-act="pityGo" data-v="${k}" title="Open in All Wishes">${POOL[k]}</button><div class="meta">of ${max}</div><div class="lastl">Last 5★</div><div class="lastn">${last?esc(last.name):'—'}</div></div></div>`}).join('');
   return`<section class="card"><h2>Current pity</h2><div class="rings">${items}</div></section>`}
 function segBar(title,parts,t,feat){const lab=x=>t&&x/t>=.08?`<em>${Math.round(x/t*100)}%</em>`:'';
   return`<div class="seg2"><div class="sh"><span>${title}</span><b class="n">${feat}</b></div><div class="trw"><div class="bar">${t?parts.map(([x,c])=>`<i style="width:${x/t*100}%;background:${c}">${lab(x)}</i>`).join(''):''}</div><u class="mid"><small>50%</small></u></div><div class="lg">${parts.map(([,c,n])=>`<span><s style="background:${c}"></s>${n}</span>`).join('')}</div></div>`}
@@ -1049,9 +1072,9 @@ function logBody(){const l=S.log;let F=D.pools[S.cat].filter(p=>(!l.bn||bkey(p)=
   const so=l.sort,dyn=!!(l.r.length||l.types.length||l.els.length||l.q.trim())||so.k==='pity',sb=(k,t)=>`<button class="hs${so.k===k?' on':''}" data-act="logSort" data-v="${k}">${t}${so.k===k?(so.d<0?' ↓':' ↑'):''}</button>`;F=[...F];
   if(so.k==='date'){if(so.d<0)F.reverse()}else if(so.k==='item')F.sort((a,b)=>so.d*a.name.localeCompare(b.name));else{const kp=p=>p.r===5?p.p5:p.r===4?p.p4:0;F.sort((a,b)=>b.r-a.r||so.d*(kp(a)-kp(b)))}
   const tot=F.length,stats=statsBar(F,S.cat);F=F.slice(0,l.limit);
-  return`${stats}<div class="log"><div class="lr hd"><span class="hm"><button class="hs" data-act="logNum" title="Flip the numbering">#${l.num>0?' ↓':' ↑'}</button></span><span class="hm">${sb('date','Date')}</span><span></span><span>${sb('item','Item')}</span><span title="Filter on: each item's own pity. No filter: pull number in the current 5★ cycle.">${sb('pity','Pity')}</span><span class="hm">Banner</span><span class="hm">Type</span></div>
+  return`${stats}<div class="log"><div class="lr hd"><span class="hm"><button class="hs" data-act="logNum" title="Flip the numbering">#${l.num>0?' ↓':' ↑'}</button></span><span class="hm">${sb('date','Date')}</span><span></span><span>${sb('item','Item')}</span><span title="Filter on: each item's own pity. No filter: pull number in the current 5★ cycle.">${sb('pity','Pity')}</span><span class="hm">Banner</span></div>
   ${F.map((p,i)=>{const c=p.type==='Character'&&p.r>=4?findChar(p.name):null,pt=dyn?(p.r===5?p.p5:p.r===4?p.p4:'–'):p.p5;
-    return`<div class="lr r${p.r}${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''}><span class="hm n meta">${l.num>0?i+1:tot-i}</span><span class="hm n">${fmtD(p.date)}</span>${p.r>=4||p.type==='Weapon'?(c||p.type==='Character'||p.type==='Weapon'?face(p,'log'):`<span class="dot r${p.r}"></span>`):'<span class="dot"></span>'}<button class="nmx linky ell" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button><span class="n pt r${p.r}">${pt}</span><span class="hm meta ell">${esc(bannerLine(p))}</span><span class="hm meta">${POOL[p.pool]}</span></div>`}).join('')}</div>
+    return`<div class="lr r${p.r}${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''}><span class="hm n meta">${l.num>0?i+1:tot-i}</span><span class="hm n">${fmtD(p.date)}</span>${p.r>=4||p.type==='Weapon'?(c||p.type==='Character'||p.type==='Weapon'?face(p,'log'):`<span class="dot r${p.r}"></span>`):'<span class="dot"></span>'}<button class="nmx linky ell" data-act="item" data-v="${esc(p.name)}">${esc(p.name)}</button><span class="n pt r${p.r}">${pt}</span><span class="hm meta ell">${esc(bannerLine(p))}</span></div>`}).join('')}</div>
   ${tot>l.limit?`<button class="btn ghost more" data-act="more">Show more · ${(tot-l.limit).toLocaleString()} left</button>`:''}<p class="meta" style="text-align:center;margin:12px 0 64px">${tot.toLocaleString()} wishes</p>`}
 
 function openPity(kind){
@@ -1173,6 +1196,7 @@ const ACT={
   item:v=>openItem(v),
   pityBin:v=>openPity(v),
   histPool:v=>{S.histPool=v;render()},
+  pityGo:v=>{Object.assign(S.log,{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},bn:'',num:1,limit:300});S.cat=v;S.view='log';render();scrollTo(0,0)},
   logReset:()=>{Object.assign(S.log,{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},bn:'',num:1,limit:300});render()},
   wm:v=>{const i=v.lastIndexOf('|'),k=v.slice(0,i),st=v.slice(i+1);if(S.wUser[k]===st)delete S.wUser[k];else S.wUser[k]=st;LS.set('wUser',S.wUser);build();render()},
   logType:v=>{tog(S.log.types,v,2);S.log.limit=300;render()},
