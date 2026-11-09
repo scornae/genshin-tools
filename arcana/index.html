@@ -19,13 +19,13 @@ Card order = card number minus 1; saved counts and links depend on it.
 Share link #t=OFFER.WANT.SERVERUID.NAME where OFFER = pairs of card (base36 char) + copies (1-9), WANT = card base36 chars,
 SERVERUID = one digit (0 none, 1 Asia, 2 Europe, 3 America) + UID in base36, NAME = URL-encoded. Old links must keep working.
 The hash routes #post and #t= are fixed.
-DECIDED RULES: palette is cream, deep teal and gold with no black text. Cards have no background plate; missing cards are locked silhouettes.
-Home shows only the collection. The trade post starts with spares (copies minus 1) and missing cards; edits there never touch the collection.
+DECIDED RULES: night-sky look (midnight blue and violet, champagne gold, pale lavender; colors are variables in :root). Each card sits in a framed tile;
+missing cards show a lock. Home shows only the collection. The trade post starts with spares (copies minus 1) and missing cards; edits there never touch the collection.
 The share page is read-only with no action buttons. Saved image: title centered, server and UID small, one per line, no site address.
 Opened as file://, the saved image uses arch placeholders because browsers block exporting local pictures (layout test only).
 Servers are Asia, Europe, America. Link previews cannot differ per link on static hosting.
 REMOVED, DO NOT ADD BACK: TW/HK/MO server, separate Have and Want panels on home, a Show UID switch in the profile (it is per post in the editor),
-an Edit profile button in the editor, the site address on the saved image, the eight-point star background.
+an Edit profile button in the editor, the site address on the saved image, the earlier cream look.
 -->
 <html lang="en">
 <head>
@@ -46,92 +46,1236 @@ an Edit profile button in the editor, the site address on the saved image, the e
 <meta name="twitter:title" content="Genshin Lunar Arcana Trade - Collection &amp; Trade Post Maker">
 <meta name="twitter:description" content="A free fan-made Genshin Impact tool: track your Lunar Arcana cards, then make a trade post with your spares and the cards you need.">
 <meta name="twitter:image" content="https://scornae.github.io/genshin-tools/arcana/og-preview.jpg">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffd75e%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f2a516%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath%20d%3D%22M32%208%20Q38.72%2025.28%2056%2032%20Q38.72%2038.72%2032%2056%20Q25.28%2038.72%208%2032%20Q25.28%2025.28%2032%208Z%22%20fill%3D%22url%28%23g%29%22/%3E%3Cpath%20d%3D%22M49%209%20Q50.68%2013.32%2055%2015%20Q50.68%2016.68%2049%2021%20Q47.32%2016.68%2043%2015%20Q47.32%2013.32%2049%209Z%22%20fill%3D%22%23ffc43d%22/%3E%3C/svg%3E">
-<meta name="color-scheme" content="light">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23f5deb3%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23c89d54%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2228%22%20fill%3D%22%230c1026%22%20stroke%3D%22url(%23g)%22%20stroke-width%3D%222%22/%3E%3Cpath%20d%3D%22M32%208%20Q37.5%2025.5%2055%2032%20Q37.5%2038.5%2032%2056%20Q26.5%2038.5%209%2032%20Q26.5%2025.5%2032%208Z%22%20fill%3D%22url(%23g)%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%224%22%20fill%3D%22%230c1026%22/%3E%3C/svg%3E">
+<meta name="color-scheme" content="dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&family=Figtree:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-:root{--bg:#f3e8d0;--paper:#fbf5e6;--ink:#3b2a18;--deep:#174c55;--mute:#7a6244;--line2:#cdb888;--gold:#a8741a;--f-head:'El Messiri',Georgia,'Times New Roman',serif;--f-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif}
-*{box-sizing:border-box}
-html{color-scheme:light;font-synthesis:none}
-body{margin:0;color:var(--ink);font:400 16px/1.45 var(--f-body);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);background:radial-gradient(1100px 600px at 50% -8%,rgba(255,255,255,.75),transparent 70%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56' width='56' height='56'><path d='M0 28L28 0L56 28L28 56Z' fill='none' stroke='%23b9a06a' stroke-opacity='.22'/></svg>") 0 0/56px,var(--bg)}
-button,input{font:inherit;color:inherit}button{cursor:pointer}
-:focus-visible{outline:2px solid var(--deep);outline-offset:2px}
-[hidden]{display:none!important}
-.sheet{max-width:1500px;margin:0 auto;padding:0 28px}
-.top{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-end;justify-content:space-between;padding:30px 0 18px}
-.orn{position:relative;height:1px;background:var(--line2);margin:0 0 22px}
-.orn::after{content:"";position:absolute;left:50%;top:50%;width:11px;height:11px;background:var(--gold);transform:translate(-50%,-50%) rotate(45deg);box-shadow:0 0 0 8px #f3e8d0}
-.kicker{font:600 11px var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
-.kicker::before{content:"\2726";margin-right:10px;font-size:13px}
-.namerow{display:flex;align-items:center;gap:12px;margin:26px 0 4px}
-.pname{background:none;border:0;padding:0;font:700 clamp(34px,6vw,58px)/1.05 var(--f-head);color:var(--deep);text-align:left}
-.pname.empty{color:var(--mute);opacity:.7}
-.pf-edit{width:32px;height:32px;border-radius:50%;border:1px solid var(--line2);background:var(--paper);color:var(--mute)}
-.uidrow{font-size:14px;color:var(--mute);margin-bottom:6px}
-.pct{display:flex;align-items:baseline;gap:14px;margin-top:6px}
-.pct b{font:700 44px/1 var(--f-head);color:var(--gold)}.pct span{font:500 20px var(--f-head);color:var(--mute)}
-.pbar{position:relative;height:8px;max-width:380px;border-radius:999px;background:#e6d6b0;margin:12px 0 10px}
-.pbar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#d9aa4a,#a8741a);transition:width .3s}
-.pbar b{position:absolute;left:54.55%;top:-3px;bottom:-3px;width:2px;background:var(--mute);opacity:.45}
-.mini{display:flex;gap:18px;font-size:13px;color:var(--mute)}.mini b{color:var(--gold)}
-.ach{margin-top:4px;font-size:12px;color:var(--mute)}
-.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line2);background:var(--paper);padding:8px 14px;font-weight:600}
-.btn:hover{background:#f1e4c6}
-.btn.cap2{background:var(--deep);border-color:var(--deep);color:#fff}.btn.cap2:hover{background:#0f3a41}
-.btn.big{padding:12px 22px;font-size:17px}
-.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:6px 0 4px}.sp{flex:1}
-.msg{min-height:22px;margin:6px 0;font-size:14px;color:var(--deep)}
-.hint{margin:0 0 16px;color:var(--mute);font-size:14px}
-.tsec{margin-top:18px}
-.tsec h2{display:flex;align-items:baseline;gap:12px;margin:0 0 14px;padding-bottom:8px;font:700 30px var(--f-head);color:var(--deep);border-bottom:1px solid var(--line2)}
-.tsec h2 small{font:600 15px var(--f-body);color:var(--mute)}.tsec h2 .sp{flex:1}.tsec h2 .btn{font:600 14px var(--f-body)}.tsec.first{margin-top:10px}.top-block{display:block;padding-bottom:20px}.lead{margin:0;font-size:14px;color:var(--mute)}.data-bar{margin-top:56px}.actions{margin-top:18px}
-.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px}
-.g.ctr{display:flex;flex-wrap:wrap;justify-content:center}.g.ctr .cell{width:calc((100% - 24px)/3)}
-.cell{position:relative}
-.c{display:block;width:100%;padding:0;border:0;background:none;text-align:center}
-.c.static{cursor:default}
-.art{position:relative;display:block}
-.c img{display:block;width:100%;aspect-ratio:684/1024;object-fit:cover;filter:drop-shadow(0 8px 10px rgba(60,40,10,.38));transition:transform .2s}
-.c:not(.static):hover img{transform:translateY(-4px)}
-.c:not(.on) img{filter:brightness(0) opacity(.14)}
-.lk{position:absolute;left:50%;top:50%;width:34%;transform:translate(-50%,-50%);color:#a89066}
-.c.on .lk{display:none}
-.cap{display:block;margin-top:8px;line-height:1.2}
-.cap i{display:block;font:600 13px var(--f-body);font-style:normal;letter-spacing:.1em;color:var(--gold)}
-.cap b{display:block;font:600 16px var(--f-head);color:var(--deep)}
-.c:not(.on) .cap{opacity:.55}
-.c.pop img{animation:pop .8s ease-out}
-@keyframes pop{0%{transform:scale(.92)}40%{transform:scale(1.08);filter:drop-shadow(0 0 22px rgba(217,170,74,1))}100%{transform:scale(1)}}
-@keyframes glow{from{filter:drop-shadow(0 0 22px rgba(217,170,74,1))}to{filter:drop-shadow(0 8px 10px rgba(60,40,10,.38))}}
-@media(prefers-reduced-motion:reduce){.c.pop img{animation:glow .9s ease-out}.c img,.pbar i{transition:none}}
-.bd{position:absolute;top:2px;right:0;background:var(--gold);color:#fff;font:700 12px/1 var(--f-body);border-radius:999px;padding:4px 8px;box-shadow:0 2px 5px rgba(60,40,10,.3)}.bd:empty{display:none}
-.mn{position:absolute;top:2px;left:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--line2);background:var(--paper);font-size:17px;line-height:1;padding:0}
-.post{position:relative;margin-top:14px;padding:6px 28px 30px;border:3px double var(--line2);border-radius:6px;background:rgba(251,245,230,.65)}
-.none{width:100%;margin:0;text-align:center;color:var(--mute);font-size:14px}
-.opts{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;padding:10px 0}
-.chk{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--ink)}.chk input:disabled+span{opacity:.5}
-.pick{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 auto 16px;padding:12px;border:1px dashed var(--line2);border-radius:10px;background:var(--paper)}
-.tile{position:relative;width:56px;padding:3px;border:2px solid transparent;border-radius:8px;background:none}
-.tile img{display:block;width:100%;aspect-ratio:684/1024;object-fit:cover;filter:grayscale(1) opacity(.5)}
-.tile i{position:absolute;left:0;right:0;bottom:3px;font:600 11px var(--f-body);font-style:normal;color:var(--ink);text-shadow:0 0 3px #fff}
-.tile.sel{border-color:var(--gold)}.tile.sel img{filter:none}.tile:disabled{opacity:.3;cursor:not-allowed}
-.vhead{text-align:center;padding:30px 0 22px}.vhead .kicker{text-align:left}.vid{white-space:pre-line;font-size:15px;line-height:1.5;color:var(--mute)}.vhead h1{margin:26px 0 10px;font:700 clamp(30px,5vw,50px)/1.1 var(--f-head);color:var(--deep)}
-.own{text-align:center;margin:24px 0 0;font-size:14px}.own a{color:var(--mute)}
-h1.pt{margin:26px 0 6px;font:700 clamp(30px,5vw,48px)/1.1 var(--f-head);color:var(--deep)}
-.legal{max-width:760px;margin:60px auto 0;padding:0 28px calc(24px + env(safe-area-inset-bottom))}
-.legal::before{content:"";display:block;width:48px;height:2px;margin:0 auto 14px;background:var(--line2)}
-.legal p{margin:0;text-align:center;font-size:10.5px;line-height:1.6;color:var(--mute);opacity:.8}
-dialog{width:min(440px,calc(100vw - 32px));border:1px solid var(--line2);border-radius:14px;background:var(--paper);color:var(--ink);padding:20px}
-dialog::backdrop{background:rgba(43,28,16,.45)}
-.dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.dh h3{margin:0;font:700 26px var(--f-head);color:var(--deep)}
-.pf{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:13px;color:var(--mute)}.pf b{color:var(--ink)}
-.pf input{background:#fff;border:1px solid var(--line2);border-radius:10px;padding:9px 12px;font-size:16px}
-.seg{display:flex;gap:8px}.seg button{flex:1;border:1px solid var(--line2);background:#fff;border-radius:999px;padding:8px 10px;font-weight:600;font-size:14px;color:var(--mute)}
-.seg button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:#fff}
-@media(max-width:900px){.sheet{padding:0 16px}.top{padding:16px 0 12px;flex-direction:column;align-items:stretch}.cap i{font-size:12px}.cap b{font-size:14px}.bar .btn{flex:1 1 30%;padding:9px 4px;font-size:13px}.bar .sp{display:none}.post{padding:4px 12px 22px}}
-@media(min-width:901px){body{font-size:18px}.g{grid-template-columns:repeat(6,1fr);gap:22px}.g.ctr{gap:22px}.g.ctr .cell{width:calc((100% - 110px)/6)}.cap i{font-size:14px}.cap b{font-size:19px}.hint{font-size:16px}.mini{font-size:15px}.ach{font-size:14px}.uidrow{font-size:16px}.vid{font-size:18px}.btn{font-size:16px}.pick{max-width:810px}.tile{width:64px}.pct b{font-size:52px}.pct span{font-size:24px}.tsec h2 small{font-size:17px}}
+:root {
+  /* Celestial Arcana Palette */
+  --midnight: #080b1a;
+  --silver: #e2e7f7;
+  --lavender: #bfb4e3;
+  --mute: #8e86b5;
+  --gold: #e6c786;
+  --gold-bright: #f7e3b5;
+  --line: rgba(230, 199, 134, 0.24);
+  --line-strong: rgba(230, 199, 134, 0.48);
+  --line-lavender: rgba(191, 180, 227, 0.2);
+  --f-head: 'El Messiri', Georgia, 'Times New Roman', serif;
+  --f-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  font-synthesis: none;
+  background-color: var(--midnight);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--silver);
+  font: 400 16px/1.5 var(--f-body);
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  background:
+    radial-gradient(1200px 680px at 50% -10%, rgba(77, 56, 148, 0.42), transparent 70%),
+    radial-gradient(900px 600px at 88% 18%, rgba(44, 62, 135, 0.35), transparent 65%),
+    radial-gradient(850px 650px at 12% 75%, rgba(56, 33, 107, 0.38), transparent 68%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240' width='240' height='240'><g fill='none' stroke='%23e6c786' stroke-opacity='.055' stroke-width='0.75'><circle cx='120' cy='120' r='92'/><circle cx='120' cy='120' r='70' stroke-dasharray='3 5'/><path d='M120 12 L120 228 M12 120 L228 120 M44 44 L196 196 M196 44 L44 196'/><polygon points='120,28 142,98 212,120 142,142 120,212 98,142 28,120 98,98'/></g><circle cx='120' cy='28' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='212' cy='120' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='120' cy='212' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='28' cy='120' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='52' cy='68' r='1.1' fill='%23e2e7f7' fill-opacity='.25'/><circle cx='188' cy='174' r='1.2' fill='%23bfb4e3' fill-opacity='.25'/><circle cx='178' cy='52' r='1' fill='%23e2e7f7' fill-opacity='.2'/></svg>") 0 0 / 240px 240px,
+    linear-gradient(180deg, #070a18 0%, #0e1533 38%, #171336 72%, #080b1a 100%);
+  background-attachment: fixed;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ambient Celestial Astrolabe Watermark */
+body::before {
+  content: "";
+  position: fixed;
+  top: -220px;
+  left: 50%;
+  width: 760px;
+  height: 760px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.22;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'><g fill='none' stroke='%23e6c786'><circle cx='300' cy='300' r='280' stroke-width='1' stroke-opacity='.4'/><circle cx='300' cy='300' r='262' stroke-width='0.75' stroke-dasharray='4 6' stroke-opacity='.5'/><circle cx='300' cy='300' r='220' stroke-width='1' stroke-opacity='.35'/><circle cx='300' cy='300' r='165' stroke-width='0.8' stroke-opacity='.3'/><polygon points='300,20 365,235 580,300 365,365 300,580 235,365 20,300 235,235' stroke-width='0.9' stroke-opacity='.35'/><polygon points='300,80 455,145 520,300 455,455 300,520 145,455 80,300 145,145' stroke-width='0.6' stroke-opacity='.25'/></g></svg>") center / contain no-repeat;
+}
+
+#home, #post, #view, footer.legal {
+  position: relative;
+  z-index: 1;
+}
+
+button, input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.sheet {
+  max-width: 1460px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ===== Celestial Archive Header & Dashboard ===== */
+.top {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px 44px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 28px;
+  padding: 32px 36px 30px;
+  border-radius: 18px;
+  background:
+    radial-gradient(700px 260px at 15% 0%, rgba(230, 199, 134, 0.12), transparent 70%),
+    radial-gradient(600px 300px at 90% 100%, rgba(128, 98, 214, 0.18), transparent 70%),
+    linear-gradient(135deg, rgba(18, 25, 58, 0.86) 0%, rgba(28, 21, 58, 0.84) 55%, rgba(14, 19, 44, 0.9) 100%);
+  border: 1px solid var(--line-strong);
+  box-shadow:
+    0 20px 50px rgba(3, 5, 15, 0.65),
+    inset 0 0 0 1px rgba(230, 199, 134, 0.12),
+    0 0 35px rgba(102, 77, 179, 0.14);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+/* Inner ornamental corner filigree on the Archive Dashboard */
+.top::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(230, 199, 134, 0.18);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.top::after {
+  content: "";
+  position: absolute;
+  right: -55px;
+  top: -55px;
+  width: 280px;
+  height: 280px;
+  pointer-events: none;
+  opacity: 0.26;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'><g fill='none' stroke='%23e6c786'><circle cx='120' cy='120' r='105' stroke-width='1.2'/><circle cx='120' cy='120' r='88' stroke-width='0.8' stroke-dasharray='4 4'/><circle cx='120' cy='120' r='64' stroke-width='1'/><path d='M120 5 L120 235 M5 120 L235 120 M38 38 L202 202 M202 38 L38 202' stroke-width='0.7'/><polygon points='120,24 143,97 216,120 143,143 120,216 97,143 24,120 97,97' stroke-width='1.1'/></g></svg>") center / contain no-repeat;
+}
+
+.top-block {
+  display: block;
+  padding-bottom: 26px;
+}
+
+.orn {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong) 20%, var(--gold) 50%, var(--line-strong) 80%, transparent);
+  margin: 26px 0 24px;
+}
+
+.orn::before {
+  content: "✧";
+  position: absolute;
+  left: calc(50% - 32px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--lavender);
+  font-size: 12px;
+  letter-spacing: 42px;
+  pointer-events: none;
+}
+
+.orn::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  background: var(--gold);
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 12px var(--gold), 0 0 0 7px var(--midnight);
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 600 11px/1 var(--f-body);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(230, 199, 134, 0.08);
+  border: 1px solid rgba(230, 199, 134, 0.25);
+  box-shadow: 0 0 16px rgba(230, 199, 134, 0.1);
+}
+
+.kicker::before {
+  content: "✦";
+  font-size: 12px;
+  color: var(--gold-bright);
+}
+
+.kicker::after {
+  content: "☾";
+  font-size: 11px;
+  color: var(--lavender);
+}
+
+.namerow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0 4px;
+}
+
+.pname {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: 700 clamp(32px, 5vw, 54px)/1.08 var(--f-head);
+  color: var(--silver);
+  text-align: left;
+  text-shadow: 0 2px 18px rgba(230, 199, 134, 0.22);
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+.pname:hover {
+  color: var(--gold-bright);
+  text-shadow: 0 0 22px rgba(230, 199, 134, 0.45);
+}
+
+.pname.empty {
+  color: var(--lavender);
+  opacity: 0.78;
+}
+
+.pf-edit {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: rgba(29, 22, 59, 0.85);
+  color: var(--gold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 14px rgba(230, 199, 134, 0.15);
+  transition: transform 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.pf-edit:hover {
+  transform: scale(1.06);
+  border-color: var(--gold-bright);
+  background: rgba(59, 45, 104, 0.9);
+  box-shadow: 0 0 18px rgba(230, 199, 134, 0.35);
+}
+
+.uidrow {
+  font-size: 14px;
+  color: var(--lavender);
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+/* Numerical Statistics & Moon-Inspired Progress */
+.pct {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.pct b {
+  font: 700 48px/1 var(--f-head);
+  background: linear-gradient(180deg, #fff6df 0%, #e6c786 65%, #c59b4d 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 12px rgba(230, 199, 134, 0.28));
+}
+
+.pct span {
+  font: 600 22px var(--f-head);
+  color: var(--lavender);
+  letter-spacing: 0.05em;
+}
+
+.pct span::before {
+  content: "☾ ";
+  color: var(--gold);
+  font-size: 17px;
+}
+
+/* Moon-phase inspired celestial progress bar */
+.pbar {
+  position: relative;
+  height: 10px;
+  width: min(420px, 82vw);
+  border-radius: 999px;
+  background: rgba(8, 11, 26, 0.85);
+  border: 1px solid rgba(230, 199, 134, 0.32);
+  margin: 14px 0 14px;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.8), 0 0 16px rgba(145, 117, 229, 0.16);
+}
+
+.pbar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6e56af 0%, #b898e8 45%, #e6c786 85%, #fff2cc 100%);
+  box-shadow: 0 0 14px rgba(230, 199, 134, 0.65);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+
+/* Crescent moon node at the 12/22 milestone */
+.pbar b {
+  position: absolute;
+  left: 54.55%;
+  top: -5px;
+  bottom: -5px;
+  width: 2px;
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+}
+
+.pbar b::after {
+  content: "☽";
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--gold);
+  opacity: 0.85;
+}
+
+.mini {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+  font-size: 14px;
+  color: var(--lavender);
+}
+
+.mini span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(11, 15, 36, 0.65);
+  border: 1px solid var(--line-lavender);
+}
+
+.mini span::before {
+  content: "✧";
+  color: var(--gold);
+  font-size: 12px;
+}
+
+.mini b {
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+
+.ach {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--mute);
+  letter-spacing: 0.03em;
+}
+
+.ach::before {
+  content: "✦ ";
+  color: var(--gold);
+}
+
+/* ===== Mystical Buttons & Controls ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: linear-gradient(180deg, rgba(35, 29, 76, 0.85) 0%, rgba(18, 23, 52, 0.92) 100%);
+  color: var(--silver);
+  padding: 9px 18px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  box-shadow: 0 4px 14px rgba(4, 6, 18, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--gold);
+  color: var(--gold-bright);
+  background: linear-gradient(180deg, rgba(52, 41, 106, 0.92) 0%, rgba(25, 31, 68, 0.96) 100%);
+  box-shadow: 0 6px 20px rgba(4, 6, 18, 0.65), 0 0 16px rgba(230, 199, 134, 0.22);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn.cap2 {
+  background: linear-gradient(135deg, #f3d999 0%, #d4af64 52%, #b08538 100%);
+  border-color: #fae5b2;
+  color: #120e24;
+  font-weight: 700;
+  box-shadow:
+    0 6px 24px rgba(212, 175, 100, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.btn.cap2::before {
+  content: "✦";
+  font-size: 13px;
+}
+
+.btn.cap2:hover {
+  background: linear-gradient(135deg, #fff 0%, #ebd08e 48%, #c79c4c 100%);
+  background: linear-gradient(135deg, #fff1c9 0%, #eccd86 50%, #c69a49 100%);
+  border-color: #ffffff;
+  color: #090714;
+  box-shadow:
+    0 8px 30px rgba(230, 199, 134, 0.5),
+    0 0 20px rgba(247, 227, 181, 0.4);
+}
+
+.btn.big {
+  padding: 14px 28px;
+  font-size: 17px;
+  letter-spacing: 0.05em;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0 4px;
+}
+
+.sp {
+  flex: 1;
+}
+
+.msg {
+  min-height: 24px;
+  margin: 10px 0 4px;
+  font-size: 14px;
+  color: var(--gold-bright);
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 12px rgba(230, 199, 134, 0.35);
+}
+
+.hint {
+  margin: 0 0 20px;
+  color: var(--lavender);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+/* ===== Section Headings ===== */
+.tsec {
+  margin-top: 22px;
+}
+
+.tsec.first {
+  margin-top: 14px;
+}
+
+.tsec h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  font: 700 30px/1.15 var(--f-head);
+  color: var(--gold-bright);
+  border-bottom: 1px solid var(--line-strong);
+  position: relative;
+  text-shadow: 0 2px 16px rgba(230, 199, 134, 0.2);
+}
+
+.tsec h2::before {
+  content: "✧";
+  color: var(--gold);
+  font-size: 20px;
+  margin-right: 2px;
+}
+
+.tsec h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 140px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+
+.tsec h2 small {
+  font: 600 15px var(--f-body);
+  color: var(--lavender);
+  letter-spacing: 0.04em;
+}
+
+.tsec h2 .sp {
+  flex: 1;
+}
+
+.tsec h2 .btn {
+  font: 600 14px var(--f-body);
+}
+
+.lead {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--lavender);
+}
+
+.data-bar {
+  margin-top: 56px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.actions {
+  margin-top: 22px;
+}
+
+/* ===== 22 Mystical Arcana Cards Grid ===== */
+.g {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+  gap: 16px;
+}
+
+.g.ctr {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.g.ctr .cell {
+  width: calc((100% - 32px) / 3);
+}
+
+.cell {
+  position: relative;
+}
+
+.c {
+  display: block;
+  width: 100%;
+  padding: 8px 8px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(191, 180, 227, 0.18);
+  background:
+    radial-gradient(circle at 50% 25%, rgba(69, 51, 133, 0.35), transparent 70%),
+    linear-gradient(180deg, rgba(18, 24, 54, 0.78) 0%, rgba(11, 14, 34, 0.9) 100%);
+  text-align: center;
+  position: relative;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
+  box-shadow: 0 8px 22px rgba(3, 5, 14, 0.6);
+}
+
+/* Delicate inner tarot filigrees */
+.c::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(230, 199, 134, 0.12);
+  pointer-events: none;
+  transition: border-color 0.28s ease;
+}
+
+/* Owned state: Celestial Gold & Starlight illumination */
+.c.on {
+  border-color: rgba(230, 199, 134, 0.58);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(230, 199, 134, 0.18), transparent 68%),
+    linear-gradient(180deg, rgba(31, 25, 68, 0.9) 0%, rgba(15, 20, 48, 0.95) 100%);
+  box-shadow:
+    0 12px 28px rgba(4, 6, 18, 0.75),
+    0 0 22px rgba(230, 199, 134, 0.16),
+    inset 0 0 15px rgba(230, 199, 134, 0.08);
+}
+
+.c.on::before {
+  border-color: rgba(230, 199, 134, 0.32);
+}
+
+.c.static {
+  cursor: default;
+}
+
+.c:not(.static):hover {
+  transform: translateY(-6px);
+  border-color: var(--gold-bright);
+  box-shadow:
+    0 16px 34px rgba(4, 6, 18, 0.85),
+    0 0 28px rgba(230, 199, 134, 0.32);
+}
+
+.c:not(.static):hover::before {
+  border-color: rgba(247, 227, 181, 0.55);
+}
+
+/* Card Artwork Frame with Celestial Tarot Backing */
+.art {
+  position: relative;
+  display: block;
+  border-radius: 9px;
+  overflow: hidden;
+  aspect-ratio: 684 / 1024;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(59, 45, 104, 0.65) 0%, rgba(13, 18, 42, 0.95) 100%);
+  border: 1px solid rgba(230, 199, 134, 0.25);
+  box-shadow: inset 0 0 18px rgba(5, 7, 20, 0.85);
+}
+
+/* Subtle ornamental line art behind card image */
+.art::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px dashed rgba(230, 199, 134, 0.22);
+  border-radius: 6px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 180'><g fill='none' stroke='%23e6c786' stroke-opacity='.22' stroke-width='0.8'><circle cx='60' cy='90' r='38'/><circle cx='60' cy='90' r='26' stroke-dasharray='2 3'/><polygon points='60,42 71,79 108,90 71,101 60,138 49,101 12,90 49,79'/><path d='M60 12 L60 168 M12 90 L108 90'/></g></svg>") center / contain no-repeat;
+  pointer-events: none;
+}
+
+.c img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 684 / 1024;
+  object-fit: cover;
+  filter: drop-shadow(0 8px 14px rgba(4, 6, 18, 0.65));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.c:not(.static):hover img {
+  transform: scale(1.03);
+}
+
+/* Unowned / Astral Sealed State */
+.c:not(.on) img {
+  filter: brightness(0.16) saturate(0.25) contrast(1.1) opacity(0.42);
+}
+
+.lk {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  width: 34%;
+  transform: translate(-50%, -50%);
+  color: var(--gold);
+  opacity: 0.72;
+  filter: drop-shadow(0 0 10px rgba(230, 199, 134, 0.45));
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.c:not(.on):hover .lk {
+  opacity: 0.95;
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.c.on .lk {
+  display: none;
+}
+
+.cap {
+  display: block;
+  margin-top: 10px;
+  line-height: 1.25;
+  position: relative;
+  z-index: 2;
+}
+
+.cap i {
+  display: block;
+  font: 600 12px/1.2 var(--f-body);
+  font-style: normal;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+  margin-bottom: 3px;
+}
+
+.cap i::before {
+  content: "· ";
+  opacity: 0.65;
+}
+
+.cap i::after {
+  content: " ·";
+  opacity: 0.65;
+}
+
+.cap b {
+  display: block;
+  font: 600 15px/1.2 var(--f-head);
+  color: var(--silver);
+  transition: color 0.2s ease;
+}
+
+.c.on .cap b {
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(230, 199, 134, 0.3);
+}
+
+.c:not(.on) .cap {
+  opacity: 0.52;
+}
+
+.c.pop img {
+  animation: pop 0.8s ease-out;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.92);
+  }
+  40% {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 26px rgba(247, 227, 181, 0.95));
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes glow {
+  from {
+    filter: drop-shadow(0 0 26px rgba(247, 227, 181, 0.95));
+  }
+  to {
+    filter: drop-shadow(0 8px 14px rgba(4, 6, 18, 0.65));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c.pop img {
+    animation: glow 0.9s ease-out;
+  }
+  .c, .c img, .pbar i {
+    transition: none;
+  }
+}
+
+/* Ownership Duplicate Badge & Minus Control */
+.bd {
+  position: absolute;
+  z-index: 3;
+  top: -5px;
+  right: -5px;
+  background: linear-gradient(135deg, #f7e3b5 0%, #d4af64 100%);
+  color: #120d26;
+  border: 1px solid #fff6df;
+  font: 700 12px/1 var(--f-body);
+  border-radius: 999px;
+  padding: 5px 9px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65), 0 0 12px rgba(230, 199, 134, 0.55);
+}
+
+.bd:empty {
+  display: none;
+}
+
+.mn {
+  position: absolute;
+  z-index: 3;
+  top: -5px;
+  left: -5px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: rgba(16, 23, 53, 0.95);
+  color: var(--gold-bright);
+  font-size: 17px;
+  line-height: 1;
+  padding: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.mn:hover {
+  background: rgba(59, 45, 104, 0.98);
+  border-color: var(--gold-bright);
+  transform: scale(1.08);
+}
+
+/* ===== Mystical Arcana Exchange Notice (Trade Post) ===== */
+.post {
+  position: relative;
+  margin-top: 16px;
+  padding: 18px 32px 36px;
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background:
+    radial-gradient(900px 420px at 50% 0%, rgba(102, 77, 179, 0.18), transparent 70%),
+    linear-gradient(180deg, rgba(16, 22, 51, 0.86) 0%, rgba(23, 18, 49, 0.9) 50%, rgba(12, 16, 38, 0.92) 100%);
+  box-shadow:
+    0 24px 56px rgba(3, 5, 15, 0.72),
+    inset 0 0 0 1px rgba(230, 199, 134, 0.16),
+    0 0 40px rgba(47, 37, 89, 0.4);
+  backdrop-filter: blur(12px);
+}
+
+/* Double ornamental inner frame for the Arcana Exchange scroll */
+.post::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(230, 199, 134, 0.22);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+/* Distinct visual separation between Offering and Looking For */
+.post > .tsec {
+  position: relative;
+  padding: 20px 24px 26px;
+  border-radius: 14px;
+  background: rgba(9, 13, 31, 0.52);
+  border: 1px solid rgba(230, 199, 134, 0.18);
+  margin-top: 22px;
+}
+
+.post > .tsec:first-child {
+  margin-top: 10px;
+  background:
+    radial-gradient(600px 220px at 0% 0%, rgba(230, 199, 134, 0.09), transparent 70%),
+    rgba(12, 16, 38, 0.56);
+  border-color: rgba(230, 199, 134, 0.28);
+}
+
+.post > .tsec:last-child {
+  background:
+    radial-gradient(600px 220px at 100% 0%, rgba(154, 132, 232, 0.11), transparent 70%),
+    rgba(16, 15, 42, 0.56);
+  border-color: rgba(191, 180, 227, 0.26);
+}
+
+.none {
+  width: 100%;
+  margin: 18px 0;
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--lavender);
+  font-size: 15px;
+  border: 1px dashed rgba(191, 180, 227, 0.24);
+  border-radius: 12px;
+  background: rgba(8, 11, 26, 0.4);
+}
+
+.opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  align-items: center;
+  padding: 14px 18px;
+  margin-top: 10px;
+  border-radius: 12px;
+  background: rgba(16, 23, 53, 0.65);
+  border: 1px solid var(--line);
+}
+
+.chk {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 14px;
+  color: var(--silver);
+  cursor: pointer;
+}
+
+.chk input {
+  accent-color: var(--gold);
+  width: 16px;
+  height: 16px;
+}
+
+.chk input:disabled + span {
+  opacity: 0.45;
+}
+
+/* Card Selector Tray in Trade Editor */
+.pick {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto 20px;
+  padding: 16px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 14px;
+  background: rgba(8, 11, 26, 0.78);
+  box-shadow: inset 0 2px 14px rgba(0, 0, 0, 0.6);
+}
+
+.tile {
+  position: relative;
+  width: 58px;
+  padding: 4px;
+  border: 2px solid rgba(191, 180, 227, 0.16);
+  border-radius: 9px;
+  background: rgba(18, 24, 54, 0.8);
+  transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.tile:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(230, 199, 134, 0.5);
+}
+
+.tile img {
+  display: block;
+  width: 100%;
+  border-radius: 5px;
+  aspect-ratio: 684 / 1024;
+  object-fit: cover;
+  filter: grayscale(0.85) brightness(0.55) opacity(0.65);
+  transition: filter 0.2s;
+}
+
+.tile i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  font: 700 11px var(--f-body);
+  font-style: normal;
+  color: var(--gold-bright);
+  text-shadow: 0 1px 4px #000, 0 0 6px #000;
+}
+
+.tile.sel {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 14px rgba(230, 199, 134, 0.45);
+}
+
+.tile.sel img {
+  filter: none;
+}
+
+.tile:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+/* ===== Read-only Shared Notice View ===== */
+.vhead {
+  text-align: center;
+  padding: 36px 24px 26px;
+}
+
+.vhead .kicker {
+  margin: 0 auto;
+}
+
+.vid {
+  white-space: pre-line;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--lavender);
+  letter-spacing: 0.05em;
+}
+
+.vhead h1 {
+  margin: 22px 0 10px;
+  font: 700 clamp(32px, 5vw, 52px)/1.1 var(--f-head);
+  color: var(--gold-bright);
+  text-shadow: 0 2px 20px rgba(230, 199, 134, 0.28);
+}
+
+.own {
+  text-align: center;
+  margin: 28px 0 0;
+  font-size: 15px;
+}
+
+.own a {
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(230, 199, 134, 0.4);
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.own a:hover {
+  color: var(--gold-bright);
+  border-color: var(--gold-bright);
+}
+
+h1.pt {
+  margin: 20px 0 6px;
+  font: 700 clamp(30px, 5vw, 48px)/1.1 var(--f-head);
+  color: var(--gold-bright);
+  text-shadow: 0 2px 18px rgba(230, 199, 134, 0.25);
+}
+
+/* ===== Footer ===== */
+.legal {
+  max-width: 780px;
+  margin: 64px auto 0;
+  padding: 0 28px calc(28px + env(safe-area-inset-bottom));
+}
+
+.legal::before {
+  content: "✧  ☾  ✧";
+  display: block;
+  text-align: center;
+  margin: 0 auto 14px;
+  color: var(--gold);
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  opacity: 0.7;
+}
+
+.legal p {
+  margin: 0;
+  text-align: center;
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--mute);
+}
+
+/* ===== Profile Dialog & Confirmation Dialog ===== */
+dialog {
+  width: min(450px, calc(100vw - 32px));
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background:
+    radial-gradient(400px 200px at 50% 0%, rgba(102, 77, 179, 0.28), transparent 70%),
+    linear-gradient(180deg, #151c42 0%, #0d122b 100%);
+  color: var(--silver);
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(230, 199, 134, 0.18);
+}
+
+dialog::backdrop {
+  background: rgba(5, 7, 18, 0.76);
+  backdrop-filter: blur(6px);
+}
+
+.cmsg {
+  margin: 0 0 20px;
+  color: var(--lavender);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.bar-end {
+  justify-content: flex-end;
+}
+
+.dh {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.dh h3 {
+  margin: 0;
+  font: 700 26px var(--f-head);
+  color: var(--gold-bright);
+}
+
+.pf {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--lavender);
+}
+
+.pf b {
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.pf input {
+  background: rgba(8, 11, 26, 0.85);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 16px;
+  color: var(--silver);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.pf input::placeholder {
+  color: var(--mute);
+  opacity: 0.6;
+}
+
+.pf input:focus {
+  outline: none;
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 14px rgba(230, 199, 134, 0.25);
+}
+
+.seg {
+  display: flex;
+  gap: 8px;
+}
+
+.seg button {
+  flex: 1;
+  border: 1px solid var(--line);
+  background: rgba(8, 11, 26, 0.75);
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--lavender);
+  transition: all 0.2s;
+}
+
+.seg button:hover {
+  border-color: var(--gold);
+  color: var(--silver);
+}
+
+.seg button[aria-pressed=true] {
+  background: linear-gradient(135deg, #f3d999 0%, #d4af64 100%);
+  border-color: #fae5b2;
+  color: #120d26;
+  box-shadow: 0 0 16px rgba(230, 199, 134, 0.35);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 900px) {
+  .sheet {
+    padding: 0 16px;
+  }
+  .top {
+    margin-top: 16px;
+    padding: 22px 20px 20px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cap i {
+    font-size: 11px;
+  }
+  .cap b {
+    font-size: 13.5px;
+  }
+  .bar .btn {
+    flex: 1 1 30%;
+    padding: 9px 8px;
+    font-size: 13px;
+  }
+  .bar .sp {
+    display: none;
+  }
+  .post {
+    padding: 12px 14px 24px;
+  }
+  .post > .tsec {
+    padding: 16px 14px 20px;
+  }
+}
+
+@media (min-width: 901px) {
+  body {
+    font-size: 17px;
+  }
+  .g {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 22px;
+  }
+  .g.ctr {
+    gap: 22px;
+  }
+  .g.ctr .cell {
+    width: calc((100% - 110px) / 6);
+  }
+  .cap i {
+    font-size: 13px;
+  }
+  .cap b {
+    font-size: 17px;
+  }
+  .hint {
+    font-size: 15px;
+  }
+  .mini {
+    font-size: 14px;
+  }
+  .ach {
+    font-size: 13.5px;
+  }
+  .uidrow {
+    font-size: 15px;
+  }
+  .vid {
+    font-size: 17px;
+  }
+  .btn {
+    font-size: 15px;
+  }
+  .pick {
+    max-width: 840px;
+  }
+  .tile {
+    width: 64px;
+  }
+  .pct b {
+    font-size: 52px;
+  }
+  .pct span {
+    font-size: 23px;
+  }
+  .tsec h2 small {
+    font-size: 16px;
+  }
+}
 </style>
 </head>
 <body>
@@ -150,7 +1294,7 @@ dialog::backdrop{background:rgba(43,28,16,.45)}
 </header>
 <p class="msg" role="status"></p>
 <section class="tsec first"><h2>Arcana Collection<small id="unl"></small></h2>
-<p class="hint">Tap a card each time you get one.</p>
+<p class="hint">Tap a card in the Celestial Archive each time you obtain one.</p>
 <div class="g" id="gh"></div></section>
 <div class="bar data-bar">
 <button class="btn" id="imp" type="button">Import data</button>
@@ -203,6 +1347,14 @@ dialog::backdrop{background:rgba(43,28,16,.45)}
 <label class="pf"><b>UID</b><input id="pfUid" inputmode="numeric" maxlength="10" placeholder="optional" autocomplete="off"></label>
 <div class="pf"><b>Server</b><div class="seg" id="srv"></div></div>
 </dialog>
+<dialog id="cdlg" aria-labelledby="ctitle">
+<div class="dh"><h3 id="ctitle">Confirm</h3></div>
+<p class="cmsg" id="cmsg"></p>
+<div class="bar bar-end">
+<button class="btn" id="ccancel" type="button">Cancel</button>
+<button class="btn cap2" id="cok" type="button">Confirm</button>
+</div>
+</dialog>
 <script>
 /* ===== 1. Card data =====
    Card number = array index + 1. Picture file: cards/NN-slug.webp (slug = lowercase name, spaces to hyphens). */
@@ -237,7 +1389,22 @@ const $=id=>document.getElementById(id);
 const say=text=>document.querySelectorAll('.msg').forEach(m=>{m.textContent=text});
 const identity=(server,uid)=>[server&&server+' server',uid&&'UID '+uid].filter(Boolean);
 const LOCK='<svg class="lk" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 0 1 6 0v3z"/></svg>';
-const cardHtml=i=>'<span class="art"><img alt="" loading="lazy" src="'+cardSrc(i)+'">'+LOCK+'</span><span class="cap"><i>'+ROMAN[i]+'</i><b>'+NAMES[i]+'</b></span>';
+const IMG_FB="this.style.opacity='0'";
+const cardHtml=i=>'<span class="art"><img alt="" loading="lazy" src="'+cardSrc(i)+'" onerror="'+IMG_FB+'">'+LOCK+'</span><span class="cap"><i>'+ROMAN[i]+'</i><b>'+NAMES[i]+'</b></span>';
+function askConfirm(message){
+  const dlg=$('cdlg');
+  if(!dlg||typeof dlg.showModal!=='function'){
+    try{return Promise.resolve(confirm(message))}catch(e){return Promise.resolve(true)}
+  }
+  return new Promise(resolve=>{
+    $('cmsg').textContent=message;
+    const done=val=>{dlg.close();resolve(val)};
+    $('cok').onclick=()=>done(true);
+    $('ccancel').onclick=()=>done(false);
+    dlg.oncancel=()=>resolve(false);
+    dlg.showModal();
+  });
+}
 function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 async function copyText(text,okMessage){
   try{await navigator.clipboard.writeText(text);say(okMessage)}
@@ -293,7 +1460,7 @@ const paintServers=()=>[...$('srv').children].forEach(b=>b.setAttribute('aria-pr
 function fillProfileInputs(){$('pfName').value=S.name;$('pfUid').value=S.uid;paintServers()}
 
 async function resetEverything(){
-  if(!confirm('Reset everything? This clears your collection and profile saved in this browser.'))return;
+  if(!(await askConfirm('Reset everything? This clears your collection and profile saved in this browser.')))return;
   try{localStorage.removeItem(STORAGE_KEY)}catch(e){}
   try{await Promise.all(NAMES.map((n,i)=>fetch(cardSrc(i),{cache:'reload'})))}catch(e){}  // refresh cached card pictures too
   location.reload();
@@ -303,7 +1470,7 @@ async function importData(file){
   if(!file)return;
   try{
     const d=JSON.parse(await file.text());if(!d||!Array.isArray(d.n))throw 0;
-    if(S.n.some(v=>v)&&!confirm('Replace your current collection with this file?'))return;
+    if(S.n.some(v=>v)&&!(await askConfirm('Replace your current collection with this file?')))return;
     S=normalize(d);saveState();fillProfileInputs();refreshAll();say('Data imported.');
   }catch(e){say('That file is not a Lunar Arcana Trade data file.')}
 }
@@ -330,7 +1497,7 @@ const tiles={O:[],W:[]};  // small pickers: O = offering (only cards you own), W
 function buildPickers(){
   [['O','kO'],['W','kW']].forEach(([kind,host])=>NAMES.forEach((name,i)=>{
     const tile=document.createElement('button');tile.type='button';tile.className='tile';
-    tile.innerHTML='<img alt="" loading="lazy" src="'+cardSrc(i)+'"><i>'+ROMAN[i]+'</i>';
+    tile.innerHTML='<img alt="" loading="lazy" src="'+cardSrc(i)+'" onerror="'+IMG_FB+'"><i>'+ROMAN[i]+'</i>';
     tile.onclick=()=>{
       if(kind==='O'){if(!S.n[i])return;if(P.offer[i])delete P.offer[i];else P.offer[i]=Math.max(1,S.n[i]-1)}
       else{const at=P.want.indexOf(i);if(at>=0)P.want.splice(at,1);else P.want.push(i)}
@@ -387,7 +1554,7 @@ function drawView(){
 
 /* ===== 9. Saved image (canvas, 6 cards per row, same look as the page) ===== */
 async function makeImage(R){
-  const sections=[['Offering',R.offer,'#a8741a'],['Looking for',R.want.map(i=>[i,0]),'#174c55']].filter(s=>s[1].length);
+  const sections=[['Offering',R.offer,'#e6c786'],['Looking for',R.want.map(i=>[i,0]),'#bfb4e3']].filter(s=>s[1].length);
   try{await Promise.all([document.fonts.load('700 56px "El Messiri"'),document.fonts.load('600 22px Figtree')])}catch(e){}
   const pics={};
   if(!LOCAL){
@@ -403,45 +1570,47 @@ async function makeImage(R){
   const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;const x=canvas.getContext('2d');
   const diamond=(cx,cy,r,color)=>{x.fillStyle=color;x.beginPath();x.moveTo(cx,cy-r);x.lineTo(cx+r,cy);x.lineTo(cx,cy+r);x.lineTo(cx-r,cy);x.closePath();x.fill()};
   const roundRect=(px,py,w,h,r)=>{x.beginPath();if(x.roundRect)x.roundRect(px,py,w,h,r);else x.rect(px,py,w,h)};
-  // background and double frame with corner diamonds
-  x.fillStyle='#f3e8d0';x.fillRect(0,0,W,H);
-  const glow=x.createRadialGradient(W/2,0,0,W/2,0,900);glow.addColorStop(0,'rgba(255,255,255,.7)');glow.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=glow;x.fillRect(0,0,W,H);
-  x.strokeStyle='#cdb888';x.lineWidth=3;x.strokeRect(14,14,W-28,H-28);x.lineWidth=1;x.strokeRect(24,24,W-48,H-48);
-  [[24,24],[W-24,24],[24,H-24],[W-24,H-24]].forEach(p=>diamond(p[0],p[1],8,'#a8741a'));
+  // celestial midnight background and double golden frame with corner diamonds
+  const bgGrad=x.createLinearGradient(0,0,0,H);bgGrad.addColorStop(0,'#090d20');bgGrad.addColorStop(0.5,'#151436');bgGrad.addColorStop(1,'#090c1d');
+  x.fillStyle=bgGrad;x.fillRect(0,0,W,H);
+  const glow=x.createRadialGradient(W/2,0,0,W/2,0,900);glow.addColorStop(0,'rgba(110,86,175,.32)');glow.addColorStop(1,'rgba(110,86,175,0)');x.fillStyle=glow;x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(230,199,134,.55)';x.lineWidth=3;x.strokeRect(14,14,W-28,H-28);x.strokeStyle='rgba(230,199,134,.28)';x.lineWidth=1;x.strokeRect(24,24,W-48,H-48);
+  [[24,24],[W-24,24],[24,H-24],[W-24,H-24]].forEach(p=>diamond(p[0],p[1],8,'#e6c786'));
   // centered title, shrunk to fit long names
   const title=(R.name?R.name+'’s ':'')+'Lunar Arcana Trade';
   let titleSize=60;x.font='700 '+titleSize+'px '+HEAD;
   while(x.measureText(title).width>W-pad*2&&titleSize>30){titleSize--;x.font='700 '+titleSize+'px '+HEAD}
-  x.textBaseline='alphabetic';x.textAlign='center';x.fillStyle='#174c55';x.fillText(title,W/2,pad+70);   // title sits midway between the frame line and the first heading
+  x.textBaseline='alphabetic';x.textAlign='center';x.fillStyle='#f7e3b5';x.fillText(title,W/2,pad+70);
   let y=pad+121;
   sections.forEach(([label,list,color],s)=>{
-    if(s)y+=30;   // extra space between sections
+    if(s)y+=30;
     x.textAlign='left';x.fillStyle=color;x.font='700 44px '+HEAD;x.fillText(label+' ('+list.length+')',pad,y+36);
-    x.fillStyle='#cdb888';x.fillRect(pad,y+60,W/2-pad-26,2);x.fillRect(W/2+26,y+60,W/2-pad-26,2);diamond(W/2,y+61,9,color);
+    x.fillStyle='rgba(230,199,134,.35)';x.fillRect(pad,y+60,W/2-pad-26,2);x.fillRect(W/2+26,y+60,W/2-pad-26,2);diamond(W/2,y+61,9,color);
     y+=96;
     for(let r=0;r*cols<list.length;r++){
-      const row=list.slice(r*cols,r*cols+cols);let px=(W-(row.length*cw+(row.length-1)*gap))/2;   // rows are centered
+      const row=list.slice(r*cols,r*cols+cols);let px=(W-(row.length*cw+(row.length-1)*gap))/2;
       row.forEach(([i,copies])=>{
-        if(pics[i]){x.save();x.shadowColor='rgba(60,40,10,.38)';x.shadowBlur=16;x.shadowOffsetY=7;x.drawImage(pics[i],px,y,cw,ch);x.restore()}
-        else{  // local file: draw an arch placeholder instead of the picture
-          x.fillStyle='rgba(122,98,68,.2)';x.beginPath();x.moveTo(px+cw/2,y);x.lineTo(px+cw,y+ch*.14);x.lineTo(px+cw,y+ch*.86);x.lineTo(px+cw/2,y+ch);x.lineTo(px,y+ch*.86);x.lineTo(px,y+ch*.14);x.closePath();x.fill();
-          x.fillStyle='#a8741a';x.font='700 52px '+HEAD;x.textAlign='center';x.fillText(ROMAN[i],px+cw/2,y+ch/2+16);
+        if(pics[i]){x.save();x.shadowColor='rgba(0,0,0,.65)';x.shadowBlur=18;x.shadowOffsetY=8;x.drawImage(pics[i],px,y,cw,ch);x.restore()}
+        else{
+          x.fillStyle='rgba(47,37,89,.55)';x.beginPath();x.moveTo(px+cw/2,y);x.lineTo(px+cw,y+ch*.14);x.lineTo(px+cw,y+ch*.86);x.lineTo(px+cw/2,y+ch);x.lineTo(px,y+ch*.86);x.lineTo(px,y+ch*.14);x.closePath();x.fill();
+          x.strokeStyle='rgba(230,199,134,.45)';x.lineWidth=2;x.stroke();
+          x.fillStyle='#e6c786';x.font='700 52px '+HEAD;x.textAlign='center';x.fillText(ROMAN[i],px+cw/2,y+ch/2+16);
         }
-        if(copies>1){  // "×N" badge
+        if(copies>1){
           const t='×'+copies;x.font='700 26px '+BODY;const w=x.measureText(t).width+24;
-          x.fillStyle='#a8741a';roundRect(px+cw-w+6,y-4,w,40,20);x.fill();x.fillStyle='#fff';x.textAlign='center';x.fillText(t,px+cw-w/2+6,y+25);
+          x.fillStyle='#e6c786';roundRect(px+cw-w+6,y-4,w,40,20);x.fill();x.fillStyle='#120d26';x.textAlign='center';x.fillText(t,px+cw-w/2+6,y+25);
         }
-        x.textAlign='center';x.fillStyle='#a8741a';x.font='600 22px '+BODY;x.fillText(ROMAN[i],px+cw/2,y+ch+34);
+        x.textAlign='center';x.fillStyle='#e6c786';x.font='600 22px '+BODY;x.fillText(ROMAN[i],px+cw/2,y+ch+34);
         let size=27;x.font='600 '+size+'px '+HEAD;
         while(x.measureText(NAMES[i]).width>cw+gap-6&&size>15){size--;x.font='600 '+size+'px '+HEAD}
-        x.fillStyle='#174c55';x.fillText(NAMES[i],px+cw/2,y+ch+66);
+        x.fillStyle='#e2e7f7';x.fillText(NAMES[i],px+cw/2,y+ch+66);
         px+=cw+gap;
       });
       y+=ch+capH+gap;
     }
   });
   // footer: server and UID, one per line
-  info.forEach(([key,val],j)=>{const by=y+70+40*j;x.textAlign='left';x.fillStyle='#a8741a';x.font='700 22px '+BODY;x.fillText(key.toUpperCase(),pad,by);x.fillStyle='#174c55';x.font='600 22px '+BODY;x.fillText(val,pad+110,by)});
+  info.forEach(([key,val],j)=>{const by=y+70+40*j;x.textAlign='left';x.fillStyle='#e6c786';x.font='700 22px '+BODY;x.fillText(key.toUpperCase(),pad,by);x.fillStyle='#e2e7f7';x.font='600 22px '+BODY;x.fillText(val,pad+110,by)});
   return new Promise((ok,fail)=>canvas.toBlob(b=>b?ok(b):fail(new Error('empty')),'image/jpeg',.92));
 }
 async function saveImage(){
