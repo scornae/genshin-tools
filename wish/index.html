@@ -22,12 +22,15 @@ Mark keys are "name|YYYY-MM-DD", with "#n" added for repeats on one day. Changin
 mergePaimon merges an import into stored rows (same pool, time and name counts once). Never go back to replacing.
 RULES DECIDED: Capturing Radiance (CR) counter starts at 1 on CR_START, a won 50/50 gives -1 (min 0), a lost one +1 (max 3).
 The site never counts CR by itself: it suggests with "?" and the user presses the button. Radiance is always shown apart from
-Lost (Won / Lost / CR are three separate numbers). Weapon Won/Lost is also user-marked; a PERM weapon is an automatic Lost, and the
+Lost (Won / Lost / CR are three separate numbers). Weapon Won/Lost is also user-marked; a mark is final once pressed, and only the Timeline Reset marks button (rainbow frame, with confirm) clears crUser and crMarks, or wUser; a PERM weapon is an automatic Lost, and the
 next limited 5-star in the same banner is Guaranteed. Avg pity is the mean pity at each 5-star, so it is not total pulls / 5-stars.
-The 50/50 record stays hidden until all marks are done, and hides again after an import adds unmarked data. Wording: "Standard" and
+The 50/50 record shows per half: the character half once all Radiance marks are done, the weapon half once all weapon marks are done; the other half shows Almost there. Wording: "Standard" and
 "standard weapon", never "permanent". Beginners' has no 5-star: excluded from Timeline and from totals unless all pools are selected.
-LANDING (no data yet): the drop box comes first, the paimon.moe link below it, then the safety line (no HoYoverse login, never ask for
-password or verification code, nothing uploaded, unofficial). Keep that wording: it matches HoYoLAB community rules.
+LANDING (no data yet): About block (why, who it is for: paimon.moe users, what it is not), drop box, paimon.moe link. The safety and legal
+wording (no login, never ask for a password or code, nothing uploaded, unofficial) lives only in the footer; keep it, it matches HoYoLAB rules.
+BANNER MAP (tab "map", Character and Weapon only): units come from BN and WN; a wish is matched to a banner by date and, for character banners,
+by banner name (featName). States: got, wished without featured, skipped, before the first wish, running now. Skipped tile counts skipped debuts.
+Summary tiles each have a color accent (orange, green, pink, blue; never the category colors gold, purple, teal, cyan, grey) and show exactly one line of detail; anything longer goes in the tile tooltip.
 REMOVED, DO NOT ADD BACK: one global banner filter over every tab (only Overview has it), Collection, Checks, Copy button, Avg gap,
 Customize panel, "50/50 next" and "Guaranteed next" tags, Oldest/Newest button in All Wishes, any mobile layout.
 -->
@@ -118,11 +121,11 @@ button,input,select{font:inherit;color:inherit}button{cursor:pointer}
 .eyebrow{font-family:var(--dig);color:var(--acc);letter-spacing:.18em;text-transform:uppercase;font-size:12px;font-weight:600;margin:0 0 18px}
 .hero h1{font-size:clamp(34px,5vw,58px);line-height:1.08}
 .gold{background:linear-gradient(180deg,#eafff0,var(--acc) 62%,#13b84c);-webkit-background-clip:text;background-clip:text;color:transparent}
-.lede{color:var(--mu);font-size:17px;max-width:540px;margin:18px auto 36px}
+.lede{color:var(--mu);font-size:17px;max-width:540px;margin:18px auto 24px}
 .drop{position:relative;display:flex;flex-direction:column;gap:6px;align-items:center;width:min(520px,100%);margin:0 auto;padding:44px 24px;border-radius:20px;background:var(--sf);cursor:pointer;isolation:isolate;transition:background .2s}
 .drop::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(44,245,107,.7),rgba(255,255,255,.07) 40%,rgba(255,255,255,.07) 60%,rgba(44,245,107,.7));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;z-index:-1}
 .drop:hover{background:var(--sf2)}.drop strong{font:22px 'Chakra Petch',sans-serif}.drop span{color:var(--mu);font-size:14px}
-.fine{color:var(--fa);font-size:13px;margin:18px auto 0;max-width:560px;line-height:1.5}
+
 .dropveil{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:rgba(0,0,0,.82);backdrop-filter:blur(6px)}
 .dropveil.on{display:grid}
 .dropveil div{font:28px 'Chakra Petch',sans-serif;padding:48px 72px;border-radius:24px;border:1.5px dashed var(--acc);color:var(--acc2)}
@@ -330,6 +333,18 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .seg2 .mid{position:absolute;left:50%;top:-6px;bottom:-6px;width:2px;background:#fff;opacity:.85;text-decoration:none}.seg2 .mid small{position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--mu)}
 .seg2 .lg{display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 0 12px;font-size:13px;color:var(--mu)}.seg2 .lg s{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
 .seg2 .bar{height:18px;border-radius:6px}.seg2 .sh b{font-size:18px}.seg2 .trw{margin-top:20px}.seg2 .bar em{font-size:11px}.seg2 .mid{top:-4px;bottom:-4px}.seg2 .lg{margin:8px 0 10px}
+.mapsum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}.mapsum>div{min-width:0;padding:12px 16px;border-radius:12px;border:1px solid rgba(var(--t),.38);background:linear-gradient(135deg,rgba(var(--t),.17),rgba(var(--t),.03) 65%),var(--sf)}.mapsum .k{font-size:13px;color:var(--c)}.mapsum .v{font-size:28px;font-weight:600;margin-top:2px;color:var(--c)}.mapsum .s{font-size:12.5px;color:var(--mu);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mapsum .a1{--c:#ffa45c;--t:255,164,92}.mapsum .a2{--c:#7fd1a8;--t:127,209,168}.mapsum .a3{--c:#ff7a93;--t:255,122,147}.mapsum .a4{--c:#8fb4ff;--t:143,180,255}
+.mlg{display:flex;gap:18px;flex-wrap:wrap;margin:4px 0 12px;font-size:13px;color:var(--mu)}.mlg i{display:inline-block;width:13px;height:13px;border-radius:4px;margin-right:7px;vertical-align:-2px;border:1.5px solid}.mlg .g{border-color:var(--r5);background:rgba(242,179,80,.35)}.mlg .m{border-color:var(--lose);background:rgba(239,139,139,.3)}.mlg .s{border-style:dashed;border-color:#7b7b7b}.mlg .p{border-color:transparent;background:rgba(255,255,255,.1)}
+.mrow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line2)}.mv{flex:none;width:104px;padding-top:24px;font-weight:600}.mph{flex:1 1 0;min-width:0}.mpl{font-size:12.5px;color:var(--mu);margin-bottom:6px}.mcs{display:flex;gap:8px}
+.mc{flex:1 1 0;max-width:280px;min-width:0;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1px solid var(--line2);background:var(--sf);text-align:left;color:var(--tx);font:inherit}.mc .pf{width:36px;height:36px;border-radius:9px}
+.mt{display:flex;flex-direction:column;min-width:0}.mt b{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mt small{font-size:12.5px;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc.got{border-color:var(--r5);background:linear-gradient(90deg,rgba(242,179,80,.22),transparent)}.mc.got small{color:var(--r5)}.mc.miss{border-color:var(--lose);background:linear-gradient(90deg,rgba(239,139,139,.15),transparent)}.mc.miss small{color:var(--lose)}
+.mc.skip{border-style:dashed;border-color:#7b7b7b}.mc.skip .pf,.mc.miss .pf{filter:grayscale(1);opacity:.5}.mc.pre{opacity:.33;border-color:transparent}.mc.pre .pf{filter:grayscale(1)}.mc.live{border-style:dashed;border-color:var(--guar)}.mc.live small{color:var(--guar)}
+button.mc{cursor:pointer}button.mc:hover{filter:brightness(1.15)}
+.wm b{display:inline-flex;align-items:center;border:1px solid var(--line2);background:rgba(0,0,0,.5);border-radius:8px;height:28px;padding:0 12px;font-size:12px;font-weight:500;color:var(--mu)}.wm b.on.w{color:#9be8c0;border-color:var(--win);background:rgba(80,200,140,.18)}.wm b.on.l{color:#ffb0b0;border-color:var(--lose);background:rgba(235,90,90,.2)}
+.chip.rbow{border:1.5px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,var(--rainbow) border-box;color:var(--tx);font-weight:600}.chip.rbow:hover{filter:brightness(1.2)}
+.about{max-width:620px;margin:0 auto 30px;text-align:left;display:grid;gap:12px}.about div{display:grid;grid-template-columns:112px minmax(0,1fr);gap:16px;font-size:14.5px;line-height:1.55;color:var(--mu)}.about b{color:var(--tx);font-weight:600}
 </style>
 </head>
 <body>
@@ -521,6 +536,7 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
     <button data-act="view" data-v="overview">Overview</button>
     <button data-act="view" data-v="timeline">5★ Timeline</button>
     <button data-act="view" data-v="log">All Wishes</button>
+    <button data-act="view" data-v="map">Banner Map</button>
     <button data-act="view" data-v="export">Import &amp; Export</button>
   </nav>
   <div class="search" id="searchBox" hidden><input id="q" placeholder="Search anyone…   /" autocomplete="off" aria-label="Search"><div class="sugg" id="sugg"></div></div>
@@ -533,11 +549,11 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
       <p class="eyebrow">Genshin Impact · Wish history</p>
       <h1>Every wish you've made,<br><span class="gold">beautifully counted.</span></h1>
       <p class="lede">Drop your paimon.moe export to see your 5★ story, your 50/50 record, and exactly how many times each character showed up for you.</p>
+      <div class="about"><div><b>Why it exists</b><span>paimon.moe keeps your wish history. Wish Ledger adds the detail it leaves out: how many times each character and weapon came out, your 50/50 record and a map of the banners you skipped.</span></div><div><b>Who it is for</b><span>People who already track their wishes on paimon.moe. Export your history there, drop the Excel file here, and the numbers appear.</span></div><div><b>What it is not</b><span>A replacement for paimon.moe, or a way to log in to the game. It only reads the file you give it.</span></div></div>
       <label class="drop"><input type="file" id="file" accept=".xlsx,.json,.docx" multiple hidden>
         <strong>Drop your file here</strong><span>or click to choose · paimon.moe Excel export</span>
       </label>
       <div class="getfile"><a class="gf-link" href="https://paimon.moe/wish" target="_blank" rel="noopener">Open the paimon.moe Wish Counter</a><p>No file yet? Import your wishes on paimon.moe first, then export them as an Excel file from its Settings and drop that file in the box above.</p></div>
-      <p class="fine">No HoYoverse account needed. This site never asks for your password or a verification code, so never type one here. Your file is read inside your browser and is not uploaded anywhere. Unofficial fan-made tool, not affiliated with HoYoverse. Made for desktop browsers.</p>
     </div>
   </section>
   <section id="app" hidden>
@@ -545,7 +561,7 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
     <div class="wrap" id="view"></div>
   </section>
 </main>
-<footer class="foot wrap"><div>Fan-made tool for Genshin Impact. Not affiliated with HoYoverse. Genshin Impact and all related assets are trademarks of HoYoverse.</div><div>Your wishes stay in this browser — nothing is uploaded. · <a href="../">Genshin Tools</a> · <a href="https://github.com/scornae/genshin-tools" target="_blank" rel="noopener">GitHub</a> · © <span id="yr"></span> SCORNAE</div></footer>
+<footer class="foot wrap"><div>Fan-made tool for Genshin Impact, not affiliated with HoYoverse. Genshin Impact and all related assets are trademarks of HoYoverse. No HoYoverse account needed: this site never asks for your password or a verification code. Your wishes stay in this browser, nothing is uploaded.</div><div><a href="../">Genshin Tools</a> · <a href="https://github.com/scornae/genshin-tools" target="_blank" rel="noopener">GitHub</a> · © <span id="yr"></span> SCORNAE</div></footer>
 <button class="btn totop" id="toTop" data-act="toTop">↑ Top</button>
 <dialog id="dlg"><div id="dlgBody"></div></dialog>
 <div class="toast" id="toast" role="status"></div>
@@ -836,7 +852,7 @@ function isFeat(p){const L=p.pool==='char'?CB:WB,k=norm(p.name);
 
 /* ---------- state ---------- */
 const S={docx:LS.get('docx',[]),paimon:LS.get('paimon',[]),crMarks:LS.get('crMarks',[]),crUser:LS.get('crUser',{}),wUser:LS.get('wUser',{}),
-  view:'overview',tlNewest:true,
+  view:'overview',tlNewest:true,mapCat:'char',
   f:{pools:Object.keys(POOL),from:'',to:''},
   cat:'char',log:{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},bn:'',num:1,limit:300},histPool:'char'};
 let D={pools:{},all:[]};
@@ -997,8 +1013,6 @@ function segBar(title,parts,t,feat){const lab=x=>t&&x/t>=.08?`<em>${Math.round(x
   return`<div class="seg2"><div class="sh"><span>${title}</span><b class="n">${feat}</b></div><div class="trw"><div class="bar">${t?parts.map(([x,c])=>`<i style="width:${x/t*100}%;background:${c}">${lab(x)}</i>`).join(''):''}</div><u class="mid"><small>50%</small></u></div><div class="lg">${parts.map(([,c,n])=>`<span><s style="background:${c}"></s>${n}</span>`).join('')}</div></div>`}
 function fiftyPanel(F){
   const pd=pending();
-  if(pd.c||pd.w){const parts=[pd.c?`${pd.c} character win${pd.c>1?'s':''} to mark as Radiance or not`:'',pd.w?`${pd.w} limited weapon${pd.w>1?'s':''} to mark Won or Lost`:''].filter(Boolean).join(' · ');
-    return`<section class="card"><h2>50/50 record <small>limited banners</small></h2><div class="lock" style="margin:0"><b>Almost there</b><p class="meta">The record appears once every Radiance candidate and every limited weapon is marked in the 5★ Timeline. Still to go: ${parts}.</p><button class="btn ghost" data-act="goMark">Go mark them</button></div></section>`}
   const c=F.filter(p=>p.pool==='char'&&p.r===5),n=o=>c.filter(p=>p.out===o).length;
   const w=n('win'),l=n('lose'),cr=n('cr'),g=n('guar'),t=w+l+cr,pct=x=>t?Math.round(x/t*100)+'%':'–';
   const last=[...(D.pools.char||[])].reverse().find(p=>p.r===5&&p.c1!=null),ctr=last?last.c1:1;
@@ -1014,8 +1028,11 @@ function fiftyPanel(F){
   <div class="ff">${tile(ww,'Won','var(--win)')}${tile(wl,'Lost','var(--lose)')}${tile(wg,'Guaranteed','var(--guar)')}${tile(wf,'Not marked','var(--mu)')}</div>
   ${segBar('How your weapon 50/50s went',[[ww,'var(--win)','Won'],[wl,'var(--lose)','Lost']],wt,(wt?Math.round(ww/wt*100)+'%':'–')+' won')}
   <div class="meta">Won <b>${wt?Math.round(ww/wt*100)+'%':'–'}</b> of the ${wt} you counted${wf?` · ${wf} still to mark in the 5★ Timeline`:''}</div></div>`:'';
-  if(!chr&&!wblk)return'';
-  return`<section class="card"><h2>50/50 record <small>limited banners</small></h2><div class="cols2${chr&&wblk?'':' one'}">${chr}${wblk}</div></section>`}
+  const lock=(label,msg,cat)=>`<div><div class="rl" style="margin-bottom:12px">${label}</div><div class="lock" style="margin:0"><b>Almost there</b><p class="meta">${msg}</p><button class="btn ghost" data-act="goMark" data-v="${cat}">Go mark them</button></div></div>`;
+  const cb=pd.c?lock('Character Event',`The record appears once every Radiance candidate is marked in the 5★ Timeline. Still to go: ${pd.c} character win${pd.c>1?'s':''} to mark as Radiance or not.`,'char'):chr;
+  const wb=pd.w?lock('Weapon Event',`The record appears once every limited weapon is marked in the 5★ Timeline. Still to go: ${pd.w} limited weapon${pd.w>1?'s':''} to mark Won or Lost.`,'weapon'):wblk;
+  if(!cb&&!wb)return'';
+  return`<section class="card"><h2>50/50 record <small>limited banners</small></h2><div class="cols2${cb&&wb?'':' one'}">${cb}${wb}</div></section>`}
 function loyalPanel(F){
   const g=groups(F.filter(p=>p.r===4&&p.type==='Character')).sort((a,b)=>b.n-a.n).slice(0,10),mx=g[0]?.n||1;
   const w=groups(F.filter(p=>p.r===4&&p.type==='Weapon')).sort((a,b)=>b.n-a.n).slice(0,10),mw=w[0]?.n||1;
@@ -1040,12 +1057,15 @@ function statsBar(rows,cat){const f5=rows.filter(p=>p.r===5),c=o=>f5.filter(p=>p
   if(cat==='char')cells.push(['Won',c('win'),'w'],['Lost',c('lose'),'l'],['CR',c('cr'),'cr']);if(cat==='weapon')cells.push(['Won',c('win'),'w'],['Lost',c('lose')+c('off'),'l']);
   return`<div class="sbar">${cells.map(([k,v,x])=>`<div><span>${k}</span><b class="n ${x||''}">${v}</b></div>`).join('')}</div>`}
 function timeline(){if(S.cat==='novice')S.cat='char';const all=D.pools[S.cat],L=all.filter(p=>p.r===5);if(S.tlNewest)L.reverse();
-  return`${catBar('tl')}${statsBar(all,S.cat)}<div class="hintrow"><p class="meta hint">Radiance (characters) and Won / Lost on limited weapons are marked by you. The site only points out where it could apply.</p>${(pd=>pd.c+pd.w?`<span class="meta"><b style="color:var(--gold)">${pd.c+pd.w}</b> left to mark</span>`:'')(pending())}<button class="chip" data-act="tlOrder">${S.tlNewest?'Newest first':'Oldest first'}</button></div>
+  const nm=S.cat==='char'?Object.keys(S.crUser).length+S.crMarks.length:S.cat==='weapon'?Object.keys(S.wUser).length:0,
+    rb=nm?`<button class="chip rbow" data-act="resetMarks" data-v="${S.cat}" title="Remove every mark you made in this category">${S.cat==='char'?'Reset Radiance marks':'Reset Won / Lost marks'}</button>`:'';
+  return`${catBar('tl')}${statsBar(all,S.cat)}<div class="hintrow"><p class="meta hint">Radiance (characters) and Won / Lost on limited weapons are marked by you. The site only points out where it could apply. A mark is final once pressed; the Reset button is the way to start over.</p>${(pd=>pd.c+pd.w?`<span class="meta"><b style="color:var(--gold)">${pd.c+pd.w}</b> left to mark</span>`:'')(pending())}${rb}<button class="chip" data-act="tlOrder">${S.tlNewest?'Newest first':'Oldest first'}</button></div>
   <div class="fives">${L.map(fiveRow).join('')||'<p class="meta">No 5★ here yet.</p>'}</div>`}
 function fiveRow(p){const c=p.type==='Character'?findChar(p.name):null,col=pityCol(p.p5,p.pool);
   const ctr=p.c0!=null&&p.out!=='guar'?`<div class="ctr n">CR ${p.c0} → ${p.c1}${p.maybeCR?' <b title="Counter was 2–3, so this win could have been Radiance">?</b>':''}</div>`:'';
-  const cu=S.crUser[p.key],btn=p.pool==='char'&&(p.out==='cr'||(p.out==='win'&&p.c0>=2))?`<span class="wm"><button class="${p.out==='cr'?'on w':''}" data-act="crm" data-v="${esc(p.key)}|1">✨ Radiance</button><button class="${p.out==='win'&&cu===false?'on l':''}" data-act="crm" data-v="${esc(p.key)}|0">Not Radiance</button></span>`:'';
-  const m=S.wUser[p.key],wbtn=p.pool==='weapon'&&p.feat&&p.out!=='guar'?`<span class="wm"><button class="${m==='win'?'on w':''}" title="Got the weapon you picked on the Epitomized Path" data-act="wm" data-v="${esc(p.key)}|win">Won</button><button class="${m==='lose'?'on l':''}" title="Got the other limited weapon" data-act="wm" data-v="${esc(p.key)}|lose">Lost</button></span>`:'';
+  const cu=S.crUser[p.key],cand=p.pool==='char'&&(p.out==='cr'||(p.out==='win'&&p.c0>=2)),
+    btn=!cand?'':(p.out==='cr'||cu===false)?`<span class="wm done"><b class="on ${p.out==='cr'?'w':'l'}">${p.out==='cr'?'✨ Radiance':'Not Radiance'}</b></span>`:`<span class="wm"><button data-act="crm" data-v="${esc(p.key)}|1">✨ Radiance</button><button data-act="crm" data-v="${esc(p.key)}|0">Not Radiance</button></span>`;
+  const m=S.wUser[p.key],wbtn=!(p.pool==='weapon'&&p.feat&&p.out!=='guar')?'':m?`<span class="wm done"><b class="on ${m==='win'?'w':'l'}">${m==='win'?'Won':'Lost'}</b></span>`:`<span class="wm"><button title="Got the weapon you picked on the Epitomized Path" data-act="wm" data-v="${esc(p.key)}|win">Won</button><button title="Got the other limited weapon" data-act="wm" data-v="${esc(p.key)}|lose">Lost</button></span>`;
   return`<div class="five${p.out==='cr'?' is-cr':''}${c?' has-el':''}${p.pool==='weapon'?' wp':''}"${c?` style="--ec:var(--${c.el})"`:''} data-act="item" data-v="${esc(p.name)}">${c?`<span class="nc"><img loading="lazy" alt="" src="${ASSET}namecardalpha/${encodeURIComponent(c.id)}.webp" onerror="this.remove()"></span>`:''}${face(p,'row')||`<span class="ord n">${p.k5}</span>`}
   <div><div class="nm"><span class="kn n">#${p.k5}</span>${esc(p.name)}</div><div class="meta ell">${esc(bannerLine(p))}<span class="show-m"> · pity ${p.p5}</span></div></div>
   <div class="meta hide-m n">${fmtD(p.date)}</div>
@@ -1179,7 +1199,65 @@ async function ingest(files){
   build();render()}
 
 /* ---------- render + events ---------- */
-const VIEWS={overview,timeline,log:logView,export:exportView};
+/* ---------- banner map ---------- */
+const sameName=(a,b)=>{const x=norm(a),y=norm(b);return!!x&&!!y&&(x===y||x.endsWith(' '+y)||y.endsWith(' '+x))};
+const MAPMON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const mapD=(d,y)=>`${MAPMON[+d.slice(5,7)-1]} ${+d.slice(8)}${y?`, ${d.slice(0,4)}`:''}`;
+const mapRange=b=>b.e>'2900'?`${mapD(b.s,true)} – TBA`:`${mapD(b.s)} – ${mapD(b.e,true)}`;
+let MAPCELLS=[];
+function mapList(cat){return cat==='char'?CB:WB}
+function mapUnits(cat){const L=mapList(cat),out=[];
+  L.forEach((b,i)=>{if(cat==='char')b.f.forEach(f=>out.push({i,b,f,name:f,v:b.v}));
+    else out.push({i,b,f:null,name:b.f.join(' / '),v:b.v})});
+  return out}
+function mapAssign(p,L,cat){const d=p.date;let c=L.filter(b=>b.s<=d&&d<=b.e);
+  if(!c.length)c=L.filter(b=>b.s<=addDays(d,1)&&addDays(b.e,1)>=d);
+  if(!c.length)return null;
+  const top=c.reduce((a,b)=>b.s>a.s?b:a);
+  if(cat!=='char')return L.indexOf(top)+'|';
+  const nm=featName(p);
+  if(nm)for(const b of c)for(const f of b.f)if(sameName(nm,f))return L.indexOf(b)+'|'+f;
+  const us=c.filter(b=>b.s===top.s).flatMap(b=>b.f.map(f=>L.indexOf(b)+'|'+f));
+  return us.length===1?us[0]:null}
+function mapBuild(cat){const L=mapList(cat),units=mapUnits(cat),by=new Map();
+  units.forEach(u=>{u.n=0;u.five=[];u.keys=new Map();by.set(u.i+'|'+(u.f||''),u)});
+  let lost=0;
+  for(const p of D.pools[cat]){const u=by.get(mapAssign(p,L,cat));if(!u){lost++;continue}
+    u.n++;if(p.r===5)u.five.push(p.name);const k=bkey(p);u.keys.set(k,(u.keys.get(k)||0)+1)}
+  const first=D.all.length?D.all[0].date:'',today=new Date().toISOString().slice(0,10);
+  for(const u of units){const feats=cat==='char'?[u.f]:cat==='weapon'?u.b.f:null;
+    u.got=feats?u.five.filter(n=>feats.some(f=>sameName(n,f))):u.five.slice();
+    u.st=u.n?(u.got.length?'got':'miss'):(u.b.e<first?'pre':(u.b.s<=today&&today<=u.b.e?'live':'skip'))}
+  {const seen=new Set();for(const u of units){const ks=cat==='char'?[u.f]:u.b.f;u.debut=ks.some(k=>!seen.has(k));ks.forEach(k=>seen.add(k))}}
+  return{units,lost}}
+function mapText(u,cat){const w=`${u.n} wish${u.n===1?'':'es'}`;
+  if(u.st==='skip')return'skipped';if(u.st==='pre')return'before your history';if(u.st==='live')return'running now';
+  if(u.st==='got')return`${w} · got ${cat==='char'?'it':[...new Set(u.got)].join(' + ')}`;
+  const o=u.five;return`${w} · ${o.length?`got ${o[0]}${o.length>1?` +${o.length-1}`:''} instead`:'no 5★'}`}
+function bannerMapView(){if(!['char','weapon'].includes(S.mapCat))S.mapCat='char';
+  const cat=S.mapCat,{units,lost}=mapBuild(cat);MAPCELLS=units;
+  const cnt=st=>units.filter(u=>u.st===st).length,got=cnt('got'),miss=cnt('miss'),skip=cnt('skip'),pre=cnt('pre');
+  const fives=D.pools[cat].filter(p=>p.r===5).slice().sort((x,y)=>x.date<y.date?-1:x.date>y.date?1:0);let gap=null;
+  for(let i=1;i<fives.length;i++){const d=Math.round((new Date(fives[i].date)-new Date(fives[i-1].date))/864e5);if(!gap||d>gap.d)gap={d,a:fives[i-1],b:fives[i]}}
+  const live=cnt('live'),sk=units.filter(u=>u.st==='skip'),skD=sk.filter(u=>u.debut).length,deb=units.filter(u=>u.debut&&u.st!=='pre').length;
+  const rr=sk.length-skD,rrW=`${rr} rerun${rr===1?'':'s'} skipped`;
+  const skSub=`of ${deb} debut${deb===1?'':'s'} · +${rrW}`,skTip=`of ${deb} debut${deb===1?'':'s'} since your history began · +${rrW}`+(live?` · ${live} running now, not counted`:'');
+  const gapSub=gap?`${gap.a.name} → ${gap.b.name}`:'needs two 5★ wishes',gapTip=gap?`${gap.a.name} → ${gap.b.name} · ${mapD(gap.a.date,gap.a.date.slice(0,4)!==gap.b.date.slice(0,4))} → ${mapD(gap.b.date,true)}`:gapSub;
+  const sum=(n,k,v,sub,tip)=>`<div class="a${n}" title="${esc(k+': '+v+(tip||sub?' '+(tip||sub):''))}"><div class="k">${k}</div><div class="v n">${v}</div><div class="s">${sub?esc(sub):'&nbsp;'}</div></div>`;
+  const gotWord=cat==='char'?'Got the featured 5★':'Got a featured 5★ weapon';
+  const catbtns=['char','weapon'].map(k=>`<button class="cat" data-k="${k}" data-act="mapCat" data-v="${k}" aria-pressed="${cat===k}"><span class="cn">${POOL[k]}</span><b class="n">${mapUnits(k).length}</b><small>banners</small></button>`).join('');
+  const cell=(u,i)=>{const faces=cat==='char'?face({name:u.f,type:'Character',r:5}):u.b.f.map(w=>face({name:w,type:'Weapon',r:5})).join('');
+    const tx=mapText(u,cat),tip=esc(`${u.name} · ${mapRange(u.b)}\n${tx}`),inner=`${faces}<span class="mt"><b>${esc(u.name)}</b><small>${esc(tx)}</small></span>`;
+    return u.n?`<button class="mc ${u.st}" data-act="mapGo" data-v="${i}" title="${tip}">${inner}</button>`:`<div class="mc ${u.st}" title="${tip}">${inner}</div>`};
+  const rows=[];
+  {const vs=[];units.forEach((u,i)=>{let g=vs.find(x=>x.v===u.v);if(!g)vs.push(g={v:u.v,ph:new Map()});if(!g.ph.has(u.i))g.ph.set(u.i,[]);g.ph.get(u.i).push([u,i])});
+    vs.forEach(g=>{let n=0;rows.push(`<div class="mrow"><div class="mv">${esc(verLabel(g.v))}</div>${[...g.ph.values()].map(a=>`<div class="mph"><div class="mpl">Phase ${++n} · ${mapRange(a[0][0].b)}</div><div class="mcs">${a.map(([u,i])=>cell(u,i)).join('')}</div></div>`).join('')}</div>`)})}
+  return`<div class="cats" style="grid-template-columns:repeat(2,minmax(0,1fr))">${catbtns}</div>
+  <div class="mapsum">${sum(1,'Wished',got+miss,`of ${units.length-pre} banners in your history`,`of ${units.length-pre} banners since your history began`)}${sum(2,'Got featured',got,got+miss?`of ${got+miss} wished banners · ${Math.round(got/(got+miss)*100)}%`:'')}${sum(3,'Skipped debuts',skD,skSub,skTip)}${sum(4,'Longest 5★ gap',gap?`${gap.d} days`:'—',gapSub,gapTip)}</div>
+  <div class="mlg"><span><i class="g"></i>${gotWord}</span><span><i class="m"></i>Wished, no featured 5★</span><span><i class="s"></i>Skipped</span><span><i class="p"></i>Before your history</span></div>
+  <div class="mmap">${rows.join('')}</div>
+  ${lost?`<p class="meta" style="margin-top:14px">${lost} wish${lost===1?'':'es'} here could not be matched to a banner: outside the known dates, or two banners ran together and the file did not say which.</p>`:''}`}
+const VIEWS={overview,timeline,log:logView,map:bannerMapView,export:exportView};
 function render(){const has=D.all.length>0;
   $('#empty').hidden=has;$('#app').hidden=!has;$('#tabs').hidden=!has;$('#searchBox').hidden=!has;if(!has)return;
   $$('#tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.v===S.view)));
@@ -1189,7 +1267,7 @@ addEventListener('scroll',()=>$('#toTop').classList.toggle('on',scrollY>700),{pa
 const ACT={
   cat:v=>{S.cat=v;S.log.bn='';S.log.limit=300;render()},logNum:()=>{S.log.num*=-1;$('#logBody').innerHTML=logBody()},toTop:()=>scrollTo({top:0,behavior:'smooth'}),
   logSort:v=>{const o=S.log.sort;if(o.k===v)o.d*=-1;else{o.k=v;o.d=v==='item'?1:-1}S.log.limit=300;render()},
-  goMark:()=>{S.cat=pending().c?'char':'weapon';S.view='timeline';render();scrollTo(0,0)},
+  goMark:v=>{S.cat=v||(pending().c?'char':'weapon');S.view='timeline';render();scrollTo(0,0)},
   view:v=>{S.view=v;render();scrollTo(0,0)},
   pool:v=>{toggleIn(S.f.pools,v);if(!['char','weapon','standard','chron'].some(k=>S.f.pools.includes(k)))S.f.pools.push(v);render()},
   resetRange:()=>{S.f.from=S.f.to='';S.f.pools=Object.keys(POOL);render()},
@@ -1197,12 +1275,19 @@ const ACT={
   pityBin:v=>openPity(v),
   histPool:v=>{S.histPool=v;render()},
   pityGo:v=>{Object.assign(S.log,{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},bn:'',num:1,limit:300});S.cat=v;S.view='log';render();scrollTo(0,0)},
+  resetMarks:v=>{
+    if(v==='char'){const n=Object.keys(S.crUser).length+S.crMarks.length;if(!n||!confirm('Reset every Radiance / Not Radiance mark? The 50/50 record is hidden again until you mark them once more.'))return;S.crUser={};S.crMarks=[];LS.set('crUser',S.crUser);LS.set('crMarks',S.crMarks)}
+    else if(v==='weapon'){const n=Object.keys(S.wUser).length;if(!n||!confirm('Reset every Won / Lost mark on limited weapons? The 50/50 record is hidden again until you mark them once more.'))return;S.wUser={};LS.set('wUser',S.wUser)}
+    else return;
+    build();render()},
+  mapCat:v=>{S.mapCat=v;render()},
+  mapGo:v=>{const u=MAPCELLS[+v];if(!u||!u.n)return;let bk='',m=0;u.keys.forEach((c,k)=>{if(c>m){m=c;bk=k}});Object.assign(S.log,{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},bn:bk,num:1,limit:300});S.cat=S.mapCat;S.view='log';render();scrollTo(0,0)},
   logReset:()=>{Object.assign(S.log,{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},bn:'',num:1,limit:300});render()},
-  wm:v=>{const i=v.lastIndexOf('|'),k=v.slice(0,i),st=v.slice(i+1);if(S.wUser[k]===st)delete S.wUser[k];else S.wUser[k]=st;LS.set('wUser',S.wUser);build();render()},
+  wm:v=>{const i=v.lastIndexOf('|'),k=v.slice(0,i),st=v.slice(i+1);if(k in S.wUser)return;S.wUser[k]=st;LS.set('wUser',S.wUser);build();render()},
   logType:v=>{tog(S.log.types,v,2);S.log.limit=300;render()},
   logEl:v=>{tog(S.log.els,v,7);S.log.limit=300;render()},
   pickItem:v=>{$('#sugg').classList.remove('on');$('#q').value='';openItem(v)},
-  crm:v=>{const i=v.lastIndexOf('|'),k=v.slice(0,i),val=v.slice(i+1)==='1';if(S.crUser[k]===val)delete S.crUser[k];else S.crUser[k]=val;LS.set('crUser',S.crUser);build();render()},
+  crm:v=>{const i=v.lastIndexOf('|'),k=v.slice(0,i),val=v.slice(i+1)==='1';if(k in S.crUser)return;S.crUser[k]=val;LS.set('crUser',S.crUser);build();render()},
   cr:v=>{const p=D.all.find(x=>x.key===v);S.crUser[v]=p?.out!=='cr';LS.set('crUser',S.crUser);build();render();toast(S.crUser[v]?'Marked as Capturing Radiance':'Unmarked')},
   logR:v=>{toggleIn(S.log.r,+v);if(S.log.r.length>=3)S.log.r=[];S.log.limit=300;render()},
   more:()=>{S.log.limit+=500;$('#logBody').innerHTML=logBody()},
