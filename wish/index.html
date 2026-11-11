@@ -13,7 +13,7 @@ ROUTINE DATA (search these names): BN = character banners, WN = weapon banners, 
 featured,featured. Append new patches at the end. Always use the full Roster name (Kaedehara Kazuha, not Kazuha): it must match SEED
 and TITLE exactly. TITLE = featured 5-star to banner title, one entry per character, add one for every new character.
 CRN = Chronicled Wish banners (start|end|title), add each new one, and leave an unannounced end blank (open-ended) until it is known. SEED = character list (id, name,
-element, weapon type, rarity), add new characters there. PERM = standard-pool 5-star weapons. LUNA = Luna version to patch number.
+element, weapon type, rarity), add new characters there. LUNA = Luna version to patch number.
 CR_START = first banner with Capturing Radiance (2024-08-28).
 DATA STATUS: banner data is verified through 7.2 Phase 1 (2026-11-09); the full record is in the comment just above SEED.
 USER DATA lives in localStorage, every key starts with "gwl:": docx, paimon, crMarks, crUser, wUser. Backup JSON is
@@ -22,17 +22,22 @@ Mark keys are "name|YYYY-MM-DD", with "#n" added for repeats on one day. Changin
 mergePaimon merges an import into stored rows (same pool, time and name counts once). Never go back to replacing.
 RULES DECIDED: Capturing Radiance (CR) counter starts at 1 on CR_START, a won 50/50 gives -1 (min 0), a lost one +1 (max 3).
 The site never counts CR by itself: it suggests with "?" and the user presses the button. Radiance is always shown apart from
-Lost (Won / Lost / CR are three separate numbers). Weapon Won/Lost is also user-marked; a mark is final once pressed, and only the Timeline Reset marks button (rainbow frame, with confirm) clears crUser and crMarks, or wUser; a PERM weapon is an automatic Lost, and the
-next limited 5-star in the same banner is Guaranteed. Avg pity is the mean pity at each 5-star, so it is not total pulls / 5-stars.
+Lost (Won / Lost / CR are three separate numbers). Weapon marks are also user-pressed, on EVERY 5-star weapon with no automatic rule: Won (the weapon the player aimed for), Lost (any other),
+Fated (it came from a full Epitomized Path). Fated is apart from Won / Lost like Guaranteed is for characters: it has its own tile and is not in the Won %. No automatic Lost for standard weapons
+(early banners rate-up standard weapons, so the site cannot know what the player aimed for), no Guaranteed badge for weapons (the word is only the characters' guarantee), no Fate Point or era rules
+(the game has two separate weapon guarantees, and players can reset their path after a standard 5-star, so the site cannot know). Weapon labels say Won / Lost / Fated, never 50/50. The Timeline hint is per category, two lines
+for both Character and Weapon, empty elsewhere; "left to mark" counts only the current category (Character or Weapon) and is hidden on Standard and Chronicled. A mark is final once pressed: the buttons disappear and only the status badge stays (Radiance and weapons alike, no second tag), and an unmarked weapon shows buttons only. The Timeline Reset marks button
+clears crUser and crMarks (rainbow frame, because it belongs to Radiance) or wUser (plain chip, no rainbow), always with confirm. Avg pity is the mean pity at each 5-star, so it is not total pulls / 5-stars.
 The 50/50 record shows per half: the character half once all Radiance marks are done, the weapon half once all weapon marks are done; the other half shows Almost there. Wording: "Standard" and
 "standard weapon", never "permanent". Beginners' has no 5-star: excluded from Timeline and from totals unless all pools are selected.
+OVERVIEW MOST PULLED: two boxes, characters (switch 5★ then 4★, opens on 5★) and weapons (switch 4★ then 3★, opens on 4★), top 10 each; Show all opens the full list in a second dialog (#dlgList, two columns) that stacks under the item pop-up. The choices live in S (lyC, lyW) until reload. Ties in count: characters newest release first (position in SEED, so keep SEED in release order), weapons latest pull first.
 LANDING (no data yet): About block (why, who it is for: paimon.moe users, what it is not), drop box, paimon.moe link. The safety and legal
 wording (no login, never ask for a password or code, nothing uploaded, unofficial) lives only in the footer; keep it, it matches HoYoLAB rules.
 BANNER MAP (tab "map", Character and Weapon only): units come from BN and WN; a wish is matched to a banner by date and, for character banners,
 by banner name (featName). States: got, wished without featured, skipped, before the first wish, running now. Skipped tile counts skipped debuts.
 Summary tiles each have a color accent (orange, green, pink, blue; never the category colors gold, purple, teal, cyan, grey) and show exactly one line of detail; anything longer goes in the tile tooltip.
 REMOVED, DO NOT ADD BACK: one global banner filter over every tab (only Overview has it), Collection, Checks, Copy button, Avg gap,
-Customize panel, "50/50 next" and "Guaranteed next" tags, Oldest/Newest button in All Wishes, any mobile layout.
+Customize panel, "50/50 next" and "Guaranteed next" tags, any automatic weapon rule (auto Lost, Guaranteed badge, Fate Point logic), Oldest/Newest button in All Wishes, any mobile layout.
 -->
 <html lang="en">
 <head>
@@ -284,7 +289,7 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .lock{padding:18px;border-radius:14px;background:rgba(255,255,255,.04);border:1px dashed var(--line2);margin-bottom:14px}.lock b{font:17px 'Chakra Petch',sans-serif}.lock p{margin:8px 0 12px}
 .chart g.hit{cursor:pointer}.chart g.hit:hover .hb{filter:brightness(1.3)}
 .eli{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex:none}.eli img{width:20px;height:20px;object-fit:contain}.edot{width:8px;height:8px;border-radius:50%;background:var(--c)}
-.hint{margin:-6px 0 14px}
+.hint{margin:-6px 0 14px}.hint2{min-height:3em}
 .cols2{display:grid;grid-template-columns:1fr 1fr;gap:40px}.cols2.one{grid-template-columns:1fr}.cols2>div+div{border-left:1px solid var(--line);padding-left:40px}
 @media(max-width:900px){.cols2{grid-template-columns:1fr;gap:24px}.cols2>div+div{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px}}
 .chip.idle{opacity:.45}
@@ -297,7 +302,8 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .lr.has-el .nmx{color:var(--ec)}
 .occ .linky{font:inherit;color:var(--tx)}
 .rng{display:inline-flex;align-items:center;gap:8px;flex-wrap:nowrap}.rng .field{width:132px}.rng select.field{width:150px}
-.hchips{display:flex;gap:6px;margin:-4px 0 12px}.chip.sm{height:28px;padding:0 12px;font-size:12px}
+.hchips{display:flex;gap:6px;margin:-4px 0 12px}
+#dlgList{max-width:min(1040px,94vw)}#dlgList .dlg{font-size:16px}.lyh{position:relative;overflow:hidden;flex:none;padding:26px 72px 20px 30px;margin-bottom:14px;background:linear-gradient(120deg,rgba(var(--rc),.26),rgba(var(--rc),.07) 55%,transparent);border-bottom:1px solid rgba(var(--rc),.38)}.lyh::after{content:"★";position:absolute;right:64px;top:-26px;font-size:150px;line-height:1;color:rgba(var(--rc),.13);pointer-events:none}.lyh>*{position:relative;z-index:1}.lyh .eb{display:block;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:rgb(var(--rc))}.lyh h3{font-size:34px;margin:4px 0 14px;font-weight:700}.lyh h3 b{color:rgb(var(--rc))}.lyp{display:flex;gap:10px;flex-wrap:wrap}.lyp span{padding:6px 14px;border-radius:999px;font-size:14px;color:#d6d6d6;background:rgba(0,0,0,.4);border:1px solid rgba(var(--rc),.4)}.lyp span b{color:#fff;font-weight:600}.ly .rk.rk1{color:#f2c45a}.ly .rk.rk2{color:#c9d1d9}.ly .rk.rk3{color:#d99565}.lyall{overflow:auto;column-count:2;column-gap:28px;padding:0 24px 24px}.lyall .ly{break-inside:avoid;width:100%}.chip.sm{height:28px;padding:0 12px;font-size:12px}
 .filters{justify-content:space-between}.sbar{display:flex;gap:12px;margin:0 0 18px}.sbar div{flex:1;display:flex;flex-direction:column;gap:2px;padding:14px 18px;border-radius:14px;background:var(--sf);border:1px solid var(--line)}.sbar span{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.12em}.sbar b{font-size:30px}.sbar div:nth-child(2) b{color:var(--gold)}.hs{background:none;border:0;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;padding:0}.hs.on{color:var(--gold)}.totop{position:fixed;right:28px;bottom:28px;z-index:40;display:none}.totop.on{display:block}
 #dlg .dlg{font-size:16px}dialog{max-width:min(940px,94vw)}#dlg .meta{font-size:15px;color:#c8c8c8}#dlg .dh{padding:32px 76px 32px 32px}#dlg .dh .pf{width:116px;height:116px}#dlg .dh h3{font-size:38px}#dlg .big{font-size:76px}#dlg .big small{font-size:16px;color:#c8c8c8}#dlg .db{padding:6px 32px 32px}#dlg .fact{padding:16px 18px;font-size:14px;color:#c8c8c8}#dlg .fact .v{font-size:26px;color:#fff}#dlg .yb{height:76px;max-width:46px}#dlg .yr b{font-size:17px}#dlg .yr small{font-size:13px;color:#c0c0c0}#dlg .occ{font-size:16px}#dlg .occ td,#dlg .occ th{padding:12px 10px}#dlg .occ td{color:#f5f5f5}#dlg .occ th{font-size:13px;color:#c0c0c0}
 
@@ -320,7 +326,7 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .hintrow{display:flex;align-items:center;gap:14px;margin:0 0 14px}.hintrow .hint{margin:0;flex:1}.rings{grid-template-columns:repeat(4,minmax(0,1fr))}.rings .meta{overflow-wrap:anywhere}
 .ovhead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .sbar{gap:10px;margin-bottom:14px}.sbar div{padding:8px 14px}.sbar b{font-size:22px}.sbar span{font-size:11px}
-.sbar b.w{color:var(--win)}.sbar b.l{color:var(--lose)}.sbar b.cr{background:var(--rainbow);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.sbar b.f{color:var(--guar)}.sbar b.w{color:var(--win)}.sbar b.l{color:var(--lose)}.sbar b.cr{background:var(--rainbow);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .cat[data-k=chron]{--cc:#35d0e6}
 .kn{display:inline-block;min-width:34px;margin-right:10px;padding:1px 8px;border-radius:8px;background:rgba(233,196,106,.14);color:var(--gold);font-size:14px;text-align:center;vertical-align:1px}
 .cr-t,.sbar b.cr{background:linear-gradient(135deg,#ff4d6d,#ffa63d,#ffe14d,#3fe08a,#3db9ff,#a56bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;display:inline-block;width:fit-content;align-self:flex-start}
@@ -342,7 +348,7 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .mc.got{border-color:var(--r5);background:linear-gradient(90deg,rgba(242,179,80,.22),transparent)}.mc.got small{color:var(--r5)}.mc.miss{border-color:var(--lose);background:linear-gradient(90deg,rgba(239,139,139,.15),transparent)}.mc.miss small{color:var(--lose)}
 .mc.skip{border-style:dashed;border-color:#7b7b7b}.mc.skip .pf,.mc.miss .pf{filter:grayscale(1);opacity:.5}.mc.pre{opacity:.33;border-color:transparent}.mc.pre .pf{filter:grayscale(1)}.mc.live{border-style:dashed;border-color:var(--guar)}.mc.live small{color:var(--guar)}
 button.mc{cursor:pointer}button.mc:hover{filter:brightness(1.15)}
-.wm b{display:inline-flex;align-items:center;border:1px solid var(--line2);background:rgba(0,0,0,.5);border-radius:8px;height:28px;padding:0 12px;font-size:12px;font-weight:500;color:var(--mu)}.wm b.on.w{color:#9be8c0;border-color:var(--win);background:rgba(80,200,140,.18)}.wm b.on.l{color:#ffb0b0;border-color:var(--lose);background:rgba(235,90,90,.2)}
+.wm b{display:inline-flex;align-items:center;border:1px solid var(--line2);background:rgba(0,0,0,.5);border-radius:8px;height:28px;padding:0 12px;font-size:12px;font-weight:500;color:var(--mu)}.wm b.on.w{color:#9be8c0;border-color:var(--win);background:rgba(80,200,140,.18)}.wm b.on.l{color:#ffb0b0;border-color:var(--lose);background:rgba(235,90,90,.2)}.wm b.on.f{color:#b3ccff;border-color:rgba(143,180,255,.55);background:rgba(90,140,255,.22)}
 .chip.rbow{border:1.5px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,var(--rainbow) border-box;color:var(--tx);font-weight:600}.chip.rbow:hover{filter:brightness(1.2)}
 .about{max-width:620px;margin:0 auto 30px;text-align:left;display:grid;gap:12px}.about div{display:grid;grid-template-columns:112px minmax(0,1fr);gap:16px;font-size:14.5px;line-height:1.55;color:var(--mu)}.about b{color:var(--tx);font-weight:600}
 </style>
@@ -564,6 +570,7 @@ button.mc{cursor:pointer}button.mc:hover{filter:brightness(1.15)}
 <footer class="foot wrap"><div>Fan-made tool for Genshin Impact, not affiliated with HoYoverse. Genshin Impact and all related assets are trademarks of HoYoverse. No HoYoverse account needed: this site never asks for your password or a verification code. Your wishes stay in this browser, nothing is uploaded.</div><div><a href="../">Genshin Tools</a> · <a href="https://github.com/scornae/genshin-tools" target="_blank" rel="noopener">GitHub</a> · © <span id="yr"></span> SCORNAE</div></footer>
 <button class="btn totop" id="toTop" data-act="toTop">↑ Top</button>
 <dialog id="dlg"><div id="dlgBody"></div></dialog>
+<dialog id="dlgList"><div id="dlgListBody"></div></dialog>
 <div class="toast" id="toast" role="status"></div>
 <div class="dropveil" id="veil"><div>Drop to import</div></div>
 
@@ -842,8 +849,6 @@ const _fc=new Map();
 function findChar(n){const k=norm(n);if(_fc.has(k))return _fc.get(k);let c=CH.get(k)||null;
   if(!c&&k)for(const [kk,v] of CH){if(kk.endsWith(' '+k)||k.endsWith(' '+kk)||kk.startsWith(k+' ')){c=v;break}}
   _fc.set(k,c);return c}
-const PERM=new Set(["Amos' Bow",'Aquila Favonia','Lost Prayer to the Sacred Winds','Primordial Jade Winged-Spear','Skyward Atlas','Skyward Blade','Skyward Harp','Skyward Pride','Skyward Spine',"Wolf's Gravestone"].map(norm));
-function wbIdx(d){let id=-1;WB.forEach((b,i)=>{if(b.s<=d)id=i});return id}
 function verOf(d){let v='';for(const b of CB){if(b.s<=d)v=b.v;else break}return v}
 function isFeat(p){const L=p.pool==='char'?CB:WB,k=norm(p.name);
   for(const b of L){if(b.s<=addDays(p.date,1)&&addDays(b.e,1)>=p.date)for(const f of b.f){const nf=norm(f);if(nf===k||k.endsWith(' '+nf)||nf.endsWith(' '+k))return true}}
@@ -928,12 +933,10 @@ function build(){
     pools[k]=[...S.docx.filter(p=>p.pool===k&&(!cut||p.date<cut)),...px].map(p=>({...p}))}
   const marks=S.crMarks.map(m=>({...m,used:false}));
   const seen={};
-  for(const [pool,L] of Object.entries(pools)){let c5=0,c4=0,guar=false,ctr=1,wprev=null,k5=0;
+  for(const [pool,L] of Object.entries(pools)){let c5=0,c4=0,guar=false,ctr=1,k5=0;
     L.forEach((p,i)=>{c5++;c4++;p.n=i+1;p.p5=c5;p.p4=c4;p.ver=verOf(p.date);{const b=`${p.name}|${p.date}`,o=seen[b]=(seen[b]??-1)+1;p.key=o?`${b}#${o}`:b}
       if(p.r===4)c4=0;if(p.r!==5)return;c5=0;c4=0;p.k5=++k5;
-      if(pool==='weapon'){p.feat=isFeat(p);const off=!p.feat&&PERM.has(norm(p.name)),bid=wbIdx(p.date),m=S.wUser[p.key];
-        p.out=off?'off':(p.feat&&wprev&&wprev.lost&&wprev.bid===bid&&bid>=0)?'guar':!p.feat?'feat':m==='win'?'win':m==='lose'?'lose':'feat';
-        wprev={lost:p.out==='off'||p.out==='lose',bid};return}
+      if(pool==='weapon'){const m=S.wUser[p.key];p.out=m==='win'?'win':m==='lose'?'lose':m==='fated'?'fated':'feat';return}
       if(pool!=='char')return;
       p.feat=isFeat(p);const era=p.date>=CR_START;p.c0=era?ctr:null;
       if(guar){p.out='guar';guar=false}
@@ -956,8 +959,9 @@ function face(p,mode){if(p.type==='Weapon')return`<span class="pf r${p.r} wimg${
 const statb=(k,v,s,a)=>`<button class="stat clk" data-act="pityBin" data-v="${a}"><div class="k">${k}</div><div class="v n">${v}</div><div class="s">${s}</div></button>`;
 const stat=(k,v,s)=>`<div class="stat"><div class="k">${k}</div><div class="v n">${v}</div><div class="s">${s}</div></div>`;
 const fact=(k,v)=>`<div class="fact"><div class="k">${k}</div><div class="v n">${v}</div></div>`;
-const OUT={win:['win','Won 50/50'],lose:['lose','Lost 50/50'],guar:['guar','Guaranteed'],cr:['cr','✨ Radiance'],feat:['feat','Limited weapon'],off:['lose','Lost']};
-const outBadge=p=>OUT[p.out]?`<span class="bd ${OUT[p.out][0]}">${OUT[p.out][1]}</span>`:'';
+const OUT={win:['win','Won 50/50'],lose:['lose','Lost 50/50'],guar:['guar','Guaranteed'],cr:['cr','✨ Radiance'],fated:['guar','Fated'],feat:['feat','Not marked']};
+const WOUT={win:'Won',lose:'Lost',fated:'Fated',feat:'Not marked'};
+const outBadge=p=>OUT[p.out]?`<span class="bd ${OUT[p.out][0]}">${p.pool==='weapon'?WOUT[p.out]:OUT[p.out][1]}</span>`:'';
 const pityCol=(n,pool)=>{const[a,b]=PT[pool]||PT.char;return n<=a?'var(--win)':n<=b?'var(--gold)':'var(--lose)'};
 const ELO=['anemo','geo','electro','dendro','hydro','pyro','cryo'];
 const eli=e=>`<span class="eli" style="--c:var(--${e})"><img alt="" src="${ASSET}icons_yatta/${e}.webp" onerror="this.replaceWith(Object.assign(document.createElement('i'),{className:'edot'}))"></span>`;
@@ -1023,22 +1027,32 @@ function fiftyPanel(F){
   <div class="meta">Won <b>${pct(w)}</b> of the ${t} you counted</div>
   ${last?`<div class="crbox"><div><div class="rl">Capturing Radiance counter</div><div class="meta">Win −1 · Lose +1 · counted from your marks</div></div><div class="pips">${[1,2,3].map(i=>`<i class="${i<=ctr?'on':''}"></i>`).join('')}<b class="n">${ctr}</b></div></div>`:''}</div>`:'';
   const wk=F.filter(p=>p.pool==='weapon'&&p.r===5),wn=o=>wk.filter(p=>p.out===o).length;
-  const ww=wn('win'),wl=wn('lose')+wn('off'),wg=wn('guar'),wf=wn('feat'),wt=ww+wl;
+  const ww=wn('win'),wl=wn('lose'),wfa=wn('fated'),wf=wn('feat'),wt=ww+wl;
   const wblk=wk.length?`<div><div class="rl" style="margin-bottom:12px">Weapon Event</div>
-  <div class="ff">${tile(ww,'Won','var(--win)')}${tile(wl,'Lost','var(--lose)')}${tile(wg,'Guaranteed','var(--guar)')}${tile(wf,'Not marked','var(--mu)')}</div>
-  ${segBar('How your weapon 50/50s went',[[ww,'var(--win)','Won'],[wl,'var(--lose)','Lost']],wt,(wt?Math.round(ww/wt*100)+'%':'–')+' won')}
+  <div class="ff">${tile(ww,'Won','var(--win)')}${tile(wl,'Lost','var(--lose)')}${tile(wfa,'Fated','var(--guar)')}${tile(wf,'Not marked','var(--mu)')}</div>
+  ${segBar('How your weapon wishes went',[[ww,'var(--win)','Won'],[wl,'var(--lose)','Lost']],wt,(wt?Math.round(ww/wt*100)+'%':'–')+' won')}
   <div class="meta">Won <b>${wt?Math.round(ww/wt*100)+'%':'–'}</b> of the ${wt} you counted${wf?` · ${wf} still to mark in the 5★ Timeline`:''}</div></div>`:'';
   const lock=(label,msg,cat)=>`<div><div class="rl" style="margin-bottom:12px">${label}</div><div class="lock" style="margin:0"><b>Almost there</b><p class="meta">${msg}</p><button class="btn ghost" data-act="goMark" data-v="${cat}">Go mark them</button></div></div>`;
   const cb=pd.c?lock('Character Event',`The record appears once every Radiance candidate is marked in the 5★ Timeline. Still to go: ${pd.c} character win${pd.c>1?'s':''} to mark as Radiance or not.`,'char'):chr;
-  const wb=pd.w?lock('Weapon Event',`The record appears once every limited weapon is marked in the 5★ Timeline. Still to go: ${pd.w} limited weapon${pd.w>1?'s':''} to mark Won or Lost.`,'weapon'):wblk;
+  const wb=pd.w?lock('Weapon Event',`The record appears once every 5★ weapon is marked in the 5★ Timeline. Still to go: ${pd.w} weapon${pd.w>1?'s':''} to mark Won or Lost.`,'weapon'):wblk;
   if(!cb&&!wb)return'';
   return`<section class="card"><h2>50/50 record <small>limited banners</small></h2><div class="cols2${cb&&wb?'':' one'}">${cb}${wb}</div></section>`}
+const REL=new Map();SEED.forEach(([,n],i)=>REL.set(norm(n),i));
+function lyCalc(F){
+  const cr=['5','4'].includes(S.lyC)?S.lyC:'5',wr=['4','3'].includes(S.lyW)?S.lyW:'4';
+  const gc=groups(F.filter(p=>p.r===+cr&&p.type==='Character')).sort((a,b)=>b.n-a.n||(REL.get(norm(b.name))??-1)-(REL.get(norm(a.name))??-1));
+  const gw=groups(F.filter(p=>p.r===+wr&&p.type==='Weapon')).sort((a,b)=>b.n-a.n||(a.last<b.last?1:a.last>b.last?-1:0));
+  return{cr,wr,gc,gw}}
+const lyRow=(x,i,m,ch)=>{const c=ch?findChar(x.name):null;return`<button class="ly${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''} data-act="item" data-v="${esc(x.name)}"><span class="rk${i<3?' rk'+(i+1):''}">${i+1}</span>${face(x,'row')}<span><span class="lyn">${esc(x.name)}</span><span class="bar"><i style="width:${x.n/m*100}%"></i></span></span><span class="c n">${x.n}</span></button>`};
 function loyalPanel(F){
-  const g=groups(F.filter(p=>p.r===4&&p.type==='Character')).sort((a,b)=>b.n-a.n).slice(0,10),mx=g[0]?.n||1;
-  const w=groups(F.filter(p=>p.r===4&&p.type==='Weapon')).sort((a,b)=>b.n-a.n).slice(0,10),mw=w[0]?.n||1;
-  const row=(x,i,m,ch)=>{const c=ch?findChar(x.name):null;return`<button class="ly${c?' has-el':''}"${c?` style="--ec:var(--${c.el})"`:''} data-act="item" data-v="${esc(x.name)}"><span class="rk">${i+1}</span>${face(x,'row')}<span><span class="lyn">${esc(x.name)}</span><span class="bar"><i style="width:${x.n/m*100}%"></i></span></span><span class="c n">${x.n}</span></button>`};
-  return`<section class="card s7"><h2>Most pulled 4★ <small>characters</small></h2><div class="loyal">${g.map((x,i)=>row(x,i,mx,true)).join('')||'<p class="meta">No 4★ characters in this range.</p>'}</div></section>
-  <section class="card s5"><h2>Most pulled 4★ <small>weapons</small></h2><div class="loyal">${w.map((x,i)=>row(x,i,mw)).join('')||'<p class="meta">None in this range.</p>'}</div></section>`}
+  const{cr,wr,gc,gw}=lyCalc(F),LIM=10,mx=gc[0]?.n||1,mw=gw[0]?.n||1;
+  const chips=(act,vals,cur)=>`<div class="hchips">${vals.map(v=>`<button class="chip sm" data-act="${act}" data-v="${v}" aria-pressed="${v===cur}">${v}★</button>`).join('')}</div>`;
+  const more=(all,k)=>all.length>LIM?`<button class="btn ghost more" data-act="lyAll" data-v="${k}" style="margin-top:12px">Show all ${all.length}</button>`:'';
+  return`<section class="card s7"><h2>Most pulled <small>characters</small></h2>${chips('lyC',['5','4'],cr)}<div class="loyal">${gc.slice(0,LIM).map((x,i)=>lyRow(x,i,mx,true)).join('')||`<p class="meta">No ${cr}★ characters in this range.</p>`}</div>${more(gc,'c')}</section>
+  <section class="card s5"><h2>Most pulled <small>weapons</small></h2>${chips('lyW',['4','3'],wr)}<div class="loyal">${gw.slice(0,LIM).map((x,i)=>lyRow(x,i,mw)).join('')||`<p class="meta">No ${wr}★ weapons in this range.</p>`}</div>${more(gw,'w')}</section>`}
+function openLyAll(k){const{cr,wr,gc,gw}=lyCalc(filtered()),ch=k==='c',all=ch?gc:gw,m=all[0]?.n||1;
+  $('#dlgListBody').innerHTML=`<div class="dlg"><button class="x" data-act="closeList" aria-label="Close">✕</button><div class="lyh" style="--rc:${({5:'242,179,80',4:'180,140,242',3:'106,169,255'})[ch?cr:wr]}"><span class="eb">Most pulled</span><h3><b>${ch?cr:wr}★</b> ${ch?'Characters':'Weapons'}</h3><div class="lyp"><span><b>${all.length}</b> ${ch?'characters':'weapons'}</span><span><b>${all.reduce((t,x)=>t+x.n,0)}</b> pulls</span>${all[0]?`<span>Top <b>${esc(all[0].name)}</b> ×${all[0].n}</span>`:''}</div></div><div class="lyall">${all.map((x,i)=>lyRow(x,i,m,ch)).join('')}</div></div>`;
+  const d=$('#dlgList');if(!d.open)d.showModal();$('#dlgList .lyall').scrollTop=0}
 function monthly(F){if(!F.length)return'<p class="meta">No wishes in this range.</p>';
   const m=new Map();F.forEach(p=>{const k=p.date.slice(0,7),o=m.get(k)||{n:0,f:0};o.n++;if(p.r===5)o.f++;m.set(k,o)});
   const keys=[...m.keys()].sort(),end=keys.at(-1),all=[];let[y,mo]=keys[0].split('-').map(Number);
@@ -1054,23 +1068,24 @@ function hist(f5,pool){if(!f5.length)return'<p class="meta">No 5★ in this rang
 function catBar(mode){return`<div class="cats">${Object.keys(POOL).map(k=>{const dis=k==='novice'&&mode==='tl';return`<button class="cat" data-k="${k}" data-act="cat" data-v="${k}" aria-pressed="${S.cat===k}"${dis?' disabled title="No 5★ here, nothing to show"':''}><span class="cn">${POOL[k]}</span><b class="n">${D.pools[k].length.toLocaleString()}</b><small>${dis?'no 5★':'wishes'}</small></button>`}).join('')}</div>`}
 function ovBar(){return`<div class="cats">${Object.keys(POOL).map(k=>{const dis=k==='novice';return`<button class="cat" data-k="${k}" data-act="pool" data-v="${k}" aria-pressed="${!dis&&S.f.pools.includes(k)}"${dis?' disabled title="Always counted in the totals"':''}><span class="cn">${POOL[k]}</span><b class="n">${D.pools[k].length.toLocaleString()}</b><small>${dis?'in totals':'wishes'}</small></button>`}).join('')}</div>`}
 function statsBar(rows,cat){const f5=rows.filter(p=>p.r===5),c=o=>f5.filter(p=>p.out===o).length,cells=[['Total pulls',rows.length.toLocaleString()],['5★',f5.length],['Avg pity',f5.length?(f5.reduce((a,p)=>a+p.p5,0)/f5.length).toFixed(2):'–']];
-  if(cat==='char')cells.push(['Won',c('win'),'w'],['Lost',c('lose'),'l'],['CR',c('cr'),'cr']);if(cat==='weapon')cells.push(['Won',c('win'),'w'],['Lost',c('lose')+c('off'),'l']);
+  if(cat==='char')cells.push(['Won',c('win'),'w'],['Lost',c('lose'),'l'],['CR',c('cr'),'cr']);if(cat==='weapon')cells.push(['Won',c('win'),'w'],['Lost',c('lose'),'l'],['Fated',c('fated'),'f']);
   return`<div class="sbar">${cells.map(([k,v,x])=>`<div><span>${k}</span><b class="n ${x||''}">${v}</b></div>`).join('')}</div>`}
 function timeline(){if(S.cat==='novice')S.cat='char';const all=D.pools[S.cat],L=all.filter(p=>p.r===5);if(S.tlNewest)L.reverse();
   const nm=S.cat==='char'?Object.keys(S.crUser).length+S.crMarks.length:S.cat==='weapon'?Object.keys(S.wUser).length:0,
-    rb=nm?`<button class="chip rbow" data-act="resetMarks" data-v="${S.cat}" title="Remove every mark you made in this category">${S.cat==='char'?'Reset Radiance marks':'Reset Won / Lost marks'}</button>`:'';
-  return`${catBar('tl')}${statsBar(all,S.cat)}<div class="hintrow"><p class="meta hint">Radiance (characters) and Won / Lost on limited weapons are marked by you. The site only points out where it could apply. A mark is final once pressed; the Reset button is the way to start over.</p>${(pd=>pd.c+pd.w?`<span class="meta"><b style="color:var(--gold)">${pd.c+pd.w}</b> left to mark</span>`:'')(pending())}${rb}<button class="chip" data-act="tlOrder">${S.tlNewest?'Newest first':'Oldest first'}</button></div>
+    lm=S.cat==='char'?pending().c:S.cat==='weapon'?pending().w:0,
+    rb=nm?`<button class="chip${S.cat==='char'?' rbow':''}" data-act="resetMarks" data-v="${S.cat}" title="Remove every mark you made in this category">${S.cat==='char'?'Reset Radiance marks':'Reset Won / Lost / Fated marks'}</button>`:'';
+  return`${catBar('tl')}${statsBar(all,S.cat)}<div class="hintrow"><p class="meta hint${S.cat==='char'||S.cat==='weapon'?' hint2':''}">${S.cat==='char'?'Radiance is yours to press: the site only points out the wins where it could apply (a ? means the counter was 2 or 3). Rows without buttons need no mark. Press Radiance or Not Radiance; a mark is final once pressed, and Reset starts over.':S.cat==='weapon'?'Weapon guarantees vary, so mark each one yourself. Won = the weapon you aimed for, Lost = any other, Fated = it came from a full Epitomized Path. Fated has its own count and is left out of the Won %. A mark is final once pressed; Reset starts over.':''}</p>${lm?`<span class="meta"><b style="color:var(--gold)">${lm}</b> left to mark</span>`:''}${rb}<button class="chip" data-act="tlOrder">${S.tlNewest?'Newest first':'Oldest first'}</button></div>
   <div class="fives">${L.map(fiveRow).join('')||'<p class="meta">No 5★ here yet.</p>'}</div>`}
 function fiveRow(p){const c=p.type==='Character'?findChar(p.name):null,col=pityCol(p.p5,p.pool);
   const ctr=p.c0!=null&&p.out!=='guar'?`<div class="ctr n">CR ${p.c0} → ${p.c1}${p.maybeCR?' <b title="Counter was 2–3, so this win could have been Radiance">?</b>':''}</div>`:'';
   const cu=S.crUser[p.key],cand=p.pool==='char'&&(p.out==='cr'||(p.out==='win'&&p.c0>=2)),
-    btn=!cand?'':(p.out==='cr'||cu===false)?`<span class="wm done"><b class="on ${p.out==='cr'?'w':'l'}">${p.out==='cr'?'✨ Radiance':'Not Radiance'}</b></span>`:`<span class="wm"><button data-act="crm" data-v="${esc(p.key)}|1">✨ Radiance</button><button data-act="crm" data-v="${esc(p.key)}|0">Not Radiance</button></span>`;
-  const m=S.wUser[p.key],wbtn=!(p.pool==='weapon'&&p.feat&&p.out!=='guar')?'':m?`<span class="wm done"><b class="on ${m==='win'?'w':'l'}">${m==='win'?'Won':'Lost'}</b></span>`:`<span class="wm"><button title="Got the weapon you picked on the Epitomized Path" data-act="wm" data-v="${esc(p.key)}|win">Won</button><button title="Got the other limited weapon" data-act="wm" data-v="${esc(p.key)}|lose">Lost</button></span>`;
+    btn=!cand?'':(p.out==='cr'||cu===false)?'':`<span class="wm"><button data-act="crm" data-v="${esc(p.key)}|1">✨ Radiance</button><button data-act="crm" data-v="${esc(p.key)}|0">Not Radiance</button></span>`;
+  const m=S.wUser[p.key],wbtn=p.pool!=='weapon'||m?'':`<span class="wm"><button title="Got the weapon you were aiming for" data-act="wm" data-v="${esc(p.key)}|win">Won</button><button title="Did not get the weapon you were aiming for" data-act="wm" data-v="${esc(p.key)}|lose">Lost</button><button title="Got the weapon you chose because your Epitomized Path was full" data-act="wm" data-v="${esc(p.key)}|fated">Fated</button></span>`;
   return`<div class="five${p.out==='cr'?' is-cr':''}${c?' has-el':''}${p.pool==='weapon'?' wp':''}"${c?` style="--ec:var(--${c.el})"`:''} data-act="item" data-v="${esc(p.name)}">${c?`<span class="nc"><img loading="lazy" alt="" src="${ASSET}namecardalpha/${encodeURIComponent(c.id)}.webp" onerror="this.remove()"></span>`:''}${face(p,'row')||`<span class="ord n">${p.k5}</span>`}
   <div><div class="nm"><span class="kn n">#${p.k5}</span>${esc(p.name)}</div><div class="meta ell">${esc(bannerLine(p))}<span class="show-m"> · pity ${p.p5}</span></div></div>
   <div class="meta hide-m n">${fmtD(p.date)}</div>
   <div class="pity hide-m"><b class="n" style="color:${col}">${p.p5}</b><span class="bar"><i style="width:${Math.min(100,p.p5/MAXP[p.pool]*100)}%;background:${col}"></i></span></div>
-  <div class="bcell">${outBadge(p)}${ctr}${btn}${wbtn}</div></div>`}
+  <div class="bcell">${p.pool==='weapon'&&p.out==='feat'?'':outBadge(p)}${ctr}${btn}${wbtn}</div></div>`}
 
 const bkey=p=>p.pool==='standard'||p.pool==='novice'?bannerLine(p):`${bannerLine(p)}|${p.banner||''}`;
 const featName=p=>{const b=p.banner||'';if(!b)return'';const n=norm(b);return Object.keys(TITLE).find(k=>norm(TITLE[k])===n)||looseChar(b)?.name||b};
@@ -1153,15 +1168,15 @@ const wt=(ws,rows)=>`<w:tbl><w:tblPr><w:tblW w:w="${ws.reduce((a,b)=>a+b)}" w:ty
 const hdrRow=(labels,ws)=>wtr(labels.map((h,i)=>wc(wr(h,{b:true,c:'FFFFFF',sz:18}),ws[i],'2B2F45')),true);
 async function exportDocx(){
   const pools=Object.keys(POOL),three=true;
-  const TXT={win:'Won 50/50',lose:'Lost 50/50',guar:'Guaranteed',cr:'✨ Capturing Radiance',feat:'Limited weapon (not marked)',off:'Standard weapon · lost'};
+  const TXT={win:'Won 50/50',lose:'Lost 50/50',guar:'Guaranteed',cr:'✨ Capturing Radiance'},resTxt=p=>p.pool==='weapon'?WOUT[p.out]||'':TXT[p.out]||'';
   let b=wp(wr('Genshin Wish History',{sz:44,b:true,c:'1F1A10'}),{a:60})+wp(wr(`Exported ${fmtD(new Date().toISOString().slice(0,10))}`,{c:'888888'}),{a:240});
   const W5=[600,2700,1700,1200,800,2600],WL=[800,1300,5000,2400];
-  const RC={win:'1E8449',lose:'C0392B',guar:'2E5EAA',cr:'7B3FB5',feat:'B8860B',off:'C0392B'};
+  const RC={win:'1E8449',lose:'C0392B',guar:'2E5EAA',cr:'7B3FB5',fated:'2E5EAA',feat:'B8860B'};
   const wm=(a,o={})=>`<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>${o.b?'<w:b/>':''}${o.c?`<w:color w:val="${o.c}"/>`:''}<w:sz w:val="${o.sz||20}"/></w:rPr>${a.map(x=>x===0?'<w:tab/>':`<w:t xml:space="preserve">${XE(x)}</w:t>`).join('')}</w:r>`;
   const tp=(f,x)=>`<w:p><w:pPr><w:tabs><w:tab w:val="left" w:pos="900"/><w:tab w:val="left" w:pos="2300"/><w:tab w:val="left" w:pos="7000"/></w:tabs>${f?`<w:shd w:val="clear" w:color="auto" w:fill="${f}"/>`:''}<w:spacing w:before="0" w:after="0"/></w:pPr>${x}</w:p>`;
   for(const k of pools){const L=D.pools[k];if(!L.length)continue;const f5=L.filter(p=>p.r===5);
     b+=wp(wr(POOL[k]+' — 5★ summary',{sz:30,b:true,c:'B8860B'}),{b:240,a:120,keep:true});
-    if(f5.length)b+=wt(W5,[hdrRow(['#','Item','Version','Date','Pity','Result'],W5),...f5.map((p,i)=>wtr([wc(wr(String(i+1)),W5[0]),wc(wr(p.name,{b:true,c:docColor(p)}),W5[1]),wc(wr(verLabel(p.ver)),W5[2]),wc(wr(dmy(p.date)),W5[3]),wc(wr(String(p.p5),p.p5>=75?{b:true,c:'C0392B'}:{}),W5[4]),wc(wr(TXT[p.out]||'',{b:true,c:RC[p.out]}),W5[5],p.out==='cr'?'F1E6FF':p.out==='win'?'EAF7F0':p.out==='guar'?'EAF0FF':p.out==='feat'?'FFF8E1':'FDECEC')]))]);
+    if(f5.length)b+=wt(W5,[hdrRow(['#','Item','Version','Date','Pity','Result'],W5),...f5.map((p,i)=>wtr([wc(wr(String(i+1)),W5[0]),wc(wr(p.name,{b:true,c:docColor(p)}),W5[1]),wc(wr(verLabel(p.ver)),W5[2]),wc(wr(dmy(p.date)),W5[3]),wc(wr(String(p.p5),p.p5>=75?{b:true,c:'C0392B'}:{}),W5[4]),wc(wr(resTxt(p),{b:true,c:RC[p.out]}),W5[5],p.out==='cr'?'F1E6FF':p.out==='win'?'EAF7F0':(p.out==='guar'||p.out==='fated')?'EAF0FF':p.out==='feat'?'FFF8E1':'FDECEC')]))]);
     const pending=L.length-(L.findLastIndex(p=>p.r===5)+1);
     b+=wp(wr(`${L.length.toLocaleString()} wishes · ${f5.length} × 5★ · ${pending} wishes since the last 5★`,{c:'888888',sz:18}),{b:80,a:200})}
   for(const k of pools){const L=D.pools[k];if(!L.length)continue;
@@ -1173,7 +1188,7 @@ async function exportDocx(){
       if(feats)b+=wp(wr('Featured: '+feats,{c:'888888',sz:18}),{a:60,keep:true});
       if(rows.length){b+=tp('',wm(['Pity',0,'Date',0,'Item',0,'Note'],{c:'888888',sz:16}));
         rows.forEach(p=>{const f=p.out==='cr'?'F1E6FF':p.r===5?'FFF4D6':p.r===4?'F7F3FF':'';
-          b+=tp(f,wm([String(p.p5),0,dmy(p.date),0],{c:'777777'})+wm([p.r===5?'★ '+p.name:p.name],{b:p.r>=4,c:docColor(p)})+(p.r===5?wm([0,TXT[p.out]||'5★'],{b:true,c:RC[p.out]}):p.r===4?wm([0,'4★'],{c:'7B4FB5'}):''))});b+=wp('',{a:120})}
+          b+=tp(f,wm([String(p.p5),0,dmy(p.date),0],{c:'777777'})+wm([p.r===5?'★ '+p.name:p.name],{b:p.r>=4,c:docColor(p)})+(p.r===5?wm([0,resTxt(p)||'5★'],{b:true,c:RC[p.out]}):p.r===4?wm([0,'4★'],{c:'7B4FB5'}):''))});b+=wp('',{a:120})}
       i=j}}
   const zip=new JSZip();
   zip.file('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
@@ -1277,7 +1292,7 @@ const ACT={
   pityGo:v=>{Object.assign(S.log,{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},bn:'',num:1,limit:300});S.cat=v;S.view='log';render();scrollTo(0,0)},
   resetMarks:v=>{
     if(v==='char'){const n=Object.keys(S.crUser).length+S.crMarks.length;if(!n||!confirm('Reset every Radiance / Not Radiance mark? The 50/50 record is hidden again until you mark them once more.'))return;S.crUser={};S.crMarks=[];LS.set('crUser',S.crUser);LS.set('crMarks',S.crMarks)}
-    else if(v==='weapon'){const n=Object.keys(S.wUser).length;if(!n||!confirm('Reset every Won / Lost mark on limited weapons? The 50/50 record is hidden again until you mark them once more.'))return;S.wUser={};LS.set('wUser',S.wUser)}
+    else if(v==='weapon'){const n=Object.keys(S.wUser).length;if(!n||!confirm('Reset every Won / Lost / Fated mark on weapons? The weapon record is hidden again until you mark them once more.'))return;S.wUser={};LS.set('wUser',S.wUser)}
     else return;
     build();render()},
   mapCat:v=>{S.mapCat=v;render()},
@@ -1293,6 +1308,7 @@ const ACT={
   more:()=>{S.log.limit+=500;$('#logBody').innerHTML=logBody()},
   order:()=>{S.log.newest=!S.log.newest;render()},
   tlOrder:()=>{S.tlNewest=!S.tlNewest;render()},
+  lyC:v=>{S.lyC=v;render()},lyW:v=>{S.lyW=v;render()},lyAll:v=>openLyAll(v==='w'?'w':'c'),closeList:()=>$('#dlgList').close(),
   docx:()=>exportDocx().catch(e=>{console.error(e);toast('Export failed')}),
   backup:()=>dl(new Blob([JSON.stringify({app:'wish-ledger',v:1,exported:new Date().toISOString(),docx:S.docx,paimon:S.paimon,crMarks:S.crMarks,crUser:S.crUser,wUser:S.wUser})],{type:'application/json'}),'wish-ledger-backup.json'),
   pick:()=>$('#file').click(),
@@ -1309,7 +1325,7 @@ document.addEventListener('input',e=>{const t=e.target,k=t.dataset.in;if(!k)retu
   else if(k==='vto'){S.f.to=VERS.find(x=>x.v===t.value)?.e||'';render()}});
 
 document.addEventListener('DOMContentLoaded',()=>{
-  const dlg=$('#dlg');dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});
+  const dlg=$('#dlg');dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});const dll=$('#dlgList');dll.addEventListener('click',e=>{if(e.target===dll)dll.close()});
   const q=$('#q');
   q.addEventListener('input',()=>suggest(q.value));
   q.addEventListener('keydown',e=>{if(e.key==='Enter'){const b=$('#sugg button');if(b)ACT.pickItem(b.dataset.v)}if(e.key==='Escape'){q.value='';suggest('');q.blur()}});
