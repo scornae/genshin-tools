@@ -19,9 +19,9 @@ Card order = card number minus 1; saved counts and links depend on it.
 Share link #t=OFFER.WANT.SERVERUID.NAME where OFFER = pairs of card (base36 char) + copies (1-9), WANT = card base36 chars,
 SERVERUID = one digit (0 none, 1 Asia, 2 Europe, 3 America) + UID in base36, NAME = URL-encoded. Old links must keep working.
 The hash routes #post and #t= are fixed.
-DECIDED RULES: night-sky look (midnight blue and violet, champagne gold, pale lavender; colors are variables in :root). Each card sits in a framed tile;
-missing cards show a lock. Home shows only the collection. The trade post starts with spares (copies minus 1) and missing cards; edits there never touch the collection.
-The share page is read-only with no action buttons. Saved image: title centered, server and UID small, one per line, no site address.
+DECIDED RULES: dusk look (plum to rose to orange sky behind panels, champagne gold; main colors are in :root, many shades are written inline in CSS and in makeImage), city skyline along the bottom of every page header (.top::after). Cards have no frames; tapping a card opens a picture dialog (kdlg, with previous/next) where copies are set 0-9;
+missing cards are dimmed with a lock. Home shows only the collection. The trade post starts with spares (copies minus 1) and missing cards; edits there never touch the collection.
+Post text has no emoji (the main Discord bans them). The share page is read-only with no action buttons. Saved image: title centered, server and UID small, one per line, no site address.
 Opened as file://, the saved image uses arch placeholders because browsers block exporting local pictures (layout test only).
 Servers are Asia, Europe, America. Link previews cannot differ per link on static hosting.
 REMOVED, DO NOT ADD BACK: TW/HK/MO server, separate Have and Want panels on home, a Show UID switch in the profile (it is per post in the editor),
@@ -46,7 +46,7 @@ an Edit profile button in the editor, the site address on the saved image, the e
 <meta name="twitter:title" content="Genshin Lunar Arcana Trade - Collection &amp; Trade Post Maker">
 <meta name="twitter:description" content="A free fan-made Genshin Impact tool: track your Lunar Arcana cards, then make a trade post with your spares and the cards you need.">
 <meta name="twitter:image" content="https://scornae.github.io/genshin-tools/arcana/og-preview.jpg">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23f5deb3%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23c89d54%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2228%22%20fill%3D%22%230c1026%22%20stroke%3D%22url(%23g)%22%20stroke-width%3D%222%22/%3E%3Cpath%20d%3D%22M32%208%20Q37.5%2025.5%2055%2032%20Q37.5%2038.5%2032%2056%20Q26.5%2038.5%209%2032%20Q26.5%2025.5%2032%208Z%22%20fill%3D%22url(%23g)%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%224%22%20fill%3D%22%230c1026%22/%3E%3C/svg%3E">
+<link%20rel="icon"%20type="image/svg+xml"%20href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2064%2064%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27b%27%20x1=%270%27%20y1=%270%27%20x2=%270%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%232b1450%27/%3E%3Cstop%20offset=%27.6%27%20stop-color=%27%238a2f68%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23e0794f%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27g%27%20x1=%270%27%20y1=%270%27%20x2=%270%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23f5deb3%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23c89d54%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%2764%27%20height=%2764%27%20rx=%2714%27%20fill=%27url%28%23b%29%27/%3E%3Cpath%20d=%27M44%209a11%2011%200%201%200%208%2019%208.5%208.5%200%201%201-8-19z%27%20fill=%27url%28%23g%29%27/%3E%3Cpath%20d=%27M0%2064V54h5v-4h5v4h4V64zM50%2064V54h4v-4h5v4h5V64z%27%20fill=%27%231d0f33%27/%3E%3Cpath%20d=%27M17%2064V47q0-9%2011-17%2011%208%2011%2017v17zM12%2064V46l2-5%202%205v18zM40%2064V46l2-5%202%205v18z%27%20fill=%27%231d0f33%27%20stroke=%27%23e8c987%27%20stroke-width=%271.6%27%20stroke-linejoin=%27round%27/%3E%3C/svg%3E">
 <meta name="color-scheme" content="dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,15 +54,15 @@ an Edit profile button in the editor, the site address on the saved image, the e
 <style>
 :root {
   /* Celestial Arcana Palette */
-  --midnight: #080b1a;
-  --silver: #e2e7f7;
-  --lavender: #bfb4e3;
-  --mute: #8e86b5;
+  --midnight: #190915;
+  --silver: #f1e8ef;
+  --lavender: #e1b6d4;
+  --mute: #b388a6;
   --gold: #e6c786;
   --gold-bright: #f7e3b5;
   --line: rgba(230, 199, 134, 0.24);
   --line-strong: rgba(230, 199, 134, 0.48);
-  --line-lavender: rgba(191, 180, 227, 0.2);
+  --line-lavender: rgba(225, 182, 212, 0.2);
   --f-head: 'El Messiri', Georgia, 'Times New Roman', serif;
   --f-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
@@ -78,17 +78,18 @@ html {
 }
 
 body {
+  display: flow-root;
   margin: 0;
   min-height: 100vh;
   color: var(--silver);
   font: 400 16px/1.5 var(--f-body);
   padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
   background:
-    radial-gradient(1200px 680px at 50% -10%, rgba(77, 56, 148, 0.42), transparent 70%),
-    radial-gradient(900px 600px at 88% 18%, rgba(44, 62, 135, 0.35), transparent 65%),
-    radial-gradient(850px 650px at 12% 75%, rgba(56, 33, 107, 0.38), transparent 68%),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240' width='240' height='240'><g fill='none' stroke='%23e6c786' stroke-opacity='.055' stroke-width='0.75'><circle cx='120' cy='120' r='92'/><circle cx='120' cy='120' r='70' stroke-dasharray='3 5'/><path d='M120 12 L120 228 M12 120 L228 120 M44 44 L196 196 M196 44 L44 196'/><polygon points='120,28 142,98 212,120 142,142 120,212 98,142 28,120 98,98'/></g><circle cx='120' cy='28' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='212' cy='120' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='120' cy='212' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='28' cy='120' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='52' cy='68' r='1.1' fill='%23e2e7f7' fill-opacity='.25'/><circle cx='188' cy='174' r='1.2' fill='%23bfb4e3' fill-opacity='.25'/><circle cx='178' cy='52' r='1' fill='%23e2e7f7' fill-opacity='.2'/></svg>") 0 0 / 240px 240px,
-    linear-gradient(180deg, #070a18 0%, #0e1533 38%, #171336 72%, #080b1a 100%);
+    radial-gradient(1200px 680px at 50% -10%, rgba(144, 60, 118, 0.42), transparent 70%),
+    radial-gradient(900px 600px at 88% 18%, rgba(131, 48, 110, 0.35), transparent 65%),
+    radial-gradient(850px 650px at 12% 75%, rgba(104, 36, 82, 0.38), transparent 68%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240' width='240' height='240'><g fill='none' stroke='%23e6c786' stroke-opacity='.055' stroke-width='0.75'><circle cx='120' cy='120' r='92'/><circle cx='120' cy='120' r='70' stroke-dasharray='3 5'/><path d='M120 12 L120 228 M12 120 L228 120 M44 44 L196 196 M196 44 L44 196'/><polygon points='120,28 142,98 212,120 142,142 120,212 98,142 28,120 98,98'/></g><circle cx='120' cy='28' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='212' cy='120' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='120' cy='212' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='28' cy='120' r='1.6' fill='%23e6c786' fill-opacity='.28'/><circle cx='52' cy='68' r='1.1' fill='%23f1e8ef' fill-opacity='.25'/><circle cx='188' cy='174' r='1.2' fill='%23e1b6d4' fill-opacity='.25'/><circle cx='178' cy='52' r='1' fill='%23f1e8ef' fill-opacity='.2'/></svg>") 0 0 / 240px 240px,
+    linear-gradient(180deg, #170d33 0%, #3a1a55 42%, #7d2f64 76%, #c0545f 94%, #d9774f 100%);
   background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
@@ -147,17 +148,17 @@ button {
   align-items: flex-end;
   justify-content: space-between;
   margin-top: 28px;
-  padding: 32px 36px 30px;
+  padding: 32px 36px 112px;
   border-radius: 18px;
   background:
     radial-gradient(700px 260px at 15% 0%, rgba(230, 199, 134, 0.12), transparent 70%),
-    radial-gradient(600px 300px at 90% 100%, rgba(128, 98, 214, 0.18), transparent 70%),
-    linear-gradient(135deg, rgba(18, 25, 58, 0.86) 0%, rgba(28, 21, 58, 0.84) 55%, rgba(14, 19, 44, 0.9) 100%);
+    radial-gradient(600px 300px at 90% 100%, rgba(209, 103, 176, 0.18), transparent 70%),
+    linear-gradient(135deg, rgba(56, 20, 47, 0.86) 0%, rgba(57, 22, 46, 0.84) 55%, rgba(43, 15, 36, 0.9) 100%);
   border: 1px solid var(--line-strong);
   box-shadow:
-    0 20px 50px rgba(3, 5, 15, 0.65),
+    0 20px 50px rgba(15, 3, 12, 0.65),
     inset 0 0 0 1px rgba(230, 199, 134, 0.12),
-    0 0 35px rgba(102, 77, 179, 0.14);
+    0 0 35px rgba(175, 81, 146, 0.14);
   backdrop-filter: blur(14px);
   overflow: hidden;
 }
@@ -175,18 +176,25 @@ button {
 .top::after {
   content: "";
   position: absolute;
-  right: -55px;
-  top: -55px;
-  width: 280px;
-  height: 280px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 92px;
   pointer-events: none;
-  opacity: 0.26;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'><g fill='none' stroke='%23e6c786'><circle cx='120' cy='120' r='105' stroke-width='1.2'/><circle cx='120' cy='120' r='88' stroke-width='0.8' stroke-dasharray='4 4'/><circle cx='120' cy='120' r='64' stroke-width='1'/><path d='M120 5 L120 235 M5 120 L235 120 M38 38 L202 202 M202 38 L38 202' stroke-width='0.7'/><polygon points='120,24 143,97 216,120 143,143 120,216 97,143 24,120 97,97' stroke-width='1.1'/></g></svg>") center / contain no-repeat;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 120' preserveAspectRatio='xMidYMax slice'><g fill='%231d0f33' stroke='%23d9a98c' stroke-width='1.4'><path d='M0 120V96h26v-8h12v8h14v-8h12v8h14v-8h12v8h26V120Z'/><path d='M150 120V86q0-22 24-22t24 22v34Z'/><path d='M222 120V70l7-16 7 16v50Z'/><path d='M300 120V92q0-26 30-26t30 26v28Z'/><path d='M520 120V84q0-20 22-26 5-14 0-26 18 8 20 26 12 4 12 26v36Z'/><path d='M610 120V50l8-26 8 26v70Z'/><path d='M650 120V92q30-8 40-40 20-18 40 0 10 32 40 40V120Z'/><path d='M760 120V70q0-20 40-52 40 32 40 52v50Z'/><path d='M800 18V6'/><path d='M840 120V92q10-32 40-40 20-18 40 0 10 32 40 40V120Z'/><path d='M974 120V50l8-26 8 26v70Z'/><path d='M1000 120V84q0-20 22-26 5-14 0-26 18 8 20 26 12 4 12 26v36Z'/><path d='M1240 120V92q0-26 30-26t30 26v28Z'/><path d='M1380 120V70l7-16 7 16v50Z'/><path d='M1420 120V86q0-22 24-22t24 22v34Z'/><path d='M1540 120V96h26v-8h12v8h14v-8h12v8h14v-8h12v8h14V120Z'/></g></svg>") center bottom / auto 100% no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+}
+
+.top > * {
+  position: relative;
+  z-index: 1;
 }
 
 .top-block {
   display: block;
-  padding-bottom: 26px;
+  padding-bottom: 104px;
 }
 
 .orn {
@@ -224,27 +232,19 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font: 600 11px/1 var(--f-body);
-  letter-spacing: 0.24em;
+  font: 600 11px/1.3 var(--f-body);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--gold);
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(230, 199, 134, 0.08);
-  border: 1px solid rgba(230, 199, 134, 0.25);
-  box-shadow: 0 0 16px rgba(230, 199, 134, 0.1);
 }
 
 .kicker::before {
-  content: "✦";
-  font-size: 12px;
-  color: var(--gold-bright);
-}
-
-.kicker::after {
-  content: "☾";
-  font-size: 11px;
-  color: var(--lavender);
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  background: var(--gold);
 }
 
 .namerow {
@@ -280,7 +280,7 @@ button {
   height: 36px;
   border-radius: 50%;
   border: 1px solid var(--line-strong);
-  background: rgba(29, 22, 59, 0.85);
+  background: rgba(58, 23, 47, 0.85);
   color: var(--gold);
   display: inline-flex;
   align-items: center;
@@ -292,7 +292,7 @@ button {
 .pf-edit:hover {
   transform: scale(1.06);
   border-color: var(--gold-bright);
-  background: rgba(59, 45, 104, 0.9);
+  background: rgba(102, 47, 85, 0.9);
   box-shadow: 0 0 18px rgba(230, 199, 134, 0.35);
 }
 
@@ -338,10 +338,10 @@ button {
   height: 10px;
   width: min(420px, 82vw);
   border-radius: 999px;
-  background: rgba(8, 11, 26, 0.85);
+  background: rgba(25, 9, 21, 0.85);
   border: 1px solid rgba(230, 199, 134, 0.32);
   margin: 14px 0 14px;
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.8), 0 0 16px rgba(145, 117, 229, 0.16);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.8), 0 0 16px rgba(225, 121, 193, 0.16);
 }
 
 .pbar i {
@@ -349,7 +349,7 @@ button {
   height: 100%;
   width: 0;
   border-radius: 999px;
-  background: linear-gradient(90deg, #6e56af 0%, #b898e8 45%, #e6c786 85%, #fff2cc 100%);
+  background: linear-gradient(90deg, #ab5a92 0%, #e59bcd 45%, #e6c786 85%, #fff2cc 100%);
   box-shadow: 0 0 14px rgba(230, 199, 134, 0.65);
   transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
@@ -389,10 +389,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: rgba(11, 15, 36, 0.65);
-  border: 1px solid var(--line-lavender);
+  padding: 3px 0;
 }
 
 .mini span::before {
@@ -423,59 +420,39 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  border-radius: 999px;
+  gap: 6px;
+  border-radius: 10px;
   border: 1px solid var(--line-strong);
-  background: linear-gradient(180deg, rgba(35, 29, 76, 0.85) 0%, rgba(18, 23, 52, 0.92) 100%);
+  background: rgba(74, 31, 61, 0.55);
   color: var(--silver);
-  padding: 9px 18px;
+  padding: 8px 16px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.03em;
-  box-shadow: 0 4px 14px rgba(4, 6, 18, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
 .btn:hover {
-  transform: translateY(-1px);
   border-color: var(--gold);
   color: var(--gold-bright);
-  background: linear-gradient(180deg, rgba(52, 41, 106, 0.92) 0%, rgba(25, 31, 68, 0.96) 100%);
-  box-shadow: 0 6px 20px rgba(4, 6, 18, 0.65), 0 0 16px rgba(230, 199, 134, 0.22);
-}
-
-.btn:active {
-  transform: translateY(0);
+  background: rgba(103, 44, 85, 0.7);
 }
 
 .btn.cap2 {
-  background: linear-gradient(135deg, #f3d999 0%, #d4af64 52%, #b08538 100%);
-  border-color: #fae5b2;
-  color: #120e24;
+  background: linear-gradient(180deg, #ecd39a 0%, #cfa95c 100%);
+  border-color: #ecd39a;
+  color: #230f1d;
   font-weight: 700;
-  box-shadow:
-    0 6px 24px rgba(212, 175, 100, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.55);
-}
-
-.btn.cap2::before {
-  content: "✦";
-  font-size: 13px;
 }
 
 .btn.cap2:hover {
-  background: linear-gradient(135deg, #fff 0%, #ebd08e 48%, #c79c4c 100%);
-  background: linear-gradient(135deg, #fff1c9 0%, #eccd86 50%, #c69a49 100%);
-  border-color: #ffffff;
-  color: #090714;
-  box-shadow:
-    0 8px 30px rgba(230, 199, 134, 0.5),
-    0 0 20px rgba(247, 227, 181, 0.4);
+  background: linear-gradient(180deg, #f6e3b2 0%, #dbb768 100%);
+  border-color: #f6e3b2;
+  color: #130810;
 }
 
 .btn.big {
-  padding: 14px 28px;
-  font-size: 17px;
-  letter-spacing: 0.05em;
+  padding: 11px 22px;
+  font-size: 15px;
 }
 
 .bar {
@@ -600,85 +577,36 @@ button {
 .c {
   display: block;
   width: 100%;
-  padding: 8px 8px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(191, 180, 227, 0.18);
-  background:
-    radial-gradient(circle at 50% 25%, rgba(69, 51, 133, 0.35), transparent 70%),
-    linear-gradient(180deg, rgba(18, 24, 54, 0.78) 0%, rgba(11, 14, 34, 0.9) 100%);
+  padding: 0;
+  border: 0;
+  background: none;
   text-align: center;
   position: relative;
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
-  box-shadow: 0 8px 22px rgba(3, 5, 14, 0.6);
-}
-
-/* Delicate inner tarot filigrees */
-.c::before {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  border-radius: 10px;
-  border: 1px solid rgba(230, 199, 134, 0.12);
-  pointer-events: none;
-  transition: border-color 0.28s ease;
-}
-
-/* Owned state: Celestial Gold & Starlight illumination */
-.c.on {
-  border-color: rgba(230, 199, 134, 0.58);
-  background:
-    radial-gradient(circle at 50% 18%, rgba(230, 199, 134, 0.18), transparent 68%),
-    linear-gradient(180deg, rgba(31, 25, 68, 0.9) 0%, rgba(15, 20, 48, 0.95) 100%);
-  box-shadow:
-    0 12px 28px rgba(4, 6, 18, 0.75),
-    0 0 22px rgba(230, 199, 134, 0.16),
-    inset 0 0 15px rgba(230, 199, 134, 0.08);
-}
-
-.c.on::before {
-  border-color: rgba(230, 199, 134, 0.32);
 }
 
 .c.static {
   cursor: default;
 }
 
-.c:not(.static):hover {
-  transform: translateY(-6px);
-  border-color: var(--gold-bright);
-  box-shadow:
-    0 16px 34px rgba(4, 6, 18, 0.85),
-    0 0 28px rgba(230, 199, 134, 0.32);
-}
-
-.c:not(.static):hover::before {
-  border-color: rgba(247, 227, 181, 0.55);
-}
-
 /* Card Artwork Frame with Celestial Tarot Backing */
 .art {
   position: relative;
   display: block;
-  border-radius: 9px;
-  overflow: hidden;
   aspect-ratio: 684 / 1024;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(59, 45, 104, 0.65) 0%, rgba(13, 18, 42, 0.95) 100%);
-  border: 1px solid rgba(230, 199, 134, 0.25);
-  box-shadow: inset 0 0 18px rgba(5, 7, 20, 0.85);
+}
+
+.c.on .art::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 14%;
+  right: 14%;
+  bottom: -9px;
+  height: 14px;
+  background: radial-gradient(ellipse at center, rgba(8, 2, 12, 0.6), transparent 70%);
 }
 
 /* Subtle ornamental line art behind card image */
-.art::before {
-  content: "";
-  position: absolute;
-  inset: 8px;
-  border: 1px dashed rgba(230, 199, 134, 0.22);
-  border-radius: 6px;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 180'><g fill='none' stroke='%23e6c786' stroke-opacity='.22' stroke-width='0.8'><circle cx='60' cy='90' r='38'/><circle cx='60' cy='90' r='26' stroke-dasharray='2 3'/><polygon points='60,42 71,79 108,90 71,101 60,138 49,101 12,90 49,79'/><path d='M60 12 L60 168 M12 90 L108 90'/></g></svg>") center / contain no-repeat;
-  pointer-events: none;
-}
-
 .c img {
   position: relative;
   z-index: 1;
@@ -686,18 +614,19 @@ button {
   width: 100%;
   height: 100%;
   aspect-ratio: 684 / 1024;
-  object-fit: cover;
-  filter: drop-shadow(0 8px 14px rgba(4, 6, 18, 0.65));
+  object-fit: contain;
+  filter: drop-shadow(0 10px 12px rgba(8, 2, 12, 0.55)) drop-shadow(0 0 10px rgba(230, 199, 134, 0.2));
   transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .c:not(.static):hover img {
-  transform: scale(1.03);
+  transform: translateY(-5px) scale(1.03);
+  filter: drop-shadow(0 16px 16px rgba(8, 2, 12, 0.6)) drop-shadow(0 0 16px rgba(230, 199, 134, 0.38));
 }
 
 /* Unowned / Astral Sealed State */
 .c:not(.on) img {
-  filter: brightness(0.16) saturate(0.25) contrast(1.1) opacity(0.42);
+  filter: brightness(0.3) saturate(0.3) drop-shadow(0 6px 8px rgba(8, 2, 12, 0.4));
 }
 
 .lk {
@@ -705,17 +634,10 @@ button {
   z-index: 2;
   left: 50%;
   top: 50%;
-  width: 34%;
+  width: 26%;
   transform: translate(-50%, -50%);
   color: var(--gold);
-  opacity: 0.72;
-  filter: drop-shadow(0 0 10px rgba(230, 199, 134, 0.45));
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.c:not(.on):hover .lk {
-  opacity: 0.95;
-  transform: translate(-50%, -50%) scale(1.08);
+  opacity: 0.7;
 }
 
 .c.on .lk {
@@ -724,7 +646,7 @@ button {
 
 .cap {
   display: block;
-  margin-top: 10px;
+  margin-top: 14px;
   line-height: 1.25;
   position: relative;
   z-index: 2;
@@ -732,21 +654,11 @@ button {
 
 .cap i {
   display: block;
-  font: 600 12px/1.2 var(--f-body);
+  font: 600 11px/1.2 var(--f-body);
   font-style: normal;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   color: var(--gold);
-  margin-bottom: 3px;
-}
-
-.cap i::before {
-  content: "· ";
-  opacity: 0.65;
-}
-
-.cap i::after {
-  content: " ·";
-  opacity: 0.65;
+  margin-bottom: 2px;
 }
 
 .cap b {
@@ -756,46 +668,12 @@ button {
   transition: color 0.2s ease;
 }
 
-.c.on .cap b {
-  color: #ffffff;
-  text-shadow: 0 0 12px rgba(230, 199, 134, 0.3);
-}
-
 .c:not(.on) .cap {
   opacity: 0.52;
 }
 
-.c.pop img {
-  animation: pop 0.8s ease-out;
-}
-
-@keyframes pop {
-  0% {
-    transform: scale(0.92);
-  }
-  40% {
-    transform: scale(1.06);
-    filter: drop-shadow(0 0 26px rgba(247, 227, 181, 0.95));
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes glow {
-  from {
-    filter: drop-shadow(0 0 26px rgba(247, 227, 181, 0.95));
-  }
-  to {
-    filter: drop-shadow(0 8px 14px rgba(4, 6, 18, 0.65));
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .c.pop img {
-    animation: glow 0.9s ease-out;
-  }
-  .c, .c img, .pbar i {
+  .c img, .pbar i {
     transition: none;
   }
 }
@@ -804,43 +682,18 @@ button {
 .bd {
   position: absolute;
   z-index: 3;
-  top: -5px;
-  right: -5px;
-  background: linear-gradient(135deg, #f7e3b5 0%, #d4af64 100%);
-  color: #120d26;
-  border: 1px solid #fff6df;
-  font: 700 12px/1 var(--f-body);
-  border-radius: 999px;
-  padding: 5px 9px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65), 0 0 12px rgba(230, 199, 134, 0.55);
+  top: 6px;
+  right: 6px;
+  background: rgba(24, 9, 28, 0.72);
+  color: var(--gold-bright);
+  border: 1px solid rgba(230, 199, 134, 0.4);
+  font: 600 11px/1 var(--f-body);
+  border-radius: 6px;
+  padding: 3px 6px;
 }
 
 .bd:empty {
   display: none;
-}
-
-.mn {
-  position: absolute;
-  z-index: 3;
-  top: -5px;
-  left: -5px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1px solid var(--line-strong);
-  background: rgba(16, 23, 53, 0.95);
-  color: var(--gold-bright);
-  font-size: 17px;
-  line-height: 1;
-  padding: 0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-  transition: background 0.2s, border-color 0.2s, transform 0.15s;
-}
-
-.mn:hover {
-  background: rgba(59, 45, 104, 0.98);
-  border-color: var(--gold-bright);
-  transform: scale(1.08);
 }
 
 /* ===== Mystical Arcana Exchange Notice (Trade Post) ===== */
@@ -851,12 +704,12 @@ button {
   border: 1px solid var(--line-strong);
   border-radius: 18px;
   background:
-    radial-gradient(900px 420px at 50% 0%, rgba(102, 77, 179, 0.18), transparent 70%),
-    linear-gradient(180deg, rgba(16, 22, 51, 0.86) 0%, rgba(23, 18, 49, 0.9) 50%, rgba(12, 16, 38, 0.92) 100%);
+    radial-gradient(900px 420px at 50% 0%, rgba(175, 81, 146, 0.18), transparent 70%),
+    linear-gradient(180deg, rgba(50, 17, 41, 0.86) 0%, rgba(48, 19, 39, 0.9) 50%, rgba(37, 13, 31, 0.92) 100%);
   box-shadow:
-    0 24px 56px rgba(3, 5, 15, 0.72),
+    0 24px 56px rgba(15, 3, 12, 0.72),
     inset 0 0 0 1px rgba(230, 199, 134, 0.16),
-    0 0 40px rgba(47, 37, 89, 0.4);
+    0 0 40px rgba(87, 39, 72, 0.4);
   backdrop-filter: blur(12px);
 }
 
@@ -875,7 +728,7 @@ button {
   position: relative;
   padding: 20px 24px 26px;
   border-radius: 14px;
-  background: rgba(9, 13, 31, 0.52);
+  background: rgba(30, 10, 25, 0.52);
   border: 1px solid rgba(230, 199, 134, 0.18);
   margin-top: 22px;
 }
@@ -884,15 +737,15 @@ button {
   margin-top: 10px;
   background:
     radial-gradient(600px 220px at 0% 0%, rgba(230, 199, 134, 0.09), transparent 70%),
-    rgba(12, 16, 38, 0.56);
+    rgba(37, 13, 31, 0.56);
   border-color: rgba(230, 199, 134, 0.28);
 }
 
 .post > .tsec:last-child {
   background:
-    radial-gradient(600px 220px at 100% 0%, rgba(154, 132, 232, 0.11), transparent 70%),
-    rgba(16, 15, 42, 0.56);
-  border-color: rgba(191, 180, 227, 0.26);
+    radial-gradient(600px 220px at 100% 0%, rgba(228, 136, 200, 0.11), transparent 70%),
+    rgba(41, 16, 34, 0.56);
+  border-color: rgba(225, 182, 212, 0.26);
 }
 
 .none {
@@ -902,9 +755,9 @@ button {
   text-align: center;
   color: var(--lavender);
   font-size: 15px;
-  border: 1px dashed rgba(191, 180, 227, 0.24);
+  border: 1px dashed rgba(225, 182, 212, 0.24);
   border-radius: 12px;
-  background: rgba(8, 11, 26, 0.4);
+  background: rgba(25, 9, 21, 0.4);
 }
 
 .opts {
@@ -915,7 +768,7 @@ button {
   padding: 14px 18px;
   margin-top: 10px;
   border-radius: 12px;
-  background: rgba(16, 23, 53, 0.65);
+  background: rgba(52, 17, 43, 0.65);
   border: 1px solid var(--line);
 }
 
@@ -948,7 +801,7 @@ button {
   padding: 16px;
   border: 1px dashed var(--line-strong);
   border-radius: 14px;
-  background: rgba(8, 11, 26, 0.78);
+  background: rgba(25, 9, 21, 0.78);
   box-shadow: inset 0 2px 14px rgba(0, 0, 0, 0.6);
 }
 
@@ -956,9 +809,9 @@ button {
   position: relative;
   width: 58px;
   padding: 4px;
-  border: 2px solid rgba(191, 180, 227, 0.16);
+  border: 2px solid rgba(225, 182, 212, 0.16);
   border-radius: 9px;
-  background: rgba(18, 24, 54, 0.8);
+  background: rgba(53, 19, 44, 0.8);
   transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -1085,16 +938,142 @@ dialog {
   border: 1px solid var(--line-strong);
   border-radius: 18px;
   background:
-    radial-gradient(400px 200px at 50% 0%, rgba(102, 77, 179, 0.28), transparent 70%),
-    linear-gradient(180deg, #151c42 0%, #0d122b 100%);
+    radial-gradient(400px 200px at 50% 0%, rgba(175, 81, 146, 0.28), transparent 70%),
+    linear-gradient(180deg, #401735 0%, #2a0e23 100%);
   color: var(--silver);
   padding: 24px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(230, 199, 134, 0.18);
 }
 
 dialog::backdrop {
-  background: rgba(5, 7, 18, 0.76);
+  background: rgba(17, 6, 14, 0.76);
   backdrop-filter: blur(6px);
+}
+
+.kd {
+  width: min(520px, calc(100vw - 24px));
+  padding: 24px 16px 20px;
+  text-align: center;
+  border-color: rgba(230, 199, 134, 0.42);
+  background:
+    radial-gradient(520px 380px at 50% 32%, rgba(230, 199, 134, 0.14), transparent 70%),
+    linear-gradient(165deg, #3b1950 0%, #1c0e31 100%);
+}
+
+.kv {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.kv img {
+  display: block;
+  height: min(50vh, 560px);
+  width: auto;
+  aspect-ratio: 684 / 1024;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 20px rgba(6, 2, 12, 0.65)) drop-shadow(0 0 22px rgba(230, 199, 134, 0.24));
+}
+
+.kd .nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  font-size: 22px;
+  background: rgba(29, 15, 51, 0.72);
+}
+
+.kd .prev {
+  left: -4px;
+}
+
+.kd .next {
+  right: -4px;
+}
+
+.ki {
+  margin-top: 18px;
+}
+
+.kno {
+  margin: 0;
+  font: 600 12px/1 var(--f-body);
+  letter-spacing: 0.3em;
+  color: var(--gold);
+}
+
+.kno::before {
+  content: "\00b7  ";
+}
+
+.kno::after {
+  content: "  \00b7";
+}
+
+.kd h3 {
+  margin: 8px 0 0;
+  font: 600 25px/1.2 var(--f-head);
+  color: var(--gold-bright);
+}
+
+.kline {
+  display: block;
+  width: 140px;
+  height: 1px;
+  margin: 12px auto;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.kd .lbl {
+  margin: 0 0 8px;
+  font: 600 11px/1 var(--f-body);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lavender);
+}
+
+.kd .ctl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.kd .ctl .btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 22px;
+  border-radius: 50%;
+}
+
+.kd .ctl .btn:disabled {
+  opacity: 0.35;
+}
+
+.kd .ctl b {
+  min-width: 56px;
+  font: 700 30px/1 var(--f-head);
+  color: var(--gold-bright);
+}
+
+.kd .st {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--lavender);
+}
+
+@media (min-width: 701px) {
+  .kd {
+    width: min(560px, calc(100vw - 48px));
+    padding: 28px 28px 24px;
+  }
+  .kv img {
+    height: clamp(320px, calc(100vh - 300px), 760px);
+  }
 }
 
 .cmsg {
@@ -1140,7 +1119,7 @@ dialog::backdrop {
 }
 
 .pf input {
-  background: rgba(8, 11, 26, 0.85);
+  background: rgba(25, 9, 21, 0.85);
   border: 1px solid var(--line-strong);
   border-radius: 10px;
   padding: 10px 14px;
@@ -1168,7 +1147,7 @@ dialog::backdrop {
 .seg button {
   flex: 1;
   border: 1px solid var(--line);
-  background: rgba(8, 11, 26, 0.75);
+  background: rgba(25, 9, 21, 0.75);
   border-radius: 999px;
   padding: 9px 12px;
   font-weight: 600;
@@ -1185,20 +1164,30 @@ dialog::backdrop {
 .seg button[aria-pressed=true] {
   background: linear-gradient(135deg, #f3d999 0%, #d4af64 100%);
   border-color: #fae5b2;
-  color: #120d26;
+  color: #250e1e;
   box-shadow: 0 0 16px rgba(230, 199, 134, 0.35);
 }
 
 /* Responsive Breakpoints */
 @media (max-width: 900px) {
+  .g {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 10px;
+  }
+  .cap b {
+    font-size: 12.5px;
+  }
   .sheet {
     padding: 0 16px;
   }
   .top {
     margin-top: 16px;
-    padding: 22px 20px 20px;
+    padding: 22px 20px 104px;
     flex-direction: column;
     align-items: stretch;
+  }
+  .top > .btn.big {
+    align-self: center;
   }
   .cap i {
     font-size: 11px;
@@ -1294,7 +1283,7 @@ dialog::backdrop {
 </header>
 <p class="msg" role="status"></p>
 <section class="tsec first"><h2>Arcana Collection<small id="unl"></small></h2>
-<p class="hint">Tap a card in the Celestial Archive each time you obtain one.</p>
+<p class="hint">Tap a card to see it and set how many copies you have.</p>
 <div class="g" id="gh"></div></section>
 <div class="bar data-bar">
 <button class="btn" id="imp" type="button">Import data</button>
@@ -1346,6 +1335,17 @@ dialog::backdrop {
 <label class="pf"><b>Name</b><input id="pfName" maxlength="40" placeholder="Your name" autocomplete="off"></label>
 <label class="pf"><b>UID</b><input id="pfUid" inputmode="numeric" maxlength="10" placeholder="optional" autocomplete="off"></label>
 <div class="pf"><b>Server</b><div class="seg" id="srv"></div></div>
+</dialog>
+<dialog id="kdlg" class="kd" aria-labelledby="kname">
+<div class="kv"><img id="kimg" alt=""><button class="btn nav prev" id="kprev" type="button" aria-label="Previous card">&lsaquo;</button><button class="btn nav next" id="knext" type="button" aria-label="Next card">&rsaquo;</button></div>
+<div class="ki">
+<p class="kno" id="kno"></p>
+<h3 id="kname"></h3>
+<div class="kline"></div>
+<p class="lbl">Copies owned</p>
+<div class="ctl"><button class="btn" id="kminus" type="button" aria-label="Remove one">&minus;</button><b id="kn"></b><button class="btn" id="kplus" type="button" aria-label="Add one">+</button></div>
+<p class="st" id="kst"></p>
+</div>
 </dialog>
 <dialog id="cdlg" aria-labelledby="ctitle">
 <div class="dh"><h3 id="ctitle">Confirm</h3></div>
@@ -1412,28 +1412,33 @@ async function copyText(text,okMessage){
 }
 
 /* ===== 5. Home: collection and header ===== */
-const cells=[];  // per card: [card button, badge, minus button] wrapped in .cell
+const cells=[];  // per card: [card button, badge] wrapped in .cell
 function buildCollection(){
   NAMES.forEach((name,i)=>{
     const cell=document.createElement('div');cell.className='cell';
-    cell.innerHTML='<button type="button" class="c">'+cardHtml(i)+'</button><span class="bd"></span><button type="button" class="mn" aria-label="Remove one '+name+'">\u2212</button>';
-    cell.children[0].onclick=()=>changeCopies(i,1);
-    cell.children[2].onclick=()=>changeCopies(i,-1);
+    cell.innerHTML='<button type="button" class="c">'+cardHtml(i)+'</button><span class="bd"></span>';
+    cell.children[0].onclick=()=>openCard(i);
     $('gh').appendChild(cell);cells.push(cell);
   });
 }
 function changeCopies(i,delta){
   const v=S.n[i]+delta;if(v<0||v>MAX_COPIES)return;
   S.n[i]=v;saveState();paintHome();say('');
-  if(delta>0&&v===1){const btn=cells[i].children[0];btn.classList.remove('pop');void btn.offsetWidth;btn.classList.add('pop')}  // unlock effect
+  if(KI===i&&$('kdlg').open)paintCard();
 }
+let KI=-1;  // card shown in the picture dialog
+function paintCard(){const v=S.n[KI];
+  $('kn').textContent=v;$('kminus').disabled=v<1;$('kplus').disabled=v>=MAX_COPIES;
+  $('kst').textContent=v?(v>1?v+' copies, '+(v-1)+' to spare':'Collected'):'Not collected yet'}
+function showCard(i){KI=i;const im=$('kimg');im.style.opacity='';im.onerror=()=>{im.style.opacity='0'};im.src=cardSrc(i);im.alt=NAMES[i];
+  $('kno').textContent=ROMAN[i];$('kname').textContent=NAMES[i];paintCard()}
+function openCard(i){showCard(i);$('kdlg').showModal()}
 function paintHome(){
   const owned=S.n.filter(v=>v>0).length,spareTotal=spares().reduce((a,p)=>a+p[1],0);
   cells.forEach((cell,i)=>{const v=S.n[i],btn=cell.children[0];
     btn.classList.toggle('on',v>0);
     btn.title=NAMES[i]+(v?' (you have '+v+')':' (not collected yet)');
-    cell.children[1].textContent=v>1?'×'+v:'';
-    cell.children[2].hidden=!v});
+    cell.children[1].textContent=v>1?'×'+v:''});
   $('pct').textContent=Math.round(owned/22*100)+'%';$('frac').textContent=owned+' / 22';$('pfill').style.width=owned/22*100+'%';
   $('nsp').textContent=spareTotal;$('nms').textContent=22-owned;$('unl').textContent='Unlocked: '+owned+' / 22';
   const next=ACHIEVEMENTS.find(m=>m>owned);
@@ -1455,6 +1460,12 @@ function buildProfile(){
   const open=()=>$('dlg').showModal();
   ['pname','pedit'].forEach(id=>{$(id).onclick=open});
   $('dclose').onclick=()=>$('dlg').close();
+  $('kminus').onclick=()=>changeCopies(KI,-1);
+  $('kplus').onclick=()=>changeCopies(KI,1);
+  $('kprev').onclick=()=>showCard((KI+NAMES.length-1)%NAMES.length);
+  $('knext').onclick=()=>showCard((KI+1)%NAMES.length);
+  $('kdlg').onkeydown=e=>{if(e.key==='ArrowLeft')$('kprev').click();if(e.key==='ArrowRight')$('knext').click()};
+  $('kdlg').onclick=e=>{if(e.target===$('kdlg'))$('kdlg').close()};
 }
 const paintServers=()=>[...$('srv').children].forEach(b=>b.setAttribute('aria-pressed',b.textContent===S.server));
 function fillProfileInputs(){$('pfName').value=S.name;$('pfUid').value=S.uid;paintServers()}
@@ -1525,13 +1536,13 @@ function drawPost(){
      server = 0 none, 1 Asia, 2 Europe, 3 America; uid = base36 number (may be empty)
      name   = encodeURIComponent text (may be empty)  */
 function postText(R){
-  const L=['╭━━━━━━━ 🔮 **LUNAR ARCANA TRADE** 🔮 ━━━━━━━╮',''];
-  const head=[R.name&&['👤','NAME',R.name],R.server&&['🌐','SERVER',R.server.toUpperCase()],R.uid&&['🆔','UID',R.uid]].filter(Boolean);
-  if(head.length){head.forEach(([icon,key,val])=>L.push('　'+icon+' **'+key+':** `'+val+'`'));L.push('')}
-  const part=(title,icon,list,line)=>{if(!list.length)return;L.push('╞═══════ '+icon+' **'+title+'** ═══════╡','');list.forEach(x=>L.push(line(x)));L.push('')};
-  part('FOR TRADE','🟢',R.offer,([i,k])=>'　🔮 **[ '+ROMAN[i]+' ] '+NAMES[i]+'**\n　　└─ `×'+k+' Available`');
-  part('LOOKING FOR','🔴',R.want,i=>'　❖ **[ '+ROMAN[i]+' ]** ── '+NAMES[i]);
-  L.push('╞══════════════════════════╡','     💬 *DM me directly or reply/ping here!* 💫');
+  const L=['╭━━━━━━━ **LUNAR ARCANA TRADE** ━━━━━━━╮',''];
+  const head=[R.name&&['NAME',R.name],R.server&&['SERVER',R.server.toUpperCase()],R.uid&&['UID',R.uid]].filter(Boolean);
+  if(head.length){head.forEach(([key,val])=>L.push('　**'+key+':** `'+val+'`'));L.push('')}
+  const part=(title,list,line)=>{if(!list.length)return;L.push('╞═══════ **'+title+'** ═══════╡','');list.forEach(x=>L.push(line(x)));L.push('')};
+  part('FOR TRADE',R.offer,([i,k])=>'　❖ **[ '+ROMAN[i]+' ] '+NAMES[i]+'**\n　　└─ `×'+k+' Available`');
+  part('LOOKING FOR',R.want,i=>'　❖ **[ '+ROMAN[i]+' ]** ── '+NAMES[i]);
+  L.push('╞══════════════════════════╡','     *DM me directly or reply/ping here!*');
   return L.join('\n');
 }
 const encodeLink=R=>location.href.split('#')[0]+'#t='
@@ -1554,7 +1565,7 @@ function drawView(){
 
 /* ===== 9. Saved image (canvas, 6 cards per row, same look as the page) ===== */
 async function makeImage(R){
-  const sections=[['Offering',R.offer,'#e6c786'],['Looking for',R.want.map(i=>[i,0]),'#bfb4e3']].filter(s=>s[1].length);
+  const sections=[['Offering',R.offer,'#e6c786'],['Looking for',R.want.map(i=>[i,0]),'#e1b6d4']].filter(s=>s[1].length);
   try{await Promise.all([document.fonts.load('700 56px "El Messiri"'),document.fonts.load('600 22px Figtree')])}catch(e){}
   const pics={};
   if(!LOCAL){
@@ -1571,10 +1582,10 @@ async function makeImage(R){
   const diamond=(cx,cy,r,color)=>{x.fillStyle=color;x.beginPath();x.moveTo(cx,cy-r);x.lineTo(cx+r,cy);x.lineTo(cx,cy+r);x.lineTo(cx-r,cy);x.closePath();x.fill()};
   const roundRect=(px,py,w,h,r)=>{x.beginPath();if(x.roundRect)x.roundRect(px,py,w,h,r);else x.rect(px,py,w,h)};
   // celestial midnight background and double golden frame with corner diamonds
-  const bgGrad=x.createLinearGradient(0,0,0,H);bgGrad.addColorStop(0,'#090d20');bgGrad.addColorStop(0.5,'#151436');bgGrad.addColorStop(1,'#090c1d');
+  const bgGrad=x.createLinearGradient(0,0,0,H);bgGrad.addColorStop(0,'#1f0a1a');bgGrad.addColorStop(0.5,'#35152c');bgGrad.addColorStop(1,'#1c0a17');
   x.fillStyle=bgGrad;x.fillRect(0,0,W,H);
-  const glow=x.createRadialGradient(W/2,0,0,W/2,0,900);glow.addColorStop(0,'rgba(110,86,175,.32)');glow.addColorStop(1,'rgba(110,86,175,0)');x.fillStyle=glow;x.fillRect(0,0,W,H);
-  x.strokeStyle='rgba(230,199,134,.55)';x.lineWidth=3;x.strokeRect(14,14,W-28,H-28);x.strokeStyle='rgba(230,199,134,.28)';x.lineWidth=1;x.strokeRect(24,24,W-48,H-48);
+  const glow=x.createRadialGradient(W/2,0,0,W/2,0,900);glow.addColorStop(0,'rgba(171, 90, 146,.32)');glow.addColorStop(1,'rgba(171, 90, 146,0)');x.fillStyle=glow;x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(230, 199, 134,.55)';x.lineWidth=3;x.strokeRect(14,14,W-28,H-28);x.strokeStyle='rgba(230, 199, 134,.28)';x.lineWidth=1;x.strokeRect(24,24,W-48,H-48);
   [[24,24],[W-24,24],[24,H-24],[W-24,H-24]].forEach(p=>diamond(p[0],p[1],8,'#e6c786'));
   // centered title, shrunk to fit long names
   const title=(R.name?R.name+'’s ':'')+'Lunar Arcana Trade';
@@ -1585,32 +1596,32 @@ async function makeImage(R){
   sections.forEach(([label,list,color],s)=>{
     if(s)y+=30;
     x.textAlign='left';x.fillStyle=color;x.font='700 44px '+HEAD;x.fillText(label+' ('+list.length+')',pad,y+36);
-    x.fillStyle='rgba(230,199,134,.35)';x.fillRect(pad,y+60,W/2-pad-26,2);x.fillRect(W/2+26,y+60,W/2-pad-26,2);diamond(W/2,y+61,9,color);
+    x.fillStyle='rgba(230, 199, 134,.35)';x.fillRect(pad,y+60,W/2-pad-26,2);x.fillRect(W/2+26,y+60,W/2-pad-26,2);diamond(W/2,y+61,9,color);
     y+=96;
     for(let r=0;r*cols<list.length;r++){
       const row=list.slice(r*cols,r*cols+cols);let px=(W-(row.length*cw+(row.length-1)*gap))/2;
       row.forEach(([i,copies])=>{
-        if(pics[i]){x.save();x.shadowColor='rgba(0,0,0,.65)';x.shadowBlur=18;x.shadowOffsetY=8;x.drawImage(pics[i],px,y,cw,ch);x.restore()}
+        if(pics[i]){x.save();x.shadowColor='rgba(0, 0, 0,.65)';x.shadowBlur=18;x.shadowOffsetY=8;x.drawImage(pics[i],px,y,cw,ch);x.restore()}
         else{
-          x.fillStyle='rgba(47,37,89,.55)';x.beginPath();x.moveTo(px+cw/2,y);x.lineTo(px+cw,y+ch*.14);x.lineTo(px+cw,y+ch*.86);x.lineTo(px+cw/2,y+ch);x.lineTo(px,y+ch*.86);x.lineTo(px,y+ch*.14);x.closePath();x.fill();
-          x.strokeStyle='rgba(230,199,134,.45)';x.lineWidth=2;x.stroke();
+          x.fillStyle='rgba(87, 39, 72,.55)';x.beginPath();x.moveTo(px+cw/2,y);x.lineTo(px+cw,y+ch*.14);x.lineTo(px+cw,y+ch*.86);x.lineTo(px+cw/2,y+ch);x.lineTo(px,y+ch*.86);x.lineTo(px,y+ch*.14);x.closePath();x.fill();
+          x.strokeStyle='rgba(230, 199, 134,.45)';x.lineWidth=2;x.stroke();
           x.fillStyle='#e6c786';x.font='700 52px '+HEAD;x.textAlign='center';x.fillText(ROMAN[i],px+cw/2,y+ch/2+16);
         }
         if(copies>1){
           const t='×'+copies;x.font='700 26px '+BODY;const w=x.measureText(t).width+24;
-          x.fillStyle='#e6c786';roundRect(px+cw-w+6,y-4,w,40,20);x.fill();x.fillStyle='#120d26';x.textAlign='center';x.fillText(t,px+cw-w/2+6,y+25);
+          x.fillStyle='#e6c786';roundRect(px+cw-w+6,y-4,w,40,20);x.fill();x.fillStyle='#250e1e';x.textAlign='center';x.fillText(t,px+cw-w/2+6,y+25);
         }
         x.textAlign='center';x.fillStyle='#e6c786';x.font='600 22px '+BODY;x.fillText(ROMAN[i],px+cw/2,y+ch+34);
         let size=27;x.font='600 '+size+'px '+HEAD;
         while(x.measureText(NAMES[i]).width>cw+gap-6&&size>15){size--;x.font='600 '+size+'px '+HEAD}
-        x.fillStyle='#e2e7f7';x.fillText(NAMES[i],px+cw/2,y+ch+66);
+        x.fillStyle='#f1e8ef';x.fillText(NAMES[i],px+cw/2,y+ch+66);
         px+=cw+gap;
       });
       y+=ch+capH+gap;
     }
   });
   // footer: server and UID, one per line
-  info.forEach(([key,val],j)=>{const by=y+70+40*j;x.textAlign='left';x.fillStyle='#e6c786';x.font='700 22px '+BODY;x.fillText(key.toUpperCase(),pad,by);x.fillStyle='#e2e7f7';x.font='600 22px '+BODY;x.fillText(val,pad+110,by)});
+  info.forEach(([key,val],j)=>{const by=y+70+40*j;x.textAlign='left';x.fillStyle='#e6c786';x.font='700 22px '+BODY;x.fillText(key.toUpperCase(),pad,by);x.fillStyle='#f1e8ef';x.font='600 22px '+BODY;x.fillText(val,pad+110,by)});
   return new Promise((ok,fail)=>canvas.toBlob(b=>b?ok(b):fail(new Error('empty')),'image/jpeg',.92));
 }
 async function saveImage(){
