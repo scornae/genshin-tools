@@ -2,42 +2,49 @@
 <!--
 HANDOFF NOTES. File-level facts only. Update this block in the same change whenever a rule or structure changes.
 WHAT IT IS
-Single-file stamina/energy recovery calculator for gacha games. Visitors enter max energy, minutes per point, current
-energy, an optional target and an optional cost per stage, press Calculate, and get a live countdown, a gauge, a
-stage schedule (up to 10 runs) and a saveable JPG. English only. No build step, no external data, no routine updates.
+Single-file stamina/energy recovery calculator for gacha games, plus quick +/- energy adjust and custom day/hour
+cooldown timers. Visitors enter max energy, minutes per point, current energy, an optional target and an optional cost
+per stage, press Calculate, and get a live countdown, a gauge, a stage schedule (up to 10 runs) and a saveable JPG.
+English only. No build step, no external data, no routine updates.
 Hosting: the canonical URL in the head is the stamina/ folder of the genshin-tools site, so the deployed file must be
 named index.html with og-preview.jpg beside it (static 1200x630 card made outside this file; redo it if the look changes).
 Only outside request: Google Fonts (Cinzel, Cormorant Garamond). The favicon is an inline SVG data URI.
 WHERE THINGS LIVE (search these names)
 STORE, MAX_RUNS, inputIds   storage key, cap on schedule rows, the five input ids (max, per, cur, target, cost)
-calculate()                 the only place results are computed; it sets the anchor time S.at
+COOLDOWN_STORE              storage key (stamina-cooldowns-v1) for custom day+hour cooldown timers
+calculate()                 computes fresh results from the five fields and sets the anchor time S.at
+applyAdjust()               quick +/- energy adjustment; advances S.at only by integer multiples of perMs() so the
+                            ongoing recovery tick phase is preserved to the millisecond (starts a fresh cycle at now
+                            only when spending down below max from a full/capped state)
 rawEnergy(), reachTs()      energy now, and when a given energy is reached, both derived from S.at
-update(), renderRuns()      repaint once a second; the stage table is rebuilt only when its text changes
+update(), renderRuns()      repaint once a second; stage table and cooldown rows update live
 setGauge(), drawGauge()     page gauge (SVG) and saved-image gauge (canvas); keep the two looks in sync
 drawSnapshot(), saveImage() draw the JPG and download it at once as stamina-timer.jpg, with no preview dialog
 STORAGE (localStorage only; no URL parameters or hash)
 Key stamina-calc-v3 holds inputs (the five field values) and calc (at, max, perMin, cur, target, cost, warn, sig).
-Do not rename it or change that shape without a migration: running timers are stored there. The Clear data handler
-also removes the old key stamina-calc-v2; keep both removals.
+Do not rename it or change that shape without a migration: running timers are stored there.
+Key stamina-cooldowns-v1 holds custom cooldown timers [{id, name, days, hours, durMs, startAt}].
+Clear data asks inline confirmation and removes stamina-calc-v3, stamina-calc-v2, and stamina-cooldowns-v1.
 RULES ALREADY DECIDED
-1. Results change only on Calculate or Enter. Editing a field saves it and shows a hint; it never recalculates.
+1. Main form results change only on Calculate or Enter, except Quick Adjust which immediately updates live energy
+   without resetting the ongoing recovery cycle. Editing a form field saves it and shows a hint; it never recalculates.
 2. The timer is anchored to the Calculate moment, so reopening the page continues the countdown. Never re-anchor on load.
-3. Clear data confirms, wipes every stored key and reloads. There is no Reset button. A blank target means max energy.
+3. Clear data asks inline confirmation, wipes calculator + cooldown keys and resets state. A blank target means max energy.
 4. Ready at uses full weekday and month words (fmtLong); the stage table uses the short form (fmtClock).
 5. The saved image heading reads STAMINA TIMER (avoid the word Snapshot on screen). Header line: Genshin Impact // Stamina Recovery.
 6. Palette: near-neutral black, gold, soft white, cyan only as a tiny jewel accent. Keep it clearly different from Roster and Arcana.
 REMOVED, DO NOT ADD BACK
 Game preset dropdown, the time-until-next-point field, the If I come back in panel, the Reset button,
-the preview dialog for the saved image.
+minutes on custom cooldowns, server-reset timers, the preview dialog for the saved image.
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stamina Recovery Calculator — Genshin Tools</title>
-  <meta name="description" content="Know the exact hour your energy returns. A fan-made stamina recovery calculator with a live timer, stage schedule and saveable image.">
+  <meta name="description" content="Know the exact hour your energy returns. A fan-made stamina recovery calculator with quick energy adjust, custom cooldown timers, live stage schedule and saveable image.">
   <meta name="theme-color" content="#0c0c0e">
-  <link rel="canonical" href="https://scornae.github.io/genshin-tools/stamina/">
+  <link rel="canonical" href="about:invalid#zPythonSafez">
 
   <!-- Favicon: celestial hourglass -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101012' stroke='%23e9c77b' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='24' fill='none' stroke='%23e9c77b' stroke-opacity='.5' stroke-width='1.5' stroke-dasharray='1.5 4.8'/%3E%3Cpath d='M21 15h22M21 49h22' stroke='%23fff1c9' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M24 16c0 9 6 12 6 16s-6 7-6 16h16c0-9-6-12-6-16s6-7 6-16z' fill='none' stroke='%23e9c77b' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpath d='M27 22h10l-5 7z' fill='%23e9c77b'/%3E%3Cpath d='M26.5 47c1-5 3.5-7 5.5-8.5 2 1.5 4.5 3.5 5.5 8.5z' fill='%23e9c77b'/%3E%3Ccircle cx='32' cy='35' r='1.2' fill='%238fe3ff'/%3E%3C/svg%3E">
@@ -45,17 +52,17 @@ the preview dialog for the saved image.
   <!-- Open Graph / Social preview -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Genshin Tools">
-  <meta property="og:url" content="https://scornae.github.io/genshin-tools/stamina/">
+  <meta property="og:url" content="about:invalid#zPythonSafez">
   <meta property="og:title" content="Stamina Recovery Calculator">
-  <meta property="og:description" content="Know the exact hour your energy returns. Live timer, stage schedule and a saveable image.">
-  <meta property="og:image" content="https://scornae.github.io/genshin-tools/stamina/og-preview.jpg">
+  <meta property="og:description" content="Know the exact hour your energy returns. Live timer, quick adjust, cooldown timers and saveable image.">
+  <meta property="og:image" content="about:invalid#zPythonSafez">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="A celestial clock gauge with Roman numerals beside the title Stamina Recovery Calculator">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Stamina Recovery Calculator">
   <meta name="twitter:description" content="Know the exact hour your energy returns.">
-  <meta name="twitter:image" content="https://scornae.github.io/genshin-tools/stamina/og-preview.jpg">
+  <meta name="twitter:image" content="about:invalid#zPythonSafez">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,13 +71,14 @@ the preview dialog for the saved image.
   <style>
     :root{
       --gold:#e9c77b; --gold-l:#fff1c9; --gold-d:#a07a36;
-      --silver:#cfcfd6; --aqua:#8fe3ff; --rose:#ff8fa3;
+      --silver:#cfcfd6; --aqua:#8fe3ff; --rose:#ff8fa3; --mint:#9ff0c9;
       --ink:#f2f0ec; --muted:#a3a2a8; --line:rgba(233,199,123,.22);
       --disp:"Cinzel", Georgia, serif;
       --body:"Cormorant Garamond", Georgia, serif;
     }
     *{box-sizing:border-box}
     html{color-scheme:dark}
+    [hidden]{display:none !important}
     body{
       margin:0; min-height:100vh; overflow-x:hidden;
       color:var(--ink); font-family:var(--body); font-size:18px; line-height:1.55;
@@ -133,7 +141,7 @@ the preview dialog for the saved image.
     .rule .ic{width:24px; height:24px; filter:drop-shadow(0 0 8px rgba(233,199,123,.6));
       animation:flip 8s cubic-bezier(.7,0,.3,1) infinite}
     @keyframes flip{0%,42%{transform:rotate(0)}50%,92%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
-    .lead{max-width:600px; margin:0 auto; color:#bdbcc4; font-size:19px}
+    .lead{max-width:620px; margin:0 auto; color:#bdbcc4; font-size:19px}
 
     /* ---------- Panels ---------- */
     .panel{
@@ -196,11 +204,43 @@ the preview dialog for the saved image.
     .detail{margin:6px 0 0; color:var(--muted); font-size:18px}
     .warn{margin:12px 0 0; padding:10px 14px; border-left:2px solid var(--rose); border-radius:0 10px 10px 0;
       background:rgba(255,143,163,.08); color:#ffc7d1; font-size:16px; text-align:left}
-    .legend{display:flex; flex-wrap:wrap; gap:18px; margin:20px 0 0; font-size:15px; color:var(--muted)}
+    .legend{display:flex; flex-wrap:wrap; gap:18px; margin:18px 0 0; font-size:15px; color:var(--muted)}
     .legend i{display:inline-block; width:22px; height:6px; margin-right:8px; border-radius:6px; vertical-align:middle}
     .l-now{background:linear-gradient(90deg,#c9973f,#ffe9b0,#fff7e0); box-shadow:0 0 8px rgba(255,236,170,.6)}
     .l-proj{background:rgba(207,207,214,.6)}
-    .snap-row{display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line)}
+
+    /* ---------- Quick Energy Adjust bar ---------- */
+    .qadj{
+      display:flex; flex-wrap:wrap; align-items:center; gap:10px;
+      margin-top:18px; padding:11px 14px; border-radius:14px;
+      background:rgba(9,9,11,.46); border:1px solid rgba(233,199,123,.2);
+    }
+    .qadj-lbl{
+      font-family:var(--disp); font-size:11px; font-weight:700; letter-spacing:.22em;
+      text-transform:uppercase; color:var(--gold); margin-right:2px;
+    }
+    .sign-seg{
+      display:inline-flex; border-radius:999px; padding:2px;
+      background:rgba(6,6,8,.8); border:1px solid rgba(233,199,123,.28);
+    }
+    .sign-seg button{
+      min-width:36px; height:32px; padding:0 11px; border-radius:999px; border:none;
+      font-family:var(--body); font-size:21px; font-weight:700; line-height:1; letter-spacing:0;
+      color:var(--muted); background:transparent;
+    }
+    .sign-seg button:hover{color:var(--gold-l); background:rgba(233,199,123,.08); transform:none; box-shadow:none}
+    .sign-seg button.on{
+      color:#1a1206; background:linear-gradient(180deg,#fff1c9,#e9c77b 65%,#b88a3e);
+      box-shadow:0 2px 10px rgba(233,199,123,.4);
+    }
+    .qadj input{
+      width:92px; padding:6px 11px; height:36px; font-size:19px; border-radius:9px;
+      text-align:center;
+    }
+    .qadj .apply-btn{padding:8px 16px; height:36px; font-size:11.5px; letter-spacing:.18em}
+    .qadj.disabled{opacity:.48}
+
+    .snap-row{display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-top:16px; padding-top:16px; border-top:1px solid var(--line)}
     .hint{margin:0; font-size:15px; color:var(--muted)}
     .msg{min-height:1.4em; margin:8px 0 0; color:var(--gold-l); font-size:16px}
 
@@ -214,6 +254,7 @@ the preview dialog for the saved image.
     }
     button:hover{background:rgba(233,199,123,.14); box-shadow:0 0 24px rgba(233,199,123,.25); transform:translateY(-1px)}
     button:focus-visible{outline:2px solid var(--gold-l); outline-offset:3px}
+    button:disabled{opacity:.45; cursor:not-allowed; transform:none; box-shadow:none}
     button.primary{color:#1a1206; border-color:transparent;
       background:linear-gradient(180deg,#fff1c9,#e9c77b 55%,#b88a3e);
       box-shadow:0 8px 24px -8px rgba(233,199,123,.6), inset 0 1px 0 rgba(255,255,255,.6)}
@@ -224,6 +265,15 @@ the preview dialog for the saved image.
     @keyframes glint{0%,70%{left:-60%}100%{left:130%}}
     button.danger{color:#ffb3c0; border-color:rgba(255,143,163,.35); background:transparent}
     button.danger:hover{background:rgba(255,143,163,.1); box-shadow:0 0 20px rgba(255,143,163,.2)}
+    button.sm{padding:7px 14px; font-size:11px; letter-spacing:.16em}
+
+    /* ---------- Inline confirm bar ---------- */
+    .confirm-bar{
+      display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;
+      margin-top:14px; padding:12px 14px; border-radius:12px;
+      background:rgba(255,143,163,.09); border:1px solid rgba(255,143,163,.38); color:#ffd4dc; font-size:16px;
+    }
+    .confirm-actions{display:flex; gap:8px}
 
     /* ---------- Form + table ---------- */
     .grid{display:grid; grid-template-columns:1fr 1fr; gap:26px}
@@ -247,7 +297,7 @@ the preview dialog for the saved image.
     input::placeholder{color:#6f6e75; font-weight:500; font-size:16px}
     input:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(233,199,123,.15), 0 0 22px rgba(233,199,123,.2)}
     .pair{display:flex; align-items:center; gap:10px}
-    .pair span{color:var(--muted); font-size:16px}
+    .pair span{color:var(--muted); font-size:16px; white-space:nowrap}
     .btns{display:flex; flex-wrap:wrap; gap:12px; margin-top:6px}
     .btns .primary{flex:1}
     .dirty{margin:14px 0 0; padding:10px 14px; border-radius:10px; font-size:16px;
@@ -262,27 +312,63 @@ the preview dialog for the saved image.
     tbody tr{transition:background .2s}
     tbody tr:hover{background:rgba(233,199,123,.05)}
     .r{text-align:right}
-    td.ok{color:#9ff0c9; font-weight:700; text-shadow:0 0 12px rgba(159,240,201,.5)}
+    td.ok{color:var(--mint); font-weight:700; text-shadow:0 0 12px rgba(159,240,201,.5)}
     td.empty{padding:34px 10px; text-align:center; white-space:normal; font-style:italic; font-family:var(--body); color:var(--muted)}
 
+    /* ---------- Custom Cooldown Timers panel ---------- */
+    .cd-panel{margin-top:26px; animation-delay:.42s}
+    .cd-form{
+      display:grid; grid-template-columns:1fr 125px 125px auto; gap:14px; align-items:end;
+      padding:16px; border-radius:14px; background:rgba(9,9,11,.38); border:1px solid rgba(207,207,214,.07);
+      margin-bottom:18px;
+    }
+    .cd-form button.primary{height:48px; padding:0 24px}
+    .cd-list{display:grid; gap:12px}
+    .cd-item{
+      display:grid; grid-template-columns:minmax(160px,1.2fr) minmax(140px,1fr) auto;
+      gap:16px; align-items:center; padding:15px 18px; border-radius:14px;
+      background:rgba(9,9,12,.52); border:1px solid rgba(233,199,123,.16);
+      transition:border-color .2s, background .2s;
+    }
+    .cd-item:hover{border-color:rgba(233,199,123,.34); background:rgba(16,16,20,.65)}
+    .cd-item.ready-card{border-color:rgba(159,240,201,.42); background:rgba(20,40,34,.28)}
+    .cd-name{margin:0; font-family:var(--body); font-size:21px; font-weight:700; color:var(--gold-l)}
+    .cd-dur{font-size:15px; color:var(--muted)}
+    .cd-clock{
+      font-family:var(--body); font-size:28px; font-weight:600; line-height:1.15;
+      font-variant-numeric:lining-nums tabular-nums; color:#fff3d2;
+    }
+    .cd-clock.done{font-family:var(--disp); font-size:19px; letter-spacing:.1em; color:var(--mint); text-shadow:0 0 12px rgba(159,240,201,.45)}
+    .cd-at{font-size:15.5px; color:var(--muted)}
+    .cd-at b{color:#e8e6e4; font-weight:600}
+    .cd-acts{display:flex; gap:8px; align-items:center}
+    .cd-empty{
+      padding:28px 16px; text-align:center; font-style:italic; color:var(--muted);
+      border-radius:14px; border:1px dashed rgba(233,199,123,.16);
+    }
+
     /* ---------- Responsive ---------- */
-    @media (max-width:820px){
+    @media (max-width:860px){
       .hero{grid-template-columns:1fr; text-align:center; gap:28px}
-      .legend,.snap-row{justify-content:center}
+      .legend,.snap-row,.qadj{justify-content:center}
       .grid{grid-template-columns:1fr}
+      .cd-form{grid-template-columns:1fr 1fr}
+      .cd-form > div:first-child{grid-column:1 / -1}
+      .cd-form button.primary{grid-column:1 / -1}
+      .cd-item{grid-template-columns:1fr; text-align:left; gap:10px}
     }
     @media (max-width:480px){
       .wrap{padding:36px 14px 50px}
       .panel{padding:22px 18px}
       .hero{padding:26px 18px}
-      .row{grid-template-columns:1fr}
+      .row,.cd-form{grid-template-columns:1fr}
       .kicker{letter-spacing:.25em; font-size:11px}
     }
     @media (prefers-reduced-motion:reduce){
       *,*::before,*::after{animation:none !important; transition:none !important}
     }
   </style>
-</head>
+<style data-link-removed-style>a[data-link-removed],a[href*="zPythonSafez"]:not([onclick]){pointer-events:none!important;cursor:default!important;opacity:.6}</style></head>
 <body>
 <svg id="astro" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -296,166 +382,210 @@ the preview dialog for the saved image.
 </svg>
 
 <div class="wrap">
-  <header>
-    <p class="kicker"><svg class="ic"><use href="#star4"/></svg>Genshin Impact // Stamina Recovery<svg class="ic"><use href="#star4"/></svg></p>
-    <h1>Stamina Recovery Calculator</h1>
-    <p class="motto">Every hour returns to its keeper.</p>
-    <div class="rule"><svg class="ic"><use href="#hg"/></svg></div>
-    <p class="lead">Enter your game's values and press Calculate. Your timer is saved and keeps running, even after you close this page.</p>
-  </header>
+    <header>
+      <p class="kicker"><svg class="ic"><use href="#star4"/></svg>Genshin Impact // Stamina Recovery<svg class="ic"><use href="#star4"/></svg></p>
+      <h1>Stamina Recovery Calculator</h1>
+      <p class="motto">Every hour returns to its keeper.</p>
+      <div class="rule"><svg class="ic"><use href="#hg"/></svg></div>
+      <p class="lead">Enter your game's values and press Calculate. Your timer is saved and keeps running, even after you close this page.</p>
+    </header>
 
-  <!-- Result -->
-  <section class="panel hero" aria-label="Result">
-    <div class="orb-wrap">
-      <svg id="gauge" viewBox="0 0 300 300" role="img" aria-label="Energy gauge">
-        <defs>
-          <linearGradient id="gBezel" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#fff1c9"/>
-            <stop offset=".35" stop-color="#e9c77b"/>
-            <stop offset=".7" stop-color="#a07a36"/>
-            <stop offset="1" stop-color="#5a3f16"/>
-          </linearGradient>
-          <radialGradient id="gBand" cx=".5" cy=".5" r=".5">
-            <stop offset=".82" stop-color="#19191c"/>
-            <stop offset="1" stop-color="#0a0a0c"/>
-          </radialGradient>
-          <radialGradient id="gDial" cx=".5" cy=".42" r=".6">
-            <stop offset="0" stop-color="#2b2b31"/>
-            <stop offset=".55" stop-color="#131316"/>
-            <stop offset="1" stop-color="#070708"/>
-          </radialGradient>
-          <radialGradient id="gGlow" cx=".5" cy=".5" r=".5">
-            <stop offset="0" stop-color="#e9c77b" stop-opacity=".22"/>
-            <stop offset=".6" stop-color="#e9c77b" stop-opacity=".08"/>
-            <stop offset="1" stop-color="#e9c77b" stop-opacity="0"/>
-          </radialGradient>
-          <linearGradient id="gArc" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0" stop-color="#c9973f"/>
-            <stop offset=".5" stop-color="#ffe9b0"/>
-            <stop offset="1" stop-color="#fff7e0"/>
-          </linearGradient>
-          <radialGradient id="gHub" cx=".35" cy=".35" r=".7">
-            <stop offset="0" stop-color="#fff7e0"/>
-            <stop offset=".55" stop-color="#e9c77b"/>
-            <stop offset="1" stop-color="#6b4a18"/>
-          </radialGradient>
-          <linearGradient id="gHand" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#b88a3e"/>
-            <stop offset=".6" stop-color="#fff1c9"/>
-            <stop offset="1" stop-color="#ffffff"/>
-          </linearGradient>
-          <clipPath id="dialClip"><circle cx="150" cy="150" r="124"/></clipPath>
-        </defs>
+    <!-- Result -->
+    <section class="panel hero" aria-label="Result">
+      <div class="orb-wrap">
+        <svg id="gauge" viewBox="0 0 300 300" role="img" aria-label="Energy gauge">
+          <defs>
+            <linearGradient id="gBezel" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#fff1c9"/>
+              <stop offset=".35" stop-color="#e9c77b"/>
+              <stop offset=".7" stop-color="#a07a36"/>
+              <stop offset="1" stop-color="#5a3f16"/>
+            </linearGradient>
+            <radialGradient id="gBand" cx=".5" cy=".5" r=".5">
+              <stop offset=".82" stop-color="#19191c"/>
+              <stop offset="1" stop-color="#0a0a0c"/>
+            </radialGradient>
+            <radialGradient id="gDial" cx=".5" cy=".42" r=".6">
+              <stop offset="0" stop-color="#2b2b31"/>
+              <stop offset=".55" stop-color="#131316"/>
+              <stop offset="1" stop-color="#070708"/>
+            </radialGradient>
+            <radialGradient id="gGlow" cx=".5" cy=".5" r=".5">
+              <stop offset="0" stop-color="#e9c77b" stop-opacity=".22"/>
+              <stop offset=".6" stop-color="#e9c77b" stop-opacity=".08"/>
+              <stop offset="1" stop-color="#e9c77b" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="gArc" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#c9973f"/>
+              <stop offset=".5" stop-color="#ffe9b0"/>
+              <stop offset="1" stop-color="#fff7e0"/>
+            </linearGradient>
+            <radialGradient id="gHub" cx=".35" cy=".35" r=".7">
+              <stop offset="0" stop-color="#fff7e0"/>
+              <stop offset=".55" stop-color="#e9c77b"/>
+              <stop offset="1" stop-color="#6b4a18"/>
+            </radialGradient>
+            <linearGradient id="gHand" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#b88a3e"/>
+              <stop offset=".6" stop-color="#fff1c9"/>
+              <stop offset="1" stop-color="#ffffff"/>
+            </linearGradient>
+            <clipPath id="dialClip"><circle cx="150" cy="150" r="124"/></clipPath>
+          </defs>
 
-        <circle cx="150" cy="150" r="146" fill="url(#gBezel)" stroke="#2a1c08" stroke-width="1.5"/>
-        <circle cx="150" cy="150" r="142.5" fill="url(#gBand)"/>
-        <g id="numerals" class="spin rev"></g>
-        <circle cx="150" cy="150" r="142.5" fill="none" stroke="#fff1c9" stroke-opacity=".25" stroke-width=".8"/>
-        <circle cx="150" cy="150" r="127" fill="none" stroke="url(#gBezel)" stroke-width="3"/>
-        <circle cx="150" cy="150" r="124" fill="url(#gDial)"/>
-        <g clip-path="url(#dialClip)"><g id="dialStars" class="spin"></g></g>
-        <circle cx="150" cy="150" r="124" fill="url(#gGlow)"/>
-        <g class="spin"><circle cx="150" cy="150" r="58" fill="none" stroke="#e9c77b" stroke-opacity=".22" stroke-width=".8" stroke-dasharray="1 4"/></g>
-        <circle cx="150" cy="150" r="50" fill="none" stroke="#e9c77b" stroke-opacity=".14"/>
+          <circle cx="150" cy="150" r="146" fill="url(#gBezel)" stroke="#2a1c08" stroke-width="1.5"/>
+          <circle cx="150" cy="150" r="142.5" fill="url(#gBand)"/>
+          <g id="numerals" class="spin rev"></g>
+          <circle cx="150" cy="150" r="142.5" fill="none" stroke="#fff1c9" stroke-opacity=".25" stroke-width=".8"/>
+          <circle cx="150" cy="150" r="127" fill="none" stroke="url(#gBezel)" stroke-width="3"/>
+          <circle cx="150" cy="150" r="124" fill="url(#gDial)"/>
+          <g clip-path="url(#dialClip)"><g id="dialStars" class="spin"></g></g>
+          <circle cx="150" cy="150" r="124" fill="url(#gGlow)"/>
+          <g class="spin"><circle cx="150" cy="150" r="58" fill="none" stroke="#e9c77b" stroke-opacity=".22" stroke-width=".8" stroke-dasharray="1 4"/></g>
+          <circle cx="150" cy="150" r="50" fill="none" stroke="#e9c77b" stroke-opacity=".14"/>
 
-        <circle cx="150" cy="150" r="96" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="75 100" transform="rotate(135 150 150)"/>
-        <circle id="arcProj" cx="150" cy="150" r="96" fill="none" stroke="#cfcfd6" stroke-opacity=".6" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 150 150)"/>
-        <circle id="arcCur" cx="150" cy="150" r="96" fill="none" stroke="url(#gArc)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 150 150)"/>
-        <g id="ticks"></g>
-        <g id="tickLabels"></g>
+          <circle cx="150" cy="150" r="96" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="75 100" transform="rotate(135 150 150)"/>
+          <circle id="arcProj" cx="150" cy="150" r="96" fill="none" stroke="#cfcfd6" stroke-opacity=".6" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 150 150)"/>
+          <circle id="arcCur" cx="150" cy="150" r="96" fill="none" stroke="url(#gArc)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 150 150)"/>
+          <g id="ticks"></g>
+          <g id="tickLabels"></g>
 
-        <text class="g-lbl" x="150" y="110" text-anchor="middle">ENERGY</text>
-        <text id="gNum" class="g-num" x="150" y="214" text-anchor="middle">--</text>
-        <text id="gMax" class="g-max" x="150" y="234" text-anchor="middle">/ --</text>
+          <text class="g-lbl" x="150" y="110" text-anchor="middle">ENERGY</text>
+          <text id="gNum" class="g-num" x="150" y="214" text-anchor="middle">--</text>
+          <text id="gMax" class="g-max" x="150" y="234" text-anchor="middle">/ --</text>
 
-        <g id="needle">
-          <circle cx="126" cy="150" r="6" fill="none" stroke="#e9c77b" stroke-width="2"/>
-          <line x1="150" y1="150" x2="132" y2="150" stroke="#e9c77b" stroke-width="3" stroke-linecap="round"/>
-          <path d="M150 147.6 L196 149 L204 144 L214 150 L204 156 L196 151 L150 152.4 Z" fill="url(#gHand)" stroke="#5a3f16" stroke-width=".8"/>
-          <line x1="214" y1="150" x2="238" y2="150" stroke="#fff7e0" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="204" cy="150" r="1.6" fill="#8fe3ff"/>
-        </g>
-        <circle cx="150" cy="150" r="11" fill="url(#gHub)" stroke="#2a1c08" stroke-width="1.5"/>
-        <circle class="hub-gem" cx="150" cy="150" r="4" fill="#8fe3ff"/>
-        <path d="M44 96 A112 112 0 0 1 150 38 A112 112 0 0 0 62 118 Z" fill="rgba(255,255,255,.06)"/>
-      </svg>
-    </div>
-
-    <div class="hero-text">
-      <p class="lbl" id="lbl">Ready when you are</p>
-      <p class="time" id="countdown">--:--:--</p>
-      <p class="ready" id="ready"></p>
-      <p class="detail" id="detail">Enter your values and press Calculate.</p>
-      <p class="warn" id="warn" hidden></p>
-      <div class="legend">
-        <span><i class="l-now"></i>Energy now</span>
-        <span><i class="l-proj"></i>To be recovered up to target</span>
+          <g id="needle">
+            <circle cx="126" cy="150" r="6" fill="none" stroke="#e9c77b" stroke-width="2"/>
+            <line x1="150" y1="150" x2="132" y2="150" stroke="#e9c77b" stroke-width="3" stroke-linecap="round"/>
+            <path d="M150 147.6 L196 149 L204 144 L214 150 L204 156 L196 151 L150 152.4 Z" fill="url(#gHand)" stroke="#5a3f16" stroke-width=".8"/>
+            <line x1="214" y1="150" x2="238" y2="150" stroke="#fff7e0" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="204" cy="150" r="1.6" fill="#8fe3ff"/>
+          </g>
+          <circle cx="150" cy="150" r="11" fill="url(#gHub)" stroke="#2a1c08" stroke-width="1.5"/>
+          <circle class="hub-gem" cx="150" cy="150" r="4" fill="#8fe3ff"/>
+          <path d="M44 96 A112 112 0 0 1 150 38 A112 112 0 0 0 62 118 Z" fill="rgba(255,255,255,.06)"/>
+        </svg>
       </div>
-      <div class="snap-row">
-        <button id="snapBtn" type="button">Save image</button>
-        <p class="hint">Saves a picture of your timer to your device.</p>
-      </div>
-      <p class="msg" id="msg" role="status"></p>
-    </div>
-  </section>
 
-  <div class="grid">
-    <section class="panel" aria-labelledby="in-h">
-      <h2 id="in-h"><svg class="ic"><use href="#hg"/></svg>Your values</h2>
-      <p class="sub">Numbers are remembered in this browser.</p>
-
-      <div class="group">
-        <p class="group-title">Game settings</p>
-        <div class="row">
-          <div>
-            <label for="max">Maximum energy</label>
-            <input id="max" type="number" min="1" step="1" value="200" inputmode="numeric">
-          </div>
-          <div>
-            <label for="per">Recover 1 energy every</label>
-            <div class="pair"><input id="per" type="number" min="0.1" step="0.1" value="8" inputmode="decimal"><span>min</span></div>
-          </div>
+      <div class="hero-text">
+        <p class="lbl" id="lbl">Ready when you are</p>
+        <p class="time" id="countdown">--:--:--</p>
+        <p class="ready" id="ready"></p>
+        <p class="detail" id="detail">Enter your values and press Calculate.</p>
+        <p class="warn" id="warn" hidden></p>
+        <div class="legend">
+          <span><i class="l-now"></i>Energy now</span>
+          <span><i class="l-proj"></i>To be recovered up to target</span>
         </div>
-      </div>
 
-      <div class="group">
-        <p class="group-title">Current status</p>
-        <div class="row">
-          <div>
-            <label for="cur">Current energy</label>
-            <input id="cur" type="number" min="0" step="1" value="60" inputmode="numeric">
+        <!-- Quick Energy Adjust -->
+        <div class="qadj disabled" id="qadjBox" aria-label="Quick energy adjustment">
+          <span class="qadj-lbl">Adjust</span>
+          <div class="sign-seg" role="group" aria-label="Subtract or add energy">
+            <button type="button" id="signSub" class="on" aria-pressed="true" title="Spend energy">−</button>
+            <button type="button" id="signAdd" aria-pressed="false" title="Add energy">+</button>
           </div>
-          <div>
-            <label for="target">Target energy</label>
-            <input id="target" type="number" min="1" step="1" placeholder="Same as maximum" inputmode="numeric">
-          </div>
+          <input id="adjAmt" type="number" min="1" step="1" placeholder="40" inputmode="numeric" aria-label="Energy amount to adjust">
+          <button type="button" class="apply-btn" id="adjBtn" disabled>Apply</button>
         </div>
-      </div>
 
-      <div class="group">
-        <p class="group-title">Stages</p>
-        <label for="cost">Energy cost per stage <span class="hint">(optional)</span></label>
-        <input id="cost" type="number" min="0" step="1" value="40" inputmode="numeric">
+        <div class="snap-row">
+          <button id="snapBtn" type="button">Save image</button>
+          <p class="hint">Saves a picture of your timer to your device.</p>
+        </div>
+        <p class="msg" id="msg" role="status"></p>
       </div>
-
-      <div class="btns">
-        <button class="primary" id="calcBtn" type="button">Calculate</button>
-        <button class="danger" id="clearBtn" type="button">Clear data</button>
-      </div>
-      <p class="dirty" id="dirty" hidden>Values changed. Press Calculate to apply them.</p>
     </section>
 
-    <section class="panel" id="runsPanel" aria-labelledby="runs-h">
-      <h2 id="runs-h"><svg class="ic"><use href="#star4"/></svg>When can I run stages?</h2>
-      <p class="sub">When you'll have enough energy for each run (up to 10).</p>
-      <div class="scroll">
-        <table>
-          <thead><tr><th>Run</th><th class="r">Needs</th><th class="r">Wait</th><th class="r">Ready at</th></tr></thead>
-          <tbody id="runsBody"></tbody>
-        </table>
+    <div class="grid">
+      <section class="panel" aria-labelledby="in-h">
+        <h2 id="in-h"><svg class="ic"><use href="#hg"/></svg>Your values</h2>
+        <p class="sub">Numbers are remembered in this browser.</p>
+
+        <div class="group">
+          <p class="group-title">Game settings</p>
+          <div class="row">
+            <div>
+              <label for="max">Maximum energy</label>
+              <input id="max" type="number" min="1" step="1" value="200" inputmode="numeric">
+            </div>
+            <div>
+              <label for="per">Recover 1 energy every</label>
+              <div class="pair"><input id="per" type="number" min="0.1" step="0.1" value="8" inputmode="decimal"><span>min</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <p class="group-title">Current status</p>
+          <div class="row">
+            <div>
+              <label for="cur">Current energy</label>
+              <input id="cur" type="number" min="0" step="1" value="60" inputmode="numeric">
+            </div>
+            <div>
+              <label for="target">Target energy</label>
+              <input id="target" type="number" min="1" step="1" placeholder="Same as maximum" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <p class="group-title">Stages</p>
+          <label for="cost">Energy cost per stage <span class="hint">(optional)</span></label>
+          <input id="cost" type="number" min="0" step="1" value="40" inputmode="numeric">
+        </div>
+
+        <div class="btns">
+          <button class="primary" id="calcBtn" type="button">Calculate</button>
+          <button class="danger" id="clearBtn" type="button">Clear data</button>
+        </div>
+        <div class="confirm-bar" id="clearConfirm" hidden>
+          <span>Clear saved values, energy timer and cooldown timers?</span>
+          <div class="confirm-actions">
+            <button type="button" class="danger sm" id="clearYes">Yes, clear</button>
+            <button type="button" class="sm" id="clearNo">Cancel</button>
+          </div>
+        </div>
+        <p class="dirty" id="dirty" hidden>Values changed. Press Calculate to apply them.</p>
+      </section>
+
+      <section class="panel" id="runsPanel" aria-labelledby="runs-h">
+        <h2 id="runs-h"><svg class="ic"><use href="#star4"/></svg>When can I run stages?</h2>
+        <p class="sub">When you'll have enough energy for each run (up to 10).</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Run</th><th class="r">Needs</th><th class="r">Wait</th><th class="r">Ready at</th></tr></thead>
+            <tbody id="runsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Custom Cooldown Timers -->
+    <section class="panel cd-panel" aria-labelledby="cd-h">
+      <h2 id="cd-h"><svg class="ic"><use href="#hg"/></svg>Cooldown timers</h2>
+      <p class="sub">Track custom day &amp; hour respawns (such as Parametric Transformer or local specialties). Saved in this browser.</p>
+
+      <div class="cd-form">
+        <div>
+          <label for="cdName">Timer name</label>
+          <input id="cdName" type="text" maxlength="60" placeholder="e.g. Parametric Transformer">
+        </div>
+        <div>
+          <label for="cdDays">Days</label>
+          <div class="pair"><input id="cdDays" type="number" min="0" max="365" step="1" value="0" inputmode="numeric"><span>d</span></div>
+        </div>
+        <div>
+          <label for="cdHours">Hours</label>
+          <div class="pair"><input id="cdHours" type="number" min="0" max="999" step="1" value="48" inputmode="numeric"><span>h</span></div>
+        </div>
+        <button type="button" class="primary" id="cdAddBtn">Start</button>
       </div>
+      <p class="warn" id="cdWarn" hidden></p>
+
+      <div class="cd-list" id="cdList"></div>
     </section>
-  </div>
 </div>
 
 <script>
@@ -464,14 +594,19 @@ the preview dialog for the saved image.
   var NS = 'http://www.w3.org/2000/svg';
   var inputIds = ['max','per','cur','target','cost'];
   var STORE = 'stamina-calc-v3';
+  var COOLDOWN_STORE = 'stamina-cooldowns-v1';
   var MAX_RUNS = 10;
   var DISP = '"Cinzel", Georgia, serif';
   var TYPE = '"Cormorant Garamond", Georgia, serif';
   var BODY = '"Cormorant Garamond", Georgia, serif';
   var ROMAN = ['XII','I','II','III','IV','V','VI','VII','VIII','IX','X','XI'];
   var still = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
   var S = null;           // saved calculation (anchor time + values)
+  var adjSign = -1;       // -1 = spend, +1 = add
   var runsCache = '';
+  var cooldowns = [];     // [{id, name, days, hours, durMs, startAt}]
+  var cdStructKey = '';
 
   /* ---------- helpers ---------- */
   function num(id, fb){ var v = parseFloat($(id).value); return isFinite(v) ? v : fb; }
@@ -508,8 +643,8 @@ the preview dialog for the saved image.
   function sig(){ return inputIds.map(function(i){ return $(i).value.trim(); }).join('|'); }
   function say(text){
     var m = $('msg'); m.textContent = text;
-    clearTimeout(say.t);
-    if(text) say.t = setTimeout(function(){ m.textContent = ''; }, 6000);
+    clearTimeout(m._t);
+    if(text) m._t = setTimeout(function(){ m.textContent = ''; }, 6000);
   }
   function el(name, attrs, parent){
     var e = document.createElementNS(NS, name);
@@ -521,7 +656,6 @@ the preview dialog for the saved image.
   /* ---------- decor: astrolabe background + gauge details ---------- */
   (function decor(){
     var i;
-    // gauge: roman numeral band
     var nm = $('numerals');
     for(i=0;i<12;i++){
       var t = el('text', {'class':'g-rn', x:150, y:15.2, 'text-anchor':'middle', 'dominant-baseline':'central',
@@ -530,7 +664,6 @@ the preview dialog for the saved image.
       el('path', {d:'M150 13l2 2.2-2 2.2-2-2.2z', fill:'#e9c77b', 'fill-opacity':.6,
                   transform:'rotate('+(i*30+15)+' 150 150)'}, nm);
     }
-    // gauge: stars inside the dial
     var seed = 7;
     function rnd(){ seed = (seed*16807) % 2147483647; return seed/2147483647; }
     var ds = $('dialStars');
@@ -539,7 +672,6 @@ the preview dialog for the saved image.
       el('circle', {cx:(150+Math.cos(aa)*rr_).toFixed(2), cy:(150+Math.sin(aa)*rr_).toFixed(2), r:sr.toFixed(2),
                     fill: rnd() > .8 ? '#ffe9b0' : '#ebe9e6', 'fill-opacity':(rnd()*.6+.2).toFixed(2)}, ds);
     }
-    // gauge: ticks + labels
     var tk = $('ticks');
     for(var tt=0;tt<=40;tt++){
       var ang = (135 + 270*tt/40)*Math.PI/180, major = tt%10 === 0, mid = tt%5 === 0;
@@ -558,7 +690,6 @@ the preview dialog for the saved image.
       tx.textContent = '';
     }
 
-    // background astrolabe
     var A = $('astro');
     function polar(r, deg){ var a = (deg-90)*Math.PI/180; return [500+Math.cos(a)*r, 500+Math.sin(a)*r]; }
     el('circle', {cx:500, cy:500, r:485, 'class':'ln faint'}, A);
@@ -599,7 +730,6 @@ the preview dialog for the saved image.
       d2.setAttribute('cx', 850); d2.setAttribute('cy', 500);
     }
 
-    // real-time clock hands
     var hands = el('g', {}, A);
     var hH = el('line', {x1:500, y1:530, x2:500, y2:330, 'class':'hand h'}, hands);
     var hM = el('line', {x1:500, y1:540, x2:500, y2:270, 'class':'hand m'}, hands);
@@ -613,7 +743,6 @@ the preview dialog for the saved image.
     }
     clock(); setInterval(clock, 1000);
 
-    // gentle parallax
     if(!still && window.matchMedia && window.matchMedia('(pointer:fine)').matches){
       window.addEventListener('mousemove', function(e){
         A.style.setProperty('--px', ((e.clientX/window.innerWidth - .5) * -18).toFixed(1) + 'px');
@@ -633,11 +762,26 @@ the preview dialog for the saved image.
   function load(){
     try{
       var raw = localStorage.getItem(STORE);
-      if(!raw) return;
-      var o = JSON.parse(raw);
-      if(o.inputs) inputIds.forEach(function(i){ if(o.inputs[i] !== undefined) $(i).value = o.inputs[i]; });
-      if(o.calc && isFinite(o.calc.at) && isFinite(o.calc.max) && isFinite(o.calc.perMin)) S = o.calc;
+      if(raw){
+        var o = JSON.parse(raw);
+        if(o.inputs) inputIds.forEach(function(i){ if(o.inputs[i] !== undefined) $(i).value = o.inputs[i]; });
+        if(o.calc && isFinite(o.calc.at) && isFinite(o.calc.max) && isFinite(o.calc.perMin)) S = o.calc;
+      }
     }catch(e){}
+    try{
+      var cdRaw = localStorage.getItem(COOLDOWN_STORE);
+      if(cdRaw){
+        var parsed = JSON.parse(cdRaw);
+        if(Array.isArray(parsed)){
+          cooldowns = parsed.filter(function(c){
+            return c && typeof c.name === 'string' && isFinite(c.durMs) && c.durMs > 0 && isFinite(c.startAt);
+          });
+        }
+      }
+    }catch(e){}
+  }
+  function saveCooldowns(){
+    try{ localStorage.setItem(COOLDOWN_STORE, JSON.stringify(cooldowns)); }catch(e){}
   }
 
   /* ---------- model ---------- */
@@ -661,21 +805,210 @@ the preview dialog for the saved image.
     return out;
   }
 
+  function buildWarnings(cur, max, targetAdjusted){
+    var warn = [];
+    if(targetAdjusted) warn.push('Target is higher than the maximum, adjusted to '+max+'.');
+    if(cur > max) warn.push('Current energy is above the maximum. Most games stop recovering in this case.');
+    return warn;
+  }
+
   function calculate(){
     var max = Math.max(1, Math.floor(num('max', 1)));
     var perMin = Math.max(0.01, num('per', 1));
     var cur = Math.max(0, num('cur', 0));
     var tRaw = $('target').value.trim();
     var target = tRaw === '' ? max : Math.floor(num('target', max));
-    var warn = [];
-    if(target > max){ warn.push('Target is higher than the maximum, adjusted to '+max+'.'); target = max; }
+    var targetAdj = false;
+    if(target > max){ targetAdj = true; target = max; }
     if(target < 1){ target = 1; }
-    if(cur > max){ warn.push('Current energy is above the maximum. Most games stop recovering in this case.'); }
+    var warn = buildWarnings(cur, max, targetAdj);
     var cost = Math.max(0, Math.floor(num('cost', 0)));
     S = {at: Date.now(), max:max, perMin:perMin, cur:cur, target:target, cost:cost, warn:warn, sig:sig()};
     runsCache = '';
     save();
     update();
+  }
+
+  /* ---------- Quick Energy Adjust (preserves exact tick phase) ---------- */
+  function setSign(s){
+    adjSign = s;
+    var subOn = s < 0;
+    $('signSub').classList.toggle('on', subOn);
+    $('signSub').setAttribute('aria-pressed', subOn ? 'true' : 'false');
+    $('signAdd').classList.toggle('on', !subOn);
+    $('signAdd').setAttribute('aria-pressed', !subOn ? 'true' : 'false');
+  }
+
+  function applyAdjust(){
+    if(!S){ say('Press Calculate first.'); return; }
+    var rawAmt = parseFloat($('adjAmt').value);
+    if(!isFinite(rawAmt) || Math.floor(rawAmt) < 1){
+      say('Enter an energy amount of 1 or more.');
+      $('adjAmt').focus();
+      return;
+    }
+    var amt = Math.floor(rawAmt);
+    var now = Date.now();
+    var ms = perMs();
+    var wasFull = (S.cur >= S.max) || (rawEnergy(now) >= S.max);
+    var liveBefore = wasFull ? Math.max(S.cur, S.max) : (S.cur + Math.floor((now - S.at) / ms));
+    var delta = adjSign * amt;
+    var nextCur = Math.max(0, liveBefore + delta);
+
+    if(wasFull){
+      // When full, the in-game recovery timer was stopped; dropping below max starts a fresh cycle now.
+      S.at = now;
+      S.cur = nextCur;
+    } else if(nextCur >= S.max){
+      // Refilled to or above cap; recovery pauses at cap.
+      S.at = now;
+      S.cur = nextCur;
+    } else {
+      // Advance S.at by an exact integer multiple of ms so (now - S.at) % ms is untouched to the millisecond.
+      var gained = Math.floor((now - S.at) / ms);
+      S.at = S.at + gained * ms;
+      S.cur = nextCur;
+    }
+
+    $('cur').value = String(S.cur);
+    var hadTargetWarn = S.warn && S.warn.some(function(w){ return w.indexOf('Target is higher') === 0; });
+    S.warn = buildWarnings(S.cur, S.max, hadTargetWarn);
+    S.sig = sig();
+    runsCache = '';
+    save();
+    update();
+    $('adjAmt').select();
+    var verb = delta < 0 ? ('−'+amt+' applied') : ('+'+amt+' applied');
+    var note = wasFull && nextCur < S.max ? ' · new cycle started from full' : (nextCur >= S.max ? ' · energy at cap' : ' · cycle timing preserved');
+    say(verb + ' (' + liveBefore + ' → ' + nextCur + ')' + note + '.');
+  }
+
+  /* ---------- Custom Cooldown Timers ---------- */
+  function fmtDurLabel(days, hours){
+    var p = [];
+    if(days > 0) p.push(days + 'd');
+    if(hours > 0) p.push(hours + 'h');
+    return p.join(' ');
+  }
+  function addCooldown(){
+    var warnEl = $('cdWarn');
+    var name = $('cdName').value.trim();
+    var d = Math.max(0, Math.floor(num('cdDays', 0)));
+    var h = Math.max(0, Math.floor(num('cdHours', 0)));
+    if(!name){
+      warnEl.hidden = false;
+      warnEl.textContent = 'Please enter a timer name.';
+      $('cdName').focus();
+      return;
+    }
+    if(d === 0 && h === 0){
+      warnEl.hidden = false;
+      warnEl.textContent = 'Set at least 1 hour or 1 day.';
+      $('cdHours').focus();
+      return;
+    }
+    warnEl.hidden = true;
+    var durMs = (d * 24 + h) * 3600000;
+    cooldowns.unshift({
+      id: String(Date.now()) + '-' + Math.floor(Math.random()*10000),
+      name: name,
+      days: d,
+      hours: h,
+      durMs: durMs,
+      startAt: Date.now()
+    });
+    $('cdName').value = '';
+    cdStructKey = '';
+    saveCooldowns();
+    renderCooldowns(Date.now());
+  }
+  function restartCooldown(id){
+    for(var i=0;i<cooldowns.length;i++){
+      if(cooldowns[i].id === id){
+        cooldowns[i].startAt = Date.now();
+        break;
+      }
+    }
+    cdStructKey = '';
+    saveCooldowns();
+    renderCooldowns(Date.now());
+  }
+  function removeCooldown(id){
+    cooldowns = cooldowns.filter(function(c){ return c.id !== id; });
+    cdStructKey = '';
+    saveCooldowns();
+    renderCooldowns(Date.now());
+  }
+  function renderCooldowns(now){
+    var listEl = $('cdList');
+    var sk = cooldowns.map(function(c){ return c.id + ':' + c.startAt; }).join('|') || 'empty';
+    if(sk !== cdStructKey){
+      cdStructKey = sk;
+      listEl.innerHTML = '';
+      if(!cooldowns.length){
+        var emp = document.createElement('div');
+        emp.className = 'cd-empty';
+        emp.textContent = 'No cooldown timers yet. Enter a name, days and hours above, then press Start.';
+        listEl.appendChild(emp);
+        return;
+      }
+      cooldowns.forEach(function(c){
+        var row = document.createElement('div');
+        row.className = 'cd-item';
+        row.setAttribute('data-cd-id', c.id);
+
+        var left = document.createElement('div');
+        var nm = document.createElement('p');
+        nm.className = 'cd-name';
+        nm.textContent = c.name;
+        var dur = document.createElement('div');
+        dur.className = 'cd-dur';
+        dur.textContent = 'Duration: ' + fmtDurLabel(c.days, c.hours);
+        left.appendChild(nm); left.appendChild(dur);
+
+        var mid = document.createElement('div');
+        var clk = document.createElement('div');
+        clk.className = 'cd-clock';
+        clk.setAttribute('data-role', 'clk');
+        var at = document.createElement('div');
+        at.className = 'cd-at';
+        at.setAttribute('data-role', 'at');
+        mid.appendChild(clk); mid.appendChild(at);
+
+        var acts = document.createElement('div');
+        acts.className = 'cd-acts';
+        var rBtn = document.createElement('button');
+        rBtn.type = 'button'; rBtn.className = 'sm'; rBtn.textContent = 'Restart';
+        rBtn.addEventListener('click', function(){ restartCooldown(c.id); });
+        var xBtn = document.createElement('button');
+        xBtn.type = 'button'; xBtn.className = 'danger sm'; xBtn.textContent = 'Remove';
+        xBtn.addEventListener('click', function(){ removeCooldown(c.id); });
+        acts.appendChild(rBtn); acts.appendChild(xBtn);
+
+        row.appendChild(left); row.appendChild(mid); row.appendChild(acts);
+        listEl.appendChild(row);
+      });
+    }
+
+    var cards = listEl.querySelectorAll('.cd-item');
+    for(var i=0;i<cards.length;i++){
+      var c = cooldowns[i];
+      if(!c) continue;
+      var endTs = c.startAt + c.durMs;
+      var remSec = (endTs - now) / 1000;
+      var done = remSec <= 0;
+      cards[i].classList.toggle('ready-card', done);
+      var clkEl = cards[i].querySelector('[data-role="clk"]');
+      var atEl = cards[i].querySelector('[data-role="at"]');
+      clkEl.classList.toggle('done', done);
+      clkEl.textContent = done ? 'Ready now' : fmtDur(remSec);
+      if(done){
+        atEl.textContent = 'Finished ' + fmtClock(endTs);
+      } else {
+        atEl.innerHTML = 'Ready at <b></b>';
+        atEl.querySelector('b').textContent = fmtLong(endTs);
+      }
+    }
   }
 
   /* ---------- gauge ---------- */
@@ -701,8 +1034,12 @@ the preview dialog for the saved image.
 
   function update(){
     var now = Date.now();
+    renderCooldowns(now);
+
     var t = $('countdown');
     $('dirty').hidden = !(S && S.sig !== sig());
+    $('qadjBox').classList.toggle('disabled', !S);
+    $('adjBtn').disabled = !S;
 
     if(!S){
       t.classList.remove('done');
@@ -886,7 +1223,6 @@ the preview dialog for the saved image.
     ctx.beginPath(); ctx.moveTo(x,y-s); ctx.lineTo(x+s,y); ctx.lineTo(x,y+s); ctx.lineTo(x-s,y); ctx.closePath(); ctx.fill();
   }
 
-  // The gauge, drawn in the same 300 x 300 space as the on-page SVG.
   function drawGauge(ctx, raw){
     var TAU = Math.PI*2, A0 = 135*Math.PI/180, SW = 270*Math.PI/180;
     var pct = Math.min(1, raw / S.max), proj = Math.min(1, Math.max(raw, S.target) / S.max);
@@ -898,13 +1234,11 @@ the preview dialog for the saved image.
       b.addColorStop(0,'#fff1c9'); b.addColorStop(.35,'#e9c77b'); b.addColorStop(.7,'#a07a36'); b.addColorStop(1,'#5a3f16');
       return b;
     }
-    // bezel
     ctx.save();
     ctx.shadowColor = 'rgba(0,0,0,.65)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
     disc(146, bezelGrad());
     ctx.restore();
     ctx.strokeStyle = '#2a1c08'; ctx.lineWidth = 1.5; ring(146);
-    // numeral band
     g = ctx.createRadialGradient(150,150,0,150,150,142.5);
     g.addColorStop(.82,'#19191c'); g.addColorStop(1,'#0a0a0c');
     disc(142.5, g);
@@ -922,7 +1256,6 @@ the preview dialog for the saved image.
     ctx.restore();
     ctx.strokeStyle = 'rgba(255,241,201,.25)'; ctx.lineWidth = .8; ring(142.5);
     ctx.strokeStyle = bezelGrad(); ctx.lineWidth = 3; ring(127);
-    // dial
     g = ctx.createRadialGradient(150,125,0,150,150,150);
     g.addColorStop(0,'#2b2b31'); g.addColorStop(.55,'#131316'); g.addColorStop(1,'#070708');
     disc(124, g);
@@ -946,7 +1279,6 @@ the preview dialog for the saved image.
     ring(58);
     if(ctx.setLineDash) ctx.setLineDash([]);
     ctx.strokeStyle = 'rgba(233,199,123,.14)'; ctx.lineWidth = 1; ring(50);
-    // arcs
     ctx.lineCap = 'round'; ctx.lineWidth = 12;
     ctx.strokeStyle = 'rgba(255,255,255,.07)';
     ctx.beginPath(); ctx.arc(150,150,96,A0,A0+SW); ctx.stroke();
@@ -963,7 +1295,6 @@ the preview dialog for the saved image.
       ctx.beginPath(); ctx.arc(150,150,96,A0,A0+SW*pct); ctx.stroke();
       ctx.restore();
     }
-    // ticks
     for(var t=0;t<=40;t++){
       var ang = A0 + SW*t/40, major = t%10 === 0, mid = t%5 === 0;
       var r1 = major ? 100 : (mid ? 104 : 107);
@@ -985,13 +1316,11 @@ the preview dialog for the saved image.
     ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = '#e9c77b'; ctx.font = '700 10.5px ' + DISP; spaced(ctx,3.2);
     ctx.fillText('ENERGY', 150, 110); spaced(ctx,0);
-    // readout
     var txt = String(Math.floor(raw));
     ctx.fillStyle = '#fff3d2'; ctx.font = '600 ' + (txt.length >= 4 ? 30 : (txt.length === 3 ? 38 : 44)) + 'px ' + TYPE;
     ctx.fillText(txt, 150, 214);
     ctx.fillStyle = '#a3a2a8'; ctx.font = '15px ' + TYPE;
     ctx.fillText('/ ' + S.max, 150, 234);
-    // needle
     ctx.save();
     ctx.translate(150,150); ctx.rotate(A0 + SW*pct);
     ctx.strokeStyle = '#e9c77b'; ctx.lineWidth = 2;
@@ -1010,7 +1339,6 @@ the preview dialog for the saved image.
     ctx.fillStyle = '#8fe3ff';
     ctx.beginPath(); ctx.arc(54,0,1.6,0,TAU); ctx.fill();
     ctx.restore();
-    // hub
     g = ctx.createRadialGradient(146,146,0,150,150,13);
     g.addColorStop(0,'#fff7e0'); g.addColorStop(.55,'#e9c77b'); g.addColorStop(1,'#6b4a18');
     ctx.fillStyle = g; ctx.strokeStyle = '#2a1c08'; ctx.lineWidth = 1.5;
@@ -1019,7 +1347,6 @@ the preview dialog for the saved image.
     ctx.shadowColor = '#8fe3ff'; ctx.shadowBlur = 8; ctx.fillStyle = '#8fe3ff';
     ctx.beginPath(); ctx.arc(150,150,4,0,TAU); ctx.fill();
     ctx.restore();
-    // glass highlight
     if(window.Path2D){
       ctx.fillStyle = 'rgba(255,255,255,.06)';
       ctx.fill(new Path2D('M44 96 A112 112 0 0 1 150 38 A112 112 0 0 0 62 118 Z'));
@@ -1041,7 +1368,6 @@ the preview dialog for the saved image.
     var GOLD='#e9c77b', GOLD_L='#fff1c9', AQUA='#8fe3ff', MUTED='#a3a2a8', INK='#f2f0ec';
     var i;
 
-    // background
     var bg = ctx.createLinearGradient(0,0,0,H);
     bg.addColorStop(0,'#101012'); bg.addColorStop(.5,'#0c0c0e'); bg.addColorStop(1,'#050506');
     ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
@@ -1054,7 +1380,6 @@ the preview dialog for the saved image.
     glow(0,H*.7,700,'rgba(200,205,230,.07)');
     glow(W,H,760,'rgba(233,199,123,.12)');
 
-    // stars + sand (deterministic)
     var seed = 11;
     function rnd(){ seed = (seed*16807) % 2147483647; return seed/2147483647; }
     for(i=0;i<240;i++){
@@ -1074,7 +1399,6 @@ the preview dialog for the saved image.
     ctx.restore();
     ctx.globalAlpha = 1;
 
-    // ghost astrolabe behind the gauge
     (function(cx, cy, R){
       ctx.save(); ctx.translate(cx, cy);
       ctx.strokeStyle = 'rgba(233,199,123,.16)'; ctx.lineWidth = 1.5;
@@ -1102,7 +1426,6 @@ the preview dialog for the saved image.
       ctx.restore();
     })(W/2, 440, 370);
 
-    // frame
     ctx.strokeStyle = 'rgba(233,199,123,.55)'; ctx.lineWidth = 2;
     rr(ctx,30,30,W-60,H-60,28); ctx.stroke();
     ctx.strokeStyle = 'rgba(233,199,123,.18)'; ctx.lineWidth = 1;
@@ -1110,7 +1433,6 @@ the preview dialog for the saved image.
     diamond(ctx, W/2, 30, 9, GOLD); diamond(ctx, W/2, H-30, 9, GOLD);
     diamond(ctx, 30, H/2, 7, GOLD); diamond(ctx, W-30, H/2, 7, GOLD);
 
-    // header
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     var hg = ctx.createLinearGradient(0,84,0,124);
     hg.addColorStop(0,'#ffffff'); hg.addColorStop(.4,GOLD_L); hg.addColorStop(.8,GOLD); hg.addColorStop(1,'#b88a3e');
@@ -1131,7 +1453,6 @@ the preview dialog for the saved image.
     ctx.fillStyle = MUTED; ctx.font = 'italic 400 26px '+BODY;
     ctx.fillText('Captured ' + fmtLong(now), W/2, 192);
 
-    // gauge
     var f = 1.28, cx = W/2, cy = 440;
     ctx.save();
     ctx.translate(cx - 150*f, cy - 150*f); ctx.scale(f,f);
@@ -1139,7 +1460,6 @@ the preview dialog for the saved image.
     ctx.restore();
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
 
-    // headline
     var label, big, sub;
     if(done){
       label = 'Status'; big = 'Target reached';
@@ -1167,7 +1487,6 @@ the preview dialog for the saved image.
     ctx.font = 'italic 400 ' + ss + 'px ' + BODY;
     ctx.fillText(sub, W/2, 866);
 
-    // stat plates
     var boxY = 906, boxH = 122, gap = 20, boxW = (IW - gap*2)/3;
     var stats = [
       ['Energy now', live+' / '+S.max],
@@ -1189,7 +1508,6 @@ the preview dialog for the saved image.
       ctx.fillText(s[1], x+boxW/2, boxY+98);
     });
 
-    // stage schedule
     if(runs.length){
       ctx.textAlign = 'left';
       ctx.fillStyle = GOLD_L; ctx.font = '700 30px '+DISP; spaced(ctx,3);
@@ -1242,21 +1560,53 @@ the preview dialog for the saved image.
     }).catch(function(){ say('Could not save the image.'); });
   }
 
-  /* ---------- events ---------- */
+  /* ---------- Events ---------- */
   $('snapBtn').addEventListener('click', saveImage);
   inputIds.forEach(function(i){
     $(i).addEventListener('input', function(){ save(); update(); });
     $(i).addEventListener('keydown', function(e){ if(e.key === 'Enter') calculate(); });
   });
   $('calcBtn').addEventListener('click', calculate);
+
+  // Quick Adjust events
+  $('signSub').addEventListener('click', function(){ setSign(-1); $('adjAmt').focus(); });
+  $('signAdd').addEventListener('click', function(){ setSign(1); $('adjAmt').focus(); });
+  $('adjBtn').addEventListener('click', applyAdjust);
+  $('adjAmt').addEventListener('keydown', function(e){ if(e.key === 'Enter') applyAdjust(); });
+
+  // Inline Clear data confirmation (works inside sandboxed iframes & standalone)
   $('clearBtn').addEventListener('click', function(){
-    if(!confirm('Clear everything? This removes your saved values and timer from this browser.')) return;
-    ['stamina-calc-v3','stamina-calc-v2'].forEach(function(k){
+    $('clearConfirm').hidden = !$('clearConfirm').hidden;
+  });
+  $('clearNo').addEventListener('click', function(){
+    $('clearConfirm').hidden = true;
+  });
+  $('clearYes').addEventListener('click', function(){
+    [STORE, 'stamina-calc-v2', COOLDOWN_STORE].forEach(function(k){
       try{ localStorage.removeItem(k); }catch(e){}
     });
-    location.reload();
+    S = null;
+    cooldowns = [];
+    cdStructKey = '';
+    runsCache = '';
+    $('max').value = '200';
+    $('per').value = '8';
+    $('cur').value = '60';
+    $('target').value = '';
+    $('cost').value = '40';
+    $('adjAmt').value = '';
+    $('clearConfirm').hidden = true;
+    update();
+    say('Saved calculator values and cooldown timers cleared.');
   });
 
+  // Cooldown Timers events
+  $('cdAddBtn').addEventListener('click', addCooldown);
+  ['cdName','cdDays','cdHours'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if(e.key === 'Enter') addCooldown(); });
+  });
+
+  /* ---------- Init ---------- */
   load();
   update();
   setInterval(update, 1000);
