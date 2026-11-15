@@ -10,7 +10,7 @@ and cannot be imported back; the JSON Backup is the real restore path.
 ASSETS: character art from ../roster/assets-optimized/ (avataricon, avatarside, namecardalpha, icons_yatta/<element>.webp).
 Weapon art from weapons/<wslug(name)>.png (lowercase, no apostrophes, spaces to underscores). A missing image must stay blank.
 ROUTINE DATA (search these names): BN = character banners, WN = weapon banners, one line each: version|start yymmdd|end yymmdd|
-featured,featured. Append new patches at the end. Always use the full Roster name (Kaedehara Kazuha, not Kazuha): it must match SEED
+featured,featured. BN lines carry a fifth part: the three 4-star rate-up characters of that phase (comma separated, Roster spelling). Append new patches at the end. Always use the full Roster name (Kaedehara Kazuha, not Kazuha): it must match SEED
 and TITLE exactly. TITLE = featured 5-star to banner title, one entry per character, add one for every new character.
 CRN = Chronicled Wish banners (start|end|title), add each new one, and leave an unannounced end blank (open-ended) until it is known. SEED = character list (id, name,
 element, weapon type, rarity), add new characters there. LUNA = Luna version to patch number.
@@ -35,7 +35,7 @@ ITEM POP-UP: the original header (square face icon on the left, the long namecar
 OVERVIEW MOST PULLED: two boxes, characters (switch 5★ then 4★, opens on 5★) and weapons (switch 4★ then 3★, opens on 4★), top 10 each; Show all opens the full list in a second dialog (#dlgList): compact rows without bars in 4 to 5 columns so about 100 names fit on one screen (bars stay in the Overview boxes only), stacked under the item pop-up. The choices live in S (lyC, lyW) until reload. Ties in count: characters newest release first (position in SEED, so keep SEED in release order), weapons latest pull first.
 LANDING (no data yet): About block (why, who it is for: paimon.moe users, what it is not), drop box, paimon.moe link. The safety and legal
 wording (no login, never ask for a password or code, nothing uploaded, unofficial) lives only in the footer; keep it, it matches HoYoLAB rules.
-BANNER MAP (tab "map", Character and Weapon only): units come from BN and WN; a wish is matched to a banner by date and, for character banners, A face is in color only when that exact 5★ was obtained (a weapon banner with two featured weapons colors only the one he got); every other face is grey, including banners running now, because color must mean he got it.
+BANNER MAP (tab "map", Character and Weapon only): units come from BN and WN; a wish is matched to a banner by date and, for character banners, A face is in color only when that exact 5★ was obtained (a weapon banner with two featured weapons colors only the one he got); every other face is grey, including banners running now, because color must mean he got it. On a character banner card the tooltip also lists the three 4★ rate-ups of that phase (both banners of a phase share one list): each name followed by how many of it he got from wishes on that exact banner, not the whole phase, a cross when none, and plain names when he made no wish on that banner.
 by banner name (featName). States: got, wished without featured, skipped, before the first wish, running now. Skipped tile counts skipped debuts.
 Summary tiles each have a color accent (orange, green, pink, blue; never the category colors gold, purple, teal, cyan, grey) and show exactly one line of detail; anything longer goes in the tile tooltip.
 REMOVED, DO NOT ADD BACK: one global banner filter over every tab (only Overview has it), Collection, Checks, Copy button, Avg gap,
@@ -578,119 +578,119 @@ button.mc{cursor:pointer}button.mc:hover{filter:brightness(1.15)}
    every character banner (108) and weapon banner (107) with version name, dates, featured characters and the two featured
    5-star weapons; banner titles of all 65 featured characters (TITLE); all 7 Chronicled Wish banners with dates and titles (CRN).
    Known game quirk, correct as is: version 1.3 has three character banners but two weapon banners, with different dates.
-   Names follow the Roster spelling. Not stored and not checked: 4-star rate-ups.
+   Names follow the Roster spelling. The fifth part of each BN line is the 4-star rate-up list, checked against his own pull history (no conflicts); 7.2 Phase 2 is not in the table until announced. The character is named Wanderer (Roster spelling and in game, image id wanderer); saved data, marks and restored backups that still say The Wanderer are renamed on load by migrateNames, so keep that function while old backups may exist.
    Next additions: 7.2 Phase 2 (Zibai, Linnea) and the Chronicled 7.2 end date, only once the dates are announced.
    After adding any patch, compare it against the wiki Version page before treating the data as verified again.
    ============================================================ */
-const SEED=[["jean","Jean","anemo","sword",5],["diluc","Diluc","pyro","claymore",5],["qiqi","Qiqi","cryo","sword",5],["mona","Mona","hydro","catalyst",5],["keqing","Keqing","electro","sword",5],["venti","Venti","anemo","bow",5],["klee","Klee","pyro","catalyst",5],["tartaglia","Tartaglia","hydro","bow",5],["zhongli","Zhongli","geo","polearm",5],["albedo","Albedo","geo","sword",5],["ganyu","Ganyu","cryo","bow",5],["xiao","Xiao","anemo","polearm",5],["hu-tao","Hu Tao","pyro","polearm",5],["eula","Eula","cryo","claymore",5],["kaedehara-kazuha","Kaedehara Kazuha","anemo","sword",5],["kamisato-ayaka","Kamisato Ayaka","cryo","sword",5],["yoimiya","Yoimiya","pyro","bow",5],["aloy","Aloy","cryo","bow",5],["raiden-shogun","Raiden Shogun","electro","polearm",5],["sangonomiya-kokomi","Sangonomiya Kokomi","hydro","catalyst",5],["arataki-itto","Arataki Itto","geo","claymore",5],["shenhe","Shenhe","cryo","polearm",5],["yae-miko","Yae Miko","electro","catalyst",5],["kamisato-ayato","Kamisato Ayato","hydro","sword",5],["yelan","Yelan","hydro","bow",5],["tighnari","Tighnari","dendro","bow",5],["cyno","Cyno","electro","polearm",5],["nilou","Nilou","hydro","sword",5],["nahida","Nahida","dendro","catalyst",5],["the-wanderer","The Wanderer","anemo","catalyst",5],["alhaitham","Alhaitham","dendro","sword",5],["dehya","Dehya","pyro","claymore",5],["baizhu","Baizhu","dendro","catalyst",5],["lyney","Lyney","pyro","bow",5],["neuvillette","Neuvillette","hydro","catalyst",5],["wriothesley","Wriothesley","cryo","catalyst",5],["furina","Furina","hydro","sword",5],["navia","Navia","geo","claymore",5],["xianyun","Xianyun","anemo","catalyst",5],["chiori","Chiori","geo","sword",5],["arlecchino","Arlecchino","pyro","polearm",5],["clorinde","Clorinde","electro","sword",5],["sigewinne","Sigewinne","hydro","bow",5],["emilie","Emilie","dendro","polearm",5],["mualani","Mualani","hydro","catalyst",5],["kinich","Kinich","dendro","claymore",5],["xilonen","Xilonen","geo","sword",5],["chasca","Chasca","anemo","bow",5],["citlali","Citlali","cryo","catalyst",5],["mavuika","Mavuika","pyro","claymore",5],["yumemizuki-mizuki","Yumemizuki Mizuki","anemo","catalyst",5],["varesa","Varesa","electro","catalyst",5],["escoffier","Escoffier","cryo","polearm",5],["skirk","Skirk","cryo","sword",5],["ineffa","Ineffa","electro","polearm",5],["lauma","Lauma","dendro","catalyst",5],["flins","Flins","electro","polearm",5],["nefer","Nefer","dendro","catalyst",5],["durin","Durin","pyro","sword",5],["columbina","Columbina","hydro","catalyst",5],["zibai","Zibai","geo","sword",5],["varka","Varka","anemo","claymore",5],["linnea","Linnea","geo","bow",5],["nicole","Nicole","pyro","catalyst",5],["lohen","Lohen","cryo","polearm",5],["sandrone","Sandrone","cryo","claymore",5],["odette","Odette","cryo","sword",5],["vesna","Vesna","anemo","sword",5],["vodyanitsa","Vodyanitsa","hydro","catalyst",5],["mitya","Mitya","electro","catalyst",5],["lisa","Lisa","electro","catalyst",4],["barbara","Barbara","hydro","catalyst",4],["kaeya","Kaeya","cryo","sword",4],["razor","Razor","electro","claymore",4],["amber","Amber","pyro","bow",4],["xiangling","Xiangling","pyro","polearm",4],["beidou","Beidou","electro","claymore",4],["xingqiu","Xingqiu","hydro","sword",4],["ningguang","Ningguang","geo","catalyst",4],["fischl","Fischl","electro","bow",4],["bennett","Bennett","pyro","sword",4],["noelle","Noelle","geo","claymore",4],["chongyun","Chongyun","cryo","claymore",4],["sucrose","Sucrose","anemo","catalyst",4],["diona","Diona","cryo","bow",4],["xinyan","Xinyan","pyro","claymore",4],["rosaria","Rosaria","cryo","polearm",4],["yanfei","Yanfei","pyro","catalyst",4],["sayu","Sayu","anemo","claymore",4],["kujou-sara","Kujou Sara","electro","bow",4],["thoma","Thoma","pyro","polearm",4],["gorou","Gorou","geo","bow",4],["yun-jin","Yun Jin","geo","polearm",4],["kuki-shinobu","Kuki Shinobu","electro","sword",4],["shikanoin-heizou","Shikanoin Heizou","anemo","catalyst",4],["collei","Collei","dendro","bow",4],["dori","Dori","electro","claymore",4],["candace","Candace","hydro","polearm",4],["layla","Layla","cryo","sword",4],["faruzan","Faruzan","anemo","bow",4],["yaoyao","Yaoyao","dendro","polearm",4],["mika","Mika","cryo","polearm",4],["kaveh","Kaveh","dendro","claymore",4],["kirara","Kirara","dendro","sword",4],["lynette","Lynette","anemo","sword",4],["freminet","Freminet","cryo","claymore",4],["charlotte","Charlotte","cryo","catalyst",4],["chevreuse","Chevreuse","pyro","polearm",4],["gaming","Gaming","pyro","claymore",4],["sethos","Sethos","electro","bow",4],["kachina","Kachina","geo","polearm",4],["ororon","Ororon","electro","bow",4],["lan-yan","Lan Yan","anemo","catalyst",4],["iansan","Iansan","electro","polearm",4],["ifa","Ifa","anemo","catalyst",4],["dahlia","Dahlia","hydro","sword",4],["aino","Aino","hydro","claymore",4],["jahoda","Jahoda","anemo","bow",4],["illuga","Illuga","geo","polearm",4],["prune","Prune","anemo","catalyst",4],["alyosha","Alyosha","electro","polearm",4],["valeriy","Valeriy","electro","sword",4]];
-const BN=`1.0|200928|201018|Venti
-1.0|201020|201110|Klee
-1.1|201111|201201|Tartaglia
-1.1|201201|201222|Zhongli
-1.2|201223|210112|Albedo
-1.2|210112|210202|Ganyu
-1.3|210203|210217|Xiao
-1.3|210217|210302|Keqing
-1.3|210302|210316|Hu Tao
-1.4|210317|210406|Venti
-1.4|210406|210427|Tartaglia
-1.5|210428|210518|Zhongli
-1.5|210518|210608|Eula
-1.6|210609|210629|Klee
-1.6|210629|210720|Kaedehara Kazuha
-2.0|210721|210810|Kamisato Ayaka
-2.0|210810|210831|Yoimiya
-2.1|210901|210921|Raiden Shogun
-2.1|210921|211012|Sangonomiya Kokomi
-2.2|211013|211102|Tartaglia
-2.2|211102|211123|Hu Tao
-2.3|211124|211214|Albedo,Eula
-2.3|211214|220104|Arataki Itto
-2.4|220105|220125|Shenhe,Xiao
-2.4|220125|220215|Zhongli,Ganyu
-2.5|220216|220308|Yae Miko
-2.5|220308|220329|Raiden Shogun,Sangonomiya Kokomi
-2.6|220330|220419|Kamisato Ayato,Venti
-2.6|220419|220531|Kamisato Ayaka
-2.7|220531|220621|Yelan,Xiao
-2.7|220621|220712|Arataki Itto
-2.8|220713|220802|Kaedehara Kazuha,Klee
-2.8|220802|220823|Yoimiya
-3.0|220824|220909|Tighnari,Zhongli
-3.0|220909|220927|Ganyu,Sangonomiya Kokomi
-3.1|220928|221014|Cyno,Venti
-3.1|221014|221101|Nilou,Albedo
-3.2|221102|221118|Nahida,Yoimiya
-3.2|221118|221206|Yae Miko,Tartaglia
-3.3|221207|221227|The Wanderer,Arataki Itto
-3.3|221227|230117|Raiden Shogun,Kamisato Ayato
-3.4|230118|230207|Alhaitham,Xiao
-3.4|230207|230228|Hu Tao,Yelan
-3.5|230301|230321|Dehya,Cyno
-3.5|230321|230411|Shenhe,Kamisato Ayaka
-3.6|230412|230502|Nahida,Nilou
-3.6|230502|230523|Baizhu,Ganyu
-3.7|230524|230613|Yoimiya,Yae Miko
-3.7|230613|230704|Alhaitham,Kaedehara Kazuha
-3.8|230705|230725|Eula,Klee
-3.8|230725|230815|Sangonomiya Kokomi,The Wanderer
-4.0|230816|230905|Lyney,Yelan
-4.0|230905|230926|Zhongli,Tartaglia
-4.1|230927|231017|Neuvillette,Hu Tao
-4.1|231017|231107|Wriothesley,Venti
-4.2|231108|231128|Furina,Baizhu
-4.2|231128|231219|Cyno,Kamisato Ayato
-4.3|231220|240109|Navia,Kamisato Ayaka
-4.3|240109|240130|Raiden Shogun,Yoimiya
-4.4|240131|240220|Xianyun,Nahida
-4.4|240220|240312|Xiao,Yae Miko
-4.5|240313|240402|Chiori,Arataki Itto
-4.5|240402|240423|Neuvillette,Kaedehara Kazuha
-4.6|240424|240514|Arlecchino,Lyney
-4.6|240514|240604|The Wanderer,Baizhu
-4.7|240605|240625|Clorinde,Alhaitham
-4.7|240625|240716|Sigewinne,Furina
-4.8|240717|240806|Navia,Nilou
-4.8|240806|240827|Emilie,Yelan
-5.0|240828|240917|Mualani,Kaedehara Kazuha
-5.0|240917|241008|Kinich,Raiden Shogun
-5.1|241009|241029|Xilonen,Chiori
-5.1|241029|241119|Nahida,Hu Tao
-5.2|241120|241210|Chasca,Lyney
-5.2|241210|241231|Neuvillette,Zhongli
-5.3|250101|250121|Mavuika,Citlali
-5.3|250121|250211|Arlecchino,Clorinde
-5.4|250212|250304|Yumemizuki Mizuki,Sigewinne
-5.4|250304|250325|Furina,Wriothesley
-5.5|250326|250415|Varesa,Xianyun
-5.5|250415|250506|Xilonen,Venti
-5.6|250507|250527|Escoffier,Navia
-5.6|250527|250617|Kinich,Raiden Shogun
-5.7|250618|250708|Skirk,Shenhe
-5.7|250708|250729|Mavuika,Emilie
-5.8|250730|250819|Ineffa,Citlali
-5.8|250819|250909|Mualani,Chasca
-Luna I|250910|250930|Lauma,Nahida
-Luna I|250930|251021|Flins,Yelan
-Luna II|251022|251111|Nefer,Furina
-Luna II|251111|251202|Arlecchino,Zhongli
-Luna III|251203|251223|Durin,Venti
-Luna III|251223|260113|Varesa,Xilonen
-Luna IV|260114|260203|Columbina,Ineffa
-Luna IV|260203|260224|Zibai,Neuvillette
-Luna V|260225|260317|Varka,Flins
-Luna V|260317|260407|Skirk,Escoffier
-Luna VI|260408|260428|Linnea,Chasca
-Luna VI|260428|260519|Lauma,Nefer
-Luna VII|260520|260609|Nicole,Durin
-Luna VII|260609|260630|Lohen,Mavuika
-Luna VIII|260701|260721|Sandrone,Citlali
-Luna VIII|260721|260811|Columbina,Raiden Shogun
-7.0|260812|260901|Odette,Arlecchino
-7.0|260901|260922|Flins,Ineffa
-7.1|260923|261013|Vesna,Vodyanitsa
-7.1|261013|261103|Skirk,Escoffier
-7.2|261104|261124|Mitya,Furina`;
+const SEED=[["jean","Jean","anemo","sword",5],["diluc","Diluc","pyro","claymore",5],["qiqi","Qiqi","cryo","sword",5],["mona","Mona","hydro","catalyst",5],["keqing","Keqing","electro","sword",5],["venti","Venti","anemo","bow",5],["klee","Klee","pyro","catalyst",5],["tartaglia","Tartaglia","hydro","bow",5],["zhongli","Zhongli","geo","polearm",5],["albedo","Albedo","geo","sword",5],["ganyu","Ganyu","cryo","bow",5],["xiao","Xiao","anemo","polearm",5],["hu-tao","Hu Tao","pyro","polearm",5],["eula","Eula","cryo","claymore",5],["kaedehara-kazuha","Kaedehara Kazuha","anemo","sword",5],["kamisato-ayaka","Kamisato Ayaka","cryo","sword",5],["yoimiya","Yoimiya","pyro","bow",5],["aloy","Aloy","cryo","bow",5],["raiden-shogun","Raiden Shogun","electro","polearm",5],["sangonomiya-kokomi","Sangonomiya Kokomi","hydro","catalyst",5],["arataki-itto","Arataki Itto","geo","claymore",5],["shenhe","Shenhe","cryo","polearm",5],["yae-miko","Yae Miko","electro","catalyst",5],["kamisato-ayato","Kamisato Ayato","hydro","sword",5],["yelan","Yelan","hydro","bow",5],["tighnari","Tighnari","dendro","bow",5],["cyno","Cyno","electro","polearm",5],["nilou","Nilou","hydro","sword",5],["nahida","Nahida","dendro","catalyst",5],["wanderer","Wanderer","anemo","catalyst",5],["alhaitham","Alhaitham","dendro","sword",5],["dehya","Dehya","pyro","claymore",5],["baizhu","Baizhu","dendro","catalyst",5],["lyney","Lyney","pyro","bow",5],["neuvillette","Neuvillette","hydro","catalyst",5],["wriothesley","Wriothesley","cryo","catalyst",5],["furina","Furina","hydro","sword",5],["navia","Navia","geo","claymore",5],["xianyun","Xianyun","anemo","catalyst",5],["chiori","Chiori","geo","sword",5],["arlecchino","Arlecchino","pyro","polearm",5],["clorinde","Clorinde","electro","sword",5],["sigewinne","Sigewinne","hydro","bow",5],["emilie","Emilie","dendro","polearm",5],["mualani","Mualani","hydro","catalyst",5],["kinich","Kinich","dendro","claymore",5],["xilonen","Xilonen","geo","sword",5],["chasca","Chasca","anemo","bow",5],["citlali","Citlali","cryo","catalyst",5],["mavuika","Mavuika","pyro","claymore",5],["yumemizuki-mizuki","Yumemizuki Mizuki","anemo","catalyst",5],["varesa","Varesa","electro","catalyst",5],["escoffier","Escoffier","cryo","polearm",5],["skirk","Skirk","cryo","sword",5],["ineffa","Ineffa","electro","polearm",5],["lauma","Lauma","dendro","catalyst",5],["flins","Flins","electro","polearm",5],["nefer","Nefer","dendro","catalyst",5],["durin","Durin","pyro","sword",5],["columbina","Columbina","hydro","catalyst",5],["zibai","Zibai","geo","sword",5],["varka","Varka","anemo","claymore",5],["linnea","Linnea","geo","bow",5],["nicole","Nicole","pyro","catalyst",5],["lohen","Lohen","cryo","polearm",5],["sandrone","Sandrone","cryo","claymore",5],["odette","Odette","cryo","sword",5],["vesna","Vesna","anemo","sword",5],["vodyanitsa","Vodyanitsa","hydro","catalyst",5],["mitya","Mitya","electro","catalyst",5],["lisa","Lisa","electro","catalyst",4],["barbara","Barbara","hydro","catalyst",4],["kaeya","Kaeya","cryo","sword",4],["razor","Razor","electro","claymore",4],["amber","Amber","pyro","bow",4],["xiangling","Xiangling","pyro","polearm",4],["beidou","Beidou","electro","claymore",4],["xingqiu","Xingqiu","hydro","sword",4],["ningguang","Ningguang","geo","catalyst",4],["fischl","Fischl","electro","bow",4],["bennett","Bennett","pyro","sword",4],["noelle","Noelle","geo","claymore",4],["chongyun","Chongyun","cryo","claymore",4],["sucrose","Sucrose","anemo","catalyst",4],["diona","Diona","cryo","bow",4],["xinyan","Xinyan","pyro","claymore",4],["rosaria","Rosaria","cryo","polearm",4],["yanfei","Yanfei","pyro","catalyst",4],["sayu","Sayu","anemo","claymore",4],["kujou-sara","Kujou Sara","electro","bow",4],["thoma","Thoma","pyro","polearm",4],["gorou","Gorou","geo","bow",4],["yun-jin","Yun Jin","geo","polearm",4],["kuki-shinobu","Kuki Shinobu","electro","sword",4],["shikanoin-heizou","Shikanoin Heizou","anemo","catalyst",4],["collei","Collei","dendro","bow",4],["dori","Dori","electro","claymore",4],["candace","Candace","hydro","polearm",4],["layla","Layla","cryo","sword",4],["faruzan","Faruzan","anemo","bow",4],["yaoyao","Yaoyao","dendro","polearm",4],["mika","Mika","cryo","polearm",4],["kaveh","Kaveh","dendro","claymore",4],["kirara","Kirara","dendro","sword",4],["lynette","Lynette","anemo","sword",4],["freminet","Freminet","cryo","claymore",4],["charlotte","Charlotte","cryo","catalyst",4],["chevreuse","Chevreuse","pyro","polearm",4],["gaming","Gaming","pyro","claymore",4],["sethos","Sethos","electro","bow",4],["kachina","Kachina","geo","polearm",4],["ororon","Ororon","electro","bow",4],["lan-yan","Lan Yan","anemo","catalyst",4],["iansan","Iansan","electro","polearm",4],["ifa","Ifa","anemo","catalyst",4],["dahlia","Dahlia","hydro","sword",4],["aino","Aino","hydro","claymore",4],["jahoda","Jahoda","anemo","bow",4],["illuga","Illuga","geo","polearm",4],["prune","Prune","anemo","catalyst",4],["alyosha","Alyosha","electro","polearm",4],["valeriy","Valeriy","electro","sword",4]];
+const BN=`1.0|200928|201018|Venti|Barbara,Fischl,Xiangling
+1.0|201020|201110|Klee|Noelle,Sucrose,Xingqiu
+1.1|201111|201201|Tartaglia|Beidou,Ningguang,Diona
+1.1|201201|201222|Zhongli|Razor,Chongyun,Xinyan
+1.2|201223|210112|Albedo|Bennett,Fischl,Sucrose
+1.2|210112|210202|Ganyu|Noelle,Xiangling,Xingqiu
+1.3|210203|210217|Xiao|Beidou,Diona,Xinyan
+1.3|210217|210302|Keqing|Barbara,Bennett,Ningguang
+1.3|210302|210316|Hu Tao|Xiangling,Xingqiu,Chongyun
+1.4|210317|210406|Venti|Razor,Noelle,Sucrose
+1.4|210406|210427|Tartaglia|Barbara,Fischl,Rosaria
+1.5|210428|210518|Zhongli|Noelle,Diona,Yanfei
+1.5|210518|210608|Eula|Beidou,Xingqiu,Xinyan
+1.6|210609|210629|Klee|Barbara,Fischl,Sucrose
+1.6|210629|210720|Kaedehara Kazuha|Razor,Bennett,Rosaria
+2.0|210721|210810|Kamisato Ayaka|Ningguang,Chongyun,Yanfei
+2.0|210810|210831|Yoimiya|Diona,Xinyan,Sayu
+2.1|210901|210921|Raiden Shogun|Sucrose,Xiangling,Kujou Sara
+2.1|210921|211012|Sangonomiya Kokomi|Beidou,Xingqiu,Rosaria
+2.2|211013|211102|Tartaglia|Ningguang,Chongyun,Yanfei
+2.2|211102|211123|Hu Tao|Diona,Sayu,Thoma
+2.3|211124|211214|Albedo,Eula|Bennett,Noelle,Rosaria
+2.3|211214|220104|Arataki Itto|Barbara,Xiangling,Gorou
+2.4|220105|220125|Shenhe,Xiao|Ningguang,Chongyun,Yun Jin
+2.4|220125|220215|Zhongli,Ganyu|Beidou,Xingqiu,Yanfei
+2.5|220216|220308|Yae Miko|Fischl,Diona,Thoma
+2.5|220308|220329|Raiden Shogun,Sangonomiya Kokomi|Bennett,Xinyan,Kujou Sara
+2.6|220330|220419|Kamisato Ayato,Venti|Sucrose,Xiangling,Yun Jin
+2.6|220419|220531|Kamisato Ayaka|Razor,Rosaria,Sayu
+2.7|220531|220621|Yelan,Xiao|Barbara,Noelle,Yanfei
+2.7|220621|220712|Arataki Itto|Chongyun,Gorou,Kuki Shinobu
+2.8|220713|220802|Kaedehara Kazuha,Klee|Ningguang,Thoma,Shikanoin Heizou
+2.8|220802|220823|Yoimiya|Bennett,Xinyan,Yun Jin
+3.0|220824|220909|Tighnari,Zhongli|Fischl,Diona,Collei
+3.0|220909|220927|Ganyu,Sangonomiya Kokomi|Sucrose,Xingqiu,Dori
+3.1|220928|221014|Cyno,Venti|Sayu,Kuki Shinobu,Candace
+3.1|221014|221101|Nilou,Albedo|Barbara,Beidou,Xiangling
+3.2|221102|221118|Nahida,Yoimiya|Razor,Bennett,Noelle
+3.2|221118|221206|Yae Miko,Tartaglia|Thoma,Shikanoin Heizou,Layla
+3.3|221207|221227|Wanderer,Arataki Itto|Yanfei,Gorou,Faruzan
+3.3|221227|230117|Raiden Shogun,Kamisato Ayato|Rosaria,Sayu,Kujou Sara
+3.4|230118|230207|Alhaitham,Xiao|Yaoyao,Yun Jin,Xinyan
+3.4|230207|230228|Hu Tao,Yelan|Beidou,Ningguang,Xingqiu
+3.5|230301|230321|Dehya,Cyno|Barbara,Bennett,Collei
+3.5|230321|230411|Shenhe,Kamisato Ayaka|Sucrose,Diona,Mika
+3.6|230412|230502|Nahida,Nilou|Kuki Shinobu,Dori,Layla
+3.6|230502|230523|Baizhu,Ganyu|Fischl,Candace,Kaveh
+3.7|230524|230613|Yoimiya,Yae Miko|Chongyun,Yun Jin,Kirara
+3.7|230613|230704|Alhaitham,Kaedehara Kazuha|Xiangling,Shikanoin Heizou,Yaoyao
+3.8|230705|230725|Eula,Klee|Razor,Thoma,Mika
+3.8|230725|230815|Sangonomiya Kokomi,Wanderer|Rosaria,Yanfei,Faruzan
+4.0|230816|230905|Lyney,Yelan|Barbara,Bennett,Lynette
+4.0|230905|230926|Zhongli,Tartaglia|Noelle,Sayu,Freminet
+4.1|230927|231017|Neuvillette,Hu Tao|Fischl,Xingqiu,Diona
+4.1|231017|231107|Wriothesley,Venti|Chongyun,Thoma,Dori
+4.2|231108|231128|Furina,Baizhu|Beidou,Collei,Charlotte
+4.2|231128|231219|Cyno,Kamisato Ayato|Xiangling,Kuki Shinobu,Kirara
+4.3|231220|240109|Navia,Kamisato Ayaka|Sucrose,Rosaria,Candace
+4.3|240109|240130|Raiden Shogun,Yoimiya|Bennett,Kujou Sara,Chevreuse
+4.4|240131|240220|Xianyun,Nahida|Noelle,Faruzan,Gaming
+4.4|240220|240312|Xiao,Yae Miko|Ningguang,Xinyan,Yaoyao
+4.5|240313|240402|Chiori,Arataki Itto|Gorou,Yun Jin,Dori
+4.5|240402|240423|Neuvillette,Kaedehara Kazuha|Barbara,Xingqiu,Yanfei
+4.6|240424|240514|Arlecchino,Lyney|Xiangling,Lynette,Freminet
+4.6|240514|240604|Wanderer,Baizhu|Beidou,Layla,Faruzan
+4.7|240605|240625|Clorinde,Alhaitham|Bennett,Thoma,Sethos
+4.7|240625|240716|Sigewinne,Furina|Noelle,Rosaria,Gaming
+4.8|240717|240806|Navia,Nilou|Ningguang,Kaveh,Kirara
+4.8|240806|240827|Emilie,Yelan|Razor,Xiangling,Yanfei
+5.0|240828|240917|Mualani,Kaedehara Kazuha|Bennett,Xinyan,Kachina
+5.0|240917|241008|Kinich,Raiden Shogun|Kujou Sara,Thoma,Chevreuse
+5.1|241009|241029|Xilonen,Chiori|Collei,Dori,Candace
+5.1|241029|241119|Nahida,Hu Tao|Xingqiu,Kuki Shinobu,Sethos
+5.2|241120|241210|Chasca,Lyney|Barbara,Sucrose,Ororon
+5.2|241210|241231|Neuvillette,Zhongli|Fischl,Shikanoin Heizou,Yaoyao
+5.3|250101|250121|Mavuika,Citlali|Bennett,Diona,Kachina
+5.3|250121|250211|Arlecchino,Clorinde|Rosaria,Chevreuse,Lan Yan
+5.4|250212|250304|Yumemizuki Mizuki,Sigewinne|Xiangling,Sayu,Gorou
+5.4|250304|250325|Furina,Wriothesley|Charlotte,Chongyun,Mika
+5.5|250326|250415|Varesa,Xianyun|Iansan,Chevreuse,Gaming
+5.5|250415|250506|Xilonen,Venti|Beidou,Yanfei,Faruzan
+5.6|250507|250527|Escoffier,Navia|Layla,Ororon,Ifa
+5.6|250527|250617|Kinich,Raiden Shogun|Kujou Sara,Thoma,Lynette
+5.7|250618|250708|Skirk,Shenhe|Diona,Candace,Dahlia
+5.7|250708|250729|Mavuika,Emilie|Xiangling,Iansan,Yaoyao
+5.8|250730|250819|Ineffa,Citlali|Fischl,Xingqiu,Sethos
+5.8|250819|250909|Mualani,Chasca|Bennett,Ororon,Ifa
+Luna I|250910|250930|Lauma,Nahida|Barbara,Kuki Shinobu,Kaveh
+Luna I|250930|251021|Flins,Yelan|Aino,Sucrose,Dori
+Luna II|251022|251111|Nefer,Furina|Xingqiu,Collei,Yaoyao
+Luna II|251111|251202|Arlecchino,Zhongli|Rosaria,Yun Jin,Lan Yan
+Luna III|251203|251223|Durin,Venti|Bennett,Faruzan,Jahoda
+Luna III|251223|260113|Varesa,Xilonen|Iansan,Chevreuse,Gaming
+Luna IV|260114|260203|Columbina,Ineffa|Fischl,Sethos,Ifa
+Luna IV|260203|260224|Zibai,Neuvillette|Gorou,Aino,Illuga
+Luna V|260225|260317|Varka,Flins|Bennett,Sucrose,Xiangling
+Luna V|260317|260407|Skirk,Escoffier|Candace,Charlotte,Dahlia
+Luna VI|260408|260428|Linnea,Chasca|Noelle,Aino,Illuga
+Luna VI|260428|260519|Lauma,Nefer|Xingqiu,Kirara,Jahoda
+Luna VII|260520|260609|Nicole,Durin|Razor,Fischl,Prune
+Luna VII|260609|260630|Lohen,Mavuika|Mika,Xiangling,Bennett
+Luna VIII|260701|260721|Sandrone,Citlali|Beidou,Diona,Freminet
+Luna VIII|260721|260811|Columbina,Raiden Shogun|Jahoda,Ororon,Sethos
+7.0|260812|260901|Odette,Arlecchino|Alyosha,Sucrose,Lynette
+7.0|260901|260922|Flins,Ineffa|Aino,Iansan,Lan Yan
+7.1|260923|261013|Vesna,Vodyanitsa|Diona,Faruzan,Chongyun
+7.1|261013|261103|Skirk,Escoffier|Dahlia,Candace,Mika
+7.2|261104|261124|Mitya,Furina|Valeriy,Charlotte,Rosaria`;
 const WN=`1.0|200928|201018|Aquila Favonia,Amos' Bow
 1.0|201020|201110|Lost Prayer to the Sacred Winds,Wolf's Gravestone
 1.1|201111|201201|Memory of Dust,Skyward Harp
@@ -806,7 +806,7 @@ const POOL={char:'Character Event',weapon:'Weapon Event',standard:'Standard',chr
 const LUNA={'Luna I':'6.0','Luna II':'6.1','Luna III':'6.2','Luna IV':'6.3','Luna V':'6.4','Luna VI':'6.5','Luna VII':'6.6','Luna VIII':'6.7'};
 const verLabel=v=>v?`v${v}${LUNA[v]?` (${LUNA[v]})`:''}`:'';
 const PT={char:[50,75],weapon:[40,65],standard:[50,75],chron:[50,75],novice:[50,75]};
-const TITLE={'Venti':'Ballad in Goblets','Klee':'Sparkling Steps','Tartaglia':'Farewell of Snezhnaya','Zhongli':'Gentry of Hermitage','Albedo':'Secretum Secretorum','Ganyu':'Adrift in the Harbor','Xiao':'Invitation to Mundane Life','Keqing':'Dance of Lanterns','Hu Tao':'Moment of Bloom','Eula':'Born of Ocean Swell','Kaedehara Kazuha':'Leaves in the Wind','Kamisato Ayaka':"The Heron's Court",'Yoimiya':'Tapestry of Golden Flames','Raiden Shogun':'Reign of Serenity','Sangonomiya Kokomi':'Drifting Luminescence','Arataki Itto':"Oni's Royale",'Shenhe':'The Transcendent One Returns','Yae Miko':'Everbloom Violet','Kamisato Ayato':'Azure Excursion','Yelan':'Discerner of Enigmas','Tighnari':'Viridescent Vigil','Cyno':'Twilight Arbiter','Nilou':'Twirling Lotus','Nahida':"The Moongrass' Enlightenment",'The Wanderer':'From Ashes Reborn','Alhaitham':'Caution in Confidence','Dehya':'Auric Blaze','Baizhu':'Immaculate Pulse','Lyney':'Conjuring Chiaroscuro','Neuvillette':'Decree of the Deeps','Wriothesley':'Tempestuous Destiny','Furina':'Chanson of Many Waters','Navia':'In the Name of the Rosula','Xianyun':'The Crane Soars Skyward','Chiori':'Of Silken Clouds Woven','Arlecchino':"The Hearth's Ashen Shadow",'Clorinde':'Illuminating Lightning','Sigewinne':'Romaritime Meluserenity','Emilie':'Ambrosial Essence','Mualani':'Sharktacular Surfari','Kinich':'Seeker of Flame-Wrought Secrets','Xilonen':"Forgefire's Blessing",'Chasca':"Piercing Shot's Crimson Wake",'Mavuika':'Ancient Flame Ablaze','Citlali':"Starry Night's Whispers",'Yumemizuki Mizuki':"Dawn's Drifting Reverie",'Varesa':'Cornucopia of Contention','Escoffier':'La Chanson Cerise','Skirk':"Void Star's Advent",'Ineffa':'Astral Actuation','Lauma':'Moonsong of the Groves','Flins':'The Lone Light Knocks at Night','Nefer':'Temptation of the Crimson Sands','Durin':'Rubedo, of White Stone Born','Columbina':'Somnias a Luna','Zibai':'Harmonious Abundance','Varka':"The Northerly Wind's Song of Triumph",'Linnea':'Ya-hoho! Compendium','Nicole':"Angel's Reverie",'Lohen':'Frostedge Nocturne','Sandrone':'To the Looking-Glass the Mademoiselle Said','Odette':"Swan's Shadow in Silken Ice",'Vesna':'When Warm Winds Cavort','Vodyanitsa':'Surging Ballad','Mitya':'Myriad Patterns Unfold'};
+const TITLE={'Venti':'Ballad in Goblets','Klee':'Sparkling Steps','Tartaglia':'Farewell of Snezhnaya','Zhongli':'Gentry of Hermitage','Albedo':'Secretum Secretorum','Ganyu':'Adrift in the Harbor','Xiao':'Invitation to Mundane Life','Keqing':'Dance of Lanterns','Hu Tao':'Moment of Bloom','Eula':'Born of Ocean Swell','Kaedehara Kazuha':'Leaves in the Wind','Kamisato Ayaka':"The Heron's Court",'Yoimiya':'Tapestry of Golden Flames','Raiden Shogun':'Reign of Serenity','Sangonomiya Kokomi':'Drifting Luminescence','Arataki Itto':"Oni's Royale",'Shenhe':'The Transcendent One Returns','Yae Miko':'Everbloom Violet','Kamisato Ayato':'Azure Excursion','Yelan':'Discerner of Enigmas','Tighnari':'Viridescent Vigil','Cyno':'Twilight Arbiter','Nilou':'Twirling Lotus','Nahida':"The Moongrass' Enlightenment",'Wanderer':'From Ashes Reborn','Alhaitham':'Caution in Confidence','Dehya':'Auric Blaze','Baizhu':'Immaculate Pulse','Lyney':'Conjuring Chiaroscuro','Neuvillette':'Decree of the Deeps','Wriothesley':'Tempestuous Destiny','Furina':'Chanson of Many Waters','Navia':'In the Name of the Rosula','Xianyun':'The Crane Soars Skyward','Chiori':'Of Silken Clouds Woven','Arlecchino':"The Hearth's Ashen Shadow",'Clorinde':'Illuminating Lightning','Sigewinne':'Romaritime Meluserenity','Emilie':'Ambrosial Essence','Mualani':'Sharktacular Surfari','Kinich':'Seeker of Flame-Wrought Secrets','Xilonen':"Forgefire's Blessing",'Chasca':"Piercing Shot's Crimson Wake",'Mavuika':'Ancient Flame Ablaze','Citlali':"Starry Night's Whispers",'Yumemizuki Mizuki':"Dawn's Drifting Reverie",'Varesa':'Cornucopia of Contention','Escoffier':'La Chanson Cerise','Skirk':"Void Star's Advent",'Ineffa':'Astral Actuation','Lauma':'Moonsong of the Groves','Flins':'The Lone Light Knocks at Night','Nefer':'Temptation of the Crimson Sands','Durin':'Rubedo, of White Stone Born','Columbina':'Somnias a Luna','Zibai':'Harmonious Abundance','Varka':"The Northerly Wind's Song of Triumph",'Linnea':'Ya-hoho! Compendium','Nicole':"Angel's Reverie",'Lohen':'Frostedge Nocturne','Sandrone':'To the Looking-Glass the Mademoiselle Said','Odette':"Swan's Shadow in Silken Ice",'Vesna':'When Warm Winds Cavort','Vodyanitsa':'Surging Ballad','Mitya':'Myriad Patterns Unfold'};
 const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 
 /* ---------- helpers ---------- */
@@ -830,7 +830,7 @@ let tT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on
 const lst=x=>Array.isArray(x)?x:String(x||'').split(/\r?\n|;/);
 const d6=s=>{s=String(s).trim();return s.includes('-')?s:`20${s.slice(0,2)}-${s.slice(2,4)}-${s.slice(4,6)}`};
 const banners=x=>lst(x).map(e=>Array.isArray(e)?e:String(e).trim().split('|')).filter(a=>a.length>=4)
-  .map(([v,s,e,f])=>({v:String(v).trim(),s:d6(s),e:d6(e),f:(Array.isArray(f)?f:String(f).split(',')).map(t=>String(t).trim()).filter(Boolean)}))
+  .map(([v,s,e,f,r])=>({v:String(v).trim(),s:d6(s),e:d6(e),f:(Array.isArray(f)?f:String(f).split(',')).map(t=>String(t).trim()).filter(Boolean),r4:r?(Array.isArray(r)?r:String(r).split(',')).map(t=>String(t).trim()).filter(Boolean):[]}))
   .sort((a,b)=>a.s<b.s?-1:1);
 const CB=banners(BN), WB=banners(WN);
 // Chronicled Wish banners: start|end|title (version comes from the date). Leave the end blank until it is announced, then fill it in. Lightrace Wish is a separate banner and is not listed.
@@ -858,6 +858,14 @@ const S={docx:LS.get('docx',[]),paimon:LS.get('paimon',[]),crMarks:LS.get('crMar
   view:'overview',tlNewest:true,mapCat:'char',
   f:{pools:Object.keys(POOL),from:'',to:''},
   cat:'char',log:{r:[],q:'',types:[],els:[],sort:{k:'date',d:-1},bn:'',num:1,limit:300},histPool:'char'};
+/* one-time rename of saved data: the character was stored as "The Wanderer" before the Roster spelling became "Wanderer" */
+const OLDN='The Wanderer',NEWN='Wanderer';
+function migrateNames(){let ch=0;
+  for(const k of['docx','paimon'])for(const r of S[k]){if(r.name===OLDN){r.name=NEWN;ch++}if(r.banner===OLDN){r.banner=NEWN;ch++}}
+  for(const m of S.crMarks)if(m.name===OLDN){m.name=NEWN;ch++}
+  for(const k of['crUser','wUser']){const o=S[k];for(const key of Object.keys(o))if(key.startsWith(OLDN+'|')){o[NEWN+key.slice(OLDN.length)]=o[key];delete o[key];ch++}}
+  if(ch)for(const k of['docx','paimon','crMarks','crUser','wUser'])LS.set(k,S[k]);return ch}
+migrateNames();
 let D={pools:{},all:[]};
 
 /* ---------- import: paimon.moe xlsx ---------- */
@@ -1208,7 +1216,7 @@ async function ingest(files){
         if(r.kind==='summary'){S.crMarks=r.marks;LS.set('crMarks',r.marks);toast(`Found ${r.marks.length} ✨ marks`)}
         else{S.docx=S.docx.filter(p=>p.file!==r.file).concat(r.rows);LS.set('docx',S.docx);toast(`Read ${r.rows.length.toLocaleString()} wishes`)}}
       else if(ext==='json'){const o=JSON.parse(await f.text());if(o.app!=='wish-ledger')throw new Error('This JSON file is not a Wish Ledger backup');
-        ['docx','paimon','crMarks'].forEach(k=>{S[k]=o[k]||[];LS.set(k,S[k])});S.crUser=o.crUser||{};LS.set('crUser',S.crUser);S.wUser=o.wUser||{};LS.set('wUser',S.wUser);toast('Backup restored')}
+        ['docx','paimon','crMarks'].forEach(k=>{S[k]=o[k]||[];LS.set(k,S[k])});S.crUser=o.crUser||{};LS.set('crUser',S.crUser);S.wUser=o.wUser||{};LS.set('wUser',S.wUser);migrateNames();toast('Backup restored')}
       else throw new Error(`Can't read .${ext} files`);
     }catch(e){console.error(e);toast(e.message||'Could not read '+f.name)}}
   if(!CB.length)toast('Banner data missing — paste SEED, BN and WN into the file');
@@ -1236,12 +1244,14 @@ function mapAssign(p,L,cat){const d=p.date;let c=L.filter(b=>b.s<=d&&d<=b.e);
   const us=c.filter(b=>b.s===top.s).flatMap(b=>b.f.map(f=>L.indexOf(b)+'|'+f));
   return us.length===1?us[0]:null}
 function mapBuild(cat){const L=mapList(cat),units=mapUnits(cat),by=new Map();
-  units.forEach(u=>{u.n=0;u.five=[];u.keys=new Map();by.set(u.i+'|'+(u.f||''),u)});
+  units.forEach(u=>{u.n=0;u.five=[];u.c4=[];u.keys=new Map();by.set(u.i+'|'+(u.f||''),u)});
   let lost=0;
   for(const p of D.pools[cat]){const u=by.get(mapAssign(p,L,cat));if(!u){lost++;continue}
+    if(p.r===4&&p.type==='Character')u.c4.push(p.name);
     u.n++;if(p.r===5)u.five.push(p.name);const k=bkey(p);u.keys.set(k,(u.keys.get(k)||0)+1)}
   const first=D.all.length?D.all[0].date:'',today=new Date().toISOString().slice(0,10);
-  for(const u of units){const feats=cat==='char'?[u.f]:cat==='weapon'?u.b.f:null;
+  for(const u of units){u.r4=cat==='char'?u.b.r4.map(n=>[n,u.n?u.c4.filter(x=>sameName(x,n)).length:null]):[];
+    const feats=cat==='char'?[u.f]:cat==='weapon'?u.b.f:null;
     u.got=feats?u.five.filter(n=>feats.some(f=>sameName(n,f))):u.five.slice();
     u.st=u.n?(u.got.length?'got':'miss'):(u.b.e<first?'pre':(u.b.s<=today&&today<=u.b.e?'live':'skip'))}
   {const seen=new Set();for(const u of units){const ks=cat==='char'?[u.f]:u.b.f;u.debut=ks.some(k=>!seen.has(k));ks.forEach(k=>seen.add(k))}}
@@ -1263,7 +1273,7 @@ function bannerMapView(){if(!['char','weapon'].includes(S.mapCat))S.mapCat='char
   const gotWord=cat==='char'?'Got the featured 5★':'Got a featured 5★ weapon';
   const catbtns=['char','weapon'].map(k=>`<button class="cat" data-k="${k}" data-act="mapCat" data-v="${k}" aria-pressed="${cat===k}"><span class="cn">${POOL[k]}</span><b class="n">${mapUnits(k).length}</b><small>banners</small></button>`).join('');
   const cell=(u,i)=>{const fc=(w,t)=>{const h=face({name:w,type:t,r:5}),on=u.st==='got'&&u.got.some(n=>sameName(n,w));return on?h:h.replace('class="pf','class="pf nog')};const faces=cat==='char'?fc(u.f,'Character'):u.b.f.map(w=>fc(w,'Weapon')).join('');
-    const tx=mapText(u,cat),tip=esc(`${u.name} · ${mapRange(u.b)}\n${tx}`),inner=`${faces}<span class="mt"><b>${esc(u.name)}</b><small>${esc(tx)}</small></span>`;
+    const tx=mapText(u,cat),f4=u.r4.length?`\n4★ rate-up\n${u.r4.map(([n,c])=>c===null?n:`${n} ${c?'×'+c:'✗'}`).join('\n')}`:'',tip=esc(`${u.name} · ${mapRange(u.b)}\n${tx}${f4}`),inner=`${faces}<span class="mt"><b>${esc(u.name)}</b><small>${esc(tx)}</small></span>`;
     return u.n?`<button class="mc ${u.st}" data-act="mapGo" data-v="${i}" title="${tip}">${inner}</button>`:`<div class="mc ${u.st}" title="${tip}">${inner}</div>`};
   const rows=[];
   {const vs=[];units.forEach((u,i)=>{let g=vs.find(x=>x.v===u.v);if(!g)vs.push(g={v:u.v,ph:new Map()});if(!g.ph.has(u.i))g.ph.set(u.i,[]);g.ph.get(u.i).push([u,i])});

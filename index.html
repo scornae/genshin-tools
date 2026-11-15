@@ -4,66 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Genshin Toolkit for Travelers</title>
-  <meta name="description" content="Free fan-made tools for Genshin Impact: Roster, Arcana Collection with trade post generator, Stamina Calculator, Wish Ledger and more.">
-  <meta name="theme-color" content="#07090d">
+  <meta name="description" content="Free fan-made tools for Genshin Impact: Roster, Wish Ledger, Stamina Calculator, Arcana Collection and more.">
+  <meta name="theme-color" content="#14161a">
   <link rel="canonical" href="https://scornae.github.io/genshin-tools/">
 
-  <!-- Favicon (inline SVG — dragon eye) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='i' cx='.5' cy='.5' r='.5'%3E%3Cstop offset='0' stop-color='%23ffe7a0'/%3E%3Cstop offset='.6' stop-color='%23ff9a3d'/%3E%3Cstop offset='1' stop-color='%238a2d0a'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpolygon points='32,3 58,18 58,46 32,61 6,46 6,18' fill='%230b0f15' stroke='%23e8b85a' stroke-width='4'/%3E%3Cpath d='M12 32Q32 12 52 32Q32 52 12 32Z' fill='url(%23i)' stroke='%23e8b85a' stroke-width='2.5'/%3E%3Cellipse cx='32' cy='32' rx='3' ry='12' fill='%230a0604'/%3E%3C/svg%3E">
+  <!-- Favicon (inline SVG — Weathered Grey Stone Seal, Tilted Orbit & Astral Star) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%233b404b'/%3E%3Cstop offset='1' stop-color='%23181a1f'/%3E%3C/linearGradient%3E%3CradialGradient id='p' cx='.5' cy='.5' r='.5'%3E%3Cstop offset='0' stop-color='%23fff6d6'/%3E%3Cstop offset='.55' stop-color='%23ff9924'/%3E%3Cstop offset='1' stop-color='%23232730' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpolygon points='32,3 41,12 47,12 52,17 52,23 61,32 52,41 52,47 47,52 41,52 32,61 23,52 17,52 12,47 12,41 3,32 12,23 12,17 17,12 23,12' fill='url(%23s)' stroke='%23d4b472' stroke-width='2.8'/%3E%3Ccircle cx='32' cy='32' r='17' fill='url(%23p)'/%3E%3Cellipse cx='32' cy='32' rx='24' ry='8' transform='rotate(-28 32 32)' fill='none' stroke='%238ee6de' stroke-width='2.2'/%3E%3Cpath d='M32 13Q35 29 51 32Q35 35 32 51Q29 35 13 32Q29 29 32 13Z' fill='%23fff8e0' stroke='%23ff9b26' stroke-width='1'/%3E%3C/svg%3E">
 
   <!-- Open Graph / Social preview -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Genshin Tools">
   <meta property="og:url" content="https://scornae.github.io/genshin-tools/">
   <meta property="og:title" content="Genshin Toolkit for Travelers">
-  <meta property="og:description" content="Track your roster, trade your Arcana, and run the numbers before you go. Free fan-made tools for Genshin Impact.">
+  <meta property="og:description" content="Track your roster, audit your wishes, calculate stamina, and trade your Arcana. Free fan-made tools for Genshin Impact.">
   <meta property="og:image" content="https://scornae.github.io/genshin-tools/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Genshin Tools — dragon eye emblem with Roster, Arcana Collection and Stamina Calculator modules">
+  <meta property="og:image:alt" content="Genshin Tools — Weathered stone mural and orbital array emblem with Roster, Wish Ledger, Stamina Calculator and Arcana Collection">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Genshin Toolkit for Travelers">
-  <meta name="twitter:description" content="Track your roster, trade your Arcana, and run the numbers before you go.">
+  <meta name="twitter:description" content="Track your roster, audit your wishes, calculate stamina, and trade your Arcana.">
   <meta name="twitter:image" content="https://scornae.github.io/genshin-tools/og-image.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #07090d;
-      --panel: #0b0f15;
-      --gold: #e8b85a;
-      --gold-soft: #e8b85a33;
-      --ember: #ff7a3d;
-      --cyan: #4fd1c5;
-      --cyan-soft: #4fd1c522;
-      --text: #ece6d8;
-      --muted: #8d96a3;
-      --cut: 16px;
+      --vault-deep: #101215;
+      --stone-dark: #181b20;
+      --stone-mid: #242830;
+      --stone-light: #353b46;
+      --stone-edge: #6f7685;
+      --stone-chalk: #c2c7d0;
+      --bronze: #c7a667;
+      --bronze-dim: #7c6742;
+      --phlogiston: #ff9c2a;
+      --phlogiston-hot: #ffe9a8;
+      --phlogiston-core: #ff6217;
+      --astral-cyan: #8cebe2;
+      --ivory: #f2f1ed;
+      --slate-text: #b7bcc6;
+      --slate-muted: #888f9c;
+      --cut: 18px;
+      --clip-stele: polygon(
+        var(--cut) 0,
+        calc(100% - var(--cut)) 0,
+        100% var(--cut),
+        100% calc(100% - var(--cut)),
+        calc(100% - var(--cut)) 100%,
+        var(--cut) 100%,
+        0 calc(100% - var(--cut)),
+        0 var(--cut)
+      );
       --font-display: "Cinzel", Georgia, serif;
-      --font-ui: "Rajdhani", system-ui, sans-serif;
-      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+      --font-ui: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: var(--font-ui);
-      font-size: 17px;
-      color: var(--text);
+      font-size: 15.5px;
+      color: var(--ivory);
       background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, #e8b85a26, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 100% 100%, #4fd1c514, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 0% 80%, #ff7a3d10, transparent 60%),
-        var(--bg);
+        radial-gradient(ellipse 75% 44% at 50% 4%, #3c424e4d 0%, transparent 65%),
+        radial-gradient(ellipse 65% 38% at 50% 24%, #ff9b2416 0%, transparent 62%),
+        radial-gradient(ellipse 90% 45% at 50% 104%, #2c313a40 0%, transparent 72%),
+        var(--vault-deep);
       overflow-x: hidden;
+      position: relative;
     }
 
     .sr-only {
@@ -76,279 +91,430 @@
       border: 0;
     }
 
-    /* ---------- Background layers ---------- */
-    .bg-hex {
+    /* ---------- Weathered Grey Concrete / Limestone Surface Layers ---------- */
+    .stone-masonry {
       position: fixed;
       inset: 0;
-      z-index: -2;
-      opacity: .35;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98' viewBox='0 0 56 98'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0 32L0 82V66l28 16 28-16v16L28 98z' fill='none' stroke='%23e8b85a' stroke-opacity='.12' stroke-width='1'/%3E%3C/svg%3E");
-      mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 30%, transparent 85%);
-      -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, #000 30%, transparent 85%);
+      z-index: -4;
+      pointer-events: none;
+      opacity: .42;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='160' viewBox='0 0 240 160'%3E%3Cg fill='none'%3E%3Cpath d='M0 80h240M120 0v80M60 80v80M180 80v80' stroke='%23090a0c' stroke-width='1.5'/%3E%3Cpath d='M0 81.5h240M121.5 0v80M61.5 80v80M181.5 80v80' stroke='%23ffffff' stroke-opacity='.045' stroke-width='1'/%3E%3Cpath d='M22 22h32v14H38v10H22zM146 102h28v28h-18v-10h-10z' stroke='%239ba2b0' stroke-opacity='.05' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E");
+      mask-image: radial-gradient(ellipse 95% 88% at 50% 34%, #000 30%, transparent 94%);
+      -webkit-mask-image: radial-gradient(ellipse 95% 88% at 50% 34%, #000 30%, transparent 94%);
     }
 
-    .bg-scan {
+    .stone-grain {
       position: fixed;
       inset: 0;
+      z-index: -3;
+      opacity: .065;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    #sparks-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       z-index: -1;
       pointer-events: none;
-      background: linear-gradient(to bottom, transparent 0%, #4fd1c50d 50%, transparent 100%);
-      background-size: 100% 300px;
-      background-repeat: no-repeat;
-      animation: scan 9s linear infinite;
     }
 
-    @keyframes scan {
-      from { background-position: 0 -300px; }
-      to   { background-position: 0 calc(100vh + 300px); }
+    /* ---------- Hero Sanctuary & Carved Stone Mural Backdrop ---------- */
+    .hero-stage {
+      position: relative;
+      overflow: hidden;
+      padding: 20px 24px 12px;
     }
 
-    /* ---------- Top status bar ---------- */
-    .statusbar {
+    .mural-panorama {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: min(1480px, 120vw);
+      min-width: 980px;
+      height: auto;
+      transform: translateX(-50%);
+      z-index: 0;
+      pointer-events: none;
+      opacity: .88;
+      mask-image: linear-gradient(to bottom, #000 64%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, #000 64%, transparent 100%);
+    }
+
+    #orbital-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hero-top {
+      position: relative;
+      z-index: 2;
+      max-width: 1240px;
+      margin: 0 auto;
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 14px 24px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      letter-spacing: 1.5px;
-      color: var(--muted);
+      align-items: center;
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: 2.6px;
       text-transform: uppercase;
+      color: var(--slate-muted);
     }
 
-    .statusbar .live { color: var(--cyan); }
-    .statusbar .live::before {
-      content: "";
-      display: inline-block;
-      width: 7px; height: 7px;
-      margin-right: 8px;
-      border-radius: 50%;
-      background: var(--cyan);
-      box-shadow: 0 0 10px var(--cyan);
-      animation: pulse 2s ease-in-out infinite;
+    .hero-top .archive-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--stone-chalk);
     }
 
-    @keyframes pulse { 50% { opacity: .35; } }
+    .hero-top svg {
+      width: 12px;
+      height: 12px;
+      color: var(--phlogiston-hot);
+      filter: drop-shadow(0 0 6px #ff9c2a88);
+    }
 
-    /* ---------- Hero ---------- */
     header {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
       text-align: center;
-      padding: 36px 20px 40px;
+      padding: 28px 0 8px;
     }
 
-    .emblem {
-      width: 112px;
-      height: 112px;
-      margin: 0 auto 22px;
-      filter: drop-shadow(0 0 18px #e8b85a55);
+    /* Central Stone & Astral Crest */
+    .crest-anchor {
+      position: relative;
+      width: 240px;
+      height: 220px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
     }
 
-    .emblem .ring { animation: spin 40s linear infinite; transform-origin: 60px 60px; }
-    .emblem .pupil { animation: blink 6s ease-in-out infinite; transform-origin: 60px 60px; }
+    .crest-glow {
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ff9e2c36 0%, #8cebe21c 46%, transparent 72%);
+      filter: blur(18px);
+      animation: core-pulse 5.2s ease-in-out infinite;
+    }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes blink {
-      0%, 92%, 100% { transform: scaleX(1); }
-      95% { transform: scaleX(2.4); }
+    @keyframes core-pulse {
+      0%, 100% { transform: scale(.94); opacity: .75; }
+      50%      { transform: scale(1.06); opacity: 1; }
+    }
+
+    .crest-svg {
+      width: 236px;
+      height: auto;
+      filter: drop-shadow(0 10px 26px #000000aa);
+    }
+
+    .crest-svg .wing-l { animation: float-l 5.6s ease-in-out infinite; }
+    .crest-svg .wing-r { animation: float-r 5.6s ease-in-out infinite; }
+    .crest-svg .star-core { animation: star-breathe 4s ease-in-out infinite; transform-origin: 120px 105px; }
+
+    @keyframes float-l { 50% { transform: translateX(-2.5px); } }
+    @keyframes float-r { 50% { transform: translateX(2.5px); } }
+    @keyframes star-breathe {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.06); }
     }
 
     .eyebrow {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 4px;
-      color: var(--cyan);
-      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
       margin: 0 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 3.2px;
+      text-transform: uppercase;
+      color: var(--astral-cyan);
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: "";
+      width: 26px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--stone-edge));
+    }
+
+    .eyebrow::after {
+      background: linear-gradient(270deg, transparent, var(--stone-edge));
     }
 
     h1 {
       font-family: var(--font-display);
-      font-size: clamp(36px, 7vw, 64px);
+      font-size: clamp(36px, 6.2vw, 64px);
       font-weight: 700;
-      letter-spacing: 4px;
-      margin: 0 0 14px;
-      background: linear-gradient(180deg, #fff3d6 0%, var(--gold) 55%, #a8772a 100%);
+      letter-spacing: 6px;
+      margin: 0 0 12px;
+      line-height: 1.06;
+      background: linear-gradient(180deg, #ffffff 0%, #dcdde2 44%, #e5be6e 76%, #8f6e38 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-shadow: 0 0 40px #e8b85a22;
+      filter: drop-shadow(0 6px 24px #000000b3);
     }
 
     .tagline {
       max-width: 560px;
       margin: 0 auto;
-      color: #c3c9d2;
-      font-size: 18px;
-      line-height: 1.6;
+      color: var(--slate-text);
+      font-size: 16.5px;
+      line-height: 1.66;
     }
 
-    .divider {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      margin: 30px auto 0;
-      max-width: 420px;
-      color: var(--gold);
+    /* Stepped Stone Arch Bridge Leading to the 4 Monoliths */
+    .sanctuary-bridge {
+      position: relative;
+      z-index: 2;
+      max-width: 1120px;
+      margin: 26px auto 0;
     }
 
-    .divider::before, .divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold));
+    .sanctuary-bridge svg {
+      display: block;
+      width: 100%;
+      height: 44px;
     }
-    .divider::after { background: linear-gradient(270deg, transparent, var(--gold)); }
 
-    /* ---------- Modules ---------- */
+    /* ---------- Main 4 Equal Monoliths + 1 Sealed Foundation ---------- */
     main {
-      max-width: 1080px;
+      position: relative;
+      z-index: 2;
+      max-width: 1260px;
       margin: 0 auto;
-      padding: 10px 24px 70px;
+      padding: 8px 24px 80px;
     }
-
-    .section-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 18px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .section-head strong { color: var(--gold); font-weight: 600; }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 18px;
+      align-items: stretch;
     }
 
-    .card {
-      --clip: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+    .grid[data-cols="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid[data-cols="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    /* ---------- Carved Weathered Grey Stone Stele ---------- */
+    .stele {
       position: relative;
       display: block;
-      padding: 1px;
+      padding: 1.5px;
       color: inherit;
       text-decoration: none;
-      clip-path: var(--clip);
-      background: linear-gradient(135deg, #e8b85a80, #4fd1c526 45%, #e8b85a40);
-      transition: transform .25s ease, background .25s ease;
+      clip-path: var(--clip-stele);
+      background:
+        radial-gradient(
+          300px circle at var(--mx, 50%) var(--my, 50%),
+          #ffcf66e0,
+          #ff7f1a88 38%,
+          #8cebe266 64%,
+          transparent 80%
+        ),
+        linear-gradient(170deg, #686f7d88 0%, #2b303a99 45%, #c7a66755 100%);
+      transition: transform .32s cubic-bezier(.16, 1, .3, 1), filter .32s ease;
       opacity: 0;
-      animation: rise .6s ease forwards;
+      animation: stele-rise .7s cubic-bezier(.16, 1, .3, 1) forwards;
     }
 
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(14px); }
+    @keyframes stele-rise {
+      from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .card-inner {
+    .stele-inner {
       position: relative;
       height: 100%;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      padding: 22px 22px 18px;
-      clip-path: var(--clip);
+      gap: 15px;
+      padding: 20px 20px 18px;
+      clip-path: var(--clip-stele);
       background:
-        linear-gradient(160deg, #121822f2, #0a0d13f7),
-        var(--panel);
+        radial-gradient(
+          360px circle at var(--mx, 50%) var(--my, 50%),
+          #ff9c2a14,
+          transparent 60%
+        ),
+        linear-gradient(174deg, #272b33f7 0%, #191c22fa 54%, #14161bfb 100%);
+      box-shadow:
+        inset 0 1px 0 #d8dde62e,
+        inset 0 -2px 0 #07080ac2;
       overflow: hidden;
     }
 
-    /* scan sweep on hover */
-    .card-inner::after {
+    /* Chiseled inner groove + weathered stone fracture lines */
+    .stele-inner::before {
       content: "";
       position: absolute;
-      top: 0; left: -60%;
-      width: 40%; height: 100%;
-      background: linear-gradient(90deg, transparent, #e8b85a1f, transparent);
+      inset: 8px;
+      border: 1px solid #8a919e22;
+      clip-path: polygon(
+        13px 0, calc(100% - 13px) 0, 100% 13px, 100% calc(100% - 13px),
+        calc(100% - 13px) 100%, 13px 100%, 0 calc(100% - 13px), 0 13px
+      );
+      pointer-events: none;
+      transition: border-color .3s ease;
+    }
+
+    /* Iridescent holographic scan sheen on hover */
+    .stele-inner::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -70%;
+      width: 48%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        #8cebe216 32%,
+        #ffcf661c 56%,
+        transparent
+      );
       transform: skewX(-20deg);
-      transition: left .6s ease;
+      transition: left .75s ease;
       pointer-events: none;
     }
 
-    a.card:hover, a.card:focus-visible {
-      transform: translateY(-4px);
-      background: linear-gradient(135deg, var(--gold), var(--cyan) 50%, var(--ember));
+    a.stele:hover,
+    a.stele:focus-visible {
+      transform: translateY(-6px);
+      background:
+        radial-gradient(
+          320px circle at var(--mx, 50%) var(--my, 50%),
+          #fff2c6,
+          #ff9429c4 38%,
+          #8cebe288 68%
+        ),
+        linear-gradient(140deg, var(--phlogiston-hot), var(--bronze) 48%, var(--astral-cyan));
+      filter: drop-shadow(0 16px 28px #00000099);
       outline: none;
     }
 
-    a.card:hover .card-inner::after,
-    a.card:focus-visible .card-inner::after { left: 120%; }
-
-    a.card:hover .launch .arrow,
-    a.card:focus-visible .launch .arrow { transform: translate(3px, -3px); }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
+    a.stele:focus-visible .stele-inner {
+      box-shadow: inset 0 0 0 2px var(--astral-cyan);
     }
 
-    .badge {
-      padding: 3px 9px;
-      border: 1px solid currentColor;
-      color: var(--cyan);
-      background: var(--cyan-soft);
-    }
+    a.stele:hover .stele-inner::before { border-color: #d4b47255; }
+    a.stele:hover .stele-inner::after,
+    a.stele:focus-visible .stele-inner::after { left: 135%; }
 
-    .badge.primary { color: var(--gold); background: var(--gold-soft); }
-    .badge.soon { color: var(--muted); background: transparent; }
-
-    .card-body {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    .icon {
-      flex-shrink: 0;
+    /* Engraved Grey Stone Mural Header Block inside every equal Stele */
+    .stele-mural {
+      position: relative;
+      height: 102px;
+      margin: -2px -2px 2px;
+      background:
+        radial-gradient(circle at 50% 56%, #313640 0%, #191c22 76%);
+      border: 1px solid #484e5b4d;
+      box-shadow:
+        inset 0 2px 6px #07080a99,
+        0 1px 0 #ffffff12;
+      clip-path: polygon(
+        10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px),
+        calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px
+      );
       display: grid;
       place-items: center;
-      width: 56px;
-      height: 56px;
-      color: var(--gold);
-      background: radial-gradient(circle, #e8b85a22, transparent 70%);
-      clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
-      position: relative;
+      overflow: hidden;
     }
 
-    .icon::before {
-      content: "";
+    .stele-mural .mural-bg {
       position: absolute;
       inset: 0;
-      background: var(--gold);
-      opacity: .18;
+      width: 100%;
+      height: 100%;
+      opacity: .72;
+      transition: opacity .35s ease;
     }
 
-    .icon svg { width: 28px; height: 28px; position: relative; }
+    .stele-mural .holo-ring {
+      position: absolute;
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      border: 1px dashed #8cebe240;
+      transition: transform .8s cubic-bezier(.16, 1, .3, 1), border-color .3s ease, box-shadow .3s ease;
+    }
 
-    .card h2 {
-      margin: 2px 0 6px;
+    .stele-mural .numeral-tag {
+      position: absolute;
+      top: 8px;
+      left: 12px;
       font-family: var(--font-display);
-      font-size: 22px;
-      letter-spacing: 1.5px;
-      color: #fff6e2;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--stone-chalk);
+      opacity: .75;
     }
 
-    .card p {
+    .stele-mural .corner-star {
+      position: absolute;
+      top: 9px;
+      right: 11px;
+      width: 10px;
+      height: 10px;
+      color: var(--bronze);
+      transition: color .3s ease, transform .4s ease;
+    }
+
+    .stele-mural .glyph-icon {
+      position: relative;
+      z-index: 2;
+      width: 34px;
+      height: 34px;
+      color: var(--ivory);
+      filter: drop-shadow(0 2px 6px #000000aa);
+      transition: color .3s ease, transform .3s ease, filter .3s ease;
+    }
+
+    a.stele:hover .stele-mural .mural-bg { opacity: 1; }
+    a.stele:hover .stele-mural .holo-ring {
+      transform: rotate(90deg) scale(1.08);
+      border-color: #8cebe2aa;
+      box-shadow: 0 0 18px #ff9c2a28, inset 0 0 12px #8cebe224;
+    }
+    a.stele:hover .stele-mural .corner-star {
+      color: var(--phlogiston-hot);
+      transform: rotate(90deg);
+    }
+    a.stele:hover .stele-mural .glyph-icon {
+      color: var(--phlogiston-hot);
+      transform: scale(1.08);
+      filter: drop-shadow(0 0 12px #ff9c2a99);
+    }
+
+    .stele h2 {
       margin: 0;
-      color: #aab2bd;
-      line-height: 1.55;
-      font-size: 16px;
-      font-weight: 500;
+      font-family: var(--font-display);
+      font-size: 19px;
+      letter-spacing: .9px;
+      color: var(--ivory);
+    }
+
+    .stele p {
+      margin: 0;
+      color: var(--slate-text);
+      line-height: 1.58;
+      font-size: 14.5px;
+      flex-grow: 1;
     }
 
     .chips {
@@ -361,192 +527,377 @@
     }
 
     .chips li {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: .5px;
-      padding: 4px 8px;
-      color: #cfd5dc;
-      background: #ffffff0a;
-      border: 1px solid #ffffff14;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3.5px 9px;
+      color: #d4d8e0;
+      background: #2f343f70;
+      border: 1px solid #6f76853b;
+      clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
     }
 
-    .launch {
-      margin-top: auto;
+    .stele-foot {
+      position: relative;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 14px;
-      border-top: 1px dashed #ffffff1a;
+      padding-top: 13px;
+      border-top: 1px solid #6f768538;
+      font-size: 12.5px;
       font-weight: 700;
-      letter-spacing: 2px;
+      letter-spacing: 1.6px;
       text-transform: uppercase;
-      font-size: 13px;
-      color: var(--gold);
+      color: var(--bronze);
     }
 
-    .launch .arrow { transition: transform .25s ease; font-size: 18px; }
-
-    /* Featured (primary) card */
-    .card.featured { grid-column: 1 / -1; }
-    .card.featured .card-inner {
-      padding: 28px 30px 22px;
-      background:
-        radial-gradient(ellipse 60% 120% at 100% 0%, #e8b85a1c, transparent 60%),
-        linear-gradient(160deg, #141b26f5, #0a0d13f7);
+    .stele-foot::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 0;
+      width: 26%;
+      height: 1.5px;
+      background: linear-gradient(90deg, var(--phlogiston), var(--astral-cyan));
+      transition: width .35s ease;
     }
-    .card.featured .icon { width: 72px; height: 72px; }
-    .card.featured .icon svg { width: 36px; height: 36px; }
-    .card.featured h2 { font-size: 30px; }
-    .card.featured p { font-size: 17px; max-width: 640px; }
 
-    /* ---------- Reserved slot (faded, softly alive) ---------- */
-    .card.slot {
-      animation-name: rise-dim;
+    a.stele:hover .stele-foot,
+    a.stele:focus-visible .stele-foot {
+      color: var(--phlogiston-hot);
+    }
+
+    a.stele:hover .stele-foot::before,
+    a.stele:focus-visible .stele-foot::before {
+      width: 100%;
+    }
+
+    .stele-foot .arrow {
+      font-size: 17px;
+      transition: transform .25s ease, color .25s ease;
+    }
+
+    a.stele:hover .stele-foot .arrow,
+    a.stele:focus-visible .stele-foot .arrow {
+      transform: translate(3px, -3px);
+      color: var(--astral-cyan);
+    }
+
+    /* ---------- Full-Width Dormant Foundation Plinth (Next Project Slot) ---------- */
+    .stele.slot {
+      grid-column: 1 / -1;
+      animation-name: stele-dormant;
       cursor: default;
-      background: linear-gradient(135deg, #e8b85a40, #4fd1c51a 50%, #e8b85a26);
+      background: linear-gradient(90deg, #4b505c55, #c7a6673d 50%, #4b505c55);
     }
 
-    @keyframes rise-dim {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: .55; transform: translateY(0); }
+    @keyframes stele-dormant {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: .72; transform: translateY(0); }
     }
 
-    .card.slot .card-inner {
-      background: repeating-linear-gradient(-45deg, #0b0f15, #0b0f15 10px, #0d1219 10px, #0d1219 20px);
+    .stele.slot .stele-inner {
+      flex-direction: row;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      min-height: 200px;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px 26px;
+      background:
+        repeating-linear-gradient(-45deg, #17191e, #17191e 12px, #1b1e24 12px, #1b1e24 24px);
     }
 
-    /* slow shimmer sweeping across the empty slot */
-    .card.slot .card-inner::after {
+    .stele.slot .stele-inner::after {
       width: 30%;
-      background: linear-gradient(90deg, transparent, #e8b85a14, #4fd1c514, transparent);
+      background: linear-gradient(90deg, transparent, #8cebe210, #ffcf6612, transparent);
       transition: none;
-      animation: shimmer 6s ease-in-out infinite;
+      animation: dormant-scan 7.5s ease-in-out infinite;
     }
 
-    @keyframes shimmer {
-      0%       { left: -60%; }
-      55%, 100% { left: 130%; }
+    @keyframes dormant-scan {
+      0%        { left: -60%; }
+      45%, 100% { left: 130%; }
     }
 
-    .card.slot .icon {
-      color: var(--gold);
-      animation: breathe 3.5s ease-in-out infinite;
+    .slot-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
 
-    @keyframes breathe {
-      0%, 100% { opacity: .35; }
-      50%      { opacity: .85; }
+    .slot-emblem {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      background: #20232a;
+      border: 1px solid #6f768555;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      color: var(--bronze);
+      animation: seal-pulse 4s ease-in-out infinite;
     }
 
-    .card.slot h2 { color: #b9a982; font-size: 18px; }
-    .card.slot p { font-size: 14px; color: #7c8591; font-family: var(--font-mono); }
-    .card.slot p::after {
-      content: "_";
-      margin-left: 2px;
-      color: var(--cyan);
-      animation: caret 1s steps(1) infinite;
+    @keyframes seal-pulse {
+      0%, 100% { opacity: .5; }
+      50%      { opacity: 1; box-shadow: 0 0 12px #ff9c2a33; }
     }
 
-    @keyframes caret { 50% { opacity: 0; } }
+    .slot-emblem svg { width: 20px; height: 20px; }
+
+    .stele.slot h2 {
+      font-size: 16px;
+      color: var(--stone-chalk);
+      margin-bottom: 2px;
+    }
+
+    .stele.slot p {
+      font-size: 13.5px;
+      color: var(--slate-muted);
+      flex-grow: 0;
+    }
+
+    .slot-badge {
+      flex-shrink: 0;
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: 2.2px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      color: var(--slate-muted);
+      border: 1px solid #6f768544;
+      background: #14161a;
+      clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+    }
 
     /* ---------- Footer ---------- */
     footer {
+      position: relative;
+      z-index: 2;
       text-align: center;
-      padding: 30px 20px 40px;
-      border-top: 1px solid #ffffff0f;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.8;
+      padding: 32px 20px 44px;
+      border-top: 1px solid #6f76852c;
+      color: var(--slate-muted);
+      font-size: 13.5px;
+      line-height: 1.85;
+      background: linear-gradient(to top, #0a0b0d, transparent);
     }
 
-    footer .mono {
-      font-family: var(--font-mono);
+    footer .credit {
+      margin-top: 8px;
+      font-family: var(--font-display);
       font-size: 11px;
-      letter-spacing: 2px;
-      color: #5d6672;
+      letter-spacing: 2.4px;
+      color: #707784;
     }
 
-    footer a { color: var(--gold); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+    footer a { color: var(--bronze); text-decoration: none; }
+    footer a:hover { color: var(--phlogiston-hot); text-decoration: underline; }
 
     /* ---------- Responsive ---------- */
-    @media (max-width: 560px) {
-      .statusbar .hide-sm { display: none; }
-      header { padding-top: 20px; }
-      .emblem { width: 88px; height: 88px; }
-      .card.featured .card-inner { padding: 22px; }
-      .card.featured h2 { font-size: 24px; }
-      .card-body { flex-direction: column; }
+    @media (max-width: 1080px) {
+      .grid,
+      .grid[data-cols="3"] {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 660px) {
+      .grid,
+      .grid[data-cols="2"],
+      .grid[data-cols="3"] {
+        grid-template-columns: 1fr;
+      }
+      .hero-top .hide-sm { display: none; }
+      .crest-anchor { width: 200px; height: 185px; }
+      .crest-svg { width: 195px; }
+      h1 { letter-spacing: 3.5px; }
+      .stele.slot .stele-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
-      .card { opacity: 1; }
-      .card.slot { opacity: .55; }
+      .stele { opacity: 1; }
+      .stele.slot { opacity: .72; }
+      #orbital-canvas, #sparks-canvas { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="bg-hex" aria-hidden="true"></div>
-  <div class="bg-scan" aria-hidden="true"></div>
+  <div class="stone-masonry" aria-hidden="true"></div>
+  <div class="stone-grain" aria-hidden="true"></div>
+  <canvas id="sparks-canvas" aria-hidden="true"></canvas>
 
-  <div class="statusbar">
-    <span class="live">System Online</span>
-    <span class="hide-sm" id="moduleCount">— Modules</span>
-    <span>v2.1</span>
-  </div>
-
-  <header>
-    <!-- Dragon eye emblem -->
-    <svg class="emblem" viewBox="0 0 120 120" aria-hidden="true">
+  <section class="hero-stage">
+    <!-- Full-Width Weathered Grey Stone Mural Bas-Relief Panorama -->
+    <svg class="mural-panorama" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
       <defs>
-        <linearGradient id="g-gold" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#fff0c8"/>
-          <stop offset=".55" stop-color="#e8b85a"/>
-          <stop offset="1" stop-color="#9c6b22"/>
+        <linearGradient id="wall-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#22262e" stop-opacity=".65"/>
+          <stop offset="1" stop-color="#101215" stop-opacity="0"/>
         </linearGradient>
-        <radialGradient id="g-iris" cx=".5" cy=".5" r=".5">
-          <stop offset="0" stop-color="#ffe7a0"/>
-          <stop offset=".6" stop-color="#ff9a3d"/>
-          <stop offset="1" stop-color="#8a2d0a"/>
-        </radialGradient>
+        <linearGradient id="vein-l" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#ff9c2a" stop-opacity="0"/>
+          <stop offset=".65" stop-color="#ff9c2a" stop-opacity=".45"/>
+          <stop offset="1" stop-color="#8cebe2" stop-opacity=".55"/>
+        </linearGradient>
+        <linearGradient id="vein-r" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#8cebe2" stop-opacity=".55"/>
+          <stop offset=".35" stop-color="#ff9c2a" stop-opacity=".45"/>
+          <stop offset="1" stop-color="#ff9c2a" stop-opacity="0"/>
+        </linearGradient>
       </defs>
-      <g class="ring" fill="none" stroke="#4fd1c5" stroke-opacity=".55" stroke-width="1">
-        <circle cx="60" cy="60" r="56" stroke-dasharray="2 6"/>
-        <path d="M60 2v8M60 110v8M2 60h8M110 60h8"/>
+
+      <!-- Carved Grey Stone Relief Backing -->
+      <rect width="1440" height="500" fill="url(#wall-grad)"/>
+
+      <!-- Giant Chiseled Orbital Circles on Mural Wall (Dark Groove + Pale Stone Rim) -->
+      <g fill="none">
+        <circle cx="720" cy="178" r="320" stroke="#090a0c" stroke-width="3"/>
+        <circle cx="720" cy="179" r="320" stroke="#7d8494" stroke-opacity=".22" stroke-width="1"/>
+        <circle cx="720" cy="178" r="245" stroke="#090a0c" stroke-width="2.5" stroke-dasharray="14 10"/>
+        <circle cx="720" cy="179" r="245" stroke="#7d8494" stroke-opacity=".2" stroke-width="1" stroke-dasharray="14 10"/>
+        <circle cx="720" cy="178" r="430" stroke="#7d8494" stroke-opacity=".1" stroke-width="1" stroke-dasharray="4 12"/>
       </g>
-      <polygon points="60,10 103,35 103,85 60,110 17,85 17,35" fill="#0b0f15" stroke="url(#g-gold)" stroke-width="2.5"/>
-      <polygon points="60,20 94,40 94,80 60,100 26,80 26,40" fill="none" stroke="#e8b85a" stroke-opacity=".3" stroke-width="1"/>
-      <path d="M26 60 Q60 28 94 60 Q60 92 26 60 Z" fill="url(#g-iris)" stroke="url(#g-gold)" stroke-width="2"/>
-      <ellipse class="pupil" cx="60" cy="60" rx="3.2" ry="19" fill="#0a0604"/>
-      <circle cx="68" cy="52" r="2.2" fill="#fff" opacity=".8"/>
-      <path d="M17 35 L8 30 M103 35 L112 30 M17 85 L8 90 M103 85 L112 90" stroke="#e8b85a" stroke-width="1.5" stroke-opacity=".6"/>
+
+      <!-- Left & Right Engraved Stone Mural Wings (Ancient Terraces & Celestial Spheres) -->
+      <g fill="none">
+        <!-- Left Mural Stepped Terraces & Planet Carvings -->
+        <path d="M40 310h165l28-36h78l24-30h90" stroke="#090a0c" stroke-width="3"/>
+        <path d="M40 311.5h165l28-36h78l24-30h90" stroke="#858c9c" stroke-opacity=".22" stroke-width="1"/>
+        <path d="M90 120h110v44h44v44h44" stroke="#090a0c" stroke-width="2.5"/>
+        <path d="M90 121.5h110v44h44v44h44" stroke="#858c9c" stroke-opacity=".18" stroke-width="1"/>
+        <circle cx="268" cy="168" r="46" stroke="#090a0c" stroke-width="2.5"/>
+        <circle cx="268" cy="169" r="46" stroke="#858c9c" stroke-opacity=".22" stroke-width="1"/>
+        <circle cx="155" cy="235" r="22" stroke="#858c9c" stroke-opacity=".18" stroke-width="1"/>
+        <!-- Stone fracture & Phlogiston trace -->
+        <path d="M180 264h140l24-24h92" stroke="url(#vein-l)" stroke-width="1.4"/>
+        <path d="M110 88l18 22-10 26 20 18" stroke="#090a0c" stroke-width="2"/>
+        <path d="M111 88l18 22-10 26 20 18" stroke="#ff9c2a" stroke-opacity=".24" stroke-width=".9"/>
+
+        <!-- Right Mural Mirrored -->
+        <path d="M1400 310h-165l-28-36h-78l-24-30h-90" stroke="#090a0c" stroke-width="3"/>
+        <path d="M1400 311.5h-165l-28-36h-78l-24-30h-90" stroke="#858c9c" stroke-opacity=".22" stroke-width="1"/>
+        <path d="M1350 120h-110v44h-44v44h-44" stroke="#090a0c" stroke-width="2.5"/>
+        <path d="M1350 121.5h-110v44h-44v44h-44" stroke="#858c9c" stroke-opacity=".18" stroke-width="1"/>
+        <circle cx="1172" cy="168" r="46" stroke="#090a0c" stroke-width="2.5"/>
+        <circle cx="1172" cy="169" r="46" stroke="#858c9c" stroke-opacity=".22" stroke-width="1"/>
+        <circle cx="1285" cy="235" r="22" stroke="#858c9c" stroke-opacity=".18" stroke-width="1"/>
+        <path d="M1260 264h-140l-24-24h-92" stroke="url(#vein-r)" stroke-width="1.4"/>
+        <path d="M1330 88l-18 22 10 26-20 18" stroke="#090a0c" stroke-width="2"/>
+        <path d="M1329 88l-18 22 10 26-20 18" stroke="#ff9c2a" stroke-opacity=".24" stroke-width=".9"/>
+      </g>
     </svg>
 
-    <p class="eyebrow">Fan-made Toolkit · Genshin Impact</p>
-    <h1>GENSHIN TOOLS</h1>
-    <p class="tagline">Forged tools for Travelers. Track your roster, trade your Arcana, and run the numbers before you go.</p>
-    <div class="divider" aria-hidden="true">◆</div>
-  </header>
+    <!-- Real-Time 3D-Projected Orbital Megastructure Canvas -->
+    <canvas id="orbital-canvas" aria-hidden="true"></canvas>
 
-  <main>
-    <div class="section-head">
-      <span>// <strong>Modules</strong></span>
-      <span id="sectionCount"></span>
+    <div class="hero-top">
+      <span class="archive-mark">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1Q13.5 10.5 23 12Q13.5 13.5 12 23Q10.5 13.5 1 12Q10.5 10.5 12 1Z" fill="currentColor"/></svg>
+        Traveler's Archive
+      </span>
+      <span class="hide-sm" id="moduleCount">— Relics Active</span>
     </div>
 
+    <header>
+      <div class="crest-anchor" id="crestAnchor" aria-hidden="true">
+        <div class="crest-glow"></div>
+        <svg class="crest-svg" viewBox="0 0 240 210">
+          <defs>
+            <linearGradient id="c-stone" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#4d5462"/>
+              <stop offset=".45" stop-color="#2c3039"/>
+              <stop offset="1" stop-color="#17191f"/>
+            </linearGradient>
+            <linearGradient id="c-gold" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff2c4"/>
+              <stop offset=".5" stop-color="#d4b06a"/>
+              <stop offset="1" stop-color="#7c6234"/>
+            </linearGradient>
+            <radialGradient id="c-core" cx=".5" cy=".5" r=".5">
+              <stop offset="0" stop-color="#fff9dc"/>
+              <stop offset=".42" stop-color="#ff9d2e"/>
+              <stop offset=".78" stop-color="#c94010" stop-opacity=".7"/>
+              <stop offset="1" stop-color="#181b20" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Floating Weathered Grey Stone Wing Fins -->
+          <g class="wing-l">
+            <line x1="16" y1="105" x2="72" y2="105" stroke="#8cebe2" stroke-opacity=".65" stroke-width="1.3"/>
+            <polygon points="76,88 38,83 28,96 28,114 38,127 76,122" fill="url(#c-stone)" stroke="#6f7685" stroke-width="1.3"/>
+            <polyline points="71,93 62,105 71,117" fill="none" stroke="#ff9c2a" stroke-width="1.8"/>
+            <polygon points="24,95 6,105 24,115 20,105" fill="#2c3039" stroke="url(#c-gold)" stroke-width="1.2"/>
+          </g>
+          <g class="wing-r">
+            <line x1="168" y1="105" x2="224" y2="105" stroke="#8cebe2" stroke-opacity=".65" stroke-width="1.3"/>
+            <polygon points="164,88 202,83 212,96 212,114 202,127 164,122" fill="url(#c-stone)" stroke="#6f7685" stroke-width="1.3"/>
+            <polyline points="169,93 178,105 169,117" fill="none" stroke="#ff9c2a" stroke-width="1.8"/>
+            <polygon points="216,95 234,105 216,115 220,105" fill="#2c3039" stroke="url(#c-gold)" stroke-width="1.2"/>
+          </g>
+
+          <!-- Top & Bottom Carved Grey Stone Capstone Shards -->
+          <polygon points="108,34 120,12 132,34 126,44 120,39 114,44" fill="url(#c-stone)" stroke="url(#c-gold)" stroke-width="1.4"/>
+          <polygon points="108,176 120,198 132,176 126,166 120,171 114,166" fill="url(#c-stone)" stroke="url(#c-gold)" stroke-width="1.4"/>
+
+          <!-- Central Stepped Grey Stone & Bronze Ring Monolith -->
+          <polygon
+            points="120,50 135,65 144,65 162,83 162,92 175,105 162,118 162,127 144,145 135,145 120,160 105,145 96,145 78,127 78,118 65,105 78,92 78,83 96,65 105,65"
+            fill="url(#c-stone)"
+            stroke="url(#c-gold)"
+            stroke-width="2.2"
+          />
+          <!-- Chiseled stone hairline + hairline fracture -->
+          <path d="M90 76l9 9M152 134l-10-10" stroke="#0c0e11" stroke-width="1.8"/>
+          <path d="M90 77l9 9M152 135l-10-10" stroke="#8cebe2" stroke-opacity=".45" stroke-width=".9"/>
+
+          <!-- Hollow Core Chamber -->
+          <circle cx="120" cy="105" r="34" fill="#111318" stroke="#6f7685" stroke-width="1.5"/>
+          <circle cx="120" cy="105" r="30" fill="url(#c-core)"/>
+          <circle cx="120" cy="105" r="24" fill="none" stroke="#8cebe2" stroke-opacity=".55" stroke-width="1" stroke-dasharray="4 5"/>
+
+          <!-- Concave 4-Point Genshin Astral Star -->
+          <g class="star-core">
+            <path d="M120 77Q123.5 101.5 148 105Q123.5 108.5 120 133Q116.5 108.5 92 105Q116.5 101.5 120 77Z" fill="#fff9e2" stroke="#ff9c2a" stroke-width="1"/>
+            <path d="M120 91Q121.8 103.2 134 105Q121.8 106.8 120 119Q118.2 106.8 106 105Q118.2 103.2 120 91Z" fill="#ffffff"/>
+          </g>
+        </svg>
+      </div>
+
+      <p class="eyebrow">Fan-made Toolkit · Genshin Impact</p>
+      <h1>GENSHIN TOOLS</h1>
+      <p class="tagline">Forged tools for Travelers. Track your roster, audit your wishes, calculate stamina, and trade your Arcana.</p>
+    </header>
+
+    <div class="sanctuary-bridge" aria-hidden="true">
+      <svg viewBox="0 0 1120 44" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="br-g" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#6f7685" stop-opacity="0"/>
+            <stop offset=".25" stop-color="#6f7685" stop-opacity=".5"/>
+            <stop offset=".5" stop-color="#ff9c2a"/>
+            <stop offset=".75" stop-color="#6f7685" stop-opacity=".5"/>
+            <stop offset="1" stop-color="#6f7685" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M40 22h420l18-12h164l18 12h420" fill="none" stroke="url(#br-g)" stroke-width="1.4"/>
+        <path d="M145 22v18M418 22v18M702 22v18M975 22v18" stroke="#6f7685" stroke-opacity=".35" stroke-width="1.2"/>
+        <polygon points="560,3 569,12 560,21 551,12" fill="#181b20" stroke="#e5be6e" stroke-width="1.5"/>
+        <circle cx="560" cy="12" r="2.5" fill="#8cebe2"/>
+      </svg>
+    </div>
+  </section>
+
+  <main>
     <div class="grid" id="tools">
       <noscript>
         <p>
           <a href="./roster/" target="_blank" rel="noopener">Genshin Roster</a> ·
-          <a href="./arcana/" target="_blank" rel="noopener">Arcana Collection</a> ·
+          <a href="./wish/" target="_blank" rel="noopener">Wish Ledger</a> ·
           <a href="./stamina/" target="_blank" rel="noopener">Stamina Calculator</a> ·
-          <a href="./wish/" target="_blank" rel="noopener">Wish Ledger</a>
+          <a href="./arcana/" target="_blank" rel="noopener">Arcana Collection</a>
         </p>
       </noscript>
     </div>
@@ -555,21 +906,30 @@
   <footer>
     <div>Fan-made tools for Genshin Impact. Not affiliated with HoYoverse.</div>
     <div>Genshin Impact and all related assets are trademarks of HoYoverse.</div>
-    <div class="mono">© <span id="year"></span> SCORNAE · <a href="https://github.com/scornae/genshin-tools" target="_blank" rel="noopener">GITHUB</a></div>
+    <div class="credit">© <span id="year"></span> SCORNAE · <a href="https://github.com/scornae/genshin-tools" target="_blank" rel="noopener">GITHUB</a></div>
   </footer>
 
   <script>
     /* =========================================================
        TOOL REGISTRY — to add a new tool, just add an object here
-       featured: true  -> large card spanning the full width
        status: "live" | "beta" | "soon"
        ========================================================= */
+    const STAR_GLYPH = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1Q13.5 10.5 23 12Q13.5 13.5 12 23Q10.5 13.5 1 12Q10.5 10.5 12 1Z" fill="currentColor"/></svg>';
+
+    // Custom engraved stone mural relief backgrounds per stele
+    const MURALS = {
+      roster: '<svg class="mural-bg" viewBox="0 0 280 102" preserveAspectRatio="xMidYMid slice"><g fill="none"><circle cx="140" cy="51" r="44" stroke="#0b0c0e" stroke-width="2.5"/><circle cx="140" cy="52" r="44" stroke="#858c9c" stroke-opacity=".25" stroke-width="1"/><path d="M24 51h66M190 51h66M140 7v14M140 81v14" stroke="#858c9c" stroke-opacity=".22" stroke-width="1"/><polygon points="86,51 94,43 102,51 94,59" stroke="#d4b06a" stroke-opacity=".4"/><polygon points="178,51 186,43 194,51 186,59" stroke="#d4b06a" stroke-opacity=".4"/></g></svg>',
+      wish: '<svg class="mural-bg" viewBox="0 0 280 102" preserveAspectRatio="xMidYMid slice"><g fill="none"><ellipse cx="140" cy="51" rx="84" ry="26" transform="rotate(-14 140 51)" stroke="#0b0c0e" stroke-width="2.5"/><ellipse cx="140" cy="52" rx="84" ry="26" transform="rotate(-14 140 52)" stroke="#8cebe2" stroke-opacity=".3" stroke-width="1"/><circle cx="204" cy="26" r="4" fill="#ff9c2a" fill-opacity=".45"/><circle cx="72" cy="72" r="3" fill="#8cebe2" fill-opacity=".45"/></g></svg>',
+      stamina: '<svg class="mural-bg" viewBox="0 0 280 102" preserveAspectRatio="xMidYMid slice"><g fill="none"><polygon points="140,10 182,51 140,92 98,51" stroke="#0b0c0e" stroke-width="2.5"/><polygon points="140,11 182,52 140,93 98,52" stroke="#ff9c2a" stroke-opacity=".32" stroke-width="1"/><path d="M18 68h58l14-17h12M262 34h-58l-14 17h-12" stroke="#858c9c" stroke-opacity=".24" stroke-width="1.2"/></g></svg>',
+      arcana: '<svg class="mural-bg" viewBox="0 0 280 102" preserveAspectRatio="xMidYMid slice"><g fill="none"><rect x="96" y="14" width="88" height="74" stroke="#0b0c0e" stroke-width="2.5"/><rect x="96" y="15" width="88" height="74" stroke="#858c9c" stroke-opacity=".22" stroke-width="1"/><circle cx="140" cy="51" r="34" stroke="#d4b06a" stroke-opacity=".3" stroke-width="1" stroke-dasharray="4 6"/><path d="M24 28h50M206 74h50" stroke="#858c9c" stroke-opacity=".22" stroke-width="1"/></g></svg>'
+    };
+
     const ICONS = {
-      roster: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><circle cx="17" cy="7" r="2.4"/><path d="M16 12.6c2.9.2 5 2.2 5 5.4"/></svg>',
-      arcana: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="1.5"/><path d="M14.5 8.5a3.5 3.5 0 1 0 0 5 3 3 0 1 1 0-5z"/><path d="M8 5h1M15 19h1"/></svg>',
-      stamina: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>',
-      wish: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 11.6l1.3 2.6 2.9.4-2.1 2 .5 2.9-2.6-1.4-2.6 1.4.5-2.9-2.1-2 2.9-.4z"/><path d="M12 12.5 20.5 4M14.5 15.5 21 9M9.5 8.5 14 4"/></svg>',
-      soon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+      roster: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5Q13 7 17.5 8Q13 9 12 13.5Q11 9 6.5 8Q11 7 12 2.5Z"/><path d="M4.5 20.5l2.4-5.5h10.2l2.4 5.5"/><circle cx="7.5" cy="11.5" r="1.5"/><circle cx="16.5" cy="11.5" r="1.5"/></svg>',
+      wish: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6.5Q10.2 12.8 16.5 14Q10.2 15.2 9 21.5Q7.8 15.2 1.5 14Q7.8 12.8 9 6.5Z"/><path d="M14 10L21 3M16.5 14.5L21.5 9.5M9.5 4.5L13 1"/></svg>',
+      stamina: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polygon points="13.5,2.5 5,13 11,13 9.5,21.5 19,10.5 13,10.5"/><path d="M4.5 6.5L6.5 4.5M17.5 19.5l2-2"/></svg>',
+      arcana: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polygon points="7,2.5 17,2.5 19.5,5 19.5,19 17,21.5 7,21.5 4.5,19 4.5,5"/><path d="M14.2 9a3.5 3.5 0 1 0 0 6 2.8 2.8 0 1 1 0-6z"/><path d="M8.5 6h2M13.5 18h2"/></svg>',
+      soon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><polygon points="12,3.5 20.5,12 12,20.5 3.5,12"/><path d="M12 8.5v7M8.5 12h7"/></svg>'
     };
 
     const TOOLS = [
@@ -578,17 +938,16 @@
         name: "Genshin Roster",
         href: "./roster/",
         status: "live",
-        featured: true,
         desc: "Record the characters you own and their constellations, build teams for Spiral Abyss, Stygian Onslaught and Imaginarium Theater, then share them as a link or an image.",
         tags: ["Character Tracker", "Team Builder", "Share Link / Image"]
       },
       {
-        id: "arcana",
-        name: "Arcana Collection",
-        href: "./arcana/",
+        id: "wish",
+        name: "Wish Ledger",
+        href: "./wish/",
         status: "live",
-        desc: "Mark the Arcana you own and the ones you still need, then generate a ready-to-share trade post to swap with other Travelers.",
-        tags: ["Collection Tracker", "Trade Post Generator"]
+        desc: "Load your paimon.moe wish export to see pity for every pull, your 50/50 and Radiance record, and your most pulled characters.",
+        tags: ["Wish History", "Pity & 50/50", "Desktop Only"]
       },
       {
         id: "stamina",
@@ -599,47 +958,40 @@
         tags: ["Calculator"]
       },
       {
-        id: "wish",
-        name: "Wish Ledger",
-        href: "./wish/",
+        id: "arcana",
+        name: "Arcana Collection",
+        href: "./arcana/",
         status: "live",
-        desc: "Load your paimon.moe wish export to see pity for every pull, your 50/50 and Radiance record, and your most pulled characters.",
-        tags: ["Wish History", "Pity & 50/50", "Desktop Only"]
+        desc: "Mark the Arcana you own and the ones you still need, then generate a ready-to-share trade post to swap with other Travelers.",
+        tags: ["Collection Tracker", "Trade Post Generator"]
       }
       // ,{ id: "new-tool", name: "New Tool", href: "./new-tool/", status: "beta", desc: "…", tags: ["…"] }
     ];
 
-    // Number of "Reserved" slots to show (set to 0 to hide them)
+    // Number of reserved next-project slots to show (set to 0 to hide)
     const PLACEHOLDER_SLOTS = 1;
 
-    const pad = n => String(n).padStart(2, "0");
+    const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+    const toRoman = idx => ROMAN[idx] || String(idx + 1);
     const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-
-    function badgeFor(tool) {
-      if (tool.featured) return '<span class="badge primary">Primary</span>';
-      if (tool.status === "beta") return '<span class="badge">Beta</span>';
-      if (tool.status === "soon") return '<span class="badge soon">Soon</span>';
-      return '<span class="badge">Online</span>';
-    }
 
     function renderTool(tool, i) {
       const tags = (tool.tags || []).map(t => `<li>${escapeHTML(t)}</li>`).join("");
+      const iconSVG = (ICONS[tool.id] || ICONS.soon).replace("<svg ", '<svg class="glyph-icon" ');
       return `
-        <a class="card${tool.featured ? " featured" : ""}" href="${tool.href}" target="_blank" rel="noopener" style="animation-delay:${i * 90}ms">
-          <div class="card-inner">
-            <div class="card-top">
-              <span>MOD-${pad(i + 1)}</span>
-              ${badgeFor(tool)}
+        <a class="stele" href="${tool.href}" target="_blank" rel="noopener" style="animation-delay:${i * 85}ms">
+          <div class="stele-inner">
+            <div class="stele-mural">
+              ${MURALS[tool.id] || ""}
+              <span class="numeral-tag">${toRoman(i)}</span>
+              <span class="corner-star">${STAR_GLYPH}</span>
+              <div class="holo-ring" aria-hidden="true"></div>
+              ${iconSVG}
             </div>
-            <div class="card-body">
-              <div class="icon">${ICONS[tool.id] || ICONS.soon}</div>
-              <div>
-                <h2>${escapeHTML(tool.name)}</h2>
-                <p>${escapeHTML(tool.desc)}</p>
-              </div>
-            </div>
+            <h2>${escapeHTML(tool.name)}</h2>
+            <p>${escapeHTML(tool.desc)}</p>
             ${tags ? `<ul class="chips">${tags}</ul>` : ""}
-            <div class="launch">
+            <div class="stele-foot">
               <span>Launch <span class="sr-only">(opens in a new tab)</span></span>
               <span class="arrow" aria-hidden="true">↗</span>
             </div>
@@ -649,11 +1001,16 @@
 
     function renderSlot(i) {
       return `
-        <div class="card slot" style="animation-delay:${i * 90}ms" aria-hidden="true">
-          <div class="card-inner">
-            <div class="icon">${ICONS.soon}</div>
-            <h2>MOD-${pad(i + 1)} · Reserved</h2>
-            <p>A new module is being forged</p>
+        <div class="stele slot" style="animation-delay:${i * 85}ms" aria-hidden="true">
+          <div class="stele-inner">
+            <div class="slot-left">
+              <div class="slot-emblem">${ICONS.soon}</div>
+              <div>
+                <h2>${toRoman(i)} · Unawakened Relic</h2>
+                <p>Reserved space for the next Traveler tool currently taking shape.</p>
+              </div>
+            </div>
+            <span class="slot-badge">Next Project</span>
           </div>
         </div>`;
     }
@@ -663,10 +1020,238 @@
     for (let s = 0; s < PLACEHOLDER_SLOTS; s++) html += renderSlot(TOOLS.length + s);
     grid.innerHTML = html;
 
+    // Balance equal grid columns automatically based on active tool count
+    const nTools = TOOLS.length;
+    if (nTools % 4 === 0) grid.dataset.cols = "4";
+    else if (nTools % 3 === 0) grid.dataset.cols = "3";
+    else grid.dataset.cols = "2";
+
     const live = TOOLS.filter(t => t.status !== "soon").length;
-    document.getElementById("moduleCount").textContent = `${pad(live)} Modules Active`;
-    document.getElementById("sectionCount").textContent = `${pad(live)} / ${pad(TOOLS.length + PLACEHOLDER_SLOTS)}`;
+    document.getElementById("moduleCount").textContent = `${String(live).padStart(2, "0")} Relics Active`;
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Interactive Pointer Light + 3D Orbital Megastructure & Sparks
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reducedMotion) {
+      // 1) Stele edge spotlight
+      let rafMove = false;
+      let mx = 0, my = 0;
+      const stelae = [...grid.querySelectorAll(".stele")];
+      grid.addEventListener("pointermove", e => {
+        mx = e.clientX;
+        my = e.clientY;
+        if (rafMove) return;
+        rafMove = true;
+        requestAnimationFrame(() => {
+          for (const el of stelae) {
+            const r = el.getBoundingClientRect();
+            el.style.setProperty("--mx", `${mx - r.left}px`);
+            el.style.setProperty("--my", `${my - r.top}px`);
+          }
+          rafMove = false;
+        });
+      });
+
+      // 2) 3D-Projected Orbital Space-Station Gyroscope Canvas locked onto Hero Crest
+      const oCanvas = document.getElementById("orbital-canvas");
+      const oCtx = oCanvas.getContext("2d");
+      const stage = document.querySelector(".hero-stage");
+      const anchor = document.getElementById("crestAnchor");
+
+      let ow = 0, oh = 0, cx = 0, cy = 0;
+      let targetTiltX = 0, targetTiltY = 0, curTiltX = 0, curTiltY = 0;
+
+      const resizeOrbital = () => {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const sr = stage.getBoundingClientRect();
+        const ar = anchor.getBoundingClientRect();
+        ow = sr.width;
+        oh = sr.height;
+        cx = ar.left - sr.left + ar.width / 2;
+        cy = ar.top - sr.top + ar.height / 2 - 4;
+        oCanvas.width = ow * dpr;
+        oCanvas.height = oh * dpr;
+        oCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+      resizeOrbital();
+      window.addEventListener("resize", resizeOrbital);
+
+      window.addEventListener("pointermove", e => {
+        targetTiltY = ((e.clientX / window.innerWidth) - 0.5) * 0.28;
+        targetTiltX = ((e.clientY / window.innerHeight) - 0.5) * -0.22;
+      });
+
+      function rot3(x, y, z, rx, ry, rz) {
+        const cy1 = Math.cos(rx), sy1 = Math.sin(rx);
+        const y1 = y * cy1 - z * sy1, z1 = y * sy1 + z * cy1;
+        const cy2 = Math.cos(ry), sy2 = Math.sin(ry);
+        const x2 = x * cy2 + z1 * sy2, z2 = -x * sy2 + z1 * cy2;
+        const cz = Math.cos(rz), sz = Math.sin(rz);
+        return { x: x2 * cz - y1 * sz, y: x2 * sz + y1 * cz, z: z2 };
+      }
+
+      function proj(p, fov = 780) {
+        const s = fov / (fov + p.z);
+        return { x: cx + p.x * s, y: cy + p.y * s, z: p.z, s };
+      }
+
+      function drawOrbitalRing(radius, rx, ry, rz, segments, stroke, width, dashed) {
+        oCtx.save();
+        oCtx.strokeStyle = stroke;
+        oCtx.lineWidth = width;
+        if (dashed) oCtx.setLineDash(dashed);
+        oCtx.beginPath();
+        for (let i = 0; i <= segments; i++) {
+          const a = (i / segments) * Math.PI * 2;
+          const p = proj(rot3(Math.cos(a) * radius, Math.sin(a) * radius, 0, rx, ry, rz));
+          if (i === 0) oCtx.moveTo(p.x, p.y);
+          else oCtx.lineTo(p.x, p.y);
+        }
+        oCtx.stroke();
+        oCtx.restore();
+      }
+
+      function drawSatNode(radius, angle, rx, ry, rz, color, size) {
+        const p = proj(rot3(Math.cos(angle) * radius, Math.sin(angle) * radius, 0, rx, ry, rz));
+        const r = size * p.s;
+        const g = oCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 4);
+        g.addColorStop(0, color);
+        g.addColorStop(1, "rgba(0,0,0,0)");
+        oCtx.fillStyle = g;
+        oCtx.beginPath();
+        oCtx.arc(p.x, p.y, r * 4, 0, Math.PI * 2);
+        oCtx.fill();
+
+        oCtx.fillStyle = "#fff9e6";
+        oCtx.beginPath();
+        oCtx.arc(p.x, p.y, r * 0.8, 0, Math.PI * 2);
+        oCtx.fill();
+      }
+
+      // Floating carved grey stone monolith shards in orbit
+      const stoneShards = [
+        { rad: 255, ang: 0.4, spd: 0.12, h: 38, w: 14, ry: 0.3 },
+        { rad: 270, ang: 2.3, spd: 0.09, h: -42, w: 16, ry: -0.4 },
+        { rad: 245, ang: 3.9, spd: 0.11, h: 24, w: 12, ry: 0.5 },
+        { rad: 265, ang: 5.2, spd: 0.1, h: -28, w: 15, ry: -0.25 }
+      ];
+
+      let t = 0;
+      let oRaf = 0;
+
+      // 3) Subtle floating sparks across full page
+      const sCanvas = document.getElementById("sparks-canvas");
+      const sCtx = sCanvas.getContext("2d");
+      let sw = 0, sh = 0;
+      const resizeSparks = () => {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        sw = window.innerWidth;
+        sh = window.innerHeight;
+        sCanvas.width = sw * dpr;
+        sCanvas.height = sh * dpr;
+        sCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+      resizeSparks();
+      window.addEventListener("resize", resizeSparks);
+
+      const sparks = Array.from({ length: sw < 640 ? 18 : 34 }, (_, i) => ({
+        x: Math.random() * sw,
+        y: Math.random() * sh,
+        r: 1 + Math.random() * 1.9,
+        vy: 0.18 + Math.random() * 0.34,
+        phase: Math.random() * Math.PI * 2,
+        a: 0.18 + Math.random() * 0.45,
+        cyan: i % 5 === 0
+      }));
+
+      const frame = () => {
+        t += 0.008;
+        curTiltX += (targetTiltX - curTiltX) * 0.05;
+        curTiltY += (targetTiltY - curTiltY) * 0.05;
+
+        // Draw 3D Orbital Megastructure
+        oCtx.clearRect(0, 0, ow, oh);
+        const scaleHero = Math.min(1, ow / 680);
+
+        // Geodesic Wireframe Sphere (subtle ancient telemetry)
+        const geoR = 136 * scaleHero;
+        for (let g = 0; g < 3; g++) {
+          drawOrbitalRing(geoR, 0.35 + curTiltX, t * 0.35 + (g * Math.PI) / 3 + curTiltY, 0.2, 48, "rgba(182, 189, 202, 0.11)", 1);
+        }
+
+        // Ring 1: Outer Stone-Bronze Equatorial Trajectory
+        const r1 = 235 * scaleHero;
+        drawOrbitalRing(r1, 1.12 + curTiltX, 0.22 + curTiltY, t * 0.22, 80, "rgba(199, 166, 103, 0.34)", 1.3, [14, 8]);
+        drawSatNode(r1, t * 0.7, 1.12 + curTiltX, 0.22 + curTiltY, t * 0.22, "rgba(255, 196, 102, 0.75)", 3.2);
+
+        // Ring 2: Molten Phlogiston Inclined Orbit
+        const r2 = 192 * scaleHero;
+        drawOrbitalRing(r2, -0.94 + curTiltX, 0.44 + curTiltY, -t * 0.3, 72, "rgba(255, 156, 42, 0.52)", 1.5);
+        drawSatNode(r2, -t * 0.9, -0.94 + curTiltX, 0.44 + curTiltY, -t * 0.3, "rgba(255, 140, 32, 0.85)", 3.8);
+        drawSatNode(r2, -t * 0.9 + Math.PI, -0.94 + curTiltX, 0.44 + curTiltY, -t * 0.3, "rgba(255, 224, 150, 0.8)", 2.8);
+
+        // Ring 3: High-Tech Astral-Cyan Holographic Telemetry Ring
+        const r3 = 152 * scaleHero;
+        drawOrbitalRing(r3, 0.68 + curTiltX, -0.58 + curTiltY, t * 0.45, 64, "rgba(140, 235, 226, 0.44)", 1.2, [5, 7]);
+        drawSatNode(r3, t * 1.15, 0.68 + curTiltX, -0.58 + curTiltY, t * 0.45, "rgba(140, 235, 226, 0.85)", 3);
+
+        // Orbiting Floating Stone Monolith Shards (only on wider viewports so text stays clean)
+        if (ow > 720) {
+          for (const shd of stoneShards) {
+            const ang = shd.ang + t * shd.spd;
+            const p = proj(rot3(Math.cos(ang) * shd.rad, shd.h, Math.sin(ang) * shd.rad * 0.55, 0.25 + curTiltX, curTiltY, 0));
+            const sz = shd.w * p.s;
+            oCtx.save();
+            oCtx.translate(p.x, p.y);
+            oCtx.rotate(ang * 0.3 + shd.ry);
+            oCtx.beginPath();
+            oCtx.moveTo(0, -sz);
+            oCtx.lineTo(sz * 0.65, -sz * 0.25);
+            oCtx.lineTo(sz * 0.5, sz * 0.85);
+            oCtx.lineTo(-sz * 0.5, sz * 0.85);
+            oCtx.lineTo(-sz * 0.65, -sz * 0.25);
+            oCtx.closePath();
+            const depthAlpha = Math.max(0.2, Math.min(0.85, 0.58 - p.z / 700));
+            oCtx.fillStyle = `rgba(46, 51, 61, ${depthAlpha})`;
+            oCtx.fill();
+            oCtx.strokeStyle = `rgba(199, 166, 103, ${depthAlpha * 0.8})`;
+            oCtx.lineWidth = 1.1;
+            oCtx.stroke();
+            oCtx.restore();
+          }
+        }
+
+        // Draw Drifting Sparks
+        sCtx.clearRect(0, 0, sw, sh);
+        for (const sp of sparks) {
+          sp.phase += 0.015;
+          sp.y -= sp.vy;
+          sp.x += Math.sin(sp.phase) * 0.18;
+          if (sp.y < -12) { sp.y = sh + 12; sp.x = Math.random() * sw; }
+          const grad = sCtx.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, sp.r * 4.5);
+          if (sp.cyan) {
+            grad.addColorStop(0, `rgba(140, 235, 226, ${sp.a})`);
+            grad.addColorStop(1, "rgba(140, 235, 226, 0)");
+          } else {
+            grad.addColorStop(0, `rgba(255, 228, 150, ${sp.a})`);
+            grad.addColorStop(0.5, `rgba(255, 140, 32, ${sp.a * 0.4})`);
+            grad.addColorStop(1, "rgba(255, 98, 23, 0)");
+          }
+          sCtx.fillStyle = grad;
+          sCtx.beginPath();
+          sCtx.arc(sp.x, sp.y, sp.r * 4.5, 0, Math.PI * 2);
+          sCtx.fill();
+        }
+
+        oRaf = requestAnimationFrame(frame);
+      };
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) cancelAnimationFrame(oRaf);
+        else oRaf = requestAnimationFrame(frame);
+      });
+      oRaf = requestAnimationFrame(frame);
+    }
   </script>
 </body>
 </html>
