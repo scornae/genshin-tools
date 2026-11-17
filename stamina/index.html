@@ -1,60 +1,57 @@
+
 <!DOCTYPE html>
 <!--
 HANDOFF NOTES. File-level facts only. Update this block in the same change whenever a rule or structure changes.
 WHAT IT IS
-Single-file stamina/energy recovery calculator for gacha games, plus quick +/- energy adjust and custom day/hour
-cooldown timers. Visitors enter max energy, minutes per point, current energy, an optional target and an optional cost
-per stage, press Calculate, and get a live countdown, a gauge, a stage schedule (up to 10 runs) and a saveable JPG.
+Single-file stamina/energy recovery calculator for gacha games with a sidebar layout (bottom tab bar on phones).
+Views: Overview/Calculator (gauge, countdown, quick adjust), Stage Schedule (up to 10 runs), Cooldowns (custom day+hour
+timers), Drift Lab (evidence log comparing the page's 8-minute rhythm with the game's Replenish in time).
 English only. No build step, no external data, no routine updates.
-Hosting: the canonical URL in the head is the stamina/ folder of the genshin-tools site, so the deployed file must be
-named index.html with og-preview.jpg beside it (static 1200x630 card made outside this file; redo it if the look changes).
-Only outside request: Google Fonts (Cinzel, Cormorant Garamond). The favicon is an inline SVG data URI.
+Hosting: canonical URL is the stamina/ folder of the genshin-tools site, so the deployed file must be named index.html
+with og-preview.jpg beside it (static 1200x630 card made outside this file; redo it if the look changes).
+Only outside request: Google Fonts (Cinzel, Plus Jakarta Sans). The favicon is an inline SVG data URI.
 WHERE THINGS LIVE (search these names)
-STORE, MAX_RUNS, inputIds   storage key, cap on schedule rows, the five input ids (max, per, cur, target, cost)
-COOLDOWN_STORE              storage key (stamina-cooldowns-v1) for custom day+hour cooldown timers
-calculate()                 computes fresh results from the five fields and sets the anchor time S.at
-applyAdjust(), undoAdjust() quick +/- energy adjustment (one Undo step: small ↶ icon shown only after Apply, memory only, cleared by Calculate/Clear data); advances S.at only by integer multiples of perMs() so the
-                            ongoing recovery tick phase is preserved to the millisecond (starts a fresh cycle at now
-                            only when spending down below max from a full/capped state)
+STORE, MAX_RUNS, inputIds   storage key, cap on schedule rows, the five input ids (max, per, cur, nextCal, cost)
+COOLDOWN_STORE, AUDIT_STORE keys for custom cooldowns (stamina-cooldowns-v1) and Drift Lab data (stamina-audit-v1)
+calculate()                 computes fresh results from the fields, sets the anchor time S.at and starts Drift baseline #0
+applyAdjust(), undoAdjust() quick +/- energy adjustment with presets 20/40/60; one Undo step (memory only, cleared by
+                            Calculate/Clear data). Advances S.at only by whole multiples of perMs() so the recovery
+                            tick phase is preserved; starts a fresh cycle only when spending from a full state
 rawEnergy(), reachTs()      energy now, and when a given energy is reached, both derived from S.at
-update(), renderRuns()      repaint once a second; stage table and cooldown rows update live
-setGauge(), drawGauge()     page gauge (SVG) and saved-image gauge (canvas); keep the two looks in sync
-drawSnapshot(), saveImage() draw the JPG and download it at once as stamina-timer.jpg, with no preview dialog
+update(), renderRuns()      repaint once a second; stage table (Needs, Wait, Ready at) and cooldown rows update live
+setGauge(), initGaugeMarks() gauge SVG (Roman numerals, dial stars, ticks); night-sky canvas #sky is the background
+captureSnap(), recordAuditCheck(), renderAudit(), copyBugReport(), exportAuditJson()  Drift Lab
+setView(), VIEW_TITLES      switch between the five views
 STORAGE (localStorage only; no URL parameters or hash)
-Key stamina-calc-v3 holds inputs (the five field values) and calc (at, max, perMin, cur, target, cost, warn, sig).
-Do not rename it or change that shape without a migration: running timers are stored there.
-Key stamina-cooldowns-v1 holds custom cooldown timers [{id, name, days, hours, durMs, startAt}].
-Clear data asks inline confirmation and removes stamina-calc-v3, stamina-calc-v2, and stamina-cooldowns-v1.
+Key stamina-calc-v3 holds inputs and calc (at, max, perMin, cur, cost, warn, sig). Do not rename it or change that
+shape without a migration: running timers are stored there. Cooldowns and audit keys hold arrays/objects of their own.
+Clear data asks inline confirmation and removes stamina-calc-v3, stamina-calc-v2, cooldowns and audit keys.
 RULES ALREADY DECIDED
-1. Main form results change only on Calculate or Enter, except Quick Adjust which immediately updates live energy
-   without resetting the ongoing recovery cycle. Editing a form field saves it and shows a hint; it never recalculates.
+1. Results change only on Calculate or Enter, except Quick Adjust which updates live energy without resetting the cycle.
 2. The timer is anchored to the Calculate moment, so reopening the page continues the countdown. Never re-anchor on load.
-3. Clear data asks inline confirmation, wipes calculator + cooldown keys and resets state. A blank target means max energy.
-4. Ready at uses full weekday and month words (fmtLong); the stage table uses the short form (fmtClock).
-5. The saved image heading reads STAMINA TIMER (avoid the word Snapshot on screen). Header line: Genshin Impact // Stamina Recovery.
-6. Palette: near-neutral black, gold, soft white, cyan only as a tiny jewel accent. Keep it clearly different from Roster and Arcana.
+3. Header line: Genshin Impact // Stamina Recovery. Site name stays Stamina Recovery (not Astral Timer / Studio).
+4. Palette: near-neutral black, gold, soft white; richer accent colours are allowed on stat cards and Drift Lab.
+   Keep it clearly different from Roster and Arcana. Ready now is soft glowing mint text. Needs has no unit.
+5. Drift Lab compares against the browser clock, so ask the user to sync the PC clock before collecting readings.
 REMOVED, DO NOT ADD BACK
-Game preset dropdown, the time-until-next-point field, the If I come back in panel, the Reset button,
-minutes on custom cooldowns, server-reset timers, the preview dialog for the saved image.
+Game preset dropdown, the If I come back in panel, the Reset button, minutes on custom cooldowns, server-reset timers,
+saved-image feature (Save image), the Target energy field.
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Stamina Recovery Calculator — Genshin Tools</title>
-  <meta name="description" content="Know the exact hour your energy returns. A fan-made stamina recovery calculator with quick energy adjust, custom cooldown timers, live stage schedule and saveable image.">
-  <meta name="theme-color" content="#0c0c0e">
+  <meta name="description" content="Know the exact hour your energy returns. A fan-made stamina recovery calculator with quick energy adjust, custom cooldown timers, live stage schedule and a timer drift log.">
+  <meta name="theme-color" content="#08080b">
   <link rel="canonical" href="https://scornae.github.io/genshin-tools/stamina/">
-
-  <!-- Favicon: celestial hourglass -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23101012' stroke='%23e9c77b' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='24' fill='none' stroke='%23e9c77b' stroke-opacity='.5' stroke-width='1.5' stroke-dasharray='1.5 4.8'/%3E%3Cpath d='M21 15h22M21 49h22' stroke='%23fff1c9' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M24 16c0 9 6 12 6 16s-6 7-6 16h16c0-9-6-12-6-16s6-7 6-16z' fill='none' stroke='%23e9c77b' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpath d='M27 22h10l-5 7z' fill='%23e9c77b'/%3E%3Cpath d='M26.5 47c1-5 3.5-7 5.5-8.5 2 1.5 4.5 3.5 5.5 8.5z' fill='%23e9c77b'/%3E%3Ccircle cx='32' cy='35' r='1.2' fill='%238fe3ff'/%3E%3C/svg%3E">
 
   <!-- Open Graph / Social preview -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Genshin Tools">
   <meta property="og:url" content="https://scornae.github.io/genshin-tools/stamina/">
   <meta property="og:title" content="Stamina Recovery Calculator">
-  <meta property="og:description" content="Know the exact hour your energy returns. Live timer, quick adjust, cooldown timers and saveable image.">
+  <meta property="og:description" content="Know the exact hour your energy returns. Live timer, quick adjust, cooldown timers and a timer drift log.">
   <meta property="og:image" content="https://scornae.github.io/genshin-tools/stamina/og-preview.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -64,342 +61,1156 @@ minutes on custom cooldowns, server-reset timers, the preview dialog for the sav
   <meta name="twitter:description" content="Know the exact hour your energy returns.">
   <meta name="twitter:image" content="https://scornae.github.io/genshin-tools/stamina/og-preview.jpg">
 
+  <!-- Favicon: celestial hourglass -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230c0c10' stroke='%23e9c77b' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='24' fill='none' stroke='%23e9c77b' stroke-opacity='.45' stroke-width='1.5' stroke-dasharray='1.5 4.8'/%3E%3Cpath d='M21 15h22M21 49h22' stroke='%23fff1c9' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M24 16c0 9 6 12 6 16s-6 7-6 16h16c0-9-6-12-6-16s6-7 6-16z' fill='none' stroke='%23e9c77b' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpath d='M27 22h10l-5 7z' fill='%23e9c77b'/%3E%3Cpath d='M26.5 47c1-5 3.5-7 5.5-8.5 2 1.5 4.5 3.5 5.5 8.5z' fill='%23e9c77b'/%3E%3Ccircle cx='32' cy='35' r='1.3' fill='%238fe3ff'/%3E%3C/svg%3E">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --gold:#e9c77b; --gold-l:#fff1c9; --gold-d:#a07a36;
-      --silver:#cfcfd6; --aqua:#8fe3ff; --rose:#ff8fa3; --mint:#9ff0c9;
-      --ink:#f2f0ec; --muted:#a3a2a8; --line:rgba(233,199,123,.22);
-      --disp:"Cinzel", Georgia, serif;
-      --body:"Cormorant Garamond", Georgia, serif;
-    }
-    *{box-sizing:border-box}
-    html{color-scheme:dark; overflow-x:clip}
-    [hidden]{display:none !important}
-    body{
-      margin:0; min-height:100vh; overflow-x:hidden; overflow-x:clip;
-      color:var(--ink); font-family:var(--body); font-size:18px; line-height:1.55;
-      background:
-        radial-gradient(ellipse 70% 50% at 50% -5%, rgba(233,199,123,.10), transparent 60%),
-        radial-gradient(ellipse 60% 45% at 10% 90%, rgba(200,205,230,.06), transparent 60%),
-        radial-gradient(ellipse 55% 45% at 95% 70%, rgba(233,199,123,.08), transparent 60%),
-        linear-gradient(180deg,#101012 0%,#09090a 55%,#040405 100%);
-      background-attachment:fixed;
+    /* ==========================================================================
+       DESIGN SYSTEM TOKENS
+       ========================================================================== */
+    :root {
+      --bg-base: #07070a;
+      --gold: #e9c77b;
+      --gold-l: #fff1c9;
+      --gold-d: #9e7834;
+      --aqua: #8fe3ff;
+      --mint: #86efac;
+      --rose: #ff8fa3;
+      --amber: #fbbf24;
+      --ink: #f4f2ee;
+      --ink-soft: #d5d3dc;
+      --muted: #93929d;
+
+      /* Glassmorphism Surfaces */
+      --glass-panel: linear-gradient(155deg, rgba(28, 28, 36, 0.74), rgba(13, 13, 18, 0.84));
+      --glass-card: linear-gradient(160deg, rgba(34, 34, 44, 0.56), rgba(16, 16, 22, 0.72));
+      --glass-bar: rgba(11, 11, 16, 0.82);
+      --glass-input: rgba(7, 7, 10, 0.75);
+
+      /* Borders & Shadows */
+      --border: rgba(233, 199, 123, 0.16);
+      --border-strong: rgba(233, 199, 123, 0.36);
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      --shadow-lg: 0 24px 64px -24px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 241, 201, 0.09);
+      --shadow-sm: 0 10px 28px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 241, 201, 0.06);
+
+      /* Typography */
+      --font-disp: "Cinzel", Georgia, serif;
+      --font-ui: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+
+      /* Layout */
+      --r-xl: 22px;
+      --r-lg: 16px;
+      --r-md: 12px;
+      --sidebar-w: 264px;
+      --topbar-h: 64px;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    /* ---------- Celestial background ---------- */
-    #astro{
-      position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; opacity:.6;
-      -webkit-mask-image:radial-gradient(circle at 50% 45%, #000 22%, transparent 72%);
-              mask-image:radial-gradient(circle at 50% 45%, #000 22%, transparent 72%);
-      transform:translate3d(var(--px,0px),var(--py,0px),0);
-      transition:transform .8s ease-out;
+    *, *::before, *::after { box-sizing: border-box; }
+    html {
+      color-scheme: dark;
+      scroll-behavior: smooth;
+      -webkit-tap-highlight-color: transparent;
     }
-    #astro .ln{fill:none; stroke:var(--gold); stroke-opacity:.34; stroke-width:1.2}
-    #astro .faint{stroke-opacity:.15}
-    #astro .num{fill:var(--gold); fill-opacity:.42; font-family:var(--disp); font-size:24px; font-weight:600; letter-spacing:2px}
-    #astro .gem{fill:var(--gold); fill-opacity:.35}
-    #astro .rot{transform-box:view-box; transform-origin:500px 500px; animation:spin 240s linear infinite}
-    #astro .rot.rev{animation-direction:reverse; animation-duration:420s}
-    #astro .rot.fast{animation-duration:110s}
-    #astro .orbit-dot{fill:var(--aqua); filter:drop-shadow(0 0 6px var(--aqua))}
-    #astro .orbit-dot.gold{fill:var(--gold-l); filter:drop-shadow(0 0 6px var(--gold))}
-    #astro .hand{stroke-linecap:round}
-    #astro .hand.h{stroke:var(--gold); stroke-opacity:.42; stroke-width:7}
-    #astro .hand.m{stroke:var(--gold-l); stroke-opacity:.36; stroke-width:4}
-    #astro .hand.s{stroke:var(--aqua); stroke-opacity:.5; stroke-width:1.6}
-    #astro .pin{fill:var(--gold); fill-opacity:.5}
-    #sky{position:fixed; inset:0; width:100%; height:100%; z-index:1; pointer-events:none}
-    .veil{position:fixed; inset:0; z-index:2; pointer-events:none;
-      background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%)}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    [hidden] { display: none !important; }
 
-    .wrap{position:relative; z-index:3; max-width:1060px; margin:0 auto; padding:56px 22px 70px}
-
-    /* ---------- Header ---------- */
-    header{text-align:center; margin-bottom:40px; animation:rise 1s cubic-bezier(.22,1,.36,1) both}
-    .kicker{display:inline-flex; align-items:center; gap:12px; margin:0 0 18px;
-      font-family:var(--disp); font-size:12px; letter-spacing:.42em; text-transform:uppercase; color:var(--gold)}
-    .ic{width:16px; height:16px; fill:currentColor; flex-shrink:0}
-    h1{
-      margin:0; font-family:var(--disp); font-weight:700; font-size:clamp(34px,6.4vw,64px);
-      line-height:1.08; letter-spacing:.06em;
-      background:linear-gradient(100deg,#b88a3e 0%,#fff1c9 22%,#e9c77b 40%,#ffffff 50%,#e9c77b 60%,#fff1c9 78%,#b88a3e 100%);
-      background-size:250% 100%;
-      -webkit-background-clip:text; background-clip:text; color:transparent;
-      filter:drop-shadow(0 0 28px rgba(233,199,123,.25));
-      animation:sheen 9s ease-in-out infinite;
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--ink);
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(ellipse 65% 45% at 55% -10%, rgba(233, 199, 123, 0.13), transparent 65%),
+        radial-gradient(ellipse 45% 40% at 95% 25%, rgba(143, 227, 255, 0.05), transparent 60%),
+        radial-gradient(ellipse 50% 45% at 15% 95%, rgba(233, 199, 123, 0.07), transparent 60%),
+        linear-gradient(180deg, #0c0c10 0%, #070709 60%, #040406 100%);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
-    @keyframes sheen{0%,100%{background-position:100% 0}50%{background-position:0 0}}
-    .motto{margin:14px 0 0; font-style:italic; font-size:20px; color:var(--silver); opacity:.8}
-    .rule{display:flex; align-items:center; justify-content:center; gap:16px; max-width:460px; margin:22px auto; color:var(--gold)}
-    .rule::before,.rule::after{content:""; flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--gold))}
-    .rule::after{background:linear-gradient(270deg,transparent,var(--gold))}
-    .rule .ic{width:24px; height:24px; filter:drop-shadow(0 0 8px rgba(233,199,123,.6));
-      animation:flip 8s cubic-bezier(.7,0,.3,1) infinite}
-    @keyframes flip{0%,42%{transform:rotate(0)}50%,92%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
-    .lead{max-width:620px; margin:0 auto; color:#bdbcc4; font-size:19px}
 
-    /* ---------- Panels ---------- */
-    .panel{
-      position:relative; padding:28px; border-radius:22px;
-      background:linear-gradient(160deg,rgba(36,36,42,.62),rgba(13,13,16,.74));
-      border:1px solid var(--line);
-      box-shadow:0 30px 80px -30px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,241,201,.08);
-      -webkit-backdrop-filter:blur(10px) saturate(130%); backdrop-filter:blur(10px) saturate(130%);
-      animation:rise 1s cubic-bezier(.22,1,.36,1) both;
-    }
-    .panel::before{content:""; position:absolute; inset:7px; border-radius:16px; border:1px solid rgba(233,199,123,.09); pointer-events:none}
-    .panel::after{
-      content:""; position:absolute; inset:-6px 0; pointer-events:none;
-      background:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 0L12 6L6 12L0 6Z' fill='%23e9c77b'/%3E%3C/svg%3E") center top/12px no-repeat,
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 0L12 6L6 12L0 6Z' fill='%23e9c77b'/%3E%3C/svg%3E") center bottom/12px no-repeat;
-    }
-    @keyframes rise{from{opacity:0; transform:translateY(18px)}to{opacity:1; transform:none}}
-    @keyframes breath{0%,100%{opacity:.7}50%{opacity:1}}
+    button, input { touch-action: manipulation; }
 
-    /* ---------- Hero / gauge ---------- */
-    .hero{display:grid; grid-template-columns:minmax(260px,360px) 1fr; gap:40px; align-items:center;
-      padding:36px 38px; margin-bottom:26px; animation-delay:.12s}
-    .orb-wrap{position:relative; aspect-ratio:1; width:100%; max-width:360px; margin:0 auto}
-    .orb-wrap::before{content:""; position:absolute; inset:-14%; border-radius:50%;
-      background:radial-gradient(circle,rgba(233,199,123,.20),rgba(233,199,123,.08) 45%,transparent 70%);
-      filter:blur(6px); animation:breath 6s ease-in-out infinite}
-    .orb-wrap::after{content:""; position:absolute; inset:-5%; border-radius:50%;
-      border:1px dashed rgba(233,199,123,.28); animation:spin 70s linear infinite}
-    #gauge{position:relative; z-index:1; display:block; width:100%; height:100%;
-      filter:drop-shadow(0 22px 40px rgba(0,0,0,.65))}
-    #gauge .spin{transform-box:view-box; transform-origin:150px 150px; animation:spin 140s linear infinite}
+    .ambient-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .ambient-grid {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(233, 199, 123, 0.11) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 80% 70% at 55% 30%, #000 10%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 70% at 55% 30%, #000 10%, transparent 80%);
+      opacity: 0.32;
+    }
+    .ambient-astrolabe {
+      position: absolute;
+      top: -180px;
+      right: -160px;
+      width: 720px;
+      height: 720px;
+      opacity: 0.11;
+      animation: spinSlow 220s linear infinite;
+    }
+    @keyframes spinSlow { to { transform: rotate(360deg); } }
+
+    .tnum { font-variant-numeric: tabular-nums lining-nums; }
+
+    /* ==========================================================================
+       APP SHELL (SIDEBAR + TOPBAR + MOBILE BOTTOM NAV)
+       ========================================================================== */
+    .app-shell { position: relative; z-index: 1; display: flex; min-height: 100vh; }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-w);
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      background: linear-gradient(180deg, rgba(16, 16, 22, 0.9), rgba(9, 9, 13, 0.95));
+      border-right: 1px solid var(--border);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 8px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 18px;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(233, 199, 123, 0.22), rgba(233, 199, 123, 0.04));
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 6px 18px -6px rgba(233, 199, 123, 0.35);
+      color: var(--gold-l);
+      flex-shrink: 0;
+    }
+    .brand-title { margin: 0; font-family: var(--font-disp); font-size: 14.5px; font-weight: 700; letter-spacing: 0.08em; color: var(--gold-l); line-height: 1.2; }
+    .brand-sub { display: block; font-size: 11px; font-weight: 500; color: var(--muted); margin-top: 2px; }
+
+    .nav-label { margin: 0 0 8px 10px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); }
+    .nav-list { display: flex; flex-direction: column; gap: 4px; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--r-md);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink-soft);
+      font-family: var(--font-ui);
+      font-size: 13.5px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+    }
+    .nav-item-left { display: flex; align-items: center; gap: 10px; }
+    .nav-item svg { width: 17px; height: 17px; color: var(--muted); flex-shrink: 0; transition: color 0.2s; }
+    .nav-item:hover { background: rgba(233, 199, 123, 0.06); color: var(--gold-l); }
+    .nav-item:hover svg { color: var(--gold); }
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(233, 199, 123, 0.16), rgba(233, 199, 123, 0.04));
+      border-color: rgba(233, 199, 123, 0.28);
+      color: var(--gold-l);
+      font-weight: 600;
+    }
+    .nav-item.active svg { color: var(--gold-l); }
+
+    .nav-badge {
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      border: 1px solid var(--border-subtle);
+    }
+    .nav-item.active .nav-badge { background: rgba(233, 199, 123, 0.16); color: var(--gold-l); border-color: rgba(233, 199, 123, 0.28); }
+
+    .sidebar-foot { margin-top: auto; padding-top: 16px; }
+    .mini-telemetry { padding: 14px; border-radius: var(--r-lg); background: var(--glass-card); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .mini-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .mini-val { font-size: 20px; font-weight: 700; color: var(--gold-l); line-height: 1.1; }
+    .mini-val span { font-size: 13px; font-weight: 500; color: var(--muted); }
+    .mini-track { height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); margin: 10px 0 8px; overflow: hidden; }
+    .mini-fill { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, var(--gold-d), var(--gold), var(--gold-l)); box-shadow: 0 0 10px rgba(233, 199, 123, 0.5); transition: width 0.6s var(--ease); }
+    .mini-sub { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; justify-content: space-between; }
+    .mini-sub b { color: var(--aqua); font-weight: 600; }
+
+    .main-wrap { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-width: 0; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      height: var(--topbar-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 28px;
+      background: var(--glass-bar);
+      border-bottom: 1px solid var(--border-subtle);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .mobile-brand-mark {
+      display: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(233, 199, 123, 0.22), rgba(233, 199, 123, 0.04));
+      border: 1px solid var(--border-strong);
+      color: var(--gold-l);
+      flex-shrink: 0;
+    }
+    .crumb { display: flex; flex-direction: column; min-width: 0; }
+    .crumb-kicker { font-size: 10.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .crumb-title { margin: 0; font-size: 16px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 32px;
+      padding: 0 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--ink-soft);
+    }
+    .dot-pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+    .status-pill.live { background: rgba(143, 227, 255, 0.08); border-color: rgba(143, 227, 255, 0.25); color: var(--aqua); }
+    .status-pill.live .dot-pulse { background: var(--aqua); box-shadow: 0 0 8px var(--aqua); animation: pulse 2s ease-in-out infinite; }
+    .status-pill.full { background: rgba(134, 239, 172, 0.09); border-color: rgba(134, 239, 172, 0.28); color: var(--mint); }
+    .status-pill.full .dot-pulse { background: var(--mint); box-shadow: 0 0 8px var(--mint); }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(0.85); } }
+
+    /* Mobile Floating Bottom Tab Bar */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      left: 10px;
+      right: 10px;
+      bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      z-index: 45;
+      padding: 5px;
+      border-radius: 18px;
+      background: rgba(14, 14, 20, 0.9);
+      border: 1px solid rgba(233, 199, 123, 0.26);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 241, 201, 0.1);
+      backdrop-filter: blur(22px) saturate(150%);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
+      grid-template-columns: repeat(5, 1fr);
+      gap: 3px;
+    }
+    .bnav-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-height: 48px;
+      padding: 5px 2px;
+      border: none;
+      border-radius: 13px;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s var(--ease);
+    }
+    .bnav-item svg { width: 17px; height: 17px; }
+    .bnav-item:active { transform: scale(0.94); }
+    .bnav-item.active {
+      background: linear-gradient(180deg, rgba(233, 199, 123, 0.2), rgba(233, 199, 123, 0.07));
+      color: var(--gold-l);
+      box-shadow: inset 0 1px 0 rgba(255, 241, 201, 0.15);
+    }
+    .bnav-badge {
+      position: absolute;
+      top: 4px;
+      right: calc(50% - 17px);
+      min-width: 15px;
+      height: 15px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: var(--gold);
+      color: #191206;
+      font-size: 9px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+    .bnav-badge[data-count="0"] { display: none; }
+
+    .workspace {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 28px 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ==========================================================================
+       SHARED COMPONENTS
+       ========================================================================== */
+    .panel {
+      position: relative;
+      padding: 24px;
+      border-radius: var(--r-xl);
+      background: var(--glass-panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(20px) saturate(135%);
+      -webkit-backdrop-filter: blur(20px) saturate(135%);
+      transition: border-color 0.25s var(--ease);
+    }
+    .panel:hover { border-color: rgba(233, 199, 123, 0.24); }
+
+    .panel-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+    .panel-title-wrap { display: flex; align-items: center; gap: 10px; }
+    .panel-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(233, 199, 123, 0.1);
+      border: 1px solid rgba(233, 199, 123, 0.22);
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .panel-icon.aqua { background: rgba(143, 227, 255, 0.1); border-color: rgba(143, 227, 255, 0.24); color: var(--aqua); }
+    .panel-title { margin: 0; font-family: var(--font-disp); font-size: 15.5px; font-weight: 700; letter-spacing: 0.05em; color: var(--gold-l); }
+    .panel-sub { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 11px;
+      border: 1px solid var(--border-strong);
+      background: rgba(233, 199, 123, 0.08);
+      color: var(--gold-l);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s var(--ease);
+      white-space: nowrap;
+    }
+    .btn:hover:not(:disabled) {
+      background: rgba(233, 199, 123, 0.16);
+      border-color: var(--gold);
+      box-shadow: 0 6px 20px -8px rgba(233, 199, 123, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:focus-visible { outline: 2px solid var(--gold-l); outline-offset: 2px; }
+    .btn:disabled { opacity: 0.42; cursor: not-allowed; }
+
+    .btn-primary {
+      border-color: transparent;
+      color: #191206;
+      font-weight: 700;
+      background: linear-gradient(180deg, #fff1c9 0%, #e9c77b 55%, #c59845 100%);
+      box-shadow: 0 8px 24px -8px rgba(233, 199, 123, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(180deg, #fff6dc 0%, #f0d089 55%, #cea04c 100%);
+      box-shadow: 0 12px 28px -8px rgba(233, 199, 123, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    }
+
+    .btn-aqua {
+      border-color: rgba(143, 227, 255, 0.42);
+      background: rgba(143, 227, 255, 0.12);
+      color: var(--aqua);
+    }
+    .btn-aqua:hover:not(:disabled) {
+      background: rgba(143, 227, 255, 0.22);
+      border-color: var(--aqua);
+      box-shadow: 0 6px 20px -8px rgba(143, 227, 255, 0.45);
+    }
+
+    .btn-ghost { border-color: var(--border-subtle); background: rgba(255, 255, 255, 0.04); color: var(--ink-soft); }
+    .btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.09); border-color: rgba(255, 255, 255, 0.2); box-shadow: none; }
+
+    .btn-danger { border-color: rgba(255, 143, 163, 0.28); background: rgba(255, 143, 163, 0.07); color: #ffb3c0; }
+    .btn-danger:hover:not(:disabled) { background: rgba(255, 143, 163, 0.15); border-color: rgba(255, 143, 163, 0.55); box-shadow: 0 6px 18px -8px rgba(255, 143, 163, 0.35); }
+
+    .btn-sm { min-height: 36px; padding: 0 12px; font-size: 12.5px; border-radius: 9px; }
+
+    /* Inputs (>= 16px prevents iOS Safari auto-zoom on focus) */
+    .field label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+    .field label span { font-weight: 500; font-size: 11px; color: var(--muted); }
+    .input-wrap { position: relative; display: flex; align-items: center; }
+
+    input[type="number"], input[type="text"] {
+      width: 100%;
+      height: 44px;
+      padding: 0 13px;
+      border-radius: var(--r-md);
+      border: 1px solid rgba(233, 199, 123, 0.22);
+      background: var(--glass-input);
+      color: var(--gold-l);
+      font-family: var(--font-ui);
+      font-size: 16px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    input.has-unit { padding-right: 44px; }
+    .input-unit { position: absolute; right: 12px; font-size: 12.5px; font-weight: 600; color: var(--muted); pointer-events: none; }
+    input::placeholder { color: #5e5d68; font-weight: 500; }
+    input:focus { outline: none; border-color: var(--gold); background: rgba(10, 10, 15, 0.92); box-shadow: 0 0 0 3px rgba(233, 199, 123, 0.15); }
+
+    .confirm-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: var(--r-lg);
+      background: rgba(255, 143, 163, 0.1);
+      border: 1px solid rgba(255, 143, 163, 0.38);
+      color: #ffd5dd;
+      font-size: 13px;
+      font-weight: 500;
+      animation: fadeSlide 0.2s var(--ease);
+    }
+    .confirm-actions { display: flex; gap: 8px; }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+    /* ==========================================================================
+       HERO TELEMETRY PANEL
+       ========================================================================== */
+    .hero-grid { display: grid; grid-template-columns: 268px 1fr; gap: 32px; align-items: center; }
+    .gauge-box {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 1;
+      margin: 0 auto;
+    }
+    .gauge-aura { position: absolute; inset: 8%; border-radius: 50%; background: radial-gradient(circle, rgba(233, 199, 123, 0.17), transparent 68%); filter: blur(12px); pointer-events: none; }
+    #gauge { position: relative; z-index: 1; width: 100%; height: 100%; display: block; filter: drop-shadow(0 16px 30px rgba(0, 0, 0, 0.65)); }
+    #arcCur { transition: stroke-dasharray 0.9s var(--ease), opacity 0.35s; filter: drop-shadow(0 0 7px rgba(255, 236, 170, 0.55)); }
+    #needle { transform-box: view-box; transform-origin: 150px 150px; transform: rotate(135deg); transition: transform 0.9s cubic-bezier(0.34, 1.3, 0.5, 1); }
+    .g-lbl { font-family: var(--font-disp); font-size: 10px; font-weight: 700; letter-spacing: 2.5px; fill: var(--gold); }
+    .g-num { font-family: var(--font-ui); font-weight: 700; fill: var(--gold-l); font-variant-numeric: tabular-nums; }
+    .g-max { font-family: var(--font-ui); font-size: 13.5px; font-weight: 500; fill: var(--muted); font-variant-numeric: tabular-nums; }
+    .g-tick {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      fill: var(--gold-l);
+      fill-opacity: .85;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hero-content { display: flex; flex-direction: column; min-width: 0; }
+    .hero-eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .eyebrow-text { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); }
+    .next-tick-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px 5px 11px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+      background: linear-gradient(135deg,rgba(143,227,255,.16),rgba(233,199,123,.14));
+      border: 1px solid rgba(143,227,255,.38);
+      color: var(--ink-soft);
+      box-shadow: 0 0 18px -4px rgba(143,227,255,.45), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .countdown {
+      margin: 0;
+      font-size: clamp(36px, 5vw, 58px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      background: linear-gradient(180deg, #ffffff 0%, #fff1c9 45%, #e9c77b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 20px rgba(233, 199, 123, 0.22));
+    }
+    .countdown.done {
+      font-family: var(--font-disp);
+      font-size: clamp(26px, 3.6vw, 40px);
+      letter-spacing: 0.04em;
+      background: linear-gradient(180deg, #ffffff 0%, #bff9d7 50%, #86efac 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .ready-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 8px; font-size: 13.5px; color: var(--ink-soft); }
+    .ready-meta b { color: var(--gold-l); font-weight: 600; }
+    .ready-meta .sep { color: rgba(255, 255, 255, 0.2); }
+
+    .warn-box {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: var(--r-md);
+      border-left: 3px solid var(--rose);
+      background: rgba(255, 143, 163, 0.09);
+      color: #ffc8d3;
+      font-size: 13px;
+    }
+    .warn-box.amber { border-left-color: var(--amber); background: rgba(251, 191, 36, 0.09); color: #fde68a; }
+
+    /* Quick Adjust */
+    .qadj {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: var(--r-lg);
+      background: rgba(8, 8, 12, 0.58);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      transition: opacity 0.2s;
+    }
+    .qadj.disabled { opacity: 0.48; }
+    .qadj-main { display: flex; align-items: center; gap: 8px; flex: 1 1 220px; }
+    .qadj-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); white-space: nowrap; }
+    .seg { display: inline-flex; padding: 3px; border-radius: 10px; background: rgba(0, 0, 0, 0.55); border: 1px solid var(--border); flex-shrink: 0; }
+    .seg button {
+      width: 38px;
+      height: 36px;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--font-ui);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all 0.16s;
+    }
+    .seg button.on { background: linear-gradient(180deg, #fff1c9, #e9c77b); color: #181105; box-shadow: 0 2px 10px rgba(233, 199, 123, 0.35); }
+    .qadj input { flex: 1; min-width: 68px; max-width: 110px; height: 44px; text-align: center; border-radius: 10px; }
+    .qadj-sub { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .preset-chips { display: inline-flex; gap: 6px; }
+    .chip {
+      height: 38px;
+      min-width: 44px;
+      padding: 0 11px;
+      border-radius: 9px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink-soft);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s;
+    }
+    .chip:hover:not(:disabled) { border-color: var(--border-strong); background: rgba(233, 199, 123, 0.12); color: var(--gold-l); }
+    .chip:active:not(:disabled) { transform: scale(0.95); }
+    .chip:disabled { opacity: 0.4; cursor: not-allowed; }
+    .qadj-actions { display: flex; align-items: center; gap: 8px; }
+    .toast-inline { min-height: 20px; margin-top: 8px; font-size: 12.5px; font-weight: 500; color: var(--gold-l); }
+
+    /* ==========================================================================
+       KPI METRIC STRIP
+       ========================================================================== */
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .kpi-card {
+      padding: 16px 18px;
+      border-radius: var(--r-lg);
+      background: var(--glass-card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+      --a1: #8fe3ff;
+      --a2: #86efac;
+    }
+    .kpi-card:hover { border-color: rgba(233, 199, 123, 0.3); transform: translateY(-2px); }
+    .kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+    .kpi-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: transparent;
+      line-height: 1.15;
+      background: linear-gradient(180deg,#fff,var(--a1));
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .kpi-val small {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--muted);
+      -webkit-text-fill-color: var(--ink-soft);
+    }
+    .kpi-foot {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+    .kpi-foot b { color: var(--gold-l); font-weight: 600; }
+
+    /* ==========================================================================
+       MAIN 2-COLUMN SECTION (SETTINGS + STAGE SCHEDULE)
+       ========================================================================== */
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 20px; align-items: start; }
+    .form-section {
+      padding: 14px;
+      border-radius: var(--r-lg);
+      background: rgba(8, 8, 12, 0.45);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 12px;
+    }
+    .form-section-title { margin: 0 0 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .dirty-banner {
+      margin-top: 12px;
+      padding: 10px 13px;
+      border-radius: var(--r-md);
+      background: rgba(233, 199, 123, 0.1);
+      border: 1px solid rgba(233, 199, 123, 0.32);
+      color: var(--gold-l);
+      font-size: 12.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .table-wrap { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th {
+      padding: 0 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    td { padding: 11px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: var(--ink-soft); white-space: nowrap; }
+    tbody tr { transition: background 0.15s; }
+    tbody tr:hover { background: rgba(233, 199, 123, 0.05); }
+    tbody tr:last-child td { border-bottom: none; }
+    .r { text-align: right; }
+    .run-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 24px;
+      padding: 0 7px;
+      border-radius: 7px;
+      background: rgba(233, 199, 123, 0.12);
+      border: 1px solid rgba(233, 199, 123, 0.22);
+      color: var(--gold-l);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .run-badge.adj {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.14);
+      color: var(--ink-soft);
+      font-size: 10.5px;
+    }
+    .ready-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(134, 239, 172, 0.12);
+      border: 1px solid rgba(134, 239, 172, 0.3);
+      color: var(--mint);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+    td.empty-cell { padding: 34px 12px; text-align: center; white-space: normal; color: var(--muted); font-size: 13.5px; }
+
+    /* ==========================================================================
+       COOLDOWN TIMERS SECTION
+       ========================================================================== */
+    .cd-creator {
+      display: grid;
+      grid-template-columns: 1.5fr 110px 110px auto;
+      gap: 12px;
+      align-items: end;
+      padding: 14px;
+      border-radius: var(--r-lg);
+      background: rgba(8, 8, 12, 0.45);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 16px;
+    }
+    .cd-creator .btn-primary { height: 44px; padding: 0 22px; }
+    .cd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+    .cd-card {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      padding: 16px;
+      border-radius: var(--r-lg);
+      background: var(--glass-card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .cd-card:hover { border-color: rgba(233, 199, 123, 0.34); transform: translateY(-2px); }
+    .cd-card.is-ready { border-color: rgba(134, 239, 172, 0.38); background: linear-gradient(160deg, rgba(20, 42, 34, 0.45), rgba(12, 18, 16, 0.72)); }
+    .cd-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .cd-name { margin: 0; font-size: 15.5px; font-weight: 700; color: var(--gold-l); word-break: break-word; }
+    .cd-dur-pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .cd-clock { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); line-height: 1.15; }
+    .cd-clock.done { font-size: 18px; color: var(--mint); }
+    .cd-bar { height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
+    .cd-bar-fill { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, var(--gold-d), var(--gold)); transition: width 0.5s linear; }
+    .cd-card.is-ready .cd-bar-fill { background: linear-gradient(90deg, #34d399, var(--mint)); }
+    .cd-card-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-top: 2px; }
+    .cd-at { font-size: 12px; color: var(--muted); }
+    .cd-at b { color: var(--ink-soft); font-weight: 600; }
+    .cd-actions { display: flex; gap: 8px; }
+    .cd-empty {
+      grid-column: 1 / -1;
+      padding: 28px 14px;
+      text-align: center;
+      border-radius: var(--r-lg);
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: 13.5px;
+    }
+
+    /* ==========================================================================
+       DRIFT LAB (ZERO-DELAY SNAP + EVIDENCE LOG)
+       ========================================================================== */
+    .audit-ref-bar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .audit-stat {
+      padding: 13px 14px;
+      border-radius: var(--r-md);
+      background: rgba(8, 8, 12, 0.56);
+      border: 1px solid var(--border-subtle);
+      position: relative;
+      overflow: hidden;
+      border-top: 3px solid var(--sc,var(--gold));
+    }
+    .audit-stat-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sc);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .audit-stat-val {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-top: 4px;
+      line-height: 1.2;
+    }
+    .audit-stat-sub {
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      margin-top: 3px;
+    }
+
+    .audit-check-box {
+      padding: 16px;
+      border-radius: var(--r-lg);
+      background: rgba(8, 8, 12, 0.52);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .snap-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 13px;
+      border-radius: var(--r-md);
+      background: rgba(143, 227, 255, 0.06);
+      border: 1px dashed rgba(143, 227, 255, 0.25);
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+    .snap-strip.snapped {
+      background: rgba(143, 227, 255, 0.12);
+      border-style: solid;
+      border-color: rgba(143, 227, 255, 0.45);
+      color: var(--aqua);
+    }
+    .snap-strip b { color: var(--gold-l); }
+
+    .audit-check-grid {
+      display: grid;
+      grid-template-columns: auto 180px 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .chart-box {
+      padding: 16px;
+      border-radius: var(--r-lg);
+      background: rgba(6, 6, 10, 0.62);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 16px;
+    }
+    .chart-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; font-size: 12px; color: var(--muted); }
+    .chart-legend { display: flex; gap: 14px; font-size: 11.5px; }
+    .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .chart-legend i { width: 10px; height: 3px; border-radius: 2px; display: inline-block; }
+    #driftSvg { width: 100%; height: 150px; display: block; }
+
+    .drift-pill { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700; }
+    .drift-pill.zero { background: rgba(134, 239, 172, 0.12); border: 1px solid rgba(134, 239, 172, 0.3); color: var(--mint); }
+    .drift-pill.warn { background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.35); color: var(--amber); }
+    .drift-pill.bad { background: rgba(255, 143, 163, 0.14); border: 1px solid rgba(255, 143, 163, 0.4); color: var(--rose); }
+    .drift-muted { color: var(--muted); font-weight: 600; }
+
+    .ev-tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: rgba(255, 255, 255, 0.06); color: var(--ink-soft); }
+
+    .audit-cards { display: none; flex-direction: column; gap: 10px; }
+    .audit-mcard {
+      padding: 14px;
+      border-radius: var(--r-md);
+      background: rgba(9, 9, 13, 0.65);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .audit-mcard-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .audit-mcard-time { font-size: 12px; font-weight: 600; color: var(--gold-l); }
+    .audit-mcard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12.5px; }
+    .audit-mcard-cell span { display: block; font-size: 10.5px; color: var(--muted); }
+    .audit-mcard-cell b { color: var(--ink); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1060px) {
+      .hero-grid { grid-template-columns: 230px 1fr; gap: 22px; }
+      .two-col { grid-template-columns: 1fr; }
+      .audit-ref-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .audit-check-grid { grid-template-columns: auto 1fr; }
+      .audit-check-grid > .field-note { grid-column: 1 / -1; }
+      .audit-check-grid > #recordCheckBtn { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 860px) {
+      .sidebar { display: none; }
+      .main-wrap { margin-left: 0; }
+      .mobile-brand-mark { display: grid; }
+      .bottom-nav { display: grid; }
+
+      .topbar { padding: 0 16px; height: 58px; }
+      .workspace { padding: 14px 14px calc(92px + env(safe-area-inset-bottom, 0px)); gap: 14px; }
+      .panel { padding: 18px 16px; border-radius: 18px; }
+
+      .hero-grid { grid-template-columns: 1fr; gap: 16px; text-align: center; }
+      .gauge-box { max-width: 196px; }
+      .hero-eyebrow, .ready-meta { justify-content: center; }
+      .countdown { font-size: 38px; }
+
+      .qadj { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px; }
+      .qadj-title { display: none; }
+      .qadj-main { width: 100%; }
+      .qadj input { max-width: none; }
+      .qadj-sub { width: 100%; justify-content: space-between; }
+
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .kpi-card { padding: 13px 14px; }
+      .kpi-card:last-child { grid-column: 1 / -1; }
+      .kpi-val { font-size: 20px; }
+
+      .cd-creator { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .cd-creator > div:first-child { grid-column: 1 / -1; }
+      .cd-creator .btn-primary { grid-column: 1 / -1; width: 100%; }
+
+      .audit-table-wrap { display: none; }
+      .audit-cards { display: flex; }
+    }
+
+    @media (max-width: 520px) {
+      .crumb-kicker { display: none; }
+      .crumb-title { font-size: 15px; }
+      .status-pill { padding: 0 9px; font-size: 11.5px; }
+      .btn-sm { min-height: 36px; padding: 0 11px; font-size: 12px; }
+
+      #secSchedule table { font-size: 12.5px; }
+      #secSchedule th { padding: 0 4px 8px; font-size: 10px; letter-spacing: 0.04em; }
+      #secSchedule td { padding: 10px 4px; }
+      .run-badge { min-width: 24px; height: 22px; font-size: 11px; padding: 0 5px; }
+      .ready-pill { font-size: 11px; padding: 2px 7px; }
+
+      .cd-card-foot { flex-direction: column; align-items: stretch; }
+      .cd-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .cd-actions .btn-sm { min-height: 40px; }
+
+      .audit-check-grid { grid-template-columns: 1fr; }
+      .audit-check-grid > #snapBtn { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  
+    /* ---- clock, sky, stat-card colours, mobile adjust box, Drift Lab ---- */
+    #sky{position:absolute; inset:0; width:100%; height:100%; pointer-events:none}
+    #gauge .spin{transform-box:view-box; transform-origin:150px 150px; animation:spinSlow 140s linear infinite}
     #gauge .spin.rev{animation-direction:reverse; animation-duration:90s}
-    #needle{transform-box:view-box; transform-origin:150px 150px; transform:rotate(135deg);
-      transition:transform 1.1s cubic-bezier(.34,1.35,.5,1)}
-    #arcCur,#arcProj{transition:stroke-dasharray 1.1s cubic-bezier(.22,1,.36,1), opacity .4s}
-    #arcCur{filter:drop-shadow(0 0 6px rgba(255,236,170,.65))}
     .hub-gem{filter:drop-shadow(0 0 4px #8fe3ff)}
-    .g-lbl{font-family:var(--disp); font-size:10.5px; font-weight:700; letter-spacing:3.2px; fill:var(--gold)}
-    .g-num{font-family:var(--body); font-weight:600; fill:#fff3d2; font-variant-numeric:lining-nums}
-    .g-max{font-family:var(--body); font-size:15px; fill:var(--muted); font-variant-numeric:lining-nums}
-    .g-tick{font-family:var(--body); font-size:13px; font-weight:600; fill:var(--gold-l); fill-opacity:.85; font-variant-numeric:lining-nums}
-    .g-rn{font-family:var(--disp); font-size:8.5px; font-weight:700; fill:var(--gold)}
-
-    .lbl{margin:0 0 6px; font-family:var(--disp); font-size:13px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold)}
-    .time{
-      margin:0; font-family:var(--body); font-weight:600; font-size:clamp(46px,7.5vw,84px); line-height:1.05;
-      font-variant-numeric:lining-nums tabular-nums; letter-spacing:.02em;
-      background:linear-gradient(180deg,#ffffff 0%,#fff1c9 35%,#e9c77b 75%,#b88a3e 100%);
-      -webkit-background-clip:text; background-clip:text; color:transparent;
-      filter:drop-shadow(0 0 22px rgba(233,199,123,.35));
+    .g-rn{font-family:var(--font-disp); font-size:8.5px; font-weight:700; fill:var(--gold)}
+    .kpi-card::before{content:""; position:absolute; left:0; right:0; top:0; height:3px; background:linear-gradient(90deg,var(--a1),var(--a2))}
+    .kpi-card::after{content:""; position:absolute; right:-30px; top:-30px; width:110px; height:110px; border-radius:50%; background:radial-gradient(circle,var(--a1),transparent 70%); opacity:.14; pointer-events:none}
+    .kpi-card:nth-child(2){--a1:#ffd27a; --a2:#ff9f5a}
+    .kpi-card:nth-child(3){--a1:#ff8fa3; --a2:#c4a1ff}
+    .kpi-top span:first-child{color:var(--a1); font-weight:700; text-transform:uppercase; letter-spacing:.08em; font-size:11px}
+    .aud-how{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:16px}
+    .aud-how div{display:flex; gap:10px; align-items:flex-start; padding:11px 13px; border-radius:12px; background:rgba(255,255,255,.04); border:1px solid var(--border-subtle); font-size:12.5px; color:var(--ink-soft); line-height:1.4}
+    .aud-how b{flex:0 0 24px; height:24px; border-radius:50%; display:grid; place-items:center; font-size:12px; color:#181105; background:linear-gradient(135deg,var(--gold-l),var(--gold))}
+    .aud-how div:nth-child(2) b{background:linear-gradient(135deg,#cfeeff,var(--aqua))}
+    .aud-how div:nth-child(3) b{background:linear-gradient(135deg,#d5ffe3,var(--mint))}
+    .audit-stat:nth-child(1){--sc:#8fe3ff} .audit-stat:nth-child(2){--sc:#ffd27a} .audit-stat:nth-child(3){--sc:#ff8fa3} .audit-stat:nth-child(4){--sc:#86efac}
+    #snapBtn{background:linear-gradient(180deg,#cfeeff,#8fe3ff); color:#06222c; border:none; font-weight:700}
+    #snapBtn:disabled{opacity:.4}
+    @media (max-width:900px){.aud-how{grid-template-columns:1fr}}
+    @media (max-width:720px){
+      .gauge-box{max-width:230px}
+      .qadj{padding:8px 10px; gap:8px; margin-top:12px}
+      .qadj-main{flex:0 0 auto; gap:6px}
+      .qadj input{min-width:0; height:40px}
+      .qadj .btn-primary{min-height:40px !important; padding:0 12px !important}
+      .seg button{width:34px; height:32px}
+      .qadj-sub{gap:6px}
+      .chip{height:34px; min-width:40px}
     }
-    .time.done{font-family:var(--disp); font-size:clamp(30px,4.8vw,50px);
-      background:linear-gradient(180deg,#fff7e0,#ffe9b0 55%,#e9c77b);
-      -webkit-background-clip:text; background-clip:text;
-      filter:drop-shadow(0 0 22px rgba(233,199,123,.5))}
-    .ready{margin:12px 0 0; font-size:20px; color:#dcdbe0}
-    .ready:empty{display:none}
-    .ready b{color:var(--gold-l); font-weight:700}
-    .detail{margin:6px 0 0; color:var(--muted); font-size:18px}
-    .warn{margin:12px 0 0; padding:10px 14px; border-left:2px solid var(--rose); border-radius:0 10px 10px 0;
-      background:rgba(255,143,163,.08); color:#ffc7d1; font-size:16px; text-align:left}
-    .legend{display:flex; flex-wrap:wrap; gap:18px; margin:18px 0 0; font-size:15px; color:var(--muted)}
-    .legend i{display:inline-block; width:22px; height:6px; margin-right:8px; border-radius:6px; vertical-align:middle}
-    .l-now{background:linear-gradient(90deg,#c9973f,#ffe9b0,#fff7e0); box-shadow:0 0 8px rgba(255,236,170,.6)}
-    .l-proj{background:rgba(207,207,214,.6)}
-
-    /* ---------- Quick Energy Adjust bar ---------- */
-    .qadj{
-      display:flex; flex-wrap:wrap; align-items:center; gap:10px;
-      margin-top:18px; padding:11px 14px; border-radius:14px;
-      background:rgba(9,9,11,.46); border:1px solid rgba(233,199,123,.2);
+  
+    /* ---- next +1 badge and schedule readability ---- */
+    .nt-dot{width:8px; height:8px; border-radius:50%; background:var(--aqua); box-shadow:0 0 8px var(--aqua); animation:pulse 2s ease-in-out infinite; flex:0 0 8px}
+    .nt-lbl{font-size:10.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--aqua)}
+    .next-tick-chip b{font-size:15px; font-weight:700; letter-spacing:.04em; color:#fff; font-variant-numeric:tabular-nums}
+    #secSchedule td{font-size:14.5px; padding:12px 10px; vertical-align:middle}
+    #secSchedule th{font-size:11px; color:var(--ink-soft)}
+    #secSchedule tbody tr:nth-child(even){background:rgba(255,255,255,.025)}
+    .need-val{font-size:17px; font-weight:700; color:var(--gold-l)}
+    #secSchedule td:nth-child(3){color:var(--aqua); font-weight:600}
+    .at-time{display:block; font-size:17px; font-weight:700; color:#fff; line-height:1.15; letter-spacing:.02em}
+    .at-day{display:block; font-size:11px; font-weight:600; color:var(--mint); text-transform:uppercase; letter-spacing:.06em; margin-top:1px}
+    .at-day.far{color:var(--muted)}
+    @media (max-width:720px){
+      .hero-eyebrow{flex-direction:column; gap:8px}
+      .next-tick-chip{padding:5px 12px 5px 10px}
+      #secSchedule td{font-size:13px; padding:10px 4px}
+      .need-val{font-size:15px}
+      .at-time{font-size:15px} .at-day{font-size:10px}
     }
-    .qadj-lbl{
-      font-family:var(--disp); font-size:11px; font-weight:700; letter-spacing:.22em;
-      text-transform:uppercase; color:var(--gold); margin-right:2px;
-    }
-    .sign-seg{
-      display:inline-flex; border-radius:999px; padding:2px;
-      background:rgba(6,6,8,.8); border:1px solid rgba(233,199,123,.28);
-    }
-    .sign-seg button{
-      min-width:36px; height:32px; padding:0 11px; border-radius:999px; border:none;
-      font-family:var(--body); font-size:21px; font-weight:700; line-height:1; letter-spacing:0;
-      color:var(--muted); background:transparent;
-    }
-    .sign-seg button:hover{color:var(--gold-l); background:rgba(233,199,123,.08); transform:none; box-shadow:none}
-    .sign-seg button.on{
-      color:#1a1206; background:linear-gradient(180deg,#fff1c9,#e9c77b 65%,#b88a3e);
-      box-shadow:0 2px 10px rgba(233,199,123,.4);
-    }
-    .qadj input{
-      width:92px; padding:6px 11px; height:36px; font-size:19px; border-radius:9px;
-      text-align:center;
-    }
-    .qadj .apply-btn{padding:8px 16px; height:36px; font-size:11.5px; letter-spacing:.18em}
-    .qadj.disabled{opacity:.48}
-    .qadj .undo-ico{width:36px; height:36px; padding:0; border-radius:50%; font-size:19px; line-height:1; letter-spacing:0;
-      display:inline-flex; align-items:center; justify-content:center}
-    .qadj .undo-ico[hidden]{display:none}
-
-    .snap-row{display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-top:16px; padding-top:16px; border-top:1px solid var(--line)}
-    .hint{margin:0; font-size:15px; color:var(--muted)}
-    .msg{min-height:1.4em; margin:8px 0 0; color:var(--gold-l); font-size:16px}
-
-    /* ---------- Buttons ---------- */
-    button{
-      position:relative; overflow:hidden; cursor:pointer;
-      padding:13px 22px; border-radius:999px; border:1px solid rgba(233,199,123,.45);
-      font-family:var(--disp); font-size:13px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
-      color:var(--gold-l); background:rgba(233,199,123,.06);
-      transition:transform .2s, box-shadow .3s, background .3s, border-color .3s;
-    }
-    button:hover{background:rgba(233,199,123,.14); box-shadow:0 0 24px rgba(233,199,123,.25); transform:translateY(-1px)}
-    button:focus-visible{outline:2px solid var(--gold-l); outline-offset:3px}
-    button:disabled{opacity:.45; cursor:not-allowed; transform:none; box-shadow:none}
-    button.primary{color:#1a1206; border-color:transparent;
-      background:linear-gradient(180deg,#fff1c9,#e9c77b 55%,#b88a3e);
-      box-shadow:0 8px 24px -8px rgba(233,199,123,.6), inset 0 1px 0 rgba(255,255,255,.6)}
-    button.primary:hover{box-shadow:0 10px 30px -6px rgba(233,199,123,.75), inset 0 1px 0 rgba(255,255,255,.6)}
-    button.primary::after{content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
-      background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);
-      transform:skewX(-20deg); animation:glint 4.5s ease-in-out infinite}
-    @keyframes glint{0%,70%{left:-60%}100%{left:130%}}
-    button.danger{color:#ffb3c0; border-color:rgba(255,143,163,.35); background:transparent}
-    button.danger:hover{background:rgba(255,143,163,.1); box-shadow:0 0 20px rgba(255,143,163,.2)}
-    button.sm{padding:7px 14px; font-size:11px; letter-spacing:.16em}
-
-    /* ---------- Inline confirm bar ---------- */
-    .confirm-bar{
-      display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;
-      margin-top:14px; padding:12px 14px; border-radius:12px;
-      background:rgba(255,143,163,.09); border:1px solid rgba(255,143,163,.38); color:#ffd4dc; font-size:16px;
-    }
-    .confirm-actions{display:flex; gap:8px}
-
-    /* ---------- Form + table ---------- */
-    .grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:26px}
-    .grid .panel:nth-child(1){animation-delay:.24s}
-    .grid .panel:nth-child(2){animation-delay:.34s}
-    h2{display:flex; align-items:center; gap:10px; margin:0 0 4px; font-family:var(--disp); font-size:19px; letter-spacing:.08em; color:var(--gold-l)}
-    h2 .ic{width:18px; height:18px; color:var(--gold)}
-    .sub{margin:0 0 20px; color:var(--muted); font-size:16px}
-    .group{margin-bottom:18px; padding:16px; border-radius:14px; background:rgba(9,9,11,.38); border:1px solid rgba(207,207,214,.07)}
-    .group-title{margin:0 0 12px; font-family:var(--disp); font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold)}
-    .row{display:grid; grid-template-columns:1fr 1fr; gap:14px}
-    label{display:block; margin-bottom:6px; font-size:16px; font-weight:600; color:#dcdbe0}
-    label .hint{display:inline; font-weight:400; font-size:14px}
-    input{
-      width:100%; padding:11px 14px; border-radius:10px;
-      border:1px solid rgba(233,199,123,.22); background:rgba(6,6,8,.65);
-      color:#fff3d2; font-family:var(--body); font-size:20px; font-weight:600;
-      font-variant-numeric:lining-nums tabular-nums;
-      transition:border-color .2s, box-shadow .2s;
-    }
-    input::placeholder{color:#6f6e75; font-weight:500; font-size:16px}
-    input:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(233,199,123,.15), 0 0 22px rgba(233,199,123,.2)}
-    .pair{display:flex; align-items:center; gap:10px}
-    .pair span{color:var(--muted); font-size:16px; white-space:nowrap}
-    .btns{display:flex; flex-wrap:wrap; gap:12px; margin-top:6px}
-    .btns .primary{flex:1}
-    .dirty{margin:14px 0 0; padding:10px 14px; border-radius:10px; font-size:16px;
-      background:rgba(233,199,123,.08); border:1px solid rgba(233,199,123,.28); color:#fff1c9;
-      animation:breath 2.4s ease-in-out infinite}
-    .scroll{overflow-x:auto}
-    table{width:100%; border-collapse:collapse; font-size:17px; font-variant-numeric:lining-nums tabular-nums}
-    th{padding:0 10px 12px; text-align:left; border-bottom:1px solid var(--line);
-      font-family:var(--disp); font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--gold)}
-    td{padding:12px 10px; border-bottom:1px solid rgba(233,199,123,.08); color:#e8e6e4; white-space:nowrap}
-    td:first-child{font-family:var(--disp); color:var(--gold-l)}
-    tbody tr{transition:background .2s}
-    tbody tr:hover{background:rgba(233,199,123,.05)}
-    .r{text-align:right}
-    td.ok{color:var(--mint); font-weight:700; text-shadow:0 0 12px rgba(159,240,201,.5)}
-    td.empty{padding:34px 10px; text-align:center; white-space:normal; font-style:italic; font-family:var(--body); color:var(--muted)}
-
-    /* ---------- Custom Cooldown Timers panel ---------- */
-    .cd-panel{margin-top:26px; animation-delay:.42s}
-    .cd-form{
-      display:grid; grid-template-columns:1fr 125px 125px auto; gap:14px; align-items:end;
-      padding:16px; border-radius:14px; background:rgba(9,9,11,.38); border:1px solid rgba(207,207,214,.07);
-      margin-bottom:18px;
-    }
-    .cd-form button.primary{height:48px; padding:0 24px}
-    .cd-list{display:grid; gap:12px}
-    .cd-item{
-      display:grid; grid-template-columns:minmax(160px,1.2fr) minmax(140px,1fr) auto;
-      gap:16px; align-items:center; padding:15px 18px; border-radius:14px;
-      background:rgba(9,9,12,.52); border:1px solid rgba(233,199,123,.16);
-      transition:border-color .2s, background .2s;
-    }
-    .cd-item:hover{border-color:rgba(233,199,123,.34); background:rgba(16,16,20,.65)}
-    .cd-item.ready-card{border-color:rgba(159,240,201,.42); background:rgba(20,40,34,.28)}
-    .cd-name{margin:0; font-family:var(--body); font-size:21px; font-weight:700; color:var(--gold-l)}
-    .cd-dur{font-size:15px; color:var(--muted)}
-    .cd-clock{
-      font-family:var(--body); font-size:28px; font-weight:600; line-height:1.15;
-      font-variant-numeric:lining-nums tabular-nums; color:#fff3d2;
-    }
-    .cd-clock.done{font-family:var(--disp); font-size:19px; letter-spacing:.1em; color:var(--mint); text-shadow:0 0 12px rgba(159,240,201,.45)}
-    .cd-at{font-size:15.5px; color:var(--muted)}
-    .cd-at b{color:#e8e6e4; font-weight:600}
-    .cd-acts{display:flex; gap:8px; align-items:center}
-    .cd-empty{
-      padding:28px 16px; text-align:center; font-style:italic; color:var(--muted);
-      border-radius:14px; border:1px dashed rgba(233,199,123,.16);
-    }
-
-    /* ---------- Responsive ---------- */
-    @media (max-width:860px){
-      .hero{grid-template-columns:1fr; text-align:center; gap:28px}
-      .legend,.snap-row,.qadj{justify-content:center}
-      .grid{grid-template-columns:minmax(0,1fr)}
-      .cd-form{grid-template-columns:1fr 1fr}
-      .cd-form > div:first-child{grid-column:1 / -1}
-      .cd-form button.primary{grid-column:1 / -1}
-      .cd-item{grid-template-columns:1fr; text-align:left; gap:10px}
-    }
-    @media (max-width:480px){
-      .wrap{padding:36px 14px 50px}
-      .panel{padding:22px 18px}
-      .hero{padding:26px 18px}
-      table{font-size:15px}
-      th{padding:0 4px 10px; letter-spacing:.12em}
-      td{padding:10px 4px}
-      .row,.cd-form{grid-template-columns:1fr}
-      .kicker{letter-spacing:.25em; font-size:11px}
-    }
-    @media (prefers-reduced-motion:reduce){
-      *,*::before,*::after{animation:none !important; transition:none !important}
-    }
+  
+  
+    /* ---- Ready now glow ---- */
+    .ready-pill{display:inline-block; padding:3px 14px; border:none; border-radius:999px; font-size:14px; font-weight:700; letter-spacing:.04em; color:#c9ffe0;
+      background:radial-gradient(ellipse at center,rgba(134,239,172,.22),rgba(134,239,172,.05) 70%,transparent);
+      text-shadow:0 0 8px rgba(134,239,172,.85),0 0 20px rgba(134,239,172,.45); animation:readyGlow 3s ease-in-out infinite}
+    @keyframes readyGlow{0%,100%{opacity:.82; text-shadow:0 0 6px rgba(134,239,172,.6),0 0 14px rgba(134,239,172,.3)}50%{opacity:1; text-shadow:0 0 10px rgba(134,239,172,1),0 0 26px rgba(134,239,172,.55)}}
+    @media (max-width:720px){.ready-pill{font-size:13px; padding:2px 10px}}
   </style>
-<style data-link-removed-style>a[data-link-removed],a[href*="zPythonSafez"]:not([onclick]){pointer-events:none!important;cursor:default!important;opacity:.6}</style></head>
+</head>
 <body>
-<svg id="astro" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
-<canvas id="sky" aria-hidden="true"></canvas>
-<div class="veil" aria-hidden="true"></div>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="hg" viewBox="0 0 24 24">
-    <path fill-rule="evenodd" d="M5 2h14v2h-1.2c0 3.6-2.3 5.6-4.3 8 2 2.4 4.3 4.4 4.3 8H19v2H5v-2h1.2c0-3.6 2.3-5.6 4.3-8-2-2.4-4.3-4.4-4.3-8H5z M8.3 4c.1 1.4.6 2.5 1.3 3.5h4.8c.7-1 1.2-2.1 1.3-3.5z"/>
-  </symbol>
-  <symbol id="star4" viewBox="0 0 24 24"><path d="M12 1l2 9 9 2-9 2-2 9-2-9-9-2 9-2z"/></symbol>
-</svg>
+  <div class="ambient-bg" aria-hidden="true">
+    <canvas id="sky"></canvas>
+    <div class="ambient-grid"></div>
+    <svg class="ambient-astrolabe" viewBox="0 0 400 400" fill="none">
+      <circle cx="200" cy="200" r="190" stroke="#e9c77b" stroke-width="0.8"/>
+      <circle cx="200" cy="200" r="165" stroke="#e9c77b" stroke-width="0.6" stroke-dasharray="3 8"/>
+      <circle cx="200" cy="200" r="125" stroke="#e9c77b" stroke-width="0.8"/>
+      <circle cx="200" cy="200" r="80" stroke="#8fe3ff" stroke-width="0.5" stroke-dasharray="2 10"/>
+      <path d="M200 10V390M10 200H390M65 65L335 335M335 65L65 335" stroke="#e9c77b" stroke-width="0.5" stroke-opacity="0.6"/>
+    </svg>
+  </div>
 
-<div class="wrap">
-    <header>
-      <p class="kicker"><svg class="ic"><use href="#star4"/></svg>Genshin Impact // Stamina Recovery<svg class="ic"><use href="#star4"/></svg></p>
-      <h1>Stamina Recovery Calculator</h1>
-      <p class="motto">Every hour returns to its keeper.</p>
-      <div class="rule"><svg class="ic"><use href="#hg"/></svg></div>
-      <p class="lead">Enter your game's values and press Calculate. Your timer is saved and keeps running, even after you close this page.</p>
-    </header>
+  <div class="app-shell">
+    <!-- ==================== DESKTOP SIDEBAR ==================== -->
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M5 2h14v2h-1.2c0 3.6-2.3 5.6-4.3 8 2 2.4 4.3 4.4 4.3 8H19v2H5v-2h1.2c0-3.6 2.3-5.6 4.3-8-2-2.4-4.3-4.4-4.3-8H5z M8.3 4c.1 1.4.6 2.5 1.3 3.5h4.8c.7-1 1.2-2.1 1.3-3.5z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="brand-title">STAMINA RECOVERY</p>
+          <span class="brand-sub">Genshin Impact</span>
+        </div>
+      </div>
 
-    <!-- Result -->
-    <section class="panel hero" aria-label="Result">
-      <div class="orb-wrap">
-        <svg id="gauge" viewBox="0 0 300 300" role="img" aria-label="Energy gauge">
+      <p class="nav-label">Workspace</p>
+      <nav class="nav-list" id="navList">
+        <button type="button" class="nav-item active" data-view="overview">
+          <span class="nav-item-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            Overview
+          </span>
+        </button>
+        <button type="button" class="nav-item" data-view="calculator">
+          <span class="nav-item-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+            Calculator
+          </span>
+        </button>
+        <button type="button" class="nav-item" data-view="schedule">
+          <span class="nav-item-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+            Stage Schedule
+          </span>
+          <span class="nav-badge tnum" id="navRunsBadge">0</span>
+        </button>
+        <button type="button" class="nav-item" data-view="cooldowns">
+          <span class="nav-item-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+            Cooldowns
+          </span>
+          <span class="nav-badge tnum" id="navCdBadge">0</span>
+        </button>
+        <button type="button" class="nav-item" data-view="audit">
+          <span class="nav-item-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Drift Lab
+          </span>
+          <span class="nav-badge tnum" id="navAuditBadge">0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="mini-telemetry">
+          <div class="mini-top">
+            <span>Live Energy</span>
+            <span id="miniPct" class="tnum">--%</span>
+          </div>
+          <div class="mini-val tnum" id="miniEnergy">-- <span>/ --</span></div>
+          <div class="mini-track"><div class="mini-fill" id="miniFill"></div></div>
+          <div class="mini-sub">
+            <span>Next +1</span>
+            <b id="miniNext" class="tnum">--:--</b>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN COLUMN ==================== -->
+    <div class="main-wrap">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="mobile-brand-mark" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M5 2h14v2h-1.2c0 3.6-2.3 5.6-4.3 8 2 2.4 4.3 4.4 4.3 8H19v2H5v-2h1.2c0-3.6 2.3-5.6 4.3-8-2-2.4-4.3-4.4-4.3-8H5z M8.3 4c.1 1.4.6 2.5 1.3 3.5h4.8c.7-1 1.2-2.1 1.3-3.5z"/>
+            </svg>
+          </div>
+          <div class="crumb">
+            <span class="crumb-kicker">Genshin Impact // Stamina Recovery</span>
+            <h1 class="crumb-title" id="viewTitle">Recovery Overview</h1>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="status-pill" id="topStatusPill">
+            <span class="dot-pulse"></span>
+            <span id="topStatusText">Idle</span>
+          </div>
+          <button type="button" class="btn btn-danger btn-sm" id="clearBtn">Clear</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <div class="confirm-banner" id="clearConfirm" hidden>
+          <span>Reset all saved values, active timer, cooldowns, and drift logs?</span>
+          <div class="confirm-actions">
+            <button type="button" class="btn btn-danger btn-sm" id="clearYes">Yes, clear</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="clearNo">Cancel</button>
+          </div>
+        </div>
+
+        <!-- ==================== HERO TELEMETRY CARD ==================== -->
+        <section class="panel" id="secHero" aria-label="Energy Recovery Status">
+          <div class="hero-grid">
+            <div class="gauge-box">
+              <div class="gauge-aura"></div>
+              <svg id="gauge" viewBox="0 0 300 300" role="img" aria-label="Energy gauge">
           <defs>
             <linearGradient id="gBezel" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0" stop-color="#fff1c9"/>
@@ -451,7 +1262,6 @@ minutes on custom cooldowns, server-reset timers, the preview dialog for the sav
           <circle cx="150" cy="150" r="50" fill="none" stroke="#e9c77b" stroke-opacity=".14"/>
 
           <circle cx="150" cy="150" r="96" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="75 100" transform="rotate(135 150 150)"/>
-          <circle id="arcProj" cx="150" cy="150" r="96" fill="none" stroke="#cfcfd6" stroke-opacity=".6" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 150 150)"/>
           <circle id="arcCur" cx="150" cy="150" r="96" fill="none" stroke="url(#gArc)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 150 150)"/>
           <g id="ticks"></g>
           <g id="tickLabels"></g>
@@ -471,205 +1281,510 @@ minutes on custom cooldowns, server-reset timers, the preview dialog for the sav
           <circle class="hub-gem" cx="150" cy="150" r="4" fill="#8fe3ff"/>
           <path d="M44 96 A112 112 0 0 1 150 38 A112 112 0 0 0 62 118 Z" fill="rgba(255,255,255,.06)"/>
         </svg>
-      </div>
-
-      <div class="hero-text">
-        <p class="lbl" id="lbl">Ready when you are</p>
-        <p class="time" id="countdown">--:--:--</p>
-        <p class="ready" id="ready"></p>
-        <p class="detail" id="detail">Enter your values and press Calculate.</p>
-        <p class="warn" id="warn" hidden></p>
-        <div class="legend">
-          <span><i class="l-now"></i>Energy now</span>
-          <span><i class="l-proj"></i>To be recovered up to target</span>
-        </div>
-
-        <!-- Quick Energy Adjust -->
-        <div class="qadj disabled" id="qadjBox" aria-label="Quick energy adjustment">
-          <span class="qadj-lbl">Adjust</span>
-          <div class="sign-seg" role="group" aria-label="Subtract or add energy">
-            <button type="button" id="signSub" class="on" aria-pressed="true" title="Spend energy">−</button>
-            <button type="button" id="signAdd" aria-pressed="false" title="Add energy">+</button>
-          </div>
-          <input id="adjAmt" type="number" min="1" step="1" placeholder="40" inputmode="numeric" aria-label="Energy amount to adjust">
-          <button type="button" class="apply-btn" id="adjBtn" disabled>Apply</button>
-          <button type="button" class="undo-ico" id="undoBtn" hidden title="Undo last adjustment" aria-label="Undo last adjustment">↶</button>
-        </div>
-
-        <div class="snap-row">
-          <button id="snapBtn" type="button">Save image</button>
-          <p class="hint">Saves a picture of your timer to your device.</p>
-        </div>
-        <p class="msg" id="msg" role="status"></p>
-      </div>
-    </section>
-
-    <div class="grid">
-      <section class="panel" aria-labelledby="in-h">
-        <h2 id="in-h"><svg class="ic"><use href="#hg"/></svg>Your values</h2>
-        <p class="sub">Numbers are remembered in this browser.</p>
-
-        <div class="group">
-          <p class="group-title">Game settings</p>
-          <div class="row">
-            <div>
-              <label for="max">Maximum energy</label>
-              <input id="max" type="number" min="1" step="1" value="200" inputmode="numeric">
             </div>
-            <div>
-              <label for="per">Recover 1 energy every</label>
-              <div class="pair"><input id="per" type="number" min="0.1" step="0.1" value="8" inputmode="decimal"><span>min</span></div>
+
+            <div class="hero-content">
+              <div class="hero-eyebrow">
+                <span class="eyebrow-text" id="lbl">Ready when you are</span>
+                <span class="next-tick-chip tnum" id="nextTickChip" hidden><i class="nt-dot" aria-hidden="true"></i><span class="nt-lbl">Next +1 in</span><b id="nextTickVal">--:--</b></span>
+              </div>
+
+              <p class="countdown tnum" id="countdown">--:--:--</p>
+
+              <div class="ready-meta" id="readyMeta">
+                <span>Enter your starting values once and press Calculate.</span>
+              </div>
+
+              <div class="warn-box" id="warnBox" hidden></div>
+
+              <!-- Quick Energy Adjust -->
+              <div class="qadj disabled" id="qadjBox" aria-label="Quick energy adjustment">
+                <span class="qadj-title">Adjust</span>
+                <div class="qadj-main">
+                  <div class="seg" role="group" aria-label="Subtract or add energy">
+                    <button type="button" id="signSub" class="on" aria-pressed="true" title="Spend energy">−</button>
+                    <button type="button" id="signAdd" aria-pressed="false" title="Add energy">+</button>
+                  </div>
+                  <input id="adjAmt" type="number" min="1" step="1" placeholder="40" inputmode="numeric" aria-label="Energy amount">
+                  <button type="button" class="btn btn-primary" id="adjBtn" disabled style="min-height:44px; padding:0 16px;">Apply</button>
+                </div>
+
+                <div class="qadj-sub">
+                  <div class="preset-chips">
+                    <button type="button" class="chip" data-preset="20">20</button>
+                    <button type="button" class="chip" data-preset="40">40</button>
+                    <button type="button" class="chip" data-preset="60">60</button>
+                  </div>
+                  <div class="qadj-actions">
+                    <button type="button" class="btn btn-ghost btn-sm" id="undoBtn" hidden title="Undo last adjustment">Undo</button>
+                  </div>
+                </div>
+              </div>
+              <div class="toast-inline" id="msg" role="status"></div>
             </div>
           </div>
+        </section>
+
+        <!-- ==================== KPI SUMMARY CARDS ==================== -->
+        <section class="kpi-grid" id="secKpi" aria-label="Key metrics">
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span>Capacity</span>
+              <span id="kpiPct" class="tnum">--%</span>
+            </div>
+            <div class="kpi-val tnum" id="kpiCur">-- <small>/ --</small></div>
+            <div class="kpi-foot" id="kpiMissing">Waiting for timer</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span>Recovery</span>
+              <span>Rate</span>
+            </div>
+            <div class="kpi-val tnum" id="kpiRate">-- <small>m/pt</small></div>
+            <div class="kpi-foot" id="kpiDaily">Daily: <b>--</b></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span>Stage Readiness</span>
+              <span id="kpiCostTag" class="tnum">Cost: --</span>
+            </div>
+            <div class="kpi-val tnum" id="kpiRuns">-- <small>ready now</small></div>
+            <div class="kpi-foot" id="kpiNextRun">Set stage cost to plan runs</div>
+          </div>
+        </section>
+
+        <!-- ==================== SETTINGS + STAGE SCHEDULE ==================== -->
+        <div class="two-col" id="secMainGrid">
+          <!-- Initial Setup Card -->
+          <section class="panel" id="secConfig" aria-labelledby="in-h">
+            <div class="panel-head">
+              <div class="panel-title-wrap">
+                <div class="panel-icon" aria-hidden="true">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <div>
+                  <h2 class="panel-title" id="in-h">Initial Setup (Once)</h2>
+                  <p class="panel-sub">Sets both your live clock &amp; Drift Lab Baseline #0.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <p class="form-section-title">Game Rules</p>
+              <div class="form-row">
+                <div class="field">
+                  <label for="max">Maximum energy</label>
+                  <input id="max" type="number" min="1" step="1" value="200" inputmode="numeric">
+                </div>
+                <div class="field">
+                  <label for="per">Recovery interval</label>
+                  <div class="input-wrap">
+                    <input id="per" class="has-unit" type="number" min="0.1" step="0.1" value="8" inputmode="decimal">
+                    <span class="input-unit">min</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <p class="form-section-title">Starting Status &amp; Stage Cost</p>
+              <div class="form-row">
+                <div class="field">
+                  <label for="cur">Current energy</label>
+                  <input id="cur" type="number" min="0" step="1" value="60" inputmode="numeric">
+                </div>
+                <div class="field">
+                  <label for="nextCal">Next +1 <span>e.g. 542 or 5:42</span></label>
+                  <input id="nextCal" type="text" placeholder="08:00" inputmode="numeric" maxlength="6">
+                </div>
+              </div>
+              <div class="field" style="margin-top:12px;">
+                <label for="cost">Stage cost <span>Optional</span></label>
+                <input id="cost" type="number" min="0" step="1" value="40" inputmode="numeric">
+              </div>
+            </div>
+
+            <button class="btn btn-primary" id="calcBtn" type="button" style="width:100%; height:46px;">
+              Calculate &amp; Set Baseline
+            </button>
+
+            <div class="dirty-banner" id="dirty" hidden>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Setup modified. Press Calculate to reset baseline (or use Quick Adjust for spends).</span>
+            </div>
+          </section>
+
+          <!-- Stage Schedule Card -->
+          <section class="panel" id="secSchedule" aria-labelledby="runs-h">
+            <div class="panel-head">
+              <div class="panel-title-wrap">
+                <div class="panel-icon" aria-hidden="true">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <div>
+                  <h2 class="panel-title" id="runs-h">Stage Run Schedule</h2>
+                  <p class="panel-sub">When you'll have enough energy for each run (up to 10).</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Run</th>
+                    <th class="r">Needs</th>
+                    <th class="r">Wait</th>
+                    <th class="r">Ready at</th>
+                  </tr>
+                </thead>
+                <tbody id="runsBody" class="tnum"></tbody>
+              </table>
+            </div>
+          </section>
         </div>
 
-        <div class="group">
-          <p class="group-title">Current status</p>
-          <div class="row">
-            <div>
-              <label for="cur">Current energy</label>
-              <input id="cur" type="number" min="0" step="1" value="60" inputmode="numeric">
-            </div>
-            <div>
-              <label for="target">Target energy</label>
-              <input id="target" type="number" min="1" step="1" placeholder="Same as maximum" inputmode="numeric">
+        <!-- ==================== CUSTOM COOLDOWN TIMERS ==================== -->
+        <section class="panel" id="secCooldowns" aria-labelledby="cd-h">
+          <div class="panel-head">
+            <div class="panel-title-wrap">
+              <div class="panel-icon" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14M5 2h14M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>
+              </div>
+              <div>
+                <h2 class="panel-title" id="cd-h">Custom Cooldown Timers</h2>
+                <p class="panel-sub">Track Parametric Transformer, specialties, or crystal respawns.</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="group">
-          <p class="group-title">Stages</p>
-          <label for="cost">Energy cost per stage <span class="hint">(optional)</span></label>
-          <input id="cost" type="number" min="0" step="1" value="40" inputmode="numeric">
-        </div>
-
-        <div class="btns">
-          <button class="primary" id="calcBtn" type="button">Calculate</button>
-          <button class="danger" id="clearBtn" type="button">Clear data</button>
-        </div>
-        <div class="confirm-bar" id="clearConfirm" hidden>
-          <span>Clear saved values, energy timer and cooldown timers?</span>
-          <div class="confirm-actions">
-            <button type="button" class="danger sm" id="clearYes">Yes, clear</button>
-            <button type="button" class="sm" id="clearNo">Cancel</button>
+          <div class="cd-creator">
+            <div class="field">
+              <label for="cdName">Timer name</label>
+              <input id="cdName" type="text" maxlength="60" placeholder="e.g. Parametric Transformer">
+            </div>
+            <div class="field">
+              <label for="cdDays">Days</label>
+              <div class="input-wrap">
+                <input id="cdDays" class="has-unit" type="number" min="0" max="365" step="1" value="0" inputmode="numeric">
+                <span class="input-unit">d</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="cdHours">Hours</label>
+              <div class="input-wrap">
+                <input id="cdHours" class="has-unit" type="number" min="0" max="999" step="1" value="48" inputmode="numeric">
+                <span class="input-unit">h</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary" id="cdAddBtn">Start Timer</button>
           </div>
-        </div>
-        <p class="dirty" id="dirty" hidden>Values changed. Press Calculate to apply them.</p>
-      </section>
 
-      <section class="panel" id="runsPanel" aria-labelledby="runs-h">
-        <h2 id="runs-h"><svg class="ic"><use href="#star4"/></svg>When can I run stages?</h2>
-        <p class="sub">When you'll have enough energy for each run (up to 10).</p>
-        <div class="scroll">
-          <table>
-            <thead><tr><th>Run</th><th class="r">Needs</th><th class="r">Wait</th><th class="r">Ready at</th></tr></thead>
-            <tbody id="runsBody"></tbody>
-          </table>
-        </div>
-      </section>
+          <div class="warn-box" id="cdWarn" hidden style="margin-bottom:16px;"></div>
+          <div class="cd-grid" id="cdList"></div>
+        </section>
+
+        <!-- ==================== DRIFT LAB / BUG EVIDENCE ==================== -->
+        <section class="panel" id="secAudit" aria-labelledby="audit-h">
+          <div class="panel-head">
+            <div class="panel-title-wrap">
+              <div class="panel-icon aqua" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div>
+                <h2 class="panel-title" id="audit-h">Timer Drift &amp; Bug Evidence Lab</h2>
+                <p class="panel-sub" id="auditHeaderSub">Baseline starts automatically when you press Calculate.</p>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+              <button type="button" class="btn btn-aqua btn-sm" id="copyReportBtn" disabled>Copy Bug Report</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="exportJsonBtn" disabled>Export JSON</button>
+              <button type="button" class="btn btn-danger btn-sm" id="resetAuditBtn" hidden>Clear Logs</button>
+            </div>
+          </div>
+
+          <div class="warn-box amber" id="capWarnBox" hidden style="margin-bottom:16px;"></div>
+
+          <div class="aud-how"><div><b>1</b><span>Press <em>Calculate</em> once. The page starts its own 8-minute rhythm as the baseline.</span></div><div><b>2</b><span>Read the game’s <em>Replenish in</em> time and press <em>Snap Now</em> the instant you see it, then type MM:SS.</span></div><div><b>3</b><span>The page shows how far the game is from the baseline over time. Copy the report to share.</span></div></div>
+
+          <div class="audit-ref-bar">
+            <div class="audit-stat">
+              <div class="audit-stat-lbl">Real Clock Now</div>
+              <div class="audit-stat-val tnum" id="audWallClock">--:--:--</div>
+              <div class="audit-stat-sub" id="audElapsed">Elapsed: --</div>
+            </div>
+            <div class="audit-stat">
+              <div class="audit-stat-lbl">Expected (Read-Only)</div>
+              <div class="audit-stat-val tnum" id="audExpected">-- / --:--</div>
+              <div class="audit-stat-sub" id="audAdjCount">Quick Adjusts: 0</div>
+            </div>
+            <div class="audit-stat">
+              <div class="audit-stat-lbl">Cumulative Drift</div>
+              <div class="audit-stat-val tnum" id="audLastPhase">--</div>
+              <div class="audit-stat-sub" id="audLastStep">Step Δ: --</div>
+            </div>
+            <div class="audit-stat">
+              <div class="audit-stat-lbl">Drift Rate</div>
+              <div class="audit-stat-val tnum" id="audRate">--</div>
+              <div class="audit-stat-sub" id="audPerDay">Est. -- / 24h</div>
+            </div>
+          </div>
+
+          <!-- Zero-Delay Snap + Fast Single-Box Entry -->
+          <div class="audit-check-box" id="auditFormBox">
+            <div class="snap-strip" id="snapStrip">
+              <span id="snapStatusText">Tap <b>Snap Now</b> (or start typing in MM:SS) the instant you read the game clock — eliminates typing delay.</span>
+              <button type="button" class="btn btn-ghost btn-sm" id="clearSnapBtn" hidden>Reset Snap</button>
+            </div>
+
+            <div class="audit-check-grid">
+              <button type="button" class="btn btn-aqua" id="snapBtn" disabled style="height:44px;">Snap Now</button>
+
+              <div class="field">
+                <label for="obsMMSS">Game MM:SS <span id="obsPreview">--:--</span></label>
+                <input id="obsMMSS" type="text" placeholder="542 or 5:42" inputmode="numeric" maxlength="6" autocomplete="off">
+              </div>
+
+              <div class="field field-note">
+                <label for="obsNote">Note <span>Optional</span></label>
+                <input id="obsNote" type="text" maxlength="80" placeholder="e.g. After spending 40, teleport, relog">
+              </div>
+
+              <button type="button" class="btn btn-primary" id="recordCheckBtn" disabled style="height:44px;">Record Check</button>
+            </div>
+
+            <div class="toast-inline" id="auditMsg" role="status"></div>
+          </div>
+
+          <div class="chart-box" id="chartBox" hidden>
+            <div class="chart-head">
+              <span><b>Drift Trajectory</b> (cumulative seconds behind real clock)</span>
+              <div class="chart-legend">
+                <span><i style="background:var(--aqua);"></i>Observed Drift</span>
+                <span><i style="background:var(--gold);"></i>0s Reference</span>
+              </div>
+            </div>
+            <svg id="driftSvg" viewBox="0 0 600 150" preserveAspectRatio="none" role="img" aria-label="Drift trajectory chart"></svg>
+          </div>
+
+          <div class="table-wrap audit-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Timestamp</th>
+                  <th>Event / Note</th>
+                  <th class="r">Expected</th>
+                  <th class="r">Observed</th>
+                  <th class="r">Step Δ</th>
+                  <th class="r">Total Drift</th>
+                </tr>
+              </thead>
+              <tbody id="auditBody" class="tnum"></tbody>
+            </table>
+          </div>
+
+          <div class="audit-cards" id="auditCards"></div>
+        </section>
+      </main>
     </div>
+  </div>
 
-    <!-- Custom Cooldown Timers -->
-    <section class="panel cd-panel" aria-labelledby="cd-h">
-      <h2 id="cd-h"><svg class="ic"><use href="#hg"/></svg>Cooldown timers</h2>
-      <p class="sub">Track custom day &amp; hour respawns (such as Parametric Transformer or local specialties). Saved in this browser.</p>
-
-      <div class="cd-form">
-        <div>
-          <label for="cdName">Timer name</label>
-          <input id="cdName" type="text" maxlength="60" placeholder="e.g. Parametric Transformer">
-        </div>
-        <div>
-          <label for="cdDays">Days</label>
-          <div class="pair"><input id="cdDays" type="number" min="0" max="365" step="1" value="0" inputmode="numeric"><span>d</span></div>
-        </div>
-        <div>
-          <label for="cdHours">Hours</label>
-          <div class="pair"><input id="cdHours" type="number" min="0" max="999" step="1" value="48" inputmode="numeric"><span>h</span></div>
-        </div>
-        <button type="button" class="primary" id="cdAddBtn">Start</button>
-      </div>
-      <p class="warn" id="cdWarn" hidden></p>
-
-      <div class="cd-list" id="cdList"></div>
-    </section>
-</div>
+  <!-- ==================== MOBILE FLOATING BOTTOM NAV ==================== -->
+  <nav class="bottom-nav" id="bottomNav" aria-label="Mobile navigation">
+    <button type="button" class="bnav-item active" data-view="overview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span>Home</span>
+    </button>
+    <button type="button" class="bnav-item" data-view="calculator">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+      <span>Timer</span>
+    </button>
+    <button type="button" class="bnav-item" data-view="schedule">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+      <span>Runs</span>
+      <span class="bnav-badge tnum" id="bnavRunsBadge" data-count="0">0</span>
+    </button>
+    <button type="button" class="bnav-item" data-view="cooldowns">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span>Timers</span>
+      <span class="bnav-badge tnum" id="bnavCdBadge" data-count="0">0</span>
+    </button>
+    <button type="button" class="bnav-item" data-view="audit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Drift</span>
+      <span class="bnav-badge tnum" id="bnavAuditBadge" data-count="0">0</span>
+    </button>
+  </nav>
 
 <script>
 (function(){
+  'use strict';
+
   var $ = function(id){ return document.getElementById(id); };
   var NS = 'http://www.w3.org/2000/svg';
-  var inputIds = ['max','per','cur','target','cost'];
+  var inputIds = ['max', 'per', 'cur', 'nextCal', 'cost'];
   var STORE = 'stamina-calc-v3';
   var COOLDOWN_STORE = 'stamina-cooldowns-v1';
+  var AUDIT_STORE = 'stamina-audit-v1';
   var MAX_RUNS = 10;
-  var DISP = '"Cinzel", Georgia, serif';
-  var TYPE = '"Cormorant Garamond", Georgia, serif';
-  var BODY = '"Cormorant Garamond", Georgia, serif';
-  var ROMAN = ['XII','I','II','III','IV','V','VI','VII','VIII','IX','X','XI'];
-  var still = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
-  var S = null;           // saved calculation (anchor time + values)
-  var adjSign = -1;       // -1 = spend, +1 = add
-  var undoState = null;   // one-step undo for Quick Adjust (memory only, never stored)
+  var S = null;
+  var adjSign = -1;
+  var undoState = null;
   var runsCache = '';
-  var cooldowns = [];     // [{id, name, days, hours, durMs, startAt}]
+  var cooldowns = [];
   var cdStructKey = '';
+  var audit = null;       // { startAt, max, perMin, baseCur, baseNextSec, hitCap, hitCapAt, logs: [] }
+  var auditCacheKey = '';
+  var snap = null;        // { ts, expEnergy, expNextSec }
 
-  /* ---------- helpers ---------- */
-  function num(id, fb){ var v = parseFloat($(id).value); return isFinite(v) ? v : fb; }
-  function pad(n){ return String(n).padStart(2,'0'); }
+  var VIEW_TITLES = {
+    overview: 'Recovery Overview',
+    calculator: 'Recovery Timer',
+    schedule: 'Stage Run Schedule',
+    cooldowns: 'Cooldown Timers',
+    audit: 'Drift & Bug Evidence Lab'
+  };
+
+  /* ---------- Utilities ---------- */
+  function num(id, fb){
+    var v = parseFloat($(id).value);
+    return isFinite(v) ? v : fb;
+  }
+  function pad(n){ return String(n).padStart(2, '0'); }
+
+  function parseMMSS(raw, maxSec){
+    var s = String(raw || '').trim();
+    if(!s) return null;
+    var m = 0, sec = 0;
+    if(/[:.\s]/.test(s)){
+      var parts = s.split(/[:.\s]+/);
+      if(parts.length !== 2) return null;
+      if(!/^\d+$/.test(parts[0] || '0') || !/^\d+$/.test(parts[1])) return null;
+      m = parseInt(parts[0] || '0', 10);
+      sec = parseInt(parts[1], 10);
+    } else {
+      if(!/^\d+$/.test(s)) return null;
+      if(s.length <= 2){
+        m = 0;
+        sec = parseInt(s, 10);
+      } else {
+        m = parseInt(s.slice(0, -2), 10);
+        sec = parseInt(s.slice(-2), 10);
+      }
+    }
+    if(!isFinite(m) || !isFinite(sec) || sec > 59) return null;
+    var total = m * 60 + sec;
+    if(maxSec && total > maxSec) return null;
+    return total;
+  }
+
   function fmtDur(totalSec){
     totalSec = Math.max(0, Math.round(totalSec));
-    var d = Math.floor(totalSec/86400), h = Math.floor((totalSec%86400)/3600),
-        m = Math.floor((totalSec%3600)/60), s = totalSec%60;
-    return (d>0 ? d+'d ' : '') + pad(h)+':'+pad(m)+':'+pad(s);
+    var d = Math.floor(totalSec / 86400);
+    var h = Math.floor((totalSec % 86400) / 3600);
+    var m = Math.floor((totalSec % 3600) / 60);
+    var s = totalSec % 60;
+    return (d > 0 ? d + 'd ' : '') + pad(h) + ':' + pad(m) + ':' + pad(s);
   }
+
+  function fmtMMSS(totalSec){
+    totalSec = Math.max(0, Math.round(totalSec));
+    var m = Math.floor(totalSec / 60);
+    var s = totalSec % 60;
+    return pad(m) + ':' + pad(s);
+  }
+
+  function fmtSignedSec(sec){
+    sec = Math.round(sec);
+    if(sec === 0) return '0s';
+    var sign = sec > 0 ? '+' : '−';
+    var abs = Math.abs(sec);
+    if(abs < 60) return sign + abs + 's';
+    var m = Math.floor(abs / 60);
+    var s = abs % 60;
+    return sign + m + 'm ' + pad(s) + 's';
+  }
+
   function fmtShort(totalSec){
     totalSec = Math.max(0, Math.round(totalSec));
-    var d = Math.floor(totalSec/86400), h = Math.floor((totalSec%86400)/3600), m = Math.floor((totalSec%3600)/60);
-    var p = [];
-    if(d) p.push(d+'d');
-    if(h) p.push(h+'h');
-    if(m || !p.length) p.push(m+'min');
-    return p.join(' ');
+    var d = Math.floor(totalSec / 86400);
+    var h = Math.floor((totalSec % 86400) / 3600);
+    var m = Math.floor((totalSec % 3600) / 60);
+    var parts = [];
+    if(d) parts.push(d + 'd');
+    if(h) parts.push(h + 'h');
+    if(m || !parts.length) parts.push(m + 'm');
+    return parts.join(' ');
   }
+
   function fmtClock(ts){
     var d = new Date(ts);
     try{
-      return d.toLocaleString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+      return d.toLocaleString('en-GB', {
+        weekday: 'short', day: 'numeric', month: 'short',
+        hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+      });
     }catch(e){ return d.toString(); }
   }
+
+  function fmtExactTime(ts){
+    var d = new Date(ts);
+    return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+
+  function fmtIsoLocal(ts){
+    var d = new Date(ts);
+    var offMin = -d.getTimezoneOffset();
+    var sign = offMin >= 0 ? '+' : '-';
+    var absM = Math.abs(offMin);
+    var tz = 'UTC' + sign + pad(Math.floor(absM / 60)) + ':' + pad(absM % 60);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+      ' ' + fmtExactTime(ts) + ' (' + tz + ')';
+  }
+
   function fmtLong(ts){
     try{
       var o = {};
-      new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',hourCycle:'h23'})
-        .formatToParts(new Date(ts)).forEach(function(p){ o[p.type] = p.value; });
-      return o.weekday+', '+o.day+' '+o.month+', '+o.hour+':'+o.minute;
+      new Intl.DateTimeFormat('en-GB', {
+        weekday: 'long', day: 'numeric', month: 'long',
+        hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+      }).formatToParts(new Date(ts)).forEach(function(p){ o[p.type] = p.value; });
+      return o.weekday + ', ' + o.day + ' ' + o.month + ', ' + o.hour + ':' + o.minute;
     }catch(e){ return fmtClock(ts); }
   }
-  function sig(){ return inputIds.map(function(i){ return $(i).value.trim(); }).join('|'); }
-  function say(text){
-    var m = $('msg'); m.textContent = text;
-    clearTimeout(m._t);
-    if(text) m._t = setTimeout(function(){ m.textContent = ''; }, 6000);
-  }
-  function el(name, attrs, parent){
-    var e = document.createElementNS(NS, name);
-    for(var k in attrs) e.setAttribute(k, attrs[k]);
-    if(parent) parent.appendChild(e);
-    return e;
+
+  function sig(){
+    return inputIds.map(function(id){ return $(id).value.trim(); }).join('|');
   }
 
-  /* ---------- decor: astrolabe background + gauge details ---------- */
-  (function decor(){
+  function say(text, targetId){
+    var el = $(targetId || 'msg');
+    el.textContent = text;
+    clearTimeout(el._t);
+    if(text) el._t = setTimeout(function(){ el.textContent = ''; }, 5500);
+  }
+
+  /* ---------- Gauge decor: numerals, dial stars, ticks ---------- */
+  (function initGaugeMarks(){
+    var ROMAN = ['XII','I','II','III','IIII','V','VI','VII','VIII','IX','X','XI'];
+    function svgEl(tag, attrs, parent){
+      var e = document.createElementNS(NS, tag);
+      for(var k in attrs) e.setAttribute(k, attrs[k]);
+      if(parent) parent.appendChild(e);
+      return e;
+    }
     var i;
     var nm = $('numerals');
     for(i=0;i<12;i++){
-      var t = el('text', {'class':'g-rn', x:150, y:15.2, 'text-anchor':'middle', 'dominant-baseline':'central',
+      var t = svgEl('text', {'class':'g-rn', x:150, y:15.2, 'text-anchor':'middle', 'dominant-baseline':'central',
                           transform:'rotate('+(i*30)+' 150 150)'}, nm);
       t.textContent = ROMAN[i];
-      el('path', {d:'M150 13l2 2.2-2 2.2-2-2.2z', fill:'#e9c77b', 'fill-opacity':.6,
+      svgEl('path', {d:'M150 13l2 2.2-2 2.2-2-2.2z', fill:'#e9c77b', 'fill-opacity':.6,
                   transform:'rotate('+(i*30+15)+' 150 150)'}, nm);
     }
     var seed = 7;
@@ -677,14 +1792,14 @@ minutes on custom cooldowns, server-reset timers, the preview dialog for the sav
     var ds = $('dialStars');
     for(i=0;i<70;i++){
       var rr_ = Math.sqrt(rnd())*120, aa = rnd()*Math.PI*2, sr = rnd()*.9+.25;
-      el('circle', {cx:(150+Math.cos(aa)*rr_).toFixed(2), cy:(150+Math.sin(aa)*rr_).toFixed(2), r:sr.toFixed(2),
+      svgEl('circle', {cx:(150+Math.cos(aa)*rr_).toFixed(2), cy:(150+Math.sin(aa)*rr_).toFixed(2), r:sr.toFixed(2),
                     fill: rnd() > .8 ? '#ffe9b0' : '#ebe9e6', 'fill-opacity':(rnd()*.6+.2).toFixed(2)}, ds);
     }
     var tk = $('ticks');
     for(var tt=0;tt<=40;tt++){
       var ang = (135 + 270*tt/40)*Math.PI/180, major = tt%10 === 0, mid = tt%5 === 0;
       var r1 = major ? 100 : (mid ? 104 : 107), r2 = 114;
-      el('line', {x1:(150+Math.cos(ang)*r1).toFixed(2), y1:(150+Math.sin(ang)*r1).toFixed(2),
+      svgEl('line', {x1:(150+Math.cos(ang)*r1).toFixed(2), y1:(150+Math.sin(ang)*r1).toFixed(2),
                   x2:(150+Math.cos(ang)*r2).toFixed(2), y2:(150+Math.sin(ang)*r2).toFixed(2),
                   stroke:'#fff1c9', 'stroke-opacity': major ? .9 : .4, 'stroke-width': major ? 2.2 : 1.2,
                   'stroke-linecap':'round'}, tk);
@@ -692,459 +1807,17 @@ minutes on custom cooldowns, server-reset timers, the preview dialog for the sav
     var tl = $('tickLabels');
     for(var k=0;k<5;k++){
       var an = (135 + 270*k/4)*Math.PI/180;
-      var tx = el('text', {'class':'g-tick', x:(150+Math.cos(an)*76).toFixed(2), y:(150+Math.sin(an)*76).toFixed(2),
+      var tx = svgEl('text', {'class':'g-tick', x:(150+Math.cos(an)*76).toFixed(2), y:(150+Math.sin(an)*76).toFixed(2),
                            'text-anchor':'middle', 'dominant-baseline':'central'}, tl);
       tx.setAttribute('data-k', k);
       tx.textContent = '';
     }
 
-    var A = $('astro');
-    function polar(r, deg){ var a = (deg-90)*Math.PI/180; return [500+Math.cos(a)*r, 500+Math.sin(a)*r]; }
-    el('circle', {cx:500, cy:500, r:485, 'class':'ln faint'}, A);
-    var g1 = el('g', {'class':'rot'}, A);
-    el('circle', {cx:500, cy:500, r:462, 'class':'ln'}, g1);
-    for(i=0;i<120;i++){
-      var L = i%10 === 0 ? 24 : (i%5 === 0 ? 14 : 7), p1 = polar(462, i*3), p2 = polar(462-L, i*3);
-      el('line', {x1:p1[0].toFixed(1), y1:p1[1].toFixed(1), x2:p2[0].toFixed(1), y2:p2[1].toFixed(1), 'class':'ln'}, g1);
-    }
-    var g2 = el('g', {'class':'rot rev'}, A);
-    el('circle', {cx:500, cy:500, r:425, 'class':'ln faint'}, g2);
-    el('circle', {cx:500, cy:500, r:368, 'class':'ln faint'}, g2);
-    for(i=0;i<12;i++){
-      var rn = el('text', {'class':'num', x:500, y:104, 'text-anchor':'middle', 'dominant-baseline':'central',
-                           transform:'rotate('+(i*30)+' 500 500)'}, g2);
-      rn.textContent = ROMAN[i];
-      el('path', {d:'M500 98l5 6-5 6-5-6z', 'class':'gem', transform:'rotate('+(i*30+15)+' 500 500)'}, g2);
-    }
-    var g3 = el('g', {'class':'rot fast'}, A);
-    el('circle', {cx:500, cy:500, r:318, 'class':'ln faint', 'stroke-dasharray':'2 12'}, g3);
-    for(i=0;i<8;i++){
-      el('path', {d:'M500 166l4 14 14 4-14 4-4 14-4-14-14-4 14-4z', 'class':'gem', transform:'rotate('+(i*45)+' 500 500)'}, g3);
-    }
-    el('circle', {cx:500, cy:500, r:240, 'class':'ln'}, A);
-    el('circle', {cx:500, cy:500, r:232, 'class':'ln faint'}, A);
-
-    var o1 = el('g', {transform:'rotate(-22 500 500)'}, A);
-    el('ellipse', {cx:500, cy:500, rx:440, ry:150, 'class':'ln faint'}, o1);
-    var d1 = el('circle', {r:5, 'class':'orbit-dot'}, o1);
-    var o2 = el('g', {transform:'rotate(30 500 500)'}, A);
-    el('ellipse', {cx:500, cy:500, rx:350, ry:105, 'class':'ln faint'}, o2);
-    var d2 = el('circle', {r:3.5, 'class':'orbit-dot gold'}, o2);
-    if(!still){
-      el('animateMotion', {dur:'48s', repeatCount:'indefinite', path:'M60 500a440 150 0 1 0 880 0a440 150 0 1 0-880 0'}, d1);
-      el('animateMotion', {dur:'30s', repeatCount:'indefinite', path:'M850 500a350 105 0 1 1-700 0a350 105 0 1 1 700 0'}, d2);
-    } else {
-      d1.setAttribute('cx', 60);  d1.setAttribute('cy', 500);
-      d2.setAttribute('cx', 850); d2.setAttribute('cy', 500);
-    }
-
-    var hands = el('g', {}, A);
-    var hH = el('line', {x1:500, y1:530, x2:500, y2:330, 'class':'hand h'}, hands);
-    var hM = el('line', {x1:500, y1:540, x2:500, y2:270, 'class':'hand m'}, hands);
-    var hS = el('line', {x1:500, y1:560, x2:500, y2:250, 'class':'hand s'}, hands);
-    el('circle', {cx:500, cy:500, r:9, 'class':'pin'}, hands);
-    function clock(){
-      var d = new Date(), s = d.getSeconds(), m = d.getMinutes() + s/60, h = (d.getHours()%12) + m/60;
-      hH.setAttribute('transform', 'rotate('+(h*30).toFixed(2)+' 500 500)');
-      hM.setAttribute('transform', 'rotate('+(m*6).toFixed(2)+' 500 500)');
-      hS.setAttribute('transform', 'rotate('+(s*6)+' 500 500)');
-    }
-    clock(); setInterval(clock, 1000);
-
-    if(!still && window.matchMedia && window.matchMedia('(pointer:fine)').matches){
-      window.addEventListener('mousemove', function(e){
-        A.style.setProperty('--px', ((e.clientX/window.innerWidth - .5) * -18).toFixed(1) + 'px');
-        A.style.setProperty('--py', ((e.clientY/window.innerHeight - .5) * -18).toFixed(1) + 'px');
-      });
-    }
   })();
-
-  /* ---------- storage ---------- */
-  function save(){
-    try{
-      var o = {};
-      inputIds.forEach(function(i){ o[i] = $(i).value; });
-      localStorage.setItem(STORE, JSON.stringify({inputs:o, calc:S}));
-    }catch(e){}
-  }
-  function load(){
-    try{
-      var raw = localStorage.getItem(STORE);
-      if(raw){
-        var o = JSON.parse(raw);
-        if(o.inputs) inputIds.forEach(function(i){ if(o.inputs[i] !== undefined) $(i).value = o.inputs[i]; });
-        if(o.calc && isFinite(o.calc.at) && isFinite(o.calc.max) && isFinite(o.calc.perMin)) S = o.calc;
-      }
-    }catch(e){}
-    try{
-      var cdRaw = localStorage.getItem(COOLDOWN_STORE);
-      if(cdRaw){
-        var parsed = JSON.parse(cdRaw);
-        if(Array.isArray(parsed)){
-          cooldowns = parsed.filter(function(c){
-            return c && typeof c.name === 'string' && isFinite(c.durMs) && c.durMs > 0 && isFinite(c.startAt);
-          });
-        }
-      }
-    }catch(e){}
-  }
-  function saveCooldowns(){
-    try{ localStorage.setItem(COOLDOWN_STORE, JSON.stringify(cooldowns)); }catch(e){}
-  }
-
-  /* ---------- model ---------- */
-  function perMs(){ return S.perMin * 60000; }
-  function rawEnergy(now){
-    if(S.cur >= S.max) return S.cur;
-    return Math.min(S.max, S.cur + Math.floor((now - S.at) / perMs()));
-  }
-  function reachTs(E){
-    if(S.cur >= E) return S.at;
-    return S.at + Math.ceil(E - S.cur) * perMs();
-  }
-  function runsList(now){
-    var out = [];
-    if(!S.cost || S.cost <= 0) return out;
-    var n = Math.min(MAX_RUNS, Math.floor(S.max / S.cost));
-    for(var i=1;i<=n;i++){
-      var need = S.cost * i, ts = reachTs(need);
-      out.push({n:i, need:need, ts:ts, ready: now >= ts, sec: Math.max(0,(ts-now)/1000)});
-    }
-    return out;
-  }
-
-  function buildWarnings(cur, max, targetAdjusted){
-    var warn = [];
-    if(targetAdjusted) warn.push('Target is higher than the maximum, adjusted to '+max+'.');
-    if(cur > max) warn.push('Current energy is above the maximum. Most games stop recovering in this case.');
-    return warn;
-  }
-
-  function calculate(){
-    var max = Math.max(1, Math.floor(num('max', 1)));
-    var perMin = Math.max(0.01, num('per', 1));
-    var cur = Math.max(0, num('cur', 0));
-    var tRaw = $('target').value.trim();
-    var target = tRaw === '' ? max : Math.floor(num('target', max));
-    var targetAdj = false;
-    if(target > max){ targetAdj = true; target = max; }
-    if(target < 1){ target = 1; }
-    var warn = buildWarnings(cur, max, targetAdj);
-    var cost = Math.max(0, Math.floor(num('cost', 0)));
-    S = {at: Date.now(), max:max, perMin:perMin, cur:cur, target:target, cost:cost, warn:warn, sig:sig()};
-    undoState = null;
-    runsCache = '';
-    save();
-    update();
-  }
-
-  /* ---------- Quick Energy Adjust (preserves exact tick phase) ---------- */
-  function setSign(s){
-    adjSign = s;
-    var subOn = s < 0;
-    $('signSub').classList.toggle('on', subOn);
-    $('signSub').setAttribute('aria-pressed', subOn ? 'true' : 'false');
-    $('signAdd').classList.toggle('on', !subOn);
-    $('signAdd').setAttribute('aria-pressed', !subOn ? 'true' : 'false');
-  }
-
-  function applyAdjust(){
-    if(!S){ say('Press Calculate first.'); return; }
-    var rawAmt = parseFloat($('adjAmt').value);
-    if(!isFinite(rawAmt) || Math.floor(rawAmt) < 1){
-      say('Enter an energy amount of 1 or more.');
-      $('adjAmt').focus();
-      return;
-    }
-    var amt = Math.floor(rawAmt);
-    var now = Date.now();
-    var ms = perMs();
-    var undoPrev = {calc: JSON.parse(JSON.stringify(S)), curField: $('cur').value};
-    var wasFull = (S.cur >= S.max) || (rawEnergy(now) >= S.max);
-    var liveBefore = wasFull ? Math.max(S.cur, S.max) : (S.cur + Math.floor((now - S.at) / ms));
-    var delta = adjSign * amt;
-    var nextCur = Math.max(0, liveBefore + delta);
-
-    if(wasFull){
-      // When full, the in-game recovery timer was stopped; dropping below max starts a fresh cycle now.
-      S.at = now;
-      S.cur = nextCur;
-    } else if(nextCur >= S.max){
-      // Refilled to or above cap; recovery pauses at cap.
-      S.at = now;
-      S.cur = nextCur;
-    } else {
-      // Advance S.at by an exact integer multiple of ms so (now - S.at) % ms is untouched to the millisecond.
-      var gained = Math.floor((now - S.at) / ms);
-      S.at = S.at + gained * ms;
-      S.cur = nextCur;
-    }
-
-    $('cur').value = String(S.cur);
-    var hadTargetWarn = S.warn && S.warn.some(function(w){ return w.indexOf('Target is higher') === 0; });
-    S.warn = buildWarnings(S.cur, S.max, hadTargetWarn);
-    S.sig = sig();
-    undoState = undoPrev;
-    undoPrev.label = liveBefore + ' → ' + nextCur;
-    runsCache = '';
-    save();
-    update();
-    $('adjAmt').select();
-    var verb = delta < 0 ? ('−'+amt+' applied') : ('+'+amt+' applied');
-    var note = wasFull && nextCur < S.max ? ' · new cycle started from full' : (nextCur >= S.max ? ' · energy at cap' : ' · cycle timing preserved');
-    say(verb + ' (' + liveBefore + ' → ' + nextCur + ')' + note + '.');
-  }
-
-  function undoAdjust(){
-    if(!undoState || !S) return;
-    var u = undoState;
-    undoState = null;
-    S = u.calc;
-    $('cur').value = u.curField;
-    runsCache = '';
-    save();
-    update();
-    say('Last adjustment undone (' + u.label.split(' → ').reverse().join(' → ') + ').');
-  }
-
-  /* ---------- Custom Cooldown Timers ---------- */
-  function fmtDurLabel(days, hours){
-    var p = [];
-    if(days > 0) p.push(days + 'd');
-    if(hours > 0) p.push(hours + 'h');
-    return p.join(' ');
-  }
-  function addCooldown(){
-    var warnEl = $('cdWarn');
-    var name = $('cdName').value.trim();
-    var d = Math.max(0, Math.floor(num('cdDays', 0)));
-    var h = Math.max(0, Math.floor(num('cdHours', 0)));
-    if(!name){
-      warnEl.hidden = false;
-      warnEl.textContent = 'Please enter a timer name.';
-      $('cdName').focus();
-      return;
-    }
-    if(d === 0 && h === 0){
-      warnEl.hidden = false;
-      warnEl.textContent = 'Set at least 1 hour or 1 day.';
-      $('cdHours').focus();
-      return;
-    }
-    warnEl.hidden = true;
-    var durMs = (d * 24 + h) * 3600000;
-    cooldowns.unshift({
-      id: String(Date.now()) + '-' + Math.floor(Math.random()*10000),
-      name: name,
-      days: d,
-      hours: h,
-      durMs: durMs,
-      startAt: Date.now()
-    });
-    $('cdName').value = '';
-    cdStructKey = '';
-    saveCooldowns();
-    renderCooldowns(Date.now());
-  }
-  function restartCooldown(id){
-    for(var i=0;i<cooldowns.length;i++){
-      if(cooldowns[i].id === id){
-        cooldowns[i].startAt = Date.now();
-        break;
-      }
-    }
-    cdStructKey = '';
-    saveCooldowns();
-    renderCooldowns(Date.now());
-  }
-  function removeCooldown(id){
-    cooldowns = cooldowns.filter(function(c){ return c.id !== id; });
-    cdStructKey = '';
-    saveCooldowns();
-    renderCooldowns(Date.now());
-  }
-  function renderCooldowns(now){
-    var listEl = $('cdList');
-    var sk = cooldowns.map(function(c){ return c.id + ':' + c.startAt; }).join('|') || 'empty';
-    if(sk !== cdStructKey){
-      cdStructKey = sk;
-      listEl.innerHTML = '';
-      if(!cooldowns.length){
-        var emp = document.createElement('div');
-        emp.className = 'cd-empty';
-        emp.textContent = 'No cooldown timers yet. Enter a name, days and hours above, then press Start.';
-        listEl.appendChild(emp);
-        return;
-      }
-      cooldowns.forEach(function(c){
-        var row = document.createElement('div');
-        row.className = 'cd-item';
-        row.setAttribute('data-cd-id', c.id);
-
-        var left = document.createElement('div');
-        var nm = document.createElement('p');
-        nm.className = 'cd-name';
-        nm.textContent = c.name;
-        var dur = document.createElement('div');
-        dur.className = 'cd-dur';
-        dur.textContent = 'Duration: ' + fmtDurLabel(c.days, c.hours);
-        left.appendChild(nm); left.appendChild(dur);
-
-        var mid = document.createElement('div');
-        var clk = document.createElement('div');
-        clk.className = 'cd-clock';
-        clk.setAttribute('data-role', 'clk');
-        var at = document.createElement('div');
-        at.className = 'cd-at';
-        at.setAttribute('data-role', 'at');
-        mid.appendChild(clk); mid.appendChild(at);
-
-        var acts = document.createElement('div');
-        acts.className = 'cd-acts';
-        var rBtn = document.createElement('button');
-        rBtn.type = 'button'; rBtn.className = 'sm'; rBtn.textContent = 'Restart';
-        rBtn.addEventListener('click', function(){ restartCooldown(c.id); });
-        var xBtn = document.createElement('button');
-        xBtn.type = 'button'; xBtn.className = 'danger sm'; xBtn.textContent = 'Remove';
-        xBtn.addEventListener('click', function(){ removeCooldown(c.id); });
-        acts.appendChild(rBtn); acts.appendChild(xBtn);
-
-        row.appendChild(left); row.appendChild(mid); row.appendChild(acts);
-        listEl.appendChild(row);
-      });
-    }
-
-    var cards = listEl.querySelectorAll('.cd-item');
-    for(var i=0;i<cards.length;i++){
-      var c = cooldowns[i];
-      if(!c) continue;
-      var endTs = c.startAt + c.durMs;
-      var remSec = (endTs - now) / 1000;
-      var done = remSec <= 0;
-      cards[i].classList.toggle('ready-card', done);
-      var clkEl = cards[i].querySelector('[data-role="clk"]');
-      var atEl = cards[i].querySelector('[data-role="at"]');
-      clkEl.classList.toggle('done', done);
-      clkEl.textContent = done ? 'Ready now' : fmtDur(remSec);
-      if(done){
-        atEl.textContent = 'Finished ' + fmtClock(endTs);
-      } else {
-        atEl.innerHTML = 'Ready at <b></b>';
-        atEl.querySelector('b').textContent = fmtLong(endTs);
-      }
-    }
-  }
-
-  /* ---------- gauge ---------- */
-  function setGauge(raw, max, target, hasData){
-    var curPct = hasData ? Math.min(100, raw / max * 100) : 0;
-    var projPct = hasData ? Math.min(100, Math.max(raw, target) / max * 100) : 0;
-    var a = $('arcCur'), p = $('arcProj');
-    a.setAttribute('stroke-dasharray', (Math.round(curPct*7.5)/10)+' 100');
-    p.setAttribute('stroke-dasharray', (Math.round(projPct*7.5)/10)+' 100');
-    a.style.opacity = curPct > 0.4 ? 1 : 0;
-    p.style.opacity = projPct > 0.4 ? 1 : 0;
-    $('needle').style.transform = 'rotate(' + (135 + 270*curPct/100).toFixed(2) + 'deg)';
-    var labels = $('tickLabels').childNodes;
-    for(var i=0;i<labels.length;i++){
-      labels[i].textContent = max > 0 && isFinite(max) ? Math.round(max * i / 4) : '';
-    }
-    var txt = hasData ? String(Math.floor(raw)) : '--';
-    var n = $('gNum');
-    n.textContent = txt;
-    n.style.fontSize = (txt.length >= 4 ? 30 : (txt.length === 3 ? 38 : 44)) + 'px';
-    $('gMax').textContent = '/ ' + (max > 0 && isFinite(max) ? max : '--');
-  }
-
-  function update(){
-    var now = Date.now();
-    renderCooldowns(now);
-
-    var t = $('countdown');
-    $('dirty').hidden = !(S && S.sig !== sig());
-    $('qadjBox').classList.toggle('disabled', !S);
-    $('adjBtn').disabled = !S;
-    $('undoBtn').hidden = !(S && undoState);
-
-    if(!S){
-      t.classList.remove('done');
-      $('lbl').textContent = 'Ready when you are';
-      t.textContent = '--:--:--';
-      $('ready').innerHTML = '';
-      $('detail').textContent = 'Enter your values and press Calculate.';
-      $('warn').hidden = true;
-      setGauge(0, Math.floor(num('max', 0)), 0, false);
-      renderRuns(null, 'Press Calculate to see the schedule.');
-      return;
-    }
-
-    var raw = rawEnergy(now);
-    var live = Math.floor(raw);
-    var reach = reachTs(S.target);
-    var done = now >= reach;
-    var fullTs = reachTs(S.max);
-
-    setGauge(raw, S.max, S.target, true);
-    $('gauge').setAttribute('aria-label', 'Energy '+live+' of '+S.max+', target '+S.target);
-
-    var w = $('warn');
-    if(S.warn && S.warn.length){ w.hidden = false; w.textContent = S.warn.join(' '); } else { w.hidden = true; }
-
-    if(done){
-      t.classList.add('done');
-      t.textContent = 'Target reached';
-      $('lbl').textContent = 'Status';
-      $('ready').innerHTML = '';
-      $('detail').textContent = raw >= S.max
-        ? 'Energy is full.'
-        : 'Full in ' + fmtShort((fullTs-now)/1000) + ' (at ' + fmtLong(fullTs) + ').';
-    } else {
-      t.classList.remove('done');
-      $('lbl').textContent = S.target === S.max ? 'Time until energy is full' : 'Time until ' + S.target + ' energy';
-      t.textContent = fmtDur((reach-now)/1000);
-      $('ready').innerHTML = 'Ready at <b></b>';
-      $('ready').querySelector('b').textContent = fmtLong(reach);
-      var missing = Math.ceil(S.target - raw);
-      $('detail').textContent = 'Need ' + missing + ' more energy (about ' + fmtShort((reach-now)/1000) + ').';
-    }
-
-    var list = runsList(now);
-    renderRuns(list, S.cost > 0 ? 'Energy cost per stage is higher than your maximum energy.' : 'Enter an energy cost per stage to see this schedule.');
-  }
-
-  function renderRuns(list, emptyText){
-    var body = $('runsBody');
-    var key = list && list.length
-      ? list.map(function(r){ return r.n+':'+(r.ready?'R':fmtShort(r.sec)); }).join('|')
-      : 'empty:' + emptyText;
-    if(key === runsCache) return;
-    runsCache = key;
-    body.innerHTML = '';
-    if(!list || !list.length){
-      var tr0 = document.createElement('tr'), td0 = document.createElement('td');
-      td0.colSpan = 4; td0.className = 'empty'; td0.textContent = emptyText;
-      tr0.appendChild(td0); body.appendChild(tr0);
-      return;
-    }
-    list.forEach(function(r){
-      var tr = document.createElement('tr');
-      [
-        [r.n, ''],
-        [r.need, 'r'],
-        [r.ready ? 'Ready now' : fmtShort(r.sec), r.ready ? 'r ok' : 'r'],
-        [r.ready ? '-' : fmtClock(r.ts), 'r']
-      ].forEach(function(x){
-        var td = document.createElement('td');
-        td.textContent = x[0];
-        if(x[1]) td.className = x[1];
-        tr.appendChild(td);
-      });
-      body.appendChild(tr);
-    });
-  }
 
   /* ---------- night sky: twinkling stars, falling sands of time, shooting stars ---------- */
   (function(){
+    var still = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     var cv = $('sky');
     var ctx = cv.getContext && cv.getContext('2d');
     if(!ctx) return;
@@ -1223,418 +1896,1307 @@ minutes on custom cooldowns, server-reset timers, the preview dialog for the sav
     if(still) step(0,false); else requestAnimationFrame(loop);
   })();
 
-  /* ---------- saved image ---------- */
-  function rr(ctx,x,y,w,h,r){
-    r = Math.max(0, Math.min(r, w/2, h/2));
-    ctx.beginPath();
-    ctx.moveTo(x+r,y);
-    ctx.arcTo(x+w,y,x+w,y+h,r);
-    ctx.arcTo(x+w,y+h,x,y+h,r);
-    ctx.arcTo(x,y+h,x,y,r);
-    ctx.arcTo(x,y,x+w,y,r);
-    ctx.closePath();
-  }
-  function fitSize(ctx, text, weight, size, maxW, family){
-    while(size > 24){
-      ctx.font = (weight ? weight+' ' : '') + size + 'px ' + family;
-      if(ctx.measureText(text).width <= maxW) break;
-      size -= 2;
-    }
-    return size;
-  }
-  function spaced(ctx, px){ if('letterSpacing' in ctx) ctx.letterSpacing = px+'px'; }
-  function diamond(ctx,x,y,s,col){
-    ctx.fillStyle = col;
-    ctx.beginPath(); ctx.moveTo(x,y-s); ctx.lineTo(x+s,y); ctx.lineTo(x,y+s); ctx.lineTo(x-s,y); ctx.closePath(); ctx.fill();
+  /* ---------- Storage ---------- */
+  function save(){
+    try{
+      var inputs = {};
+      inputIds.forEach(function(id){ inputs[id] = $(id).value; });
+      localStorage.setItem(STORE, JSON.stringify({ inputs: inputs, calc: S }));
+    }catch(e){}
   }
 
-  function drawGauge(ctx, raw){
-    var TAU = Math.PI*2, A0 = 135*Math.PI/180, SW = 270*Math.PI/180;
-    var pct = Math.min(1, raw / S.max), proj = Math.min(1, Math.max(raw, S.target) / S.max);
-    var g, i;
-    function disc(r, fill){ ctx.fillStyle = fill; ctx.beginPath(); ctx.arc(150,150,r,0,TAU); ctx.fill(); }
-    function ring(r){ ctx.beginPath(); ctx.arc(150,150,r,0,TAU); ctx.stroke(); }
-    function bezelGrad(){
-      var b = ctx.createLinearGradient(0,0,300,300);
-      b.addColorStop(0,'#fff1c9'); b.addColorStop(.35,'#e9c77b'); b.addColorStop(.7,'#a07a36'); b.addColorStop(1,'#5a3f16');
-      return b;
-    }
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,.65)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
-    disc(146, bezelGrad());
-    ctx.restore();
-    ctx.strokeStyle = '#2a1c08'; ctx.lineWidth = 1.5; ring(146);
-    g = ctx.createRadialGradient(150,150,0,150,150,142.5);
-    g.addColorStop(.82,'#19191c'); g.addColorStop(1,'#0a0a0c');
-    disc(142.5, g);
-    ctx.save(); ctx.translate(150,150);
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.font = '700 8.5px ' + DISP;
-    for(i=0;i<12;i++){
-      ctx.save(); ctx.rotate(i*Math.PI/6);
-      ctx.fillStyle = '#e9c77b'; ctx.fillText(ROMAN[i], 0, -134.8);
-      ctx.restore();
-      ctx.save(); ctx.rotate(i*Math.PI/6 + Math.PI/12); ctx.globalAlpha = .6;
-      diamond(ctx, 0, -134.8, 2.2, '#e9c77b');
-      ctx.restore();
-    }
-    ctx.restore();
-    ctx.strokeStyle = 'rgba(255,241,201,.25)'; ctx.lineWidth = .8; ring(142.5);
-    ctx.strokeStyle = bezelGrad(); ctx.lineWidth = 3; ring(127);
-    g = ctx.createRadialGradient(150,125,0,150,150,150);
-    g.addColorStop(0,'#2b2b31'); g.addColorStop(.55,'#131316'); g.addColorStop(1,'#070708');
-    disc(124, g);
-    ctx.save();
-    ctx.beginPath(); ctx.arc(150,150,124,0,TAU); ctx.clip();
-    var sd = 7;
-    function r2(){ sd = (sd*16807) % 2147483647; return sd/2147483647; }
-    for(i=0;i<70;i++){
-      var rr_ = Math.sqrt(r2())*120, aa = r2()*TAU, sr = r2()*.9+.25;
-      ctx.fillStyle = r2() > .8 ? '#ffe9b0' : '#ebe9e6';
-      ctx.globalAlpha = r2()*.6+.2;
-      ctx.beginPath(); ctx.arc(150+Math.cos(aa)*rr_, 150+Math.sin(aa)*rr_, sr, 0, TAU); ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-    ctx.restore();
-    g = ctx.createRadialGradient(150,150,0,150,150,124);
-    g.addColorStop(0,'rgba(233,199,123,.22)'); g.addColorStop(.6,'rgba(233,199,123,.08)'); g.addColorStop(1,'rgba(233,199,123,0)');
-    disc(124, g);
-    ctx.strokeStyle = 'rgba(233,199,123,.22)'; ctx.lineWidth = .8;
-    if(ctx.setLineDash) ctx.setLineDash([1,4]);
-    ring(58);
-    if(ctx.setLineDash) ctx.setLineDash([]);
-    ctx.strokeStyle = 'rgba(233,199,123,.14)'; ctx.lineWidth = 1; ring(50);
-    ctx.lineCap = 'round'; ctx.lineWidth = 12;
-    ctx.strokeStyle = 'rgba(255,255,255,.07)';
-    ctx.beginPath(); ctx.arc(150,150,96,A0,A0+SW); ctx.stroke();
-    if(proj > 0.004){
-      ctx.strokeStyle = 'rgba(207,207,214,.55)';
-      ctx.beginPath(); ctx.arc(150,150,96,A0,A0+SW*proj); ctx.stroke();
-    }
-    if(pct > 0.004){
-      g = ctx.createLinearGradient(40,260,260,40);
-      g.addColorStop(0,'#c9973f'); g.addColorStop(.5,'#ffe9b0'); g.addColorStop(1,'#fff7e0');
-      ctx.save();
-      ctx.shadowColor = 'rgba(255,236,170,.7)'; ctx.shadowBlur = 12;
-      ctx.strokeStyle = g;
-      ctx.beginPath(); ctx.arc(150,150,96,A0,A0+SW*pct); ctx.stroke();
-      ctx.restore();
-    }
-    for(var t=0;t<=40;t++){
-      var ang = A0 + SW*t/40, major = t%10 === 0, mid = t%5 === 0;
-      var r1 = major ? 100 : (mid ? 104 : 107);
-      ctx.strokeStyle = major ? 'rgba(255,241,201,.9)' : 'rgba(255,241,201,.4)';
-      ctx.lineWidth = major ? 2.2 : 1.2;
-      ctx.beginPath();
-      ctx.moveTo(150+Math.cos(ang)*r1, 150+Math.sin(ang)*r1);
-      ctx.lineTo(150+Math.cos(ang)*114, 150+Math.sin(ang)*114);
-      ctx.stroke();
-    }
-    ctx.lineCap = 'butt';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#fff1c9'; ctx.font = '600 13px ' + TYPE; ctx.globalAlpha = .85;
-    for(var k=0;k<5;k++){
-      var an = A0 + SW*k/4;
-      ctx.fillText(String(Math.round(S.max*k/4)), 150+Math.cos(an)*76, 150+Math.sin(an)*76);
-    }
-    ctx.globalAlpha = 1;
-    ctx.textBaseline = 'alphabetic';
-    ctx.fillStyle = '#e9c77b'; ctx.font = '700 10.5px ' + DISP; spaced(ctx,3.2);
-    ctx.fillText('ENERGY', 150, 110); spaced(ctx,0);
-    var txt = String(Math.floor(raw));
-    ctx.fillStyle = '#fff3d2'; ctx.font = '600 ' + (txt.length >= 4 ? 30 : (txt.length === 3 ? 38 : 44)) + 'px ' + TYPE;
-    ctx.fillText(txt, 150, 214);
-    ctx.fillStyle = '#a3a2a8'; ctx.font = '15px ' + TYPE;
-    ctx.fillText('/ ' + S.max, 150, 234);
-    ctx.save();
-    ctx.translate(150,150); ctx.rotate(A0 + SW*pct);
-    ctx.strokeStyle = '#e9c77b'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(-24,0,6,0,TAU); ctx.stroke();
-    ctx.lineWidth = 3; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-18,0); ctx.stroke();
-    g = ctx.createLinearGradient(0,0,64,0);
-    g.addColorStop(0,'#b88a3e'); g.addColorStop(.6,'#fff1c9'); g.addColorStop(1,'#ffffff');
-    ctx.fillStyle = g; ctx.strokeStyle = '#5a3f16'; ctx.lineWidth = .8;
-    ctx.beginPath();
-    ctx.moveTo(0,-2.4); ctx.lineTo(46,-1); ctx.lineTo(54,-6); ctx.lineTo(64,0);
-    ctx.lineTo(54,6); ctx.lineTo(46,1); ctx.lineTo(0,2.4); ctx.closePath();
-    ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = '#fff7e0'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(64,0); ctx.lineTo(88,0); ctx.stroke();
-    ctx.fillStyle = '#8fe3ff';
-    ctx.beginPath(); ctx.arc(54,0,1.6,0,TAU); ctx.fill();
-    ctx.restore();
-    g = ctx.createRadialGradient(146,146,0,150,150,13);
-    g.addColorStop(0,'#fff7e0'); g.addColorStop(.55,'#e9c77b'); g.addColorStop(1,'#6b4a18');
-    ctx.fillStyle = g; ctx.strokeStyle = '#2a1c08'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.arc(150,150,11,0,TAU); ctx.fill(); ctx.stroke();
-    ctx.save();
-    ctx.shadowColor = '#8fe3ff'; ctx.shadowBlur = 8; ctx.fillStyle = '#8fe3ff';
-    ctx.beginPath(); ctx.arc(150,150,4,0,TAU); ctx.fill();
-    ctx.restore();
-    if(window.Path2D){
-      ctx.fillStyle = 'rgba(255,255,255,.06)';
-      ctx.fill(new Path2D('M44 96 A112 112 0 0 1 150 38 A112 112 0 0 0 62 118 Z'));
-    }
+  function load(){
+    try{
+      var raw = localStorage.getItem(STORE);
+      if(raw){
+        var o = JSON.parse(raw);
+        if(o.inputs){
+          inputIds.forEach(function(id){
+            if(o.inputs[id] !== undefined) $(id).value = o.inputs[id];
+          });
+        }
+        if(o.calc && isFinite(o.calc.at) && isFinite(o.calc.max) && isFinite(o.calc.perMin)){
+          S = o.calc;
+          S.sig = sig();
+        }
+      }
+    }catch(e){}
+
+    try{
+      var cdRaw = localStorage.getItem(COOLDOWN_STORE);
+      if(cdRaw){
+        var parsed = JSON.parse(cdRaw);
+        if(Array.isArray(parsed)){
+          cooldowns = parsed.filter(function(c){
+            return c && typeof c.name === 'string' && isFinite(c.durMs) && c.durMs > 0 && isFinite(c.startAt);
+          });
+        }
+      }
+    }catch(e){}
+
+    try{
+      var audRaw = localStorage.getItem(AUDIT_STORE);
+      if(audRaw){
+        var a = JSON.parse(audRaw);
+        if(a && isFinite(a.startAt) && isFinite(a.perMin) && Array.isArray(a.logs)){
+          audit = a;
+        }
+      }
+    }catch(e){}
   }
 
-  function drawSnapshot(){
+  function saveCooldowns(){
+    try{ localStorage.setItem(COOLDOWN_STORE, JSON.stringify(cooldowns)); }catch(e){}
+  }
+
+  function saveAudit(){
+    try{
+      if(audit) localStorage.setItem(AUDIT_STORE, JSON.stringify(audit));
+      else localStorage.removeItem(AUDIT_STORE);
+    }catch(e){}
+  }
+
+  /* ---------- Core Model ---------- */
+  function perMs(){ return S.perMin * 60000; }
+
+  function rawEnergy(now){
+    if(S.cur >= S.max) return S.cur;
+    var elapsed = Math.max(0, now - S.at);
+    return Math.min(S.max, S.cur + Math.floor(elapsed / perMs()));
+  }
+
+  function reachTs(E){
+    if(S.cur >= E) return S.at;
+    return S.at + Math.ceil(E - S.cur) * perMs();
+  }
+
+  function msToNextPoint(now){
+    if(!S || rawEnergy(now) >= S.max) return 0;
+    var ms = perMs();
+    var elapsed = Math.max(0, now - S.at);
+    var rem = ms - (elapsed % ms);
+    return rem === ms ? 0 : rem;
+  }
+
+  function runsList(now){
+    var out = [];
+    if(!S || !S.cost || S.cost <= 0) return out;
+    var n = Math.min(MAX_RUNS, Math.floor(S.max / S.cost));
+    for(var i = 1; i <= n; i++){
+      var need = S.cost * i;
+      var ts = reachTs(need);
+      out.push({
+        n: i,
+        need: need,
+        ts: ts,
+        ready: now >= ts,
+        sec: Math.max(0, (ts - now) / 1000)
+      });
+    }
+    return out;
+  }
+
+  function buildWarnings(cur, max){
+    var warn = [];
+    if(cur > max){
+      warn.push('Current energy exceeds maximum capacity. Natural recovery is paused.');
+    }
+    return warn;
+  }
+
+  function calculate(){
+    var max = Math.max(1, Math.floor(num('max', 1)));
+    var perMin = Math.max(0.01, num('per', 1));
+    var cur = Math.max(0, num('cur', 0));
+    var cost = Math.max(0, Math.floor(num('cost', 0)));
+    var warn = buildWarnings(cur, max);
+
     var now = Date.now();
-    var raw = rawEnergy(now), live = Math.floor(raw);
-    var reach = reachTs(S.target), done = now >= reach;
-    var runs = runsList(now);
-    var TAU = Math.PI*2;
+    var ms = perMin * 60000;
+    var P = Math.round(perMin * 60);
+    var anchorAt = now;
 
-    var W = 1080, P = 72, IW = W - P*2;
-    var tableEnd = runs.length ? 1094 + runs.length*64 : 1040;
-    var H = tableEnd + 120;
-    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-    var ctx = cv.getContext('2d');
-    var GOLD='#e9c77b', GOLD_L='#fff1c9', AQUA='#8fe3ff', MUTED='#a3a2a8', INK='#f2f0ec';
-    var i;
-
-    var bg = ctx.createLinearGradient(0,0,0,H);
-    bg.addColorStop(0,'#101012'); bg.addColorStop(.5,'#0c0c0e'); bg.addColorStop(1,'#050506');
-    ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
-    function glow(x,y,r,col){
-      var g = ctx.createRadialGradient(x,y,0,x,y,r);
-      g.addColorStop(0,col); g.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
-    }
-    glow(W/2,-80,900,'rgba(233,199,123,.14)');
-    glow(0,H*.7,700,'rgba(200,205,230,.07)');
-    glow(W,H,760,'rgba(233,199,123,.12)');
-
-    var seed = 11;
-    function rnd(){ seed = (seed*16807) % 2147483647; return seed/2147483647; }
-    for(i=0;i<240;i++){
-      var sx = rnd()*W, sy = rnd()*H, sr = rnd()*1.3+.2;
-      ctx.globalAlpha = .2 + rnd()*.7;
-      ctx.fillStyle = rnd() < .15 ? '#ffe9b0' : '#ebe9e6';
-      ctx.beginPath(); ctx.arc(sx,sy,sr,0,TAU); ctx.fill();
-    }
-    ctx.save();
-    ctx.shadowColor = GOLD; ctx.shadowBlur = 10;
-    for(i=0;i<60;i++){
-      var gx = rnd()*W, gy = rnd()*H, gr = rnd()*1.6+.6;
-      ctx.globalAlpha = .3 + rnd()*.6;
-      ctx.fillStyle = '#ffd98c';
-      ctx.beginPath(); ctx.arc(gx,gy,gr,0,TAU); ctx.fill();
-    }
-    ctx.restore();
-    ctx.globalAlpha = 1;
-
-    (function(cx, cy, R){
-      ctx.save(); ctx.translate(cx, cy);
-      ctx.strokeStyle = 'rgba(233,199,123,.16)'; ctx.lineWidth = 1.5;
-      [R, R-18, R-90].forEach(function(r){ ctx.beginPath(); ctx.arc(0,0,r,0,TAU); ctx.stroke(); });
-      for(var j=0;j<120;j++){
-        var a = j*3*Math.PI/180, L = j%10 === 0 ? 22 : (j%5 === 0 ? 12 : 6);
-        ctx.beginPath();
-        ctx.moveTo(Math.sin(a)*R, -Math.cos(a)*R);
-        ctx.lineTo(Math.sin(a)*(R-L), -Math.cos(a)*(R-L));
-        ctx.stroke();
+    var calRaw = $('nextCal').value.trim();
+    if(calRaw !== '' && cur < max){
+      var parsedSec = parseMMSS(calRaw, P);
+      if(parsedSec === null){
+        warn.push('Invalid Next +1 time (use e.g. 542 or 5:42 within interval); started at full interval.');
+      } else if(parsedSec > 0){
+        anchorAt = now - (ms - parsedSec * 1000);
       }
-      ctx.fillStyle = 'rgba(233,199,123,.22)'; ctx.font = '700 22px ' + DISP;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      for(j=0;j<12;j++){
-        ctx.save(); ctx.rotate(j*Math.PI/6); ctx.fillText(ROMAN[j], 0, -(R-52)); ctx.restore();
-      }
-      if(ctx.setLineDash) ctx.setLineDash([2,12]);
-      ctx.beginPath(); ctx.arc(0,0,R-120,0,TAU); ctx.stroke();
-      if(ctx.setLineDash) ctx.setLineDash([]);
-      ctx.rotate(-22*Math.PI/180);
-      ctx.strokeStyle = 'rgba(233,199,123,.12)';
-      if(ctx.ellipse){ ctx.beginPath(); ctx.ellipse(0,0,480,150,0,0,TAU); ctx.stroke(); }
-      ctx.shadowColor = AQUA; ctx.shadowBlur = 12; ctx.fillStyle = AQUA;
-      ctx.beginPath(); ctx.arc(480*Math.cos(2.4), 150*Math.sin(2.4), 5, 0, TAU); ctx.fill();
-      ctx.restore();
-    })(W/2, 440, 370);
+    }
 
-    ctx.strokeStyle = 'rgba(233,199,123,.55)'; ctx.lineWidth = 2;
-    rr(ctx,30,30,W-60,H-60,28); ctx.stroke();
-    ctx.strokeStyle = 'rgba(233,199,123,.18)'; ctx.lineWidth = 1;
-    rr(ctx,42,42,W-84,H-84,20); ctx.stroke();
-    diamond(ctx, W/2, 30, 9, GOLD); diamond(ctx, W/2, H-30, 9, GOLD);
-    diamond(ctx, 30, H/2, 7, GOLD); diamond(ctx, W-30, H/2, 7, GOLD);
+    S = {
+      at: anchorAt,
+      max: max,
+      perMin: perMin,
+      cur: cur,
+      cost: cost,
+      warn: warn,
+      sig: sig()
+    };
+    undoState = null;
+    snap = null;
+    runsCache = '';
+    save();
 
-    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-    var hg = ctx.createLinearGradient(0,84,0,124);
-    hg.addColorStop(0,'#ffffff'); hg.addColorStop(.4,GOLD_L); hg.addColorStop(.8,GOLD); hg.addColorStop(1,'#b88a3e');
-    ctx.save();
-    ctx.shadowColor = 'rgba(233,199,123,.4)'; ctx.shadowBlur = 20;
-    ctx.fillStyle = hg; ctx.font = '700 40px '+DISP; spaced(ctx,7);
-    ctx.fillText('STAMINA TIMER', W/2, 122); spaced(ctx,0);
-    ctx.restore();
-    var lg = ctx.createLinearGradient(P+120,0,W/2,0);
-    lg.addColorStop(0,'rgba(233,199,123,0)'); lg.addColorStop(1,GOLD);
-    ctx.strokeStyle = lg; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(P+120,150); ctx.lineTo(W/2-20,150); ctx.stroke();
-    lg = ctx.createLinearGradient(W-P-120,0,W/2,0);
-    lg.addColorStop(0,'rgba(233,199,123,0)'); lg.addColorStop(1,GOLD);
-    ctx.strokeStyle = lg;
-    ctx.beginPath(); ctx.moveTo(W/2+20,150); ctx.lineTo(W-P-120,150); ctx.stroke();
-    diamond(ctx, W/2, 150, 7, GOLD);
-    ctx.fillStyle = MUTED; ctx.font = 'italic 400 26px '+BODY;
-    ctx.fillText('Captured ' + fmtLong(now), W/2, 192);
-
-    var f = 1.28, cx = W/2, cy = 440;
-    ctx.save();
-    ctx.translate(cx - 150*f, cy - 150*f); ctx.scale(f,f);
-    drawGauge(ctx, raw);
-    ctx.restore();
-    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-
-    var label, big, sub;
-    if(done){
-      label = 'Status'; big = 'Target reached';
-      sub = raw >= S.max ? 'Energy is full' : 'Full at ' + fmtLong(reachTs(S.max));
+    // Automatically establish Drift Lab Baseline #0 from Calculate
+    if(cur < max){
+      var nextSec = Math.round(msToNextPoint(now) / 1000);
+      audit = {
+        startAt: now,
+        max: max,
+        perMin: perMin,
+        baseCur: Math.floor(cur),
+        baseNextSec: nextSec,
+        hitCap: false,
+        hitCapAt: null,
+        logs: [{
+          id: 'base-' + now,
+          type: 'baseline',
+          idx: 0,
+          ts: now,
+          elapsedSec: 0,
+          tag: 'Baseline #0',
+          note: calRaw ? ('Calibrated at ' + fmtMMSS(nextSec)) : 'Started at full interval',
+          expEnergy: Math.floor(cur),
+          expNextSec: nextSec,
+          obsEnergy: Math.floor(cur),
+          obsNextSec: nextSec,
+          stepDriftSec: 0,
+          phaseDriftSec: 0
+        }]
+      };
     } else {
-      label = S.target === S.max ? 'Energy will be full at' : 'Energy reaches ' + S.target + ' at';
-      big = fmtLong(reach);
-      sub = 'About ' + fmtShort((reach-now)/1000) + ' left when captured (' + Math.ceil(S.target-raw) + ' energy to go)';
+      audit = null;
     }
-    ctx.fillStyle = GOLD; ctx.font = '700 26px '+DISP; spaced(ctx,4);
-    ctx.fillText(label.toUpperCase(), W/2, 726); spaced(ctx,0);
-    var bigFont = done ? DISP : TYPE, bigW = done ? '700' : '600';
-    var size = fitSize(ctx, big, bigW, 84, IW, bigFont);
-    ctx.font = bigW + ' ' + size + 'px ' + bigFont;
-    var tg = ctx.createLinearGradient(0,812-size,0,812);
-    if(done){ tg.addColorStop(0,'#fff7e0'); tg.addColorStop(.55,'#ffe9b0'); tg.addColorStop(1,GOLD); }
-    else { tg.addColorStop(0,'#ffffff'); tg.addColorStop(.35,GOLD_L); tg.addColorStop(.75,GOLD); tg.addColorStop(1,'#c9973f'); }
-    ctx.save();
-    ctx.shadowColor = done ? 'rgba(233,199,123,.55)' : 'rgba(233,199,123,.45)'; ctx.shadowBlur = 24;
-    ctx.fillStyle = tg;
-    ctx.fillText(big, W/2, 812);
-    ctx.restore();
-    ctx.fillStyle = MUTED;
-    var ss = fitSize(ctx, sub, 'italic 400', 28, IW, BODY);
-    ctx.font = 'italic 400 ' + ss + 'px ' + BODY;
-    ctx.fillText(sub, W/2, 866);
+    auditCacheKey = '';
+    saveAudit();
+    updateSnapUI();
+    update();
+    say('Timer started & Drift Baseline #0 anchored.');
+  }
 
-    var boxY = 906, boxH = 122, gap = 20, boxW = (IW - gap*2)/3;
-    var stats = [
-      ['Energy now', live+' / '+S.max],
-      ['Target', String(S.target)],
-      ['Recovery', '1 / '+(Math.round(S.perMin*100)/100)+' min']
-    ];
-    stats.forEach(function(s,i){
-      var x = P + i*(boxW+gap);
-      var pg = ctx.createLinearGradient(0,boxY,0,boxY+boxH);
-      pg.addColorStop(0,'rgba(42,42,50,.9)'); pg.addColorStop(1,'rgba(18,18,22,.92)');
-      ctx.fillStyle = pg; rr(ctx,x,boxY,boxW,boxH,16); ctx.fill();
-      ctx.strokeStyle = 'rgba(233,199,123,.42)'; ctx.lineWidth = 1.5; rr(ctx,x,boxY,boxW,boxH,16); ctx.stroke();
-      diamond(ctx, x+boxW/2, boxY, 6, GOLD);
-      ctx.textAlign = 'center';
-      ctx.fillStyle = GOLD; ctx.font = '700 20px '+DISP; spaced(ctx,3);
-      ctx.fillText(s[0].toUpperCase(), x+boxW/2, boxY+50); spaced(ctx,0);
-      var vs = fitSize(ctx, s[1], '600', 40, boxW-40, TYPE);
-      ctx.fillStyle = '#fff3d2'; ctx.font = '600 '+vs+'px '+TYPE;
-      ctx.fillText(s[1], x+boxW/2, boxY+98);
+  /* ---------- Quick Energy Adjust ---------- */
+  function setSign(s){
+    adjSign = s;
+    var subOn = s < 0;
+    $('signSub').classList.toggle('on', subOn);
+    $('signSub').setAttribute('aria-pressed', subOn ? 'true' : 'false');
+    $('signAdd').classList.toggle('on', !subOn);
+    $('signAdd').setAttribute('aria-pressed', !subOn ? 'true' : 'false');
+  }
+
+  function applyAdjust(){
+    if(!S){ say('Press Calculate first.'); return; }
+    var rawAmt = parseFloat($('adjAmt').value);
+    if(!isFinite(rawAmt) || Math.floor(rawAmt) < 1){
+      say('Enter an energy amount of 1 or more.');
+      $('adjAmt').focus();
+      return;
+    }
+
+    var amt = Math.floor(rawAmt);
+    var now = Date.now();
+    var ms = perMs();
+    var undoPrev = {
+      calc: JSON.parse(JSON.stringify(S)),
+      curField: $('cur').value,
+      auditHadHitCap: audit ? !!audit.hitCap : false,
+      auditHitCapAt: audit ? audit.hitCapAt : null,
+      addedAuditAdjId: null
+    };
+
+    var wasFull = (S.cur >= S.max) || (rawEnergy(now) >= S.max);
+    var liveBefore = wasFull
+      ? Math.max(S.cur, S.max)
+      : (S.cur + Math.floor(Math.max(0, now - S.at) / ms));
+
+    var delta = adjSign * amt;
+    var nextCur = Math.max(0, liveBefore + delta);
+
+    if(wasFull || nextCur >= S.max){
+      S.at = now;
+      S.cur = nextCur;
+    } else {
+      var gained = Math.floor(Math.max(0, now - S.at) / ms);
+      S.at = S.at + gained * ms;
+      S.cur = nextCur;
+    }
+
+    $('cur').value = String(S.cur);
+    S.warn = buildWarnings(S.cur, S.max);
+
+    var parts = typeof S.sig === 'string' ? S.sig.split('|') : [];
+    if(parts.length === 5){
+      parts[2] = String(S.cur);
+      S.sig = parts.join('|');
+    } else {
+      S.sig = sig();
+    }
+
+    // Log Quick Adjust neutrally in Drift Audit (never claims "sealed" — awaits next Check!)
+    if(audit){
+      var hitBoundary = wasFull || (nextCur >= S.max);
+      if(hitBoundary && !audit.hitCap){
+        audit.hitCap = true;
+        audit.hitCapAt = now;
+      }
+      var adjId = 'adj-' + now + '-' + Math.floor(Math.random() * 10000);
+      var nextSecNow = nextCur >= S.max ? 0 : Math.round(msToNextPoint(now) / 1000);
+      audit.logs.push({
+        id: adjId,
+        type: 'adjust',
+        idx: null,
+        ts: now,
+        elapsedSec: Math.max(0, Math.round((now - audit.startAt) / 1000)),
+        tag: delta < 0 ? ('Spend ' + delta) : ('Add +' + delta),
+        note: 'Energy ' + liveBefore + ' → ' + nextCur + (hitBoundary ? ' (hit cap)' : ''),
+        expEnergy: nextCur,
+        expNextSec: nextSecNow,
+        obsEnergy: null,
+        obsNextSec: null,
+        stepDriftSec: null,
+        phaseDriftSec: null,
+        delta: delta
+      });
+      undoPrev.addedAuditAdjId = adjId;
+      auditCacheKey = '';
+      saveAudit();
+    }
+
+    undoPrev.label = liveBefore + ' → ' + nextCur;
+    undoState = undoPrev;
+    runsCache = '';
+    save();
+    update();
+
+    var verb = delta < 0 ? ('−' + amt + ' applied') : ('+' + amt + ' applied');
+    var note = (wasFull && nextCur < S.max)
+      ? ' · new cycle from full'
+      : (nextCur >= S.max ? ' · at max cap' : ' · reference updated');
+    say(verb + ' (' + liveBefore + ' → ' + nextCur + ')' + note + '.');
+  }
+
+  function undoAdjust(){
+    if(!undoState || !S) return;
+    var u = undoState;
+    undoState = null;
+    S = u.calc;
+    $('cur').value = u.curField;
+
+    if(audit && u.addedAuditAdjId){
+      audit.logs = audit.logs.filter(function(l){ return l.id !== u.addedAuditAdjId; });
+      audit.hitCap = u.auditHadHitCap;
+      audit.hitCapAt = u.auditHitCapAt;
+      auditCacheKey = '';
+      saveAudit();
+    }
+
+    runsCache = '';
+    save();
+    update();
+    say('Reverted adjustment (' + u.label.split(' → ').reverse().join(' → ') + ').');
+  }
+
+  /* ---------- Cooldown Timers ---------- */
+  function fmtDurLabel(days, hours){
+    var p = [];
+    if(days > 0) p.push(days + 'd');
+    if(hours > 0) p.push(hours + 'h');
+    return p.join(' ');
+  }
+
+  function addCooldown(){
+    var warnEl = $('cdWarn');
+    var name = $('cdName').value.trim();
+    var d = Math.max(0, Math.floor(num('cdDays', 0)));
+    var h = Math.max(0, Math.floor(num('cdHours', 0)));
+
+    if(!name){
+      warnEl.hidden = false;
+      warnEl.textContent = 'Please enter a timer name.';
+      $('cdName').focus();
+      return;
+    }
+    if(d === 0 && h === 0){
+      warnEl.hidden = false;
+      warnEl.textContent = 'Duration must be at least 1 hour or 1 day.';
+      $('cdHours').focus();
+      return;
+    }
+
+    warnEl.hidden = true;
+    cooldowns.unshift({
+      id: String(Date.now()) + '-' + Math.floor(Math.random() * 10000),
+      name: name,
+      days: d,
+      hours: h,
+      durMs: (d * 24 + h) * 3600000,
+      startAt: Date.now()
+    });
+    $('cdName').value = '';
+    cdStructKey = '';
+    saveCooldowns();
+    renderCooldowns(Date.now());
+  }
+
+  function restartCooldown(id){
+    for(var i = 0; i < cooldowns.length; i++){
+      if(cooldowns[i].id === id){
+        cooldowns[i].startAt = Date.now();
+        break;
+      }
+    }
+    cdStructKey = '';
+    saveCooldowns();
+    renderCooldowns(Date.now());
+  }
+
+  function removeCooldown(id){
+    cooldowns = cooldowns.filter(function(c){ return c.id !== id; });
+    cdStructKey = '';
+    saveCooldowns();
+    renderCooldowns(Date.now());
+  }
+
+  function renderCooldowns(now){
+    var cdCountStr = String(cooldowns.length);
+    $('navCdBadge').textContent = cdCountStr;
+    $('bnavCdBadge').textContent = cdCountStr;
+    $('bnavCdBadge').setAttribute('data-count', cdCountStr);
+
+    var listEl = $('cdList');
+    var sk = cooldowns.map(function(c){ return c.id + ':' + c.startAt; }).join('|') || 'empty';
+
+    if(sk !== cdStructKey){
+      cdStructKey = sk;
+      listEl.innerHTML = '';
+
+      if(!cooldowns.length){
+        var emp = document.createElement('div');
+        emp.className = 'cd-empty';
+        emp.textContent = 'No active cooldown timers. Add a name and duration above to start tracking.';
+        listEl.appendChild(emp);
+        return;
+      }
+
+      cooldowns.forEach(function(c){
+        var card = document.createElement('article');
+        card.className = 'cd-card';
+
+        var head = document.createElement('div');
+        head.className = 'cd-card-head';
+        var nm = document.createElement('h3');
+        nm.className = 'cd-name';
+        nm.textContent = c.name;
+        var dur = document.createElement('span');
+        dur.className = 'cd-dur-pill tnum';
+        dur.textContent = fmtDurLabel(c.days, c.hours);
+        head.appendChild(nm);
+        head.appendChild(dur);
+
+        var clk = document.createElement('div');
+        clk.className = 'cd-clock tnum';
+        clk.setAttribute('data-role', 'clk');
+
+        var bar = document.createElement('div');
+        bar.className = 'cd-bar';
+        var fill = document.createElement('div');
+        fill.className = 'cd-bar-fill';
+        fill.setAttribute('data-role', 'fill');
+        bar.appendChild(fill);
+
+        var foot = document.createElement('div');
+        foot.className = 'cd-card-foot';
+        var at = document.createElement('div');
+        at.className = 'cd-at';
+        at.setAttribute('data-role', 'at');
+
+        var acts = document.createElement('div');
+        acts.className = 'cd-actions';
+        var rBtn = document.createElement('button');
+        rBtn.type = 'button';
+        rBtn.className = 'btn btn-ghost btn-sm';
+        rBtn.textContent = 'Restart';
+        rBtn.addEventListener('click', function(){ restartCooldown(c.id); });
+
+        var xBtn = document.createElement('button');
+        xBtn.type = 'button';
+        xBtn.className = 'btn btn-danger btn-sm';
+        xBtn.textContent = 'Remove';
+        xBtn.addEventListener('click', function(){ removeCooldown(c.id); });
+
+        acts.appendChild(rBtn);
+        acts.appendChild(xBtn);
+        foot.appendChild(at);
+        foot.appendChild(acts);
+
+        card.appendChild(head);
+        card.appendChild(clk);
+        card.appendChild(bar);
+        card.appendChild(foot);
+        listEl.appendChild(card);
+      });
+    }
+
+    var cards = listEl.querySelectorAll('.cd-card');
+    for(var i = 0; i < cards.length; i++){
+      var c = cooldowns[i];
+      if(!c) continue;
+      var endTs = c.startAt + c.durMs;
+      var remSec = (endTs - now) / 1000;
+      var done = remSec <= 0;
+      var pct = Math.max(0, Math.min(100, ((now - c.startAt) / c.durMs) * 100));
+
+      cards[i].classList.toggle('is-ready', done);
+      var clkEl = cards[i].querySelector('[data-role="clk"]');
+      var fillEl = cards[i].querySelector('[data-role="fill"]');
+      var atEl = cards[i].querySelector('[data-role="at"]');
+
+      clkEl.classList.toggle('done', done);
+      clkEl.textContent = done ? 'Ready now' : fmtDur(remSec);
+      fillEl.style.width = pct.toFixed(1) + '%';
+
+      if(done){
+        atEl.textContent = 'Finished ' + fmtClock(endTs);
+      } else {
+        atEl.innerHTML = 'Ready <b></b>';
+        atEl.querySelector('b').textContent = fmtClock(endTs);
+      }
+    }
+  }
+
+  /* ---------- Drift Lab (Zero-Delay Snap & Unwrapped Drift) ---------- */
+  function captureSnap(focusInput){
+    if(!audit || !S) return;
+    var now = Date.now();
+    snap = {
+      ts: now,
+      expEnergy: Math.floor(rawEnergy(now)),
+      expNextSec: Math.round(msToNextPoint(now) / 1000)
+    };
+    updateSnapUI();
+    if(focusInput) $('obsMMSS').focus();
+  }
+
+  function clearSnap(){
+    snap = null;
+    updateSnapUI();
+  }
+
+  function updateSnapUI(){
+    var strip = $('snapStrip');
+    var txt = $('snapStatusText');
+    var clr = $('clearSnapBtn');
+    if(snap){
+      strip.classList.add('snapped');
+      txt.innerHTML = 'Snapped at <b>' + fmtExactTime(snap.ts) + '</b> · Expected at snap: <b>' + snap.expEnergy + ' (' + fmtMMSS(snap.expNextSec) + ')</b>';
+      clr.hidden = false;
+    } else {
+      strip.classList.remove('snapped');
+      txt.innerHTML = 'Tap <b>Snap Now</b> (or start typing in MM:SS) the instant you read the game clock — eliminates typing delay.';
+      clr.hidden = true;
+    }
+
+    var P = S ? Math.round(S.perMin * 60) : 480;
+    var parsed = parseMMSS($('obsMMSS').value, P);
+    $('obsPreview').textContent = parsed === null ? '--:--' : fmtMMSS(parsed);
+  }
+
+  function recordAuditCheck(){
+    if(!audit || !S){
+      say('Press Calculate & Set Baseline first.', 'auditMsg');
+      return;
+    }
+
+    var P = Math.round(S.perMin * 60);
+    var obsNextSec = parseMMSS($('obsMMSS').value, P);
+    if(obsNextSec === null){
+      say('Enter valid Game MM:SS (e.g. 542 or 5:42, seconds 00–59).', 'auditMsg');
+      $('obsMMSS').focus();
+      return;
+    }
+
+    // Use snapped timestamp if captured, otherwise current moment
+    var refTs = snap ? snap.ts : Date.now();
+    var expEnergy = snap ? snap.expEnergy : Math.floor(rawEnergy(refTs));
+    var expNextSec = snap ? snap.expNextSec : Math.round(msToNextPoint(refTs) / 1000);
+
+    // Unwrap modular phase difference relative to previous measurement so multi-minute cumulative drift never flips sign
+    var measures = audit.logs.filter(function(l){ return l.type === 'baseline' || l.type === 'check'; });
+    var prevDrift = measures.length ? measures[measures.length - 1].phaseDriftSec : 0;
+
+    var rawMod = ((obsNextSec - expNextSec) % P + P) % P;
+    var k = Math.round((prevDrift - rawMod) / P);
+    var unwrappedDrift = Math.round(rawMod + k * P);
+    var stepDrift = unwrappedDrift - prevDrift;
+
+    var checkNum = audit.logs.filter(function(l){ return l.type === 'check'; }).length + 1;
+    var entry = {
+      id: 'chk-' + refTs + '-' + Math.floor(Math.random() * 10000),
+      type: 'check',
+      idx: checkNum,
+      ts: refTs,
+      elapsedSec: Math.max(0, Math.round((refTs - audit.startAt) / 1000)),
+      tag: 'Check #' + checkNum,
+      note: $('obsNote').value.trim(),
+      expEnergy: expEnergy,
+      expNextSec: expNextSec,
+      obsEnergy: expEnergy,
+      obsNextSec: obsNextSec,
+      stepDriftSec: stepDrift,
+      phaseDriftSec: unwrappedDrift
+    };
+
+    audit.logs.push(entry);
+    $('obsMMSS').value = '';
+    $('obsNote').value = '';
+    snap = null;
+    auditCacheKey = '';
+    saveAudit();
+    updateSnapUI();
+    renderAudit(Date.now());
+    say('Recorded Check #' + entry.idx + ' · Drift: ' + fmtSignedSec(entry.phaseDriftSec) + ' (Step ' + fmtSignedSec(entry.stepDriftSec) + ').', 'auditMsg');
+  }
+
+  function driftClass(sec){
+    var a = Math.abs(sec);
+    if(a === 0) return 'zero';
+    if(a <= 3) return 'warn';
+    return 'bad';
+  }
+
+  function drawDriftChart(checkPoints){
+    var box = $('chartBox');
+    var svg = $('driftSvg');
+    if(checkPoints.length < 2){
+      box.hidden = true;
+      return;
+    }
+    box.hidden = false;
+    svg.innerHTML = '';
+
+    var W = 600, H = 150, PL = 42, PR = 14, PT = 16, PB = 22;
+    var IW = W - PL - PR, IH = H - PT - PB;
+
+    var maxT = Math.max(1, checkPoints[checkPoints.length - 1].elapsedSec);
+    var minY = 0, maxY = 0;
+    checkPoints.forEach(function(l){
+      if(l.phaseDriftSec < minY) minY = l.phaseDriftSec;
+      if(l.phaseDriftSec > maxY) maxY = l.phaseDriftSec;
+    });
+    if(minY === maxY){ minY -= 5; maxY += 5; }
+    else {
+      var padY = Math.max(2, Math.ceil((maxY - minY) * 0.18));
+      minY -= padY;
+      maxY += padY;
+    }
+
+    function xPos(t){ return PL + (t / maxT) * IW; }
+    function yPos(v){ return PT + ((maxY - v) / (maxY - minY)) * IH; }
+
+    function addEl(name, attrs){
+      var el = document.createElementNS(NS, name);
+      for(var k in attrs) el.setAttribute(k, attrs[k]);
+      svg.appendChild(el);
+      return el;
+    }
+
+    var y0 = yPos(0);
+    addEl('line', {
+      x1: PL, y1: y0.toFixed(1), x2: W - PR, y2: y0.toFixed(1),
+      stroke: '#e9c77b', 'stroke-opacity': '0.45', 'stroke-width': '1', 'stroke-dasharray': '4 4'
     });
 
-    if(runs.length){
-      ctx.textAlign = 'left';
-      ctx.fillStyle = GOLD_L; ctx.font = '700 30px '+DISP; spaced(ctx,3);
-      ctx.fillText('WHEN CAN I RUN STAGES?', P, 1076); spaced(ctx,0);
-      var y = 1094;
-      runs.forEach(function(r){
-        ctx.strokeStyle = 'rgba(233,199,123,.22)'; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.moveTo(P,y); ctx.lineTo(W-P,y); ctx.stroke();
-        var ty = y + 42;
-        ctx.textAlign = 'left';
-        ctx.fillStyle = GOLD_L; ctx.font = '600 26px '+DISP;
-        ctx.fillText('Run '+r.n, P, ty);
-        ctx.fillStyle = MUTED; ctx.font = 'italic 400 26px '+BODY;
-        ctx.fillText('needs '+r.need, P+200, ty);
-        ctx.textAlign = 'right';
-        ctx.fillStyle = r.ready ? '#9ff0c9' : INK; ctx.font = '600 28px '+BODY;
-        ctx.fillText(r.ready ? 'Ready now' : fmtClock(r.ts), W-P, ty);
-        y += 64;
+    [maxY, 0, minY].forEach(function(val){
+      var t = addEl('text', {
+        x: PL - 6, y: yPos(val).toFixed(1),
+        fill: '#93929d', 'font-size': '10', 'text-anchor': 'end', 'dominant-baseline': 'central'
       });
-    }
+      t.textContent = (val > 0 ? '+' : '') + Math.round(val) + 's';
+    });
 
-    ctx.textAlign = 'center';
-    ctx.fillStyle = MUTED; ctx.font = 'italic 400 22px '+BODY;
-    ctx.fillText('Based on the values entered when you pressed Calculate.', W/2, H-76);
-    return cv;
+    var pts = checkPoints.map(function(l){ return xPos(l.elapsedSec).toFixed(1) + ',' + yPos(l.phaseDriftSec).toFixed(1); });
+    addEl('polyline', {
+      fill: 'none', stroke: '#8fe3ff', 'stroke-width': '2.2',
+      'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+      points: pts.join(' ')
+    });
+
+    checkPoints.forEach(function(l){
+      addEl('circle', {
+        cx: xPos(l.elapsedSec).toFixed(1), cy: yPos(l.phaseDriftSec).toFixed(1),
+        r: l.type === 'baseline' ? '3.5' : '4.2',
+        fill: l.phaseDriftSec === 0 ? '#86efac' : '#ff8fa3',
+        stroke: '#0c0c10', 'stroke-width': '1.5'
+      });
+    });
+
+    var xl = addEl('text', { x: W - PR, y: H - 5, fill: '#93929d', 'font-size': '10', 'text-anchor': 'end' });
+    xl.textContent = 'Elapsed: ' + fmtShort(maxT);
   }
 
-  function downloadBlob(blob, name){
+  function renderAudit(now){
+    $('audWallClock').textContent = fmtExactTime(now);
+
+    if(audit && S && !audit.hitCap && rawEnergy(now) >= S.max){
+      audit.hitCap = true;
+      audit.hitCapAt = now;
+      saveAudit();
+    }
+
+    if(S){
+      var expE = Math.floor(rawEnergy(now));
+      var expN = Math.round(msToNextPoint(now) / 1000);
+      $('audExpected').textContent = expE + ' · ' + fmtMMSS(expN);
+    } else {
+      $('audExpected').textContent = '-- · --:--';
+    }
+
+    var checkLogs = audit ? audit.logs.filter(function(l){ return l.type === 'check'; }) : [];
+    var adjLogs = audit ? audit.logs.filter(function(l){ return l.type === 'adjust'; }) : [];
+    var checkCountStr = String(checkLogs.length);
+    $('navAuditBadge').textContent = checkCountStr;
+    $('bnavAuditBadge').textContent = checkCountStr;
+    $('bnavAuditBadge').setAttribute('data-count', checkCountStr);
+
+    var hasAudit = !!(audit && audit.logs.length);
+    $('snapBtn').disabled = !hasAudit;
+    $('recordCheckBtn').disabled = !hasAudit;
+    $('copyReportBtn').disabled = !hasAudit;
+    $('exportJsonBtn').disabled = !hasAudit;
+    $('resetAuditBtn').hidden = !hasAudit;
+    $('audAdjCount').textContent = 'Quick Adjusts: ' + adjLogs.length;
+
+    var capBox = $('capWarnBox');
+    if(hasAudit && audit.hitCap){
+      capBox.hidden = false;
+      capBox.textContent = 'Energy reached maximum cap at ' + fmtExactTime(audit.hitCapAt || now) + '. In-game recovery paused at cap, so checks after this time reflect cap reset.';
+    } else {
+      capBox.hidden = true;
+    }
+
+    if(!hasAudit){
+      $('auditHeaderSub').textContent = 'Set Initial Setup once and press Calculate — Baseline #0 starts automatically.';
+      $('audElapsed').textContent = 'Elapsed: --';
+      $('audLastPhase').textContent = '--';
+      $('audLastPhase').style.color = '';
+      $('audLastStep').textContent = 'Step Δ: --';
+      $('audRate').textContent = '--';
+      $('audPerDay').textContent = 'Est. -- / 24h';
+      $('chartBox').hidden = true;
+      $('auditBody').innerHTML = '<tr><td colspan="7" class="empty-cell">No audit session yet. Press Calculate &amp; Set Baseline to start tracking.</td></tr>';
+      $('auditCards').innerHTML = '<div class="cd-empty">No audit session yet. Press Calculate &amp; Set Baseline to start tracking.</div>';
+      return;
+    }
+
+    var elapsedTotalSec = Math.max(0, Math.round((now - audit.startAt) / 1000));
+    $('auditHeaderSub').textContent =
+      'Baseline #' + audit.baseCur + '/' + audit.max + ' (' + fmtMMSS(audit.baseNextSec) + ') started ' +
+      fmtIsoLocal(audit.startAt) + (audit.hitCap ? ' · Hit Cap' : ' · Continuous');
+    $('audElapsed').textContent = 'Elapsed: ' + fmtDur(elapsedTotalSec);
+
+    var measurePoints = audit.logs.filter(function(l){ return l.type === 'baseline' || l.type === 'check'; });
+    var latestMeasure = measurePoints[measurePoints.length - 1];
+    $('audLastPhase').textContent = fmtSignedSec(latestMeasure.phaseDriftSec);
+    $('audLastPhase').style.color = latestMeasure.phaseDriftSec === 0 ? 'var(--mint)' : 'var(--rose)';
+    $('audLastStep').textContent = 'Step Δ: ' + fmtSignedSec(latestMeasure.stepDriftSec);
+
+    if(latestMeasure.elapsedSec >= 60){
+      var ratePerHr = (latestMeasure.phaseDriftSec / (latestMeasure.elapsedSec / 3600));
+      var ratePerDay = ratePerHr * 24;
+      $('audRate').textContent = (ratePerHr >= 0 ? '+' : '') + ratePerHr.toFixed(1) + ' s/hr';
+      $('audPerDay').textContent = 'Est. ' + fmtSignedSec(ratePerDay) + ' / 24h';
+    } else {
+      $('audRate').textContent = 'Need ≥1m';
+      $('audPerDay').textContent = 'Check later for rate';
+    }
+
+    var key = audit.startAt + ':' + audit.logs.length + ':' + (audit.hitCap ? '1' : '0');
+    if(key === auditCacheKey) return;
+    auditCacheKey = key;
+
+    drawDriftChart(measurePoints);
+
+    var tbody = $('auditBody');
+    tbody.innerHTML = '';
+    var cards = $('auditCards');
+    cards.innerHTML = '';
+
+    audit.logs.forEach(function(l){
+      var isAdj = l.type === 'adjust';
+      var cls = isAdj ? '' : driftClass(l.phaseDriftSec);
+      var stepCls = isAdj ? '' : driftClass(l.stepDriftSec);
+
+      var tr = document.createElement('tr');
+      var tdIdx = document.createElement('td');
+      var bdg = document.createElement('span');
+      bdg.className = 'run-badge' + (isAdj ? ' adj' : '');
+      bdg.textContent = isAdj ? 'ADJ' : ('#' + l.idx);
+      tdIdx.appendChild(bdg);
+
+      var tdTime = document.createElement('td');
+      tdTime.textContent = fmtExactTime(l.ts) + ' (+' + fmtShort(l.elapsedSec) + ')';
+
+      var tdEv = document.createElement('td');
+      var tagEl = document.createElement('span');
+      tagEl.className = 'ev-tag';
+      tagEl.textContent = l.tag;
+      tdEv.appendChild(tagEl);
+      if(l.note){
+        var nt = document.createElement('div');
+        nt.style.fontSize = '11.5px';
+        nt.style.color = 'var(--muted)';
+        nt.style.marginTop = '2px';
+        nt.textContent = l.note;
+        tdEv.appendChild(nt);
+      }
+
+      var tdExp = document.createElement('td');
+      tdExp.className = 'r';
+      tdExp.textContent = isAdj ? '—' : (l.expEnergy + ' · ' + fmtMMSS(l.expNextSec));
+
+      var tdObs = document.createElement('td');
+      tdObs.className = 'r';
+      tdObs.textContent = isAdj ? ('→ ' + l.expEnergy) : fmtMMSS(l.obsNextSec);
+
+      var tdStep = document.createElement('td');
+      tdStep.className = 'r';
+      if(isAdj){
+        var sMut = document.createElement('span');
+        sMut.className = 'drift-muted';
+        sMut.textContent = '—';
+        tdStep.appendChild(sMut);
+      } else {
+        var sPill = document.createElement('span');
+        sPill.className = 'drift-pill ' + stepCls;
+        sPill.textContent = fmtSignedSec(l.stepDriftSec);
+        tdStep.appendChild(sPill);
+      }
+
+      var tdTot = document.createElement('td');
+      tdTot.className = 'r';
+      if(isAdj){
+        var tMut = document.createElement('span');
+        tMut.className = 'drift-muted';
+        tMut.textContent = '—';
+        tdTot.appendChild(tMut);
+      } else {
+        var tPill = document.createElement('span');
+        tPill.className = 'drift-pill ' + cls;
+        tPill.textContent = fmtSignedSec(l.phaseDriftSec);
+        tdTot.appendChild(tPill);
+      }
+
+      tr.appendChild(tdIdx);
+      tr.appendChild(tdTime);
+      tr.appendChild(tdEv);
+      tr.appendChild(tdExp);
+      tr.appendChild(tdObs);
+      tr.appendChild(tdStep);
+      tr.appendChild(tdTot);
+      tbody.appendChild(tr);
+
+      // Mobile Card
+      var mc = document.createElement('div');
+      mc.className = 'audit-mcard';
+
+      var top = document.createElement('div');
+      top.className = 'audit-mcard-top';
+      var tm = document.createElement('span');
+      tm.className = 'audit-mcard-time tnum';
+      tm.textContent = (isAdj ? 'ADJ' : '#' + l.idx) + ' · ' + fmtExactTime(l.ts) + ' (+' + fmtShort(l.elapsedSec) + ')';
+      top.appendChild(tm);
+
+      if(isAdj){
+        var pAdj = document.createElement('span');
+        pAdj.className = 'ev-tag';
+        pAdj.textContent = l.tag;
+        top.appendChild(pAdj);
+      } else {
+        var p2 = document.createElement('span');
+        p2.className = 'drift-pill ' + cls;
+        p2.textContent = 'Drift ' + fmtSignedSec(l.phaseDriftSec);
+        top.appendChild(p2);
+      }
+
+      var evRow = document.createElement('div');
+      evRow.style.fontSize = '12.5px';
+      evRow.style.color = 'var(--muted)';
+      evRow.textContent = isAdj ? l.note : (l.note || l.tag);
+
+      mc.appendChild(top);
+      mc.appendChild(evRow);
+
+      if(!isAdj){
+        var grid = document.createElement('div');
+        grid.className = 'audit-mcard-grid tnum';
+        grid.innerHTML =
+          '<div class="audit-mcard-cell"><span>Expected (at Snap)</span><b></b></div>' +
+          '<div class="audit-mcard-cell"><span>Game Observed</span><b></b></div>';
+        var bs = grid.querySelectorAll('b');
+        bs[0].textContent = l.expEnergy + ' (' + fmtMMSS(l.expNextSec) + ')';
+        bs[1].textContent = fmtMMSS(l.obsNextSec) + ' · Step ' + fmtSignedSec(l.stepDriftSec);
+        mc.appendChild(grid);
+      }
+      cards.appendChild(mc);
+    });
+  }
+
+  function copyBugReport(){
+    if(!audit || !audit.logs.length) return;
+    var logs = audit.logs;
+    var measures = logs.filter(function(l){ return l.type === 'baseline' || l.type === 'check'; });
+    var adjCount = logs.filter(function(l){ return l.type === 'adjust'; }).length;
+    var latest = measures[measures.length - 1];
+
+    var lines = [
+      '### Stamina Recovery Timer Drift Report',
+      '- **Recovery Rule:** 1 point / ' + audit.perMin + ' min (' + Math.round(audit.perMin * 60) + 's), Max Cap: ' + audit.max,
+      '- **Baseline #0:** ' + fmtIsoLocal(audit.startAt) + ' (`' + audit.baseCur + '/' + audit.max + '`, Next +1 in `' + fmtMMSS(audit.baseNextSec) + '`)',
+      '- **Cap Integrity:** ' + (audit.hitCap ? ('Hit max cap at ' + fmtIsoLocal(audit.hitCapAt)) : 'Continuous (Never reached max cap during entire test)'),
+      '- **Energy Changes:** ' + adjCount + ' Quick Adjust events logged',
+      '- **Observation Span:** ' + fmtDur(latest.elapsedSec) + ' (' + (measures.length - 1) + ' verified checks)',
+      '- **Cumulative Drift:** `' + fmtSignedSec(latest.phaseDriftSec) + '` (+ = game timer lagging behind real clock)'
+    ];
+    if(latest.elapsedSec >= 60){
+      var rate = latest.phaseDriftSec / (latest.elapsedSec / 3600);
+      lines.push('- **Estimated Drift Rate:** `' + (rate >= 0 ? '+' : '') + rate.toFixed(2) + ' sec/hour` (`' + fmtSignedSec(rate * 24) + '/day`)');
+    }
+    lines.push('');
+    lines.push('| # | Local Timestamp | Elapsed | Event / Note | Expected (at Snap) | Observed MM:SS | Step Δ | Cumulative Drift |');
+    lines.push('|---:|---|---:|---|---|---|---|---|');
+    logs.forEach(function(l){
+      var isAdj = l.type === 'adjust';
+      var ev = l.tag + (l.note ? ' — ' + l.note.replace(/\|/g, '/') : '');
+      lines.push(
+        '| ' + (isAdj ? 'ADJ' : l.idx) +
+        ' | ' + fmtIsoLocal(l.ts) +
+        ' | +' + fmtDur(l.elapsedSec) +
+        ' | ' + ev +
+        ' | ' + (isAdj ? '—' : (l.expEnergy + ' (`' + fmtMMSS(l.expNextSec) + '`)')) +
+        ' | ' + (isAdj ? ('→ ' + l.expEnergy) : ('`' + fmtMMSS(l.obsNextSec) + '`')) +
+        ' | ' + (isAdj ? '—' : ('`' + fmtSignedSec(l.stepDriftSec) + '`')) +
+        ' | ' + (isAdj ? '—' : ('`' + fmtSignedSec(l.phaseDriftSec) + '`')) + ' |'
+      );
+    });
+
+    var report = lines.join('\n');
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(report).then(function(){
+        say('Markdown bug report copied to clipboard.', 'auditMsg');
+      }).catch(function(){ fallbackCopy(report); });
+    } else {
+      fallbackCopy(report);
+    }
+  }
+
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try{
+      document.execCommand('copy');
+      say('Bug report copied to clipboard.', 'auditMsg');
+    }catch(e){
+      say('Could not copy automatically. Use Export JSON instead.', 'auditMsg');
+    }
+    ta.remove();
+  }
+
+  function exportAuditJson(){
+    if(!audit) return;
+    var payload = {
+      exportedAt: new Date().toISOString(),
+      timezoneOffsetMinutes: -new Date().getTimezoneOffset(),
+      audit: audit
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = name;
-    document.body.appendChild(a); a.click(); a.remove();
+    a.href = URL.createObjectURL(blob);
+    a.download = 'stamina-drift-evidence-' + Date.now() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+    say('Evidence JSON downloaded.', 'auditMsg');
   }
 
-  function saveImage(){
-    if(!S){ say('Press Calculate first.'); return; }
-    var loads = [];
-    if(document.fonts && document.fonts.load){
-      ['700 20px "Cinzel"', '600 20px "Cinzel"', '400 20px "Cormorant Garamond"', '600 20px "Cormorant Garamond"', 'italic 400 20px "Cormorant Garamond"'].forEach(function(f){
-        loads.push(document.fonts.load(f).catch(function(){}));
-      });
+  /* ---------- Gauge & Main UI Update ---------- */
+  function setGauge(raw, max, hasData){
+    var pct = hasData && max > 0 ? Math.min(100, (raw / max) * 100) : 0;
+    var arc = $('arcCur');
+    arc.setAttribute('stroke-dasharray', (Math.round(pct * 7.5) / 10) + ' 100');
+    arc.style.opacity = pct > 0.4 ? '1' : '0';
+    $('needle').style.transform = 'rotate(' + (135 + 270 * pct / 100).toFixed(2) + 'deg)';
+
+    var labels = $('tickLabels').childNodes;
+    for(var i = 0; i < labels.length; i++){
+      labels[i].textContent = max > 0 && isFinite(max) ? Math.round(max * i / 4) : '';
     }
-    Promise.all(loads).then(function(){
-      var cv = drawSnapshot();
-      cv.toBlob(function(blob){
-        if(!blob){ say('Could not save the image.'); return; }
-        downloadBlob(blob, 'stamina-timer.jpg');
-        say('Image saved.');
-      }, 'image/jpeg', .92);
-    }).catch(function(){ say('Could not save the image.'); });
+
+    var txt = hasData ? String(Math.floor(raw)) : '--';
+    var n = $('gNum');
+    n.textContent = txt;
+    n.style.fontSize = (txt.length >= 4 ? 28 : (txt.length === 3 ? 36 : 42)) + 'px';
+    $('gMax').textContent = '/ ' + (max > 0 && isFinite(max) ? max : '--');
   }
 
-  /* ---------- Events ---------- */
-  $('snapBtn').addEventListener('click', saveImage);
-  inputIds.forEach(function(i){
-    $(i).addEventListener('input', function(){ save(); update(); });
-    $(i).addEventListener('keydown', function(e){ if(e.key === 'Enter') calculate(); });
+  function update(){
+    var now = Date.now();
+    renderCooldowns(now);
+    renderAudit(now);
+
+    var dirty = !!(S && S.sig !== sig());
+    $('dirty').hidden = !dirty;
+    $('qadjBox').classList.toggle('disabled', !S);
+    $('adjBtn').disabled = !S;
+    $('undoBtn').hidden = !(S && undoState);
+
+    var chips = document.querySelectorAll('.chip[data-preset]');
+    for(var c = 0; c < chips.length; c++) chips[c].disabled = !S;
+
+    var pill = $('topStatusPill');
+    var pillTxt = $('topStatusText');
+    var cdEl = $('countdown');
+
+    if(!S){
+      var previewMax = Math.floor(num('max', 0));
+      setGauge(0, previewMax, false);
+      cdEl.classList.remove('done');
+      cdEl.textContent = '--:--:--';
+      $('lbl').textContent = 'Ready when you are';
+      $('nextTickChip').hidden = true;
+      $('readyMeta').innerHTML = '<span>Enter your starting values once and press <b>Calculate &amp; Set Baseline</b>.</span>';
+      $('warnBox').hidden = true;
+
+      pill.className = 'status-pill';
+      pillTxt.textContent = 'Idle';
+
+      $('miniEnergy').innerHTML = '-- <span>/ ' + (previewMax > 0 ? previewMax : '--') + '</span>';
+      $('miniPct').textContent = '--%';
+      $('miniFill').style.width = '0%';
+      $('miniNext').textContent = '--:--';
+
+      $('kpiPct').textContent = '--%';
+      $('kpiCur').innerHTML = '-- <small>/ --</small>';
+      $('kpiMissing').textContent = 'Waiting for calculation';
+      $('kpiRate').innerHTML = '-- <small>m/pt</small>';
+      $('kpiDaily').innerHTML = 'Daily: <b>--</b>';
+      $('kpiCostTag').textContent = 'Cost: --';
+      $('kpiRuns').innerHTML = '-- <small>ready now</small>';
+      $('kpiNextRun').textContent = 'Press Calculate to plan runs';
+      $('navRunsBadge').textContent = '0';
+      $('bnavRunsBadge').textContent = '0';
+      $('bnavRunsBadge').setAttribute('data-count', '0');
+
+      renderRuns(null, 'Press Calculate to generate your stage schedule.');
+      return;
+    }
+
+    var raw = rawEnergy(now);
+    var live = Math.floor(raw);
+    var fullTs = reachTs(S.max);
+    var done = now >= fullTs;
+    var pct = Math.min(100, Math.round((raw / S.max) * 100));
+
+    setGauge(raw, S.max, true);
+    $('gauge').setAttribute('aria-label', 'Energy ' + live + ' of ' + S.max);
+
+    var wb = $('warnBox');
+    if(S.warn && S.warn.length){
+      wb.hidden = false;
+      wb.textContent = S.warn.join(' ');
+    } else {
+      wb.hidden = true;
+    }
+
+    var nextMs = msToNextPoint(now);
+    if(done){
+      cdEl.classList.add('done');
+      cdEl.textContent = 'Full Capacity';
+      $('lbl').textContent = 'Recovery Status';
+      $('nextTickChip').hidden = true;
+      $('readyMeta').innerHTML = raw > S.max
+        ? '<span>Overflowed above cap (<b>' + live + ' / ' + S.max + '</b>).</span>'
+        : '<span>Your energy is completely full and ready to use.</span>';
+
+      pill.className = 'status-pill full';
+      pillTxt.textContent = 'Full';
+      $('miniNext').textContent = 'Full';
+    } else {
+      cdEl.classList.remove('done');
+      cdEl.textContent = fmtDur((fullTs - now) / 1000);
+      $('lbl').textContent = 'Time Until Full';
+      $('nextTickChip').hidden = false;
+      $('nextTickVal').textContent = fmtDur(nextMs / 1000);
+
+      var missing = Math.ceil(S.max - raw);
+      $('readyMeta').innerHTML =
+        '<span>Full at <b></b></span>' +
+        '<span class="sep">•</span>' +
+        '<span><b>' + missing + '</b> left (~' + fmtShort((fullTs - now) / 1000) + ')</span>';
+      $('readyMeta').querySelector('b').textContent = fmtLong(fullTs);
+
+      pill.className = 'status-pill live';
+      pillTxt.textContent = 'Live';
+      $('miniNext').textContent = fmtDur(nextMs / 1000);
+    }
+
+    $('miniEnergy').innerHTML = live + ' <span>/ ' + S.max + '</span>';
+    $('miniPct').textContent = pct + '%';
+    $('miniFill').style.width = pct + '%';
+
+    $('kpiPct').textContent = pct + '%';
+    $('kpiCur').innerHTML = live + ' <small>/ ' + S.max + '</small>';
+    $('kpiMissing').innerHTML = done
+      ? '<b>Maximum reached</b>'
+      : 'Needs <b>' + Math.ceil(S.max - raw) + '</b> to cap';
+
+    var rateClean = Math.round(S.perMin * 100) / 100;
+    var perDay = Math.floor(1440 / S.perMin);
+    $('kpiRate').innerHTML = rateClean + ' <small>m/pt</small>';
+    $('kpiDaily').innerHTML = 'Daily: <b>' + perDay + ' pts</b>';
+
+    var list = runsList(now);
+    var readyCount = list.filter(function(r){ return r.ready; }).length;
+    $('navRunsBadge').textContent = String(list.length);
+    $('bnavRunsBadge').textContent = String(readyCount);
+    $('bnavRunsBadge').setAttribute('data-count', String(readyCount));
+
+    if(S.cost > 0){
+      $('kpiCostTag').textContent = 'Cost: ' + S.cost;
+      $('kpiRuns').innerHTML = readyCount + ' <small>ready now</small>';
+      var nextPending = null;
+      for(var i = 0; i < list.length; i++){
+        if(!list[i].ready){ nextPending = list[i]; break; }
+      }
+      $('kpiNextRun').innerHTML = nextPending
+        ? 'Next run (#<b>' + nextPending.n + '</b>) in <b>' + fmtShort(nextPending.sec) + '</b>'
+        : (list.length ? 'All <b>' + list.length + '</b> planned runs ready' : 'Cost exceeds max energy');
+    } else {
+      $('kpiCostTag').textContent = 'Cost: —';
+      $('kpiRuns').innerHTML = '— <small>no cost set</small>';
+      $('kpiNextRun').textContent = 'Enter a stage cost to see schedule';
+    }
+
+    renderRuns(
+      list,
+      S.cost > 0
+        ? 'Energy cost per stage is higher than your maximum energy.'
+        : 'Enter an energy cost per stage to see when you can run.'
+    );
+  }
+
+  function renderRuns(list, emptyText){
+    var body = $('runsBody');
+    var key = (list && list.length)
+      ? list.map(function(r){ return r.n + ':' + (r.ready ? 'R' : fmtShort(r.sec)); }).join('|')
+      : 'empty:' + emptyText;
+
+    if(key === runsCache) return;
+    runsCache = key;
+    body.innerHTML = '';
+
+    if(!list || !list.length){
+      var tr0 = document.createElement('tr');
+      var td0 = document.createElement('td');
+      td0.colSpan = 4;
+      td0.className = 'empty-cell';
+      td0.textContent = emptyText;
+      tr0.appendChild(td0);
+      body.appendChild(tr0);
+      return;
+    }
+
+    var compact = window.innerWidth <= 480;
+    list.forEach(function(r){
+      var tr = document.createElement('tr');
+
+      var tdRun = document.createElement('td');
+      var badge = document.createElement('span');
+      badge.className = 'run-badge';
+      badge.textContent = '#' + r.n;
+      tdRun.appendChild(badge);
+
+      var tdNeed = document.createElement('td');
+      tdNeed.className = 'r';
+      var nv = document.createElement('span'); nv.className = 'need-val'; nv.textContent = r.need;
+      tdNeed.appendChild(nv);
+
+      var tdWait = document.createElement('td');
+      tdWait.className = 'r';
+      if(r.ready){
+        var pill = document.createElement('span');
+        pill.className = 'ready-pill';
+        pill.textContent = compact ? 'Ready' : 'Ready now';
+        tdWait.appendChild(pill);
+      } else {
+        tdWait.textContent = fmtShort(r.sec);
+      }
+
+      var tdAt = document.createElement('td');
+      tdAt.className = 'r';
+      if(r.ready){ tdAt.textContent = '—'; }
+      else {
+        var dt = new Date(r.ts), td0 = new Date(); td0.setHours(0,0,0,0);
+        var diffDays = Math.round((new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()) - td0) / 86400000);
+        var dayTxt = diffDays === 0 ? 'Today' : (diffDays === 1 ? 'Tomorrow' : dt.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'}));
+        var at1 = document.createElement('span'); at1.className = 'at-time'; at1.textContent = pad(dt.getHours()) + ':' + pad(dt.getMinutes());
+        var at2 = document.createElement('span'); at2.className = 'at-day' + (diffDays > 1 ? ' far' : ''); at2.textContent = dayTxt;
+        tdAt.appendChild(at1); tdAt.appendChild(at2);
+      }
+
+      tr.appendChild(tdRun);
+      tr.appendChild(tdNeed);
+      tr.appendChild(tdWait);
+      tr.appendChild(tdAt);
+      body.appendChild(tr);
+    });
+  }
+
+  /* ---------- View Switching ---------- */
+  function setView(view){
+    $('viewTitle').textContent = VIEW_TITLES[view] || 'Recovery Overview';
+
+    var sideItems = document.querySelectorAll('#navList .nav-item');
+    for(var i = 0; i < sideItems.length; i++){
+      sideItems[i].classList.toggle('active', sideItems[i].getAttribute('data-view') === view);
+    }
+    var botItems = document.querySelectorAll('#bottomNav .bnav-item');
+    for(var j = 0; j < botItems.length; j++){
+      botItems[j].classList.toggle('active', botItems[j].getAttribute('data-view') === view);
+    }
+
+    $('secHero').hidden = !(view === 'overview' || view === 'calculator');
+    $('secKpi').hidden = !(view === 'overview' || view === 'schedule');
+    $('secConfig').hidden = !(view === 'overview' || view === 'calculator');
+    $('secSchedule').hidden = !(view === 'overview' || view === 'schedule');
+    $('secCooldowns').hidden = !(view === 'overview' || view === 'cooldowns');
+    $('secAudit').hidden = !(view === 'overview' || view === 'audit');
+
+    var grid = $('secMainGrid');
+    grid.hidden = ($('secConfig').hidden && $('secSchedule').hidden);
+    grid.style.gridTemplateColumns = ($('secConfig').hidden || $('secSchedule').hidden) ? '1fr' : '';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ---------- Event Bindings ---------- */
+  inputIds.forEach(function(id){
+    $(id).addEventListener('input', function(){ save(); update(); });
+    $(id).addEventListener('keydown', function(e){ if(e.key === 'Enter'){ this.blur(); calculate(); } });
   });
   $('calcBtn').addEventListener('click', calculate);
 
-  // Quick Adjust events
-  $('signSub').addEventListener('click', function(){ setSign(-1); $('adjAmt').focus(); });
-  $('signAdd').addEventListener('click', function(){ setSign(1); $('adjAmt').focus(); });
+  // Quick Adjust
+  $('signSub').addEventListener('click', function(){ setSign(-1); });
+  $('signAdd').addEventListener('click', function(){ setSign(1); });
   $('adjBtn').addEventListener('click', applyAdjust);
   $('undoBtn').addEventListener('click', undoAdjust);
-  $('adjAmt').addEventListener('keydown', function(e){ if(e.key === 'Enter') applyAdjust(); });
+  $('adjAmt').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ this.blur(); applyAdjust(); } });
 
-  // Inline Clear data confirmation (works inside sandboxed iframes & standalone)
+  var presetBtns = document.querySelectorAll('.chip[data-preset]');
+  for(var p = 0; p < presetBtns.length; p++){
+    presetBtns[p].addEventListener('click', function(){
+      if(!S) return;
+      $('adjAmt').value = this.getAttribute('data-preset');
+    });
+  }
+
+  // Clear Data
   $('clearBtn').addEventListener('click', function(){
-    $('clearConfirm').hidden = !$('clearConfirm').hidden;
+    var nextHidden = !$('clearConfirm').hidden;
+    $('clearConfirm').hidden = nextHidden;
+    if(!nextHidden) window.scrollTo({ top: 0, behavior: 'smooth' });
   });
-  $('clearNo').addEventListener('click', function(){
-    $('clearConfirm').hidden = true;
-  });
+  $('clearNo').addEventListener('click', function(){ $('clearConfirm').hidden = true; });
   $('clearYes').addEventListener('click', function(){
-    [STORE, 'stamina-calc-v2', COOLDOWN_STORE].forEach(function(k){
+    [STORE, 'stamina-calc-v2', COOLDOWN_STORE, AUDIT_STORE].forEach(function(k){
       try{ localStorage.removeItem(k); }catch(e){}
     });
     S = null;
     undoState = null;
     cooldowns = [];
+    audit = null;
+    snap = null;
     cdStructKey = '';
     runsCache = '';
+    auditCacheKey = '';
+
     $('max').value = '200';
     $('per').value = '8';
     $('cur').value = '60';
-    $('target').value = '';
+    $('nextCal').value = '';
     $('cost').value = '40';
     $('adjAmt').value = '';
+    $('obsMMSS').value = '';
+    $('obsNote').value = '';
     $('clearConfirm').hidden = true;
+
+    updateSnapUI();
     update();
-    say('Saved calculator values and cooldown timers cleared.');
+    say('All saved data, timers, and audit logs cleared.');
   });
 
-  // Cooldown Timers events
+  // Cooldown Timers
   $('cdAddBtn').addEventListener('click', addCooldown);
-  ['cdName','cdDays','cdHours'].forEach(function(id){
-    $(id).addEventListener('keydown', function(e){ if(e.key === 'Enter') addCooldown(); });
+  ['cdName', 'cdDays', 'cdHours'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if(e.key === 'Enter'){ this.blur(); addCooldown(); } });
+  });
+
+  // Drift Lab: Zero-Delay Snap & Record
+  $('snapBtn').addEventListener('click', function(){ captureSnap(true); });
+  $('clearSnapBtn').addEventListener('click', clearSnap);
+
+  $('obsMMSS').addEventListener('input', function(){
+    // Auto-snap on first typed digit if user skipped pressing Snap Now
+    if(this.value.trim() !== '' && !snap && audit && S){
+      captureSnap(false);
+    } else {
+      updateSnapUI();
+    }
+  });
+  $('obsMMSS').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ this.blur(); recordAuditCheck(); }
+  });
+  $('obsNote').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ this.blur(); recordAuditCheck(); }
+  });
+
+  $('recordCheckBtn').addEventListener('click', recordAuditCheck);
+  $('copyReportBtn').addEventListener('click', copyBugReport);
+  $('exportJsonBtn').addEventListener('click', exportAuditJson);
+  $('resetAuditBtn').addEventListener('click', function(){
+    audit = null;
+    snap = null;
+    auditCacheKey = '';
+    saveAudit();
+    updateSnapUI();
+    renderAudit(Date.now());
+    say('Audit logs cleared.', 'auditMsg');
+  });
+
+  // Sidebar & Bottom Nav
+  var allNavBtns = document.querySelectorAll('[data-view]');
+  for(var n = 0; n < allNavBtns.length; n++){
+    allNavBtns[n].addEventListener('click', function(){
+      setView(this.getAttribute('data-view'));
+    });
+  }
+
+  window.addEventListener('resize', function(){
+    runsCache = '';
+    update();
   });
 
   /* ---------- Init ---------- */
   load();
+  updateSnapUI();
   update();
   setInterval(update, 1000);
   document.addEventListener('visibilitychange', function(){ if(!document.hidden) update(); });
