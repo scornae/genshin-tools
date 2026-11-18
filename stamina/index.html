@@ -1,41 +1,39 @@
-
 <!DOCTYPE html>
 <!--
 HANDOFF NOTES. File-level facts only. Update this block in the same change whenever a rule or structure changes.
 WHAT IT IS
-Single-file stamina/energy recovery calculator for gacha games with a sidebar layout (bottom tab bar on phones).
-Views: Overview/Calculator (gauge, countdown, quick adjust), Stage Schedule (up to 10 runs), Cooldowns (custom day+hour
-timers), Drift Lab (evidence log comparing the page's 8-minute rhythm with the game's Replenish in time).
+Single-file stamina/energy recovery calculator for gacha games. Sidebar layout, bottom tab bar on phones. Views: Overview and
+Calculator (gauge, countdown, quick adjust), Stage Schedule (up to 10 runs), Cooldowns (custom day+hour timers), Drift Lab
+(log comparing the page's 8 minute rhythm with the game's Replenish in time). Top-right Data menu: Export, Import, Clear.
 English only. No build step, no external data, no routine updates.
-Hosting: canonical URL is the stamina/ folder of the genshin-tools site, so the deployed file must be named index.html
-with og-preview.jpg beside it (static 1200x630 card made outside this file; redo it if the look changes).
-Only outside request: Google Fonts (Cinzel, Plus Jakarta Sans). The favicon is an inline SVG data URI.
+HOSTING
+Canonical URL is the stamina/ folder of the genshin-tools site: deploy as index.html with og-preview.jpg beside it (static
+1200x630 card made outside this file; redo it when the look changes). Only outside request: Google Fonts (Cinzel, Plus
+Jakarta Sans). Favicon is an inline SVG data URI.
 WHERE THINGS LIVE (search these names)
-STORE, MAX_RUNS, inputIds   storage key, cap on schedule rows, the five input ids (max, per, cur, nextCal, cost)
-COOLDOWN_STORE, AUDIT_STORE keys for custom cooldowns (stamina-cooldowns-v1) and Drift Lab data (stamina-audit-v1)
-calculate()                 computes fresh results from the fields, sets the anchor time S.at and starts Drift baseline #0
-applyAdjust(), undoAdjust() quick +/- energy adjustment with presets 20/40/60; one Undo step (memory only, cleared by
-                            Calculate/Clear data). Advances S.at only by whole multiples of perMs() so the recovery
-                            tick phase is preserved; starts a fresh cycle only when spending from a full state
-rawEnergy(), reachTs()      energy now, and when a given energy is reached, both derived from S.at
-update(), renderRuns()      repaint once a second; stage table (Needs, Wait, Ready at) and cooldown rows update live
-setGauge(), initGaugeMarks() gauge SVG (Roman numerals, dial stars, ticks); night-sky canvas #sky is the background
-captureSnap(), recordAuditCheck(), renderAudit(), copyBugReport(), exportAuditJson()  Drift Lab
-setView(), VIEW_TITLES      switch between the five views
-STORAGE (localStorage only; no URL parameters or hash)
-Key stamina-calc-v3 holds inputs and calc (at, max, perMin, cur, cost, warn, sig). Do not rename it or change that
-shape without a migration: running timers are stored there. Cooldowns and audit keys hold arrays/objects of their own.
-Clear data asks inline confirmation and removes stamina-calc-v3, stamina-calc-v2, cooldowns and audit keys.
+STORE, COOLDOWN_STORE, AUDIT_STORE, inputIds, MAX_RUNS   storage keys, input ids (max, per, cur, nextCal, cost), row cap
+calculate()                  computes from the fields, sets the anchor time S.at, starts Drift baseline #0, dims the setup box
+applyAdjust(), undoAdjust()  quick +/- energy (presets 20/40/60), one Undo step in memory. S.at moves only by whole multiples
+                             of perMs() to keep the tick phase; a fresh cycle starts only when spending from full
+update(), renderRuns()       repaint once a second (stage table, cooldowns, Drift Lab)
+setGauge(), initGaugeMarks() gauge SVG; night-sky canvas #sky is the page background
+captureSnap(), recordAuditCheck(), copyBugReport(), exportAuditJson()   Drift Lab
+exportBackup(), importBackup(), parseBackup()   Data menu; setView(), VIEW_TITLES switch views
+STORAGE (localStorage only, no URL parameters)
+stamina-calc-v3 holds inputs and calc (at, max, perMin, cur, cost, warn, sig): running timers live there, so never rename it or
+change its shape without a migration. stamina-cooldowns-v1 and stamina-audit-v1 are separate. Export writes one JSON (app
+stamina-recovery, version 1) with the three keys; Import validates, asks confirmation, rewrites them and reloads. Clear data
+asks confirmation, removes those keys plus old stamina-calc-v2 (never localStorage.clear) and reloads.
 RULES ALREADY DECIDED
-1. Results change only on Calculate or Enter, except Quick Adjust which updates live energy without resetting the cycle.
-2. The timer is anchored to the Calculate moment, so reopening the page continues the countdown. Never re-anchor on load.
-3. Header line: Genshin Impact // Stamina Recovery. Site name stays Stamina Recovery (not Astral Timer / Studio).
-4. Palette: near-neutral black, gold, soft white; richer accent colours are allowed on stat cards and Drift Lab.
-   Keep it clearly different from Roster and Arcana. Ready now is soft glowing mint text. Needs has no unit.
-5. Drift Lab compares against the browser clock, so ask the user to sync the PC clock before collecting readings.
+1. Results change only on Calculate or Enter; Quick Adjust updates live energy without resetting the cycle.
+2. The timer is anchored to the Calculate moment so reopening continues the countdown. Never re-anchor on load.
+3. Header line: Genshin Impact // Stamina Recovery. Site name stays Stamina Recovery.
+4. Palette: near-neutral black, gold, soft white. Stat cards: Capacity gold, Recovery green, Stage Readiness blue. Wait times
+   soft red, Ready now soft glowing mint, Live badge green, Full badge gold. Differs from Roster and Arcana. Needs has no unit.
+5. After Calculate the Initial Setup box is dimmed (class sealed) and brightens on focus; it is never locked.
+6. Drift Lab compares against the browser clock, so the PC clock must be synced before readings.
 REMOVED, DO NOT ADD BACK
-Game preset dropdown, the If I come back in panel, the Reset button, minutes on custom cooldowns, server-reset timers,
-saved-image feature (Save image), the Target energy field.
+Game preset dropdown, If I come back in panel, Reset button, minutes on cooldowns, server-reset timers, Save image, Target energy.
 -->
 <html lang="en">
 <head>
@@ -308,10 +306,10 @@ saved-image feature (Save image), the Target energy field.
       color: var(--ink-soft);
     }
     .dot-pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
-    .status-pill.live { background: rgba(143, 227, 255, 0.08); border-color: rgba(143, 227, 255, 0.25); color: var(--aqua); }
-    .status-pill.live .dot-pulse { background: var(--aqua); box-shadow: 0 0 8px var(--aqua); animation: pulse 2s ease-in-out infinite; }
-    .status-pill.full { background: rgba(134, 239, 172, 0.09); border-color: rgba(134, 239, 172, 0.28); color: var(--mint); }
-    .status-pill.full .dot-pulse { background: var(--mint); box-shadow: 0 0 8px var(--mint); }
+    .status-pill.live { background: rgba(134, 239, 172, 0.09); border-color: rgba(134, 239, 172, 0.3); color: var(--mint); }
+    .status-pill.live .dot-pulse { background: var(--mint); box-shadow: 0 0 8px var(--mint); animation: pulse 2s ease-in-out infinite; }
+    .status-pill.full { background: rgba(233, 199, 123, 0.1); border-color: rgba(233, 199, 123, 0.32); color: var(--gold-l); }
+    .status-pill.full .dot-pulse { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
     @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(0.85); } }
 
     /* Mobile Floating Bottom Tab Bar */
@@ -679,8 +677,8 @@ saved-image feature (Save image), the Target energy field.
       transition: border-color 0.2s, transform 0.2s;
       position: relative;
       overflow: hidden;
-      --a1: #8fe3ff;
-      --a2: #86efac;
+      --a1: #ffd27a;
+      --a2: #ff9f5a;
     }
     .kpi-card:hover { border-color: rgba(233, 199, 123, 0.3); transform: translateY(-2px); }
     .kpi-top {
@@ -1038,8 +1036,8 @@ saved-image feature (Save image), the Target energy field.
     .g-rn{font-family:var(--font-disp); font-size:8.5px; font-weight:700; fill:var(--gold)}
     .kpi-card::before{content:""; position:absolute; left:0; right:0; top:0; height:3px; background:linear-gradient(90deg,var(--a1),var(--a2))}
     .kpi-card::after{content:""; position:absolute; right:-30px; top:-30px; width:110px; height:110px; border-radius:50%; background:radial-gradient(circle,var(--a1),transparent 70%); opacity:.14; pointer-events:none}
-    .kpi-card:nth-child(2){--a1:#ffd27a; --a2:#ff9f5a}
-    .kpi-card:nth-child(3){--a1:#ff8fa3; --a2:#c4a1ff}
+    .kpi-card:nth-child(2){--a1:#86efac; --a2:#4fd18b}
+    .kpi-card:nth-child(3){--a1:#8fe3ff; --a2:#6db8ff}
     .kpi-top span:first-child{color:var(--a1); font-weight:700; text-transform:uppercase; letter-spacing:.08em; font-size:11px}
     .aud-how{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:16px}
     .aud-how div{display:flex; gap:10px; align-items:flex-start; padding:11px 13px; border-radius:12px; background:rgba(255,255,255,.04); border:1px solid var(--border-subtle); font-size:12.5px; color:var(--ink-soft); line-height:1.4}
@@ -1069,7 +1067,7 @@ saved-image feature (Save image), the Target energy field.
     #secSchedule th{font-size:11px; color:var(--ink-soft)}
     #secSchedule tbody tr:nth-child(even){background:rgba(255,255,255,.025)}
     .need-val{font-size:17px; font-weight:700; color:var(--gold-l)}
-    #secSchedule td:nth-child(3){color:var(--aqua); font-weight:600}
+    #secSchedule td:nth-child(3){color:#ff9b9b; font-weight:600}
     .at-time{display:block; font-size:17px; font-weight:700; color:#fff; line-height:1.15; letter-spacing:.02em}
     .at-day{display:block; font-size:11px; font-weight:600; color:var(--mint); text-transform:uppercase; letter-spacing:.06em; margin-top:1px}
     .at-day.far{color:var(--muted)}
@@ -1088,6 +1086,20 @@ saved-image feature (Save image), the Target energy field.
       text-shadow:0 0 8px rgba(134,239,172,.85),0 0 20px rgba(134,239,172,.45); animation:readyGlow 3s ease-in-out infinite}
     @keyframes readyGlow{0%,100%{opacity:.82; text-shadow:0 0 6px rgba(134,239,172,.6),0 0 14px rgba(134,239,172,.3)}50%{opacity:1; text-shadow:0 0 10px rgba(134,239,172,1),0 0 26px rgba(134,239,172,.55)}}
     @media (max-width:720px){.ready-pill{font-size:13px; padding:2px 10px}}
+  
+    /* ---- Data menu, sealed setup box, schedule alignment ---- */
+    .data-menu{position:relative}
+    .data-pop{position:absolute; right:0; top:calc(100% + 8px); min-width:190px; padding:6px; z-index:60; border-radius:12px;
+      background:rgba(18,16,24,.98); border:1px solid var(--border-subtle,rgba(255,255,255,.12)); box-shadow:0 14px 40px rgba(0,0,0,.6)}
+    .data-pop[hidden]{display:none}
+    .data-item{display:block; width:100%; text-align:left; padding:10px 12px; border:none; border-radius:8px; background:transparent;
+      color:var(--ink,#f4f2ee); font:inherit; font-size:13px; font-weight:600; cursor:pointer}
+    .data-item:hover,.data-item:focus-visible{background:rgba(255,255,255,.07); outline:none}
+    .data-item.danger{color:#ffb3c0}
+    #secConfig{transition:opacity .45s ease, filter .45s ease}
+    #secConfig.sealed:not(:focus-within){opacity:.5; filter:saturate(.2) brightness(.85)}
+    .ready-pill{margin-right:-14px}
+    @media (max-width:720px){.ready-pill{margin-right:-10px}}
   </style>
 </head>
 <body>
@@ -1192,7 +1204,15 @@ saved-image feature (Save image), the Target energy field.
             <span class="dot-pulse"></span>
             <span id="topStatusText">Idle</span>
           </div>
-          <button type="button" class="btn btn-danger btn-sm" id="clearBtn">Clear</button>
+          <div class="data-menu" id="dataMenu">
+            <button type="button" class="btn btn-ghost btn-sm" id="dataBtn" aria-haspopup="true" aria-expanded="false">Data &#9662;</button>
+            <div class="data-pop" id="dataPop" role="menu" hidden>
+              <button type="button" class="data-item" id="exportBtn" role="menuitem">Export backup</button>
+              <button type="button" class="data-item" id="importBtn" role="menuitem">Import backup</button>
+              <button type="button" class="data-item danger" id="clearBtn" role="menuitem">Clear data</button>
+            </div>
+            <input type="file" id="importFile" accept="application/json,.json" hidden>
+          </div>
         </div>
       </header>
 
@@ -1202,6 +1222,14 @@ saved-image feature (Save image), the Target energy field.
           <div class="confirm-actions">
             <button type="button" class="btn btn-danger btn-sm" id="clearYes">Yes, clear</button>
             <button type="button" class="btn btn-ghost btn-sm" id="clearNo">Cancel</button>
+          </div>
+        </div>
+
+        <div class="confirm-banner" id="importConfirm" hidden>
+          <span id="importMsg"></span>
+          <div class="confirm-actions">
+            <button type="button" class="btn btn-primary btn-sm" id="importYes">Yes, replace</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="importNo">Cancel</button>
           </div>
         </div>
 
@@ -2074,6 +2102,8 @@ saved-image feature (Save image), the Target energy field.
     saveAudit();
     updateSnapUI();
     update();
+    var ae = document.activeElement;
+    if(ae && $('secConfig').contains(ae)) ae.blur();
     say('Timer started & Drift Baseline #0 anchored.');
   }
 
@@ -2856,6 +2886,7 @@ saved-image feature (Save image), the Target energy field.
     $('qadjBox').classList.toggle('disabled', !S);
     $('adjBtn').disabled = !S;
     $('undoBtn').hidden = !(S && undoState);
+    $('secConfig').classList.toggle('sealed', !!S && !dirty);
 
     var chips = document.querySelectorAll('.chip[data-preset]');
     for(var c = 0; c < chips.length; c++) chips[c].disabled = !S;
@@ -3112,6 +3143,7 @@ saved-image feature (Save image), the Target energy field.
   $('clearBtn').addEventListener('click', function(){
     var nextHidden = !$('clearConfirm').hidden;
     $('clearConfirm').hidden = nextHidden;
+    $('importConfirm').hidden = true;
     if(!nextHidden) window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   $('clearNo').addEventListener('click', function(){ $('clearConfirm').hidden = true; });
@@ -3140,7 +3172,96 @@ saved-image feature (Save image), the Target energy field.
 
     updateSnapUI();
     update();
-    say('All saved data, timers, and audit logs cleared.');
+    location.reload();
+  });
+
+  /* ---------- Data menu: export, import, clear ---------- */
+  var pendingImport = null;
+
+  function setDataMenu(open){
+    $('dataPop').hidden = !open;
+    $('dataBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  function readStored(key){
+    try{ var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
+  }
+
+  function exportBackup(){
+    var d = new Date();
+    var day = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    var payload = {
+      app: 'stamina-recovery',
+      version: 1,
+      exportedAt: d.toISOString(),
+      calc: readStored(STORE),
+      cooldowns: readStored(COOLDOWN_STORE),
+      audit: readStored(AUDIT_STORE)
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'stamina-backup-' + day + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+    say('Backup downloaded.');
+  }
+
+  function parseBackup(text){
+    var o;
+    try{ o = JSON.parse(text); }catch(e){ return null; }
+    if(!o || o.app !== 'stamina-recovery') return null;
+    var c = o.calc;
+    var calcOk = !!(c && c.calc && isFinite(c.calc.at) && isFinite(c.calc.max) && isFinite(c.calc.perMin));
+    var cds = Array.isArray(o.cooldowns) ? o.cooldowns.filter(function(x){
+      return x && typeof x.name === 'string' && isFinite(x.durMs) && x.durMs > 0 && isFinite(x.startAt);
+    }) : [];
+    var a = o.audit;
+    var auditOk = !!(a && isFinite(a.startAt) && isFinite(a.perMin) && Array.isArray(a.logs));
+    if(!calcOk && !cds.length && !auditOk) return null;
+    return { calc: calcOk ? c : null, cooldowns: cds, audit: auditOk ? a : null, exportedAt: o.exportedAt };
+  }
+
+  function importBackup(file){
+    if(!file) return;
+    var fr = new FileReader();
+    fr.onload = function(){
+      var b = parseBackup(String(fr.result || ''));
+      if(!b){ say('That file is not a valid Stamina backup.'); return; }
+      pendingImport = b;
+      var when = b.exportedAt ? new Date(b.exportedAt).toLocaleString() : 'unknown date';
+      $('importMsg').textContent = 'Replace current data with the backup from ' + when + '? It holds ' +
+        (b.calc ? 'a running timer' : 'no timer') + ', ' + b.cooldowns.length + ' cooldown(s) and ' +
+        (b.audit ? b.audit.logs.length + ' drift reading(s)' : 'no drift log') + '.';
+      $('importConfirm').hidden = false;
+      $('clearConfirm').hidden = true;
+    };
+    fr.readAsText(file);
+  }
+
+  $('dataBtn').addEventListener('click', function(e){ e.stopPropagation(); setDataMenu($('dataPop').hidden); });
+  document.addEventListener('click', function(e){ if(!$('dataMenu').contains(e.target)) setDataMenu(false); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') setDataMenu(false); });
+  Array.prototype.forEach.call(document.querySelectorAll('.data-item'), function(el){
+    el.addEventListener('click', function(){ setDataMenu(false); });
+  });
+  $('exportBtn').addEventListener('click', exportBackup);
+  $('importBtn').addEventListener('click', function(){ $('importFile').click(); });
+  $('importFile').addEventListener('change', function(){ importBackup(this.files && this.files[0]); this.value = ''; });
+  $('importNo').addEventListener('click', function(){ pendingImport = null; $('importConfirm').hidden = true; });
+  $('importYes').addEventListener('click', function(){
+    if(!pendingImport) return;
+    var b = pendingImport;
+    pendingImport = null;
+    try{
+      [STORE, COOLDOWN_STORE, AUDIT_STORE].forEach(function(k){ localStorage.removeItem(k); });
+      if(b.calc) localStorage.setItem(STORE, JSON.stringify(b.calc));
+      if(b.cooldowns.length) localStorage.setItem(COOLDOWN_STORE, JSON.stringify(b.cooldowns));
+      if(b.audit) localStorage.setItem(AUDIT_STORE, JSON.stringify(b.audit));
+    }catch(e){}
+    location.reload();
   });
 
   // Cooldown Timers
