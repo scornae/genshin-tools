@@ -15,7 +15,7 @@ and TITLE exactly. TITLE = featured 5-star to banner title, one entry per charac
 CRN = Chronicled Wish banners (start|end|title), add each new one, and leave an unannounced end blank (open-ended) until it is known. SEED = character list (id, name,
 element, weapon type, rarity), add new characters there. LUNA = Luna version to patch number.
 CR_START = first banner with Capturing Radiance (2024-08-28).
-DATA STATUS: banner data is verified through 7.2 Phase 1 (2026-11-09); the full record is in the comment just above SEED.
+DATA STATUS: banner data is verified through 7.2 Phase 2 (2026-11-20, from HoYoLAB); the full record is in the comment just above SEED.
 USER DATA lives in localStorage, every key starts with "gwl:": docx, paimon, crMarks, crUser, wUser. Backup JSON is
 {app:"wish-ledger", v:1} plus those five fields. Do not rename keys or change that shape: saved data and old backups break.
 Mark keys are "name|YYYY-MM-DD", with "#n" added for repeats on one day. Changing that format loses every mark.
@@ -35,7 +35,7 @@ ITEM POP-UP: the original header (square face icon on the left, the long namecar
 OVERVIEW MOST PULLED: two boxes, characters (switch 5★ then 4★, opens on 5★) and weapons (switch 4★ then 3★, opens on 4★), top 10 each; Show all opens the full list in a second dialog (#dlgList): compact rows without bars in 4 to 5 columns so about 100 names fit on one screen (bars stay in the Overview boxes only), stacked under the item pop-up. The choices live in S (lyC, lyW) until reload. Ties in count: characters newest release first (position in SEED, so keep SEED in release order), weapons latest pull first.
 LANDING (no data yet): About block (why, who it is for: paimon.moe users, what it is not), drop box, paimon.moe link. The safety and legal
 wording (no login, never ask for a password or code, nothing uploaded, unofficial) lives only in the footer; keep it, it matches HoYoLAB rules.
-BANNER MAP (tab "map", Character and Weapon only): units come from BN and WN; a wish is matched to a banner by date and, for character banners, A face is in color only when that exact 5★ was obtained (a weapon banner with two featured weapons colors only the one he got); every other face is grey, including banners running now, because color must mean he got it. On a character banner card the tooltip also lists the three 4★ rate-ups of that phase (both banners of a phase share one list): each name followed by how many of it he got from wishes on that exact banner, not the whole phase, a cross when none, and plain names when he made no wish on that banner.
+BANNER MAP (tab "map", Character and Weapon only): units come from BN and WN; a wish is matched to a banner by date and, for character banners, A face is in color only when that exact 5★ was obtained (a weapon banner with two featured weapons colors only the one he got); every other face is grey, including banners running now, because color must mean he got it. On a character banner card the tooltip also lists the three 4★ rate-ups of that phase (both banners of a phase share one list): each name followed by how many of it he got from wishes on that exact banner, not the whole phase, a cross when none, and plain names when he made no wish on that banner. A banner that has not started yet is "upcoming" (dotted grey frame), never counted as skipped.
 by banner name (featName). States: got, wished without featured, skipped, before the first wish, running now. Skipped tile counts skipped debuts.
 Summary tiles each have a color accent (orange, green, pink, blue; never the category colors gold, purple, teal, cyan, grey) and show exactly one line of detail; anything longer goes in the tile tooltip.
 REMOVED, DO NOT ADD BACK: one global banner filter over every tab (only Overview has it), Collection, Checks, Copy button, Avg gap,
@@ -344,7 +344,7 @@ dialog::backdrop{background:rgba(5,6,10,.72);backdrop-filter:blur(4px)}
 .mc{flex:1 1 0;max-width:280px;min-width:0;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1px solid var(--line2);background:var(--sf);text-align:left;color:var(--tx);font:inherit}.mc .pf{width:36px;height:36px;border-radius:9px}
 .mt{display:flex;flex-direction:column;min-width:0}.mt b{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mt small{font-size:12.5px;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mc.got{border-color:var(--r5);background:linear-gradient(90deg,rgba(242,179,80,.22),transparent)}.mc.got small{color:var(--r5)}.mc.miss{border-color:var(--lose);background:linear-gradient(90deg,rgba(239,139,139,.15),transparent)}.mc.miss small{color:var(--lose)}
-.mc .pf.nog{filter:grayscale(1);opacity:.5}.mc.skip{border-style:dashed;border-color:#7b7b7b}.mc.skip .pf,.mc.miss .pf{filter:grayscale(1);opacity:.5}.mc.pre{opacity:.33;border-color:transparent}.mc.pre .pf{filter:grayscale(1)}.mc.live{border-style:dashed;border-color:var(--guar)}.mc.live small{color:var(--guar)}
+.mc .pf.nog{filter:grayscale(1);opacity:.5}.mc.skip{border-style:dashed;border-color:#7b7b7b}.mc.skip .pf,.mc.miss .pf{filter:grayscale(1);opacity:.5}.mc.pre{opacity:.33;border-color:transparent}.mc.soon{border-style:dotted;border-color:#6a6a6a}.mc.soon .pf{filter:grayscale(1);opacity:.5}.mc.pre .pf{filter:grayscale(1)}.mc.live{border-style:dashed;border-color:var(--guar)}.mc.live small{color:var(--guar)}
 button.mc{cursor:pointer}button.mc:hover{filter:brightness(1.15)}
 .wm b{display:inline-flex;align-items:center;border:1px solid var(--line2);background:rgba(0,0,0,.5);border-radius:8px;height:28px;padding:0 12px;font-size:12px;font-weight:500;color:var(--mu)}.wm b.on.w{color:#9be8c0;border-color:var(--win);background:rgba(80,200,140,.18)}.wm b.on.l{color:#ffb0b0;border-color:var(--lose);background:rgba(235,90,90,.2)}.wm b.on.f{color:#b3ccff;border-color:rgba(143,180,255,.55);background:rgba(90,140,255,.22)}
 .chip.rbow{border:1.5px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,var(--rainbow) border-box;color:var(--tx);font-weight:600}.chip.rbow:hover{filter:brightness(1.2)}
@@ -578,8 +578,8 @@ button.mc{cursor:pointer}button.mc:hover{filter:brightness(1.15)}
    every character banner (108) and weapon banner (107) with version name, dates, featured characters and the two featured
    5-star weapons; banner titles of all 65 featured characters (TITLE); all 7 Chronicled Wish banners with dates and titles (CRN).
    Known game quirk, correct as is: version 1.3 has three character banners but two weapon banners, with different dates.
-   Names follow the Roster spelling. The fifth part of each BN line is the 4-star rate-up list, checked against his own pull history (no conflicts); 7.2 Phase 2 is not in the table until announced. The character is named Wanderer (Roster spelling and in game, image id wanderer); saved data, marks and restored backups that still say The Wanderer are renamed on load by migrateNames, so keep that function while old backups may exist.
-   Next additions: 7.2 Phase 2 (Zibai, Linnea) and the Chronicled 7.2 end date, only once the dates are announced.
+   Names follow the Roster spelling. The fifth part of each BN line is the 4-star rate-up list, checked against his own pull history (no conflicts); 7.2 Phase 2 (Zibai, Linnea; 24 Nov to 15 Dec 2026) was added on 2026-11-20 from HoYoLAB. The character is named Wanderer (Roster spelling and in game, image id wanderer); saved data, marks and restored backups that still say The Wanderer are renamed on load by migrateNames, so keep that function while old backups may exist.
+   Next additions: 7.3 and later, only once the dates are announced; the Chronicled 7.2 banner now ends 2026-12-15.
    After adding any patch, compare it against the wiki Version page before treating the data as verified again.
    ============================================================ */
 const SEED=[["jean","Jean","anemo","sword",5],["diluc","Diluc","pyro","claymore",5],["qiqi","Qiqi","cryo","sword",5],["mona","Mona","hydro","catalyst",5],["keqing","Keqing","electro","sword",5],["venti","Venti","anemo","bow",5],["klee","Klee","pyro","catalyst",5],["tartaglia","Tartaglia","hydro","bow",5],["zhongli","Zhongli","geo","polearm",5],["albedo","Albedo","geo","sword",5],["ganyu","Ganyu","cryo","bow",5],["xiao","Xiao","anemo","polearm",5],["hu-tao","Hu Tao","pyro","polearm",5],["eula","Eula","cryo","claymore",5],["kaedehara-kazuha","Kaedehara Kazuha","anemo","sword",5],["kamisato-ayaka","Kamisato Ayaka","cryo","sword",5],["yoimiya","Yoimiya","pyro","bow",5],["aloy","Aloy","cryo","bow",5],["raiden-shogun","Raiden Shogun","electro","polearm",5],["sangonomiya-kokomi","Sangonomiya Kokomi","hydro","catalyst",5],["arataki-itto","Arataki Itto","geo","claymore",5],["shenhe","Shenhe","cryo","polearm",5],["yae-miko","Yae Miko","electro","catalyst",5],["kamisato-ayato","Kamisato Ayato","hydro","sword",5],["yelan","Yelan","hydro","bow",5],["tighnari","Tighnari","dendro","bow",5],["cyno","Cyno","electro","polearm",5],["nilou","Nilou","hydro","sword",5],["nahida","Nahida","dendro","catalyst",5],["wanderer","Wanderer","anemo","catalyst",5],["alhaitham","Alhaitham","dendro","sword",5],["dehya","Dehya","pyro","claymore",5],["baizhu","Baizhu","dendro","catalyst",5],["lyney","Lyney","pyro","bow",5],["neuvillette","Neuvillette","hydro","catalyst",5],["wriothesley","Wriothesley","cryo","catalyst",5],["furina","Furina","hydro","sword",5],["navia","Navia","geo","claymore",5],["xianyun","Xianyun","anemo","catalyst",5],["chiori","Chiori","geo","sword",5],["arlecchino","Arlecchino","pyro","polearm",5],["clorinde","Clorinde","electro","sword",5],["sigewinne","Sigewinne","hydro","bow",5],["emilie","Emilie","dendro","polearm",5],["mualani","Mualani","hydro","catalyst",5],["kinich","Kinich","dendro","claymore",5],["xilonen","Xilonen","geo","sword",5],["chasca","Chasca","anemo","bow",5],["citlali","Citlali","cryo","catalyst",5],["mavuika","Mavuika","pyro","claymore",5],["yumemizuki-mizuki","Yumemizuki Mizuki","anemo","catalyst",5],["varesa","Varesa","electro","catalyst",5],["escoffier","Escoffier","cryo","polearm",5],["skirk","Skirk","cryo","sword",5],["ineffa","Ineffa","electro","polearm",5],["lauma","Lauma","dendro","catalyst",5],["flins","Flins","electro","polearm",5],["nefer","Nefer","dendro","catalyst",5],["durin","Durin","pyro","sword",5],["columbina","Columbina","hydro","catalyst",5],["zibai","Zibai","geo","sword",5],["varka","Varka","anemo","claymore",5],["linnea","Linnea","geo","bow",5],["nicole","Nicole","pyro","catalyst",5],["lohen","Lohen","cryo","polearm",5],["sandrone","Sandrone","cryo","claymore",5],["odette","Odette","cryo","sword",5],["vesna","Vesna","anemo","sword",5],["vodyanitsa","Vodyanitsa","hydro","catalyst",5],["mitya","Mitya","electro","catalyst",5],["lisa","Lisa","electro","catalyst",4],["barbara","Barbara","hydro","catalyst",4],["kaeya","Kaeya","cryo","sword",4],["razor","Razor","electro","claymore",4],["amber","Amber","pyro","bow",4],["xiangling","Xiangling","pyro","polearm",4],["beidou","Beidou","electro","claymore",4],["xingqiu","Xingqiu","hydro","sword",4],["ningguang","Ningguang","geo","catalyst",4],["fischl","Fischl","electro","bow",4],["bennett","Bennett","pyro","sword",4],["noelle","Noelle","geo","claymore",4],["chongyun","Chongyun","cryo","claymore",4],["sucrose","Sucrose","anemo","catalyst",4],["diona","Diona","cryo","bow",4],["xinyan","Xinyan","pyro","claymore",4],["rosaria","Rosaria","cryo","polearm",4],["yanfei","Yanfei","pyro","catalyst",4],["sayu","Sayu","anemo","claymore",4],["kujou-sara","Kujou Sara","electro","bow",4],["thoma","Thoma","pyro","polearm",4],["gorou","Gorou","geo","bow",4],["yun-jin","Yun Jin","geo","polearm",4],["kuki-shinobu","Kuki Shinobu","electro","sword",4],["shikanoin-heizou","Shikanoin Heizou","anemo","catalyst",4],["collei","Collei","dendro","bow",4],["dori","Dori","electro","claymore",4],["candace","Candace","hydro","polearm",4],["layla","Layla","cryo","sword",4],["faruzan","Faruzan","anemo","bow",4],["yaoyao","Yaoyao","dendro","polearm",4],["mika","Mika","cryo","polearm",4],["kaveh","Kaveh","dendro","claymore",4],["kirara","Kirara","dendro","sword",4],["lynette","Lynette","anemo","sword",4],["freminet","Freminet","cryo","claymore",4],["charlotte","Charlotte","cryo","catalyst",4],["chevreuse","Chevreuse","pyro","polearm",4],["gaming","Gaming","pyro","claymore",4],["sethos","Sethos","electro","bow",4],["kachina","Kachina","geo","polearm",4],["ororon","Ororon","electro","bow",4],["lan-yan","Lan Yan","anemo","catalyst",4],["iansan","Iansan","electro","polearm",4],["ifa","Ifa","anemo","catalyst",4],["dahlia","Dahlia","hydro","sword",4],["aino","Aino","hydro","claymore",4],["jahoda","Jahoda","anemo","bow",4],["illuga","Illuga","geo","polearm",4],["prune","Prune","anemo","catalyst",4],["alyosha","Alyosha","electro","polearm",4],["valeriy","Valeriy","electro","sword",4]];
@@ -690,7 +690,8 @@ Luna VIII|260721|260811|Columbina,Raiden Shogun|Jahoda,Ororon,Sethos
 7.0|260901|260922|Flins,Ineffa|Aino,Iansan,Lan Yan
 7.1|260923|261013|Vesna,Vodyanitsa|Diona,Faruzan,Chongyun
 7.1|261013|261103|Skirk,Escoffier|Dahlia,Candace,Mika
-7.2|261104|261124|Mitya,Furina|Valeriy,Charlotte,Rosaria`;
+7.2|261104|261124|Mitya,Furina|Valeriy,Charlotte,Rosaria
+7.2|261124|261215|Zibai,Linnea|Illuga,Aino,Ningguang`;
 const WN=`1.0|200928|201018|Aquila Favonia,Amos' Bow
 1.0|201020|201110|Lost Prayer to the Sacred Winds,Wolf's Gravestone
 1.1|201111|201201|Memory of Dust,Skyward Harp
@@ -797,7 +798,8 @@ Luna VIII|260721|260811|Nocturne's Curtain Call,Engulfing Lightning
 7.0|260901|260922|Bloodsoaked Ruins,Fractured Halo
 7.1|260923|261013|Beyond the Chrysalis,Hymn of the Maelstrom
 7.1|261013|261103|Azurelight,Symphonist of Scents
-7.2|261104|261124|Starsealed Edict,Splendor of Tranquil Waters`;
+7.2|261104|261124|Starsealed Edict,Splendor of Tranquil Waters
+7.2|261124|261215|Lightbearing Moonshard,Golden Frostbound Oath`;
 
 const ASSET='../roster/assets-optimized/';
 const CR_START='2024-08-28';
@@ -840,7 +842,7 @@ const CRN=`240313|240402|Ode to the Dawn Breeze
 250910|250930|Roving Chalice of Dewgrass
 260225|260317|Ode to the Dawn Breeze
 260428|260519|Dewlit Tranquility
-261124||Names Forged Beneath Blazing Skies`.split('\n').map(l=>{const[x,y,t]=l.split('|');return{s:d6(x),e:y?d6(y):'2999-12-31',t}});
+261124|261215|Names Forged Beneath Blazing Skies`.split('\n').map(l=>{const[x,y,t]=l.split('|');return{s:d6(x),e:y?d6(y):'2999-12-31',t}});
 const CH=new Map();SEED.forEach(([id,name,el,wt,r])=>CH.set(norm(name),{id,name,el:String(el).toLowerCase(),wt,r:+r}));
 const VERS=[];{const m=new Map();CB.forEach(b=>{const o=m.get(b.v);if(!o)m.set(b.v,{v:b.v,s:b.s,e:b.e});else{if(b.s<o.s)o.s=b.s;if(b.e>o.e)o.e=b.e}});VERS.push(...m.values())}
 const _fc=new Map();
@@ -1259,11 +1261,11 @@ function mapBuild(cat){const L=mapList(cat),units=mapUnits(cat),by=new Map();
   for(const u of units){u.r4=cat==='char'?u.b.r4.map(n=>[n,u.n?u.c4.filter(x=>sameName(x,n)).length:null]):[];
     const feats=cat==='char'?[u.f]:cat==='weapon'?u.b.f:null;
     u.got=feats?u.five.filter(n=>feats.some(f=>sameName(n,f))):u.five.slice();
-    u.st=u.n?(u.got.length?'got':'miss'):(u.b.e<first?'pre':(u.b.s<=today&&today<=u.b.e?'live':'skip'))}
+    u.st=u.n?(u.got.length?'got':'miss'):(u.b.e<first?'pre':(u.b.s>today?'soon':(today<=u.b.e?'live':'skip')))}
   {const seen=new Set();for(const u of units){const ks=cat==='char'?[u.f]:u.b.f;u.debut=ks.some(k=>!seen.has(k));ks.forEach(k=>seen.add(k))}}
   return{units,lost}}
 function mapText(u,cat){const w=`${u.n} wish${u.n===1?'':'es'}`;
-  if(u.st==='skip')return'skipped';if(u.st==='pre')return'before your history';if(u.st==='live')return'running now';
+  if(u.st==='skip')return'skipped';if(u.st==='soon')return'upcoming';if(u.st==='pre')return'before your history';if(u.st==='live')return'running now';
   if(u.st==='got')return`${w} · got ${cat==='char'?'it':[...new Set(u.got)].join(' + ')}`;
   const o=u.five;return`${w} · ${o.length?`got ${o[0]}${o.length>1?` +${o.length-1}`:''} instead`:'no 5★'}`}
 function bannerMapView(){if(!['char','weapon'].includes(S.mapCat))S.mapCat='char';
@@ -1271,7 +1273,7 @@ function bannerMapView(){if(!['char','weapon'].includes(S.mapCat))S.mapCat='char
   const cnt=st=>units.filter(u=>u.st===st).length,got=cnt('got'),miss=cnt('miss'),skip=cnt('skip'),pre=cnt('pre');
   const fives=D.pools[cat].filter(p=>p.r===5).slice().sort((x,y)=>x.date<y.date?-1:x.date>y.date?1:0);let gap=null;
   for(let i=1;i<fives.length;i++){const d=Math.round((new Date(fives[i].date)-new Date(fives[i-1].date))/864e5);if(!gap||d>gap.d)gap={d,a:fives[i-1],b:fives[i]}}
-  const live=cnt('live'),sk=units.filter(u=>u.st==='skip'),skD=sk.filter(u=>u.debut).length,deb=units.filter(u=>u.debut&&u.st!=='pre').length;
+  const live=cnt('live'),sk=units.filter(u=>u.st==='skip'),skD=sk.filter(u=>u.debut).length,deb=units.filter(u=>u.debut&&u.st!=='pre'&&u.st!=='soon').length;
   const rr=sk.length-skD,rrW=`${rr} rerun${rr===1?'':'s'} skipped`;
   const skSub=`of ${deb} debut${deb===1?'':'s'} · +${rrW}`,skTip=`of ${deb} debut${deb===1?'':'s'} since your history began · +${rrW}`+(live?` · ${live} running now, not counted`:'');
   const gapSub=gap?`${gap.a.name} → ${gap.b.name}`:'needs two 5★ wishes',gapTip=gap?`${gap.a.name} → ${gap.b.name} · ${mapD(gap.a.date,gap.a.date.slice(0,4)!==gap.b.date.slice(0,4))} → ${mapD(gap.b.date,true)}`:gapSub;
