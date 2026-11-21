@@ -13,8 +13,10 @@ Jakarta Sans). Favicon is an inline SVG data URI.
 WHERE THINGS LIVE (search these names)
 STORE, COOLDOWN_STORE, AUDIT_STORE, inputIds, MAX_RUNS   storage keys, input ids (max, per, cur, nextCal, cost), row cap
 calculate()                  computes from the fields, sets the anchor time S.at, starts Drift baseline #0, dims the setup box
-applyAdjust(), undoAdjust()  quick +/- energy (presets 20/40/60), one Undo step in memory. S.at moves only by whole multiples
-                             of perMs() to keep the tick phase; a fresh cycle starts only when spending from full
+applyAdjust(), adjustBy(), undoAdjust()  quick +/- energy, one Undo step in memory. S.at moves only by whole multiples
+                             of perMs() to keep the tick phase; a fresh cycle starts only when spending from full.
+                             Phones: number field with presets 20/40/60. Desktop (min-width 721px): craft slider in
+                             #craftBox (steps of 20, marks at 60/120/180), Add resin +60, Confirm, Undo
 update(), renderRuns()       repaint once a second (stage table, cooldowns, Drift Lab)
 setGauge(), initGaugeMarks() gauge SVG; night-sky canvas #sky is the page background
 captureSnap(), recordAuditCheck(), copyBugReport(), exportAuditJson()   Drift Lab
@@ -30,6 +32,7 @@ RULES ALREADY DECIDED
 3. Header line: Genshin Impact // Stamina Recovery. Site name stays Stamina Recovery.
 4. Palette: near-neutral black, gold, soft white. Stat cards: Capacity gold, Recovery green, Stage Readiness blue. Wait times
    soft red, Ready now soft glowing mint, Live badge green, Full badge gold. Differs from Roster and Arcana. Needs has no unit.
+   The gauge is the hero: up to 396px on desktop (wider than 1060px), 230px on phones. Keep it prominent.
 5. After Calculate the Initial Setup box is dimmed (class sealed) and brightens on focus; it is never locked.
 6. Drift Lab compares against the browser clock, so the PC clock must be synced before readings.
 REMOVED, DO NOT ADD BACK
@@ -1100,6 +1103,74 @@ Game preset dropdown, If I come back in panel, Reset button, minutes on cooldown
     #secConfig.sealed:not(:focus-within){opacity:.5; filter:saturate(.2) brightness(.85)}
     .ready-pill{margin-right:-14px}
     @media (max-width:720px){.ready-pill{margin-right:-10px}}
+  
+    /* ---- Desktop craft-style adjust box ---- */
+    .craft{margin-top:16px; padding:14px 18px 18px; border-radius:16px; background:linear-gradient(160deg,rgba(7,7,10,.72),rgba(18,18,24,.55)); border:1px solid var(--border); box-shadow:inset 0 1px 0 rgba(255,241,201,.06), inset 0 -18px 30px -24px rgba(233,199,123,.1)}
+    .craft.disabled{opacity:.48; pointer-events:none}
+    .craft-head{display:flex; align-items:baseline; gap:12px}
+    .craft-use{display:inline-flex; align-items:baseline; gap:8px}
+    .craft-use-lbl{font-size:12px; color:var(--muted)}
+    .craft-amt{font-family:var(--font-disp); font-size:36px; font-weight:700; line-height:1; background:linear-gradient(180deg,#fff1c9,#e9c77b 70%,#c59845); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(233,199,123,.25))}
+    .craft-resin{font-size:12.5px; font-weight:600; color:var(--aqua); min-width:48px}
+    .craft-now{margin-left:auto; font-size:12.5px; color:var(--muted); display:inline-flex; align-items:baseline; gap:10px}
+    .craft-now-wrap{position:relative}
+    .craft-now b{display:inline-block; font-size:16px; color:var(--ink)}
+    .craft-after{color:var(--ink-soft); font-weight:600}
+    .craft-slide{margin-top:8px}
+    .craft-slide input[type=range]{-webkit-appearance:none; appearance:none; display:block; width:100%; height:22px; margin:0; background:transparent; cursor:pointer; --p:0%; --a:100%}
+    .craft-slide input[type=range]:disabled{cursor:default}
+    .craft-slide input[type=range]::-webkit-slider-runnable-track{height:8px; border-radius:99px; border:1px solid rgba(233,199,123,.22); background:linear-gradient(90deg,#fff1c9,#e9c77b 0,#c59845 var(--p),rgba(255,255,255,.12) var(--p) var(--a),rgba(255,255,255,.035) var(--a)); box-shadow:inset 0 1px 2px rgba(0,0,0,.6), 0 0 14px -4px rgba(233,199,123,.35)}
+    .craft-slide input[type=range]::-moz-range-track{height:8px; border-radius:99px; border:1px solid rgba(233,199,123,.22); background:linear-gradient(90deg,#e9c77b 0,#c59845 var(--p),rgba(255,255,255,.12) var(--p) var(--a),rgba(255,255,255,.035) var(--a)); box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
+    .craft-slide input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; margin-top:-7px; border-radius:50%; border:2px solid #fff1c9; background:radial-gradient(circle at 35% 30%,#fff,#bff0ff 45%,#6bc5e8); box-shadow:0 0 0 3px rgba(143,227,255,.18), 0 0 14px rgba(143,227,255,.7), 0 2px 5px rgba(0,0,0,.6); transition:transform .15s var(--ease)}
+    .craft-slide input[type=range]::-moz-range-thumb{width:16px; height:16px; border-radius:50%; border:2px solid #fff1c9; background:radial-gradient(circle at 35% 30%,#fff,#bff0ff 45%,#6bc5e8); box-shadow:0 0 14px rgba(143,227,255,.7)}
+    .craft-slide input[type=range]:hover::-webkit-slider-thumb,.craft-slide input[type=range]:focus-visible::-webkit-slider-thumb{transform:scale(1.15)}
+    .craft-slide input[type=range]:focus-visible{outline:none}
+    .craft-ticks{position:relative; height:40px; margin-top:2px}
+    .craft-tick{position:absolute; top:0; transform:translateX(-50%); text-align:center; transition:opacity .3s}
+    .craft-tick i{display:block; margin:0 auto; width:1px; height:8px; background:rgba(255,255,255,.28)}
+    .craft-tick.major i{width:2px; height:15px; background:linear-gradient(180deg,#fff1c9,#e9c77b); box-shadow:0 0 8px rgba(233,199,123,.6)}
+    .craft-tick span{display:block; margin-top:4px; font-size:11.5px; color:var(--muted)}
+    .craft-tick.major span{font-size:13.5px; font-weight:700; color:var(--gold-l)}
+    .craft-tick.off{opacity:.3}
+    .craft-status{display:flex; align-items:center; gap:12px; min-height:34px; margin:2px 0 12px; font-size:12.5px; color:var(--muted)}
+    .craft-actions{display:flex; justify-content:space-between; align-items:center}
+    .craft-actions .btn{min-height:44px; padding:0 22px; font-size:13.5px}
+    .craft-actions small{font-size:11.5px; font-weight:500; opacity:.7}
+    .craft .ico{flex:0 0 auto}
+    .craft-fl{position:absolute; right:-6px; top:-8px; font-size:14px; font-weight:700; color:var(--aqua); animation:craftFl .9s ease forwards; pointer-events:none}
+    @keyframes craftFl{from{opacity:1; transform:translateY(0)}to{opacity:0; transform:translateY(-22px)}}
+    @keyframes craftPop{0%{color:var(--aqua); transform:scale(1.28)}100%{color:var(--ink); transform:scale(1)}}
+    .craft-pop{animation:craftPop .7s ease}
+    @media (max-width:720px){.craft{display:none}}
+    @media (min-width:721px){.qadj{display:none}}
+  
+    /* ---- Big watch-style hero (desktop) and polish ---- */
+    #secHero::before{content:""; position:absolute; inset:9px; border-radius:calc(var(--r-xl) - 8px); border:1px solid rgba(233,199,123,.11); pointer-events:none}
+    .eyebrow-text::before{content:""; display:inline-block; width:6px; height:6px; margin-right:9px; background:var(--gold); transform:rotate(45deg); vertical-align:2px; box-shadow:0 0 8px rgba(233,199,123,.7)}
+    .ready-meta{display:flex; width:fit-content; max-width:100%; padding:8px 16px; margin-top:12px; border-radius:12px; border:1px solid var(--border-subtle); background:rgba(255,255,255,.035)}
+    .hero-rule{position:relative; height:1px; margin:20px 0 2px; background:linear-gradient(90deg,var(--border-strong),rgba(233,199,123,.04) 90%)}
+    .hero-rule::before{content:""; position:absolute; left:0; top:-3px; width:7px; height:7px; background:var(--gold); transform:rotate(45deg); box-shadow:0 0 8px rgba(233,199,123,.7)}
+    .craft .qadj-title{display:inline-block; padding:3px 10px; border:1px solid var(--border-strong); border-radius:6px; background:rgba(233,199,123,.08); font-size:11px; letter-spacing:.16em; color:var(--gold)}
+    .craft-use-lbl{text-transform:uppercase; letter-spacing:.12em; font-size:11px}
+    .craft-now{flex-direction:column; align-items:flex-end; gap:5px}
+    .craft-after{padding:2px 10px; border-radius:999px; border:1px solid rgba(233,199,123,.32); background:rgba(233,199,123,.09); color:var(--gold-l); font-size:12px; font-weight:700}
+    @media (min-width:721px){ .hero-eyebrow{justify-content:space-between; flex-wrap:nowrap} .next-tick-chip{margin-left:auto} }
+    @media (min-width:1061px){
+      .hero-grid{grid-template-columns:clamp(268px, calc(100vw - 850px), 396px) minmax(0,1fr); gap:40px}
+      .gauge-box{max-width:none}
+      .countdown{font-size:64px}
+    }
+    @media (max-width:860px){
+      .hero-rule{background:linear-gradient(90deg,transparent,var(--border-strong),transparent)}
+      .hero-rule::before{left:50%; margin-left:-3px}
+      .ready-meta{margin-left:auto; margin-right:auto; justify-content:center}
+    }
+  
+    .craft-head{flex-wrap:wrap; row-gap:6px}
+    .craft-actions{gap:10px; flex-wrap:wrap}
+    @media (min-width:721px) and (max-width:1060px){ .craft-actions .btn{flex:1 1 auto; padding:0 14px} }
+  
+    .g-lbl{paint-order:stroke; stroke:rgba(8,8,10,.85); stroke-width:3px; stroke-linejoin:round}
   </style>
 </head>
 <body>
@@ -1293,8 +1364,6 @@ Game preset dropdown, If I come back in panel, Reset button, minutes on cooldown
           <circle id="arcCur" cx="150" cy="150" r="96" fill="none" stroke="url(#gArc)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(135 150 150)"/>
           <g id="ticks"></g>
           <g id="tickLabels"></g>
-
-          <text class="g-lbl" x="150" y="110" text-anchor="middle">ENERGY</text>
           <text id="gNum" class="g-num" x="150" y="214" text-anchor="middle">--</text>
           <text id="gMax" class="g-max" x="150" y="234" text-anchor="middle">/ --</text>
 
@@ -1308,6 +1377,7 @@ Game preset dropdown, If I come back in panel, Reset button, minutes on cooldown
           <circle cx="150" cy="150" r="11" fill="url(#gHub)" stroke="#2a1c08" stroke-width="1.5"/>
           <circle class="hub-gem" cx="150" cy="150" r="4" fill="#8fe3ff"/>
           <path d="M44 96 A112 112 0 0 1 150 38 A112 112 0 0 0 62 118 Z" fill="rgba(255,255,255,.06)"/>
+          <text class="g-lbl" x="150" y="110" text-anchor="middle">ENERGY</text>
         </svg>
             </div>
 
@@ -1325,7 +1395,27 @@ Game preset dropdown, If I come back in panel, Reset button, minutes on cooldown
 
               <div class="warn-box" id="warnBox" hidden></div>
 
-              <!-- Quick Energy Adjust -->
+              <div class="hero-rule" aria-hidden="true"></div>
+
+              <!-- Quick Energy Adjust, desktop: craft-table style slider (phones keep the number field below) -->
+              <div class="craft disabled" id="craftBox" aria-label="Quick energy adjustment">
+                <div class="craft-head">
+                  <span class="qadj-title">Adjust</span>
+                  <span class="craft-use"><span class="craft-use-lbl">Use</span><span class="craft-amt tnum" id="craftAmt">0</span><span class="craft-resin" id="craftResin"></span></span>
+                  <span class="craft-now tnum"><span class="craft-now-wrap">Now <b id="craftNow">--</b> / <span id="craftMax">200</span><span id="craftFlt"></span></span><span class="craft-after" id="craftAfter"></span></span>
+                </div>
+                <div class="craft-slide">
+                  <input id="craftSl" type="range" min="0" max="200" step="20" value="0" aria-label="Energy to spend" disabled>
+                  <div class="craft-ticks" id="craftTicks" aria-hidden="true"></div>
+                </div>
+                <div class="craft-status"><span id="craftStatus">Drag the slider, then Confirm.</span><button type="button" class="btn btn-ghost btn-sm" id="craftUndo" hidden title="Undo last adjustment"><svg class="ico" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Undo</button></div>
+                <div class="craft-actions">
+                  <button type="button" class="btn btn-aqua" id="craftAdd" disabled>Add resin<svg class="ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20.2 14.6A8.5 8.5 0 0 1 9.4 3.8a8.5 8.5 0 1 0 10.8 10.8z" fill="currentColor"/></svg><small>+60</small></button>
+                  <button type="button" class="btn btn-primary" id="craftOk" disabled><svg class="ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Confirm</button>
+                </div>
+              </div>
+
+              <!-- Quick Energy Adjust (phones) -->
               <div class="qadj disabled" id="qadjBox" aria-label="Quick energy adjustment">
                 <span class="qadj-title">Adjust</span>
                 <div class="qadj-main">
@@ -2126,7 +2216,12 @@ Game preset dropdown, If I come back in panel, Reset button, minutes on cooldown
       return;
     }
 
-    var amt = Math.floor(rawAmt);
+    adjustBy(adjSign, Math.floor(rawAmt));
+  }
+
+  // Shared by the phone number field and the desktop slider. sign: -1 spend, +1 add.
+  function adjustBy(sign, amt){
+    if(!S){ say('Press Calculate first.'); return; }
     var now = Date.now();
     var ms = perMs();
     var undoPrev = {
@@ -2142,7 +2237,7 @@ Game preset dropdown, If I come back in panel, Reset button, minutes on cooldown
       ? Math.max(S.cur, S.max)
       : (S.cur + Math.floor(Math.max(0, now - S.at) / ms));
 
-    var delta = adjSign * amt;
+    var delta = sign * amt;
     var nextCur = Math.max(0, liveBefore + delta);
 
     if(wasFull || nextCur >= S.max){
@@ -2205,7 +2300,61 @@ Game preset dropdown, If I come back in panel, Reset button, minutes on cooldown
     var note = (wasFull && nextCur < S.max)
       ? ' · new cycle from full'
       : (nextCur >= S.max ? ' · at max cap' : ' · reference updated');
-    say(verb + ' (' + liveBefore + ' → ' + nextCur + ')' + note + '.');
+    adjNote(verb + ' (' + liveBefore + ' → ' + nextCur + ')' + note + '.', delta < 0 ? '#ffd27a' : 'var(--aqua)');
+    craftBump(delta < 0 ? '−' + amt : '+' + amt);
+  }
+
+  // Status text: inside the desktop box on wide screens, the inline toast on phones
+  function adjNote(text, tone){
+    if(window.matchMedia('(min-width: 721px)').matches){
+      var s = $('craftStatus'); s.textContent = text; s.style.color = tone || '';
+    } else say(text);
+  }
+
+  function craftBump(txt){
+    var e = $('craftNow'); e.classList.remove('craft-pop'); void e.offsetWidth; e.classList.add('craft-pop');
+    var f = $('craftFlt'); f.innerHTML = '<span class="craft-fl">' + txt + '</span>';
+    clearTimeout(f._t); f._t = setTimeout(function(){ f.innerHTML = ''; }, 950);
+  }
+
+  var craftTicksMax = -1;
+  function buildCraftTicks(rmax){
+    var box = $('craftTicks'); box.innerHTML = '';
+    var n = Math.round(rmax / 20);
+    for(var i = 0; i <= n; i++){
+      var v = i * 20, major = (v % 60 === 0 && v > 0 && v < rmax), end = (v === 0 || v === rmax);
+      var d = document.createElement('div');
+      d.className = 'craft-tick' + (major ? ' major' : '');
+      d.setAttribute('data-v', v);
+      d.style.left = 'calc(10px + (100% - 20px) * ' + (n ? i / n : 0) + ')';
+      d.innerHTML = '<i></i>' + ((major || end) ? '<span>' + v + '</span>' : '');
+      box.appendChild(d);
+    }
+    craftTicksMax = rmax;
+  }
+
+  function renderCraft(now){
+    var on = !!S;
+    var rmax = on ? Math.max(20, Math.floor(S.max / 20) * 20) : 200;
+    if(rmax !== craftTicksMax) buildCraftTicks(rmax);
+    var sl = $('craftSl');
+    sl.max = String(rmax);
+    var live = on ? Math.floor(rawEnergy(now)) : 0;
+    var avail = Math.min(rmax, Math.floor(live / 20) * 20);
+    if(+sl.value > avail) sl.value = String(avail);
+    var val = +sl.value;
+    $('craftBox').classList.toggle('disabled', !on);
+    sl.disabled = !on; $('craftAdd').disabled = !on; $('craftOk').disabled = !on;
+    $('craftUndo').hidden = !(on && undoState);
+    $('craftNow').textContent = on ? live : '--';
+    $('craftMax').textContent = on ? S.max : $('max').value || '200';
+    $('craftAmt').textContent = val;
+    $('craftResin').textContent = (val > 0 && val % 60 === 0) ? (val / 60) + ' resin' : '';
+    $('craftAfter').textContent = on ? live + ' → ' + Math.max(0, live - val) : '';
+    sl.style.setProperty('--p', (val / rmax * 100) + '%');
+    sl.style.setProperty('--a', (avail / rmax * 100) + '%');
+    var ticks = $('craftTicks').children;
+    for(var i = 0; i < ticks.length; i++) ticks[i].classList.toggle('off', +ticks[i].getAttribute('data-v') > avail);
   }
 
   function undoAdjust(){
@@ -2226,7 +2375,8 @@ Game preset dropdown, If I come back in panel, Reset button, minutes on cooldown
     runsCache = '';
     save();
     update();
-    say('Reverted adjustment (' + u.label.split(' → ').reverse().join(' → ') + ').');
+    adjNote('Reverted adjustment (' + u.label.split(' → ').reverse().join(' → ') + ').', 'var(--muted)');
+    craftBump('↶');
   }
 
   /* ---------- Cooldown Timers ---------- */
@@ -2887,6 +3037,7 @@ Game preset dropdown, If I come back in panel, Reset button, minutes on cooldown
     $('adjBtn').disabled = !S;
     $('undoBtn').hidden = !(S && undoState);
     $('secConfig').classList.toggle('sealed', !!S && !dirty);
+    renderCraft(now);
 
     var chips = document.querySelectorAll('.chip[data-preset]');
     for(var c = 0; c < chips.length; c++) chips[c].disabled = !S;
@@ -3129,6 +3280,18 @@ Game preset dropdown, If I come back in panel, Reset button, minutes on cooldown
   $('signAdd').addEventListener('click', function(){ setSign(1); });
   $('adjBtn').addEventListener('click', applyAdjust);
   $('undoBtn').addEventListener('click', undoAdjust);
+  $('craftUndo').addEventListener('click', undoAdjust);
+  $('craftSl').addEventListener('input', function(){ $('craftStatus').style.color = ''; renderCraft(Date.now()); });
+  $('craftAdd').addEventListener('click', function(){ adjustBy(1, 60); });
+  function craftConfirm(){
+    var val = +$('craftSl').value;
+    if(val < 1){ var s = $('craftStatus'); s.textContent = 'Drag the slider to choose how much to use.'; s.style.color = '#ff9b9b'; return; }
+    adjustBy(-1, val);
+    $('craftSl').value = '0';
+    renderCraft(Date.now());
+  }
+  $('craftOk').addEventListener('click', craftConfirm);
+  $('craftSl').addEventListener('keydown', function(e){ if(e.key === 'Enter') craftConfirm(); });
   $('adjAmt').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ this.blur(); applyAdjust(); } });
 
   var presetBtns = document.querySelectorAll('.chip[data-preset]');
